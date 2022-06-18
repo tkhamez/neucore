@@ -127,14 +127,10 @@ class Account
      *
      * @param Character $char Character with Player object attached.
      * @param EveAuthentication $eveAuth
-     * @param bool $updateAutoGroups Update "auto groups" if the character is new or was moved to another account
      * @return bool
      */
-    public function updateAndStoreCharacterWithPlayer(
-        Character $char,
-        EveAuthentication $eveAuth,
-        bool $updateAutoGroups
-    ): bool {
+    public function updateAndStoreCharacterWithPlayer(Character $char, EveAuthentication $eveAuth): bool
+    {
         // update character
         $token = $eveAuth->getToken();
         // Do not update the character name: after a character rename the name from SSO is/can be? the old name.
@@ -193,12 +189,7 @@ class Account
 
         // update character if corporation is missing
         if ($char->getCorporation() === null) {
-            $this->esiData->fetchCharacterWithCorporationAndAlliance($char->getId());
-        }
-
-        // update groups
-        if ($updateAutoGroups) {
-            $this->updateGroups($char->getPlayer()->getId()); // flushes
+            $this->esiData->fetchCharacterWithCorporationAndAlliance($char->getId()); // flushes
         }
 
         return $success;
@@ -562,7 +553,7 @@ class Account
         // get role
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $roleName]);
         if ($role === null) {
-            $this->log->error('Account::syncGroupManagerRole(): Role not found.');
+            $this->log->error("Account::syncGroupManagerRole(): Role '$roleName' not found.");
             return;
         }
 

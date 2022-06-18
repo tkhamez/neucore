@@ -163,8 +163,7 @@ class AccountTest extends TestCase
     {
         $result = $this->service->updateAndStoreCharacterWithPlayer(
             new Character(),
-            new EveAuthentication(100, '', '', new AccessToken(['access_token' => 'irrelevant'])),
-            false
+            new EveAuthentication(100, '', '', new AccessToken(['access_token' => 'irrelevant']))
         );
         $this->assertFalse($result);
 
@@ -203,8 +202,7 @@ class AccountTest extends TestCase
                 'will be updated because corporation is missing',
                 'character-owner-hash',
                 new AccessToken(['access_token' => $token[0], 'refresh_token' => 'r-t', 'expires' => $expires])
-            ),
-            false
+            )
         );
         $this->assertTrue($result);
 
@@ -249,8 +247,7 @@ class AccountTest extends TestCase
                 'char name changed',
                 'character-owner-hash',
                 new AccessToken(['access_token' => 'a-t'])
-            ),
-            true
+            )
         );
         $this->assertTrue($result);
 
@@ -283,8 +280,7 @@ class AccountTest extends TestCase
         $char = $char ?: new Character(); // only for PHPStan
         $result = $this->service->updateAndStoreCharacterWithPlayer(
             $char,
-            new EveAuthentication(100, '', '', new AccessToken(['access_token' => 'a-t'])),
-            false
+            new EveAuthentication(100, '', '', new AccessToken(['access_token' => 'a-t']))
         );
         $this->assertTrue($result);
 
@@ -968,7 +964,7 @@ class AccountTest extends TestCase
         $this->service->syncManagerRole(new Player, 'name');
 
         $this->assertSame(
-            'Account::syncGroupManagerRole(): Role not found.',
+            "Account::syncGroupManagerRole(): Role 'name' not found.",
             $this->log->getHandler()->getRecords()[0]['message']
         );
     }

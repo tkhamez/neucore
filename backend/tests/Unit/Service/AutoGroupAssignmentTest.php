@@ -114,7 +114,7 @@ class AutoGroupAssignmentTest extends TestCase
         $this->assertGreaterThan('2018-04-28 17:56:54', $playerDb->getLastUpdate()->format('Y-m-d H:i:s'));
     }
 
-    public function testAddDefaultGroups()
+    public function testAssignDefaultGroups()
     {
         $this->setUpData();
         $this->assertSame([$this->group4->getId(), $this->group5Id], $this->player->getGroupIds());

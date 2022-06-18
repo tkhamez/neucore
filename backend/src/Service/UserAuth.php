@@ -212,7 +212,10 @@ class UserAuth implements RoleProviderInterface
             $char->getPlayer()->addRole($userRole[0]);
         }
 
-        $success = $this->accountService->updateAndStoreCharacterWithPlayer($char, $eveAuth, $updateAutoGroups);
+        $success = $this->accountService->updateAndStoreCharacterWithPlayer($char, $eveAuth); // flushes
+        if ($updateAutoGroups) {
+            $this->accountService->updateGroups($char->getPlayer()->getId()); // flushes
+        }
 
         if (!$success) {
             return false;
@@ -229,16 +232,10 @@ class UserAuth implements RoleProviderInterface
     {
         $characterId = $eveAuth->getCharacterId();
 
-        // check if the character was already registered,
-        // if so, move it to this player account if needed, otherwise create it
-        // (there is no need to check for a changed character owner hash here)
+        $existingChar = true;
         $alt = $this->repositoryFactory->getCharacterRepository()->find($characterId);
-        if ($alt !== null && $alt->getPlayer()->getId() !== $player->getId()) {
-            $oldPlayerId = $alt->getPlayer()->getId();
-            $this->accountService->moveCharacter($alt, $player, RemovedCharacter::REASON_MOVED);
-            $this->accountService->updateGroups($oldPlayerId); // flushes the entity manager
-            $alt->setMain(false);
-        } elseif ($alt === null) {
+        if ($alt === null) {
+            $existingChar = false;
             $alt = new Character();
             $alt->setId($characterId);
             try {
@@ -248,10 +245,23 @@ class UserAuth implements RoleProviderInterface
             }
             $player->addCharacter($alt);
             $alt->setPlayer($player);
-            $alt->setMain(false);
+        }
+        $alt->setMain(false);
+
+        $success = $this->accountService->updateAndStoreCharacterWithPlayer($alt, $eveAuth); // flushes
+        if (!$success) {
+            return false;
         }
 
-        return $this->accountService->updateAndStoreCharacterWithPlayer($alt, $eveAuth, true);
+        if ($existingChar && $alt->getPlayer()->getId() !== $player->getId()) {
+            $oldPlayerId = $alt->getPlayer()->getId();
+            $this->accountService->moveCharacter($alt, $player, RemovedCharacter::REASON_MOVED);
+            $this->accountService->updateGroups($oldPlayerId); // flushes
+        }
+
+        $this->accountService->updateGroups($player->getId()); // flushes
+
+        return true;
     }
 
     /**

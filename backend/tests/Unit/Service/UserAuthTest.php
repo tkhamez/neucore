@@ -13,14 +13,12 @@ use League\OAuth2\Client\Token\AccessToken;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
-use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
 use Neucore\Entity\ServiceConfiguration;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Plugin\CoreGroup;
 use Neucore\Repository\EsiTokenRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\SessionData;
@@ -269,10 +267,45 @@ class UserAuthTest extends TestCase
         $this->assertFalse($chars[1]->getMain());
     }
 
+    public function testLogin_AddAltNewCharAddsGroups()
+    {
+        $_SESSION['character_id'] = 100;
+        $this->helper->addRoles([Role::GROUP_MANAGER, Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
+        $group = (new Group())->setName('g1');
+        $corp = (new Corporation())->setId(102)->setName('c1')->setTicker('t1')->addGroup($group);
+        $this->om->persist($group);
+        $this->om->persist($corp);
+        $main = $this->helper->addCharacterMain('Main', 100, [Role::USER]);
+
+        $player = $main->getPlayer();
+        $this->client->setResponse(
+            new Response(200, [], '{"name": "Alt 1", "corporation_id": 102}'), // getCharactersCharacterId
+            new Response(200, [], '[]'), // postCharactersAffiliation())
+            new Response(200, [], '{"name": "c1 updated", "ticker": "t1"}') // getCorporationsCorporationId()
+        );
+        $token = new AccessToken(['access_token' => 'tk', 'expires' => 1525456785, 'refresh_token' => 'rf']);
+
+        $result = $this->service->login(new EveAuthentication(101, 'Alt 1', 'hash', $token));
+
+        $this->assertSame(UserAuth::LOGIN_CHARACTER_ADDED_SUCCESS, $result);
+        $this->assertSame(0, count($this->log->getMessages()));
+
+        $chars = $player->getCharacters();
+        $this->assertSame(2, count($chars));
+        $this->assertSame([$group->getId()], $chars[0]->getPlayer()->getGroupIds());
+        $this->assertSame('c1 updated', $chars[1]->getCorporation()->getName());
+        $this->assertSame(101, $chars[1]->getId());
+        $this->assertLessThanOrEqual(time(), $chars[1]->getCreated()->getTimestamp());
+        $this->assertSame('Alt 1', $chars[1]->getName());
+        $this->assertSame('hash', $chars[1]->getCharacterOwnerHash());
+        $this->assertSame('rf', $chars[1]->getEsiToken(EveLogin::NAME_DEFAULT)->getRefreshToken());
+        $this->assertFalse($chars[1]->getMain());
+    }
+
     /**
      * @throws \Exception
      */
-    public function testLogin_AddAltExistingChar()
+    public function testLogin_AddAltExistingCharAndMove()
     {
         $_SESSION['character_id'] = 100;
         $corp = (new Corporation())->setId(101);
