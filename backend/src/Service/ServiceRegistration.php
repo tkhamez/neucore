@@ -6,10 +6,13 @@ namespace Neucore\Service;
 
 use Neucore\Application;
 use Neucore\Entity\Character;
+use Neucore\Entity\Player;
 use Neucore\Entity\Service;
+use Neucore\Entity\ServiceConfiguration;
+use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
-use Neucore\Plugin\ServiceConfiguration;
+use Neucore\Plugin\ServiceConfiguration as PluginServiceConfiguration;
 use Neucore\Plugin\ServiceInterface;
 use Psr\Log\LoggerInterface;
 
@@ -17,9 +20,15 @@ class ServiceRegistration
 {
     private LoggerInterface $log;
 
-    public function __construct(LoggerInterface $log)
+    private RepositoryFactory $repositoryFactory;
+
+    private AccountGroup $accountGroup;
+
+    public function __construct(LoggerInterface $log, RepositoryFactory $repositoryFactory, AccountGroup $accountGroup)
     {
         $this->log = $log;
+        $this->accountGroup = $accountGroup;
+        $this->repositoryFactory = $repositoryFactory;
     }
 
     public function getServiceImplementation(Service $service): ?ServiceInterface
@@ -58,7 +67,7 @@ class ServiceRegistration
         // ServiceInterface::__construct
         return new $phpClass(
             $this->log,
-            new ServiceConfiguration(
+            new PluginServiceConfiguration(
                 $service->getId(),
                 array_map('intval', (array)$serviceConfig->requiredGroups),
                 $serviceConfig->configurationData
@@ -107,5 +116,73 @@ class ServiceRegistration
         }
 
         return $accountData;
+    }
+
+    public function updatePlayerAccounts(Player $player): array
+    {
+        $updated = [];
+
+        $services = $this->repositoryFactory->getServiceRepository()->findBy([]);
+        foreach ($services as $service) {
+            // Check if service has the "update-account" action
+            if (!in_array(ServiceConfiguration::ACTION_UPDATE_ACCOUNT, (array)$service->getConfiguration()->actions)) {
+                continue;
+            }
+
+            $implementation = $this->getServiceImplementation($service);
+            if (!$implementation) {
+                continue;
+            }
+
+            $accounts = [];
+            try {
+                $accounts = $this->getAccounts($implementation, $player->getCharacters());
+            } catch (Exception $e) {
+                // Do nothing, service should log its errors
+            }
+
+            foreach ($accounts as $account) {
+                $character = $player->getCharacter($account->getCharacterId());
+                if (!$character) {
+                    $this->log->error('ServiceController::updateAllAccounts: Character not found on account.');
+                    continue;
+                }
+                $error = $this->updateServiceAccount($character, $implementation);
+                if ($error === null) {
+                    $updated[] = [
+                        'serviceName' => $service->getName(),
+                        'characterId' => $account->getCharacterId()
+                    ];
+                } else {
+                    $serviceName = $service->getName();
+                    $this->log->error("ServiceController::updateAllAccounts: $serviceName: $error");
+                }
+            }
+        }
+
+        return $updated;
+    }
+
+    /**
+     * @return string|null Error message (can be empty) or null on success.
+     */
+    public function updateServiceAccount(Character $character, ServiceInterface $serviceImplementation): ?string
+    {
+        $main = null;
+        if ($character->getPlayer()->getMain() !== null) {
+            $main = $character->getPlayer()->getMain()->toCoreCharacter();
+        }
+
+        try {
+            $serviceImplementation->updateAccount(
+                $character->toCoreCharacter(),
+                $this->accountGroup->getCoreGroups($character->getPlayer()),
+                $main
+            );
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+
+        return null;
     }
 }

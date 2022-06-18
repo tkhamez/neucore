@@ -357,7 +357,7 @@ class ServiceController extends BaseController
         }
 
         // Update account.
-        $error = $this->updateServiceAccount($validCharacter, $serviceImplementation);
+        $error = $this->serviceRegistration->updateServiceAccount($validCharacter, $serviceImplementation);
         if (!empty($error)) {
             return $this->withJson($error, 409);
         } elseif ($error === '') {
@@ -409,45 +409,7 @@ class ServiceController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $updated = [];
-
-        $services = $this->repositoryFactory->getServiceRepository()->findBy([]);
-        foreach ($services as $service) {
-            // Check if service has the "update-account" action
-            if (!in_array(ServiceConfiguration::ACTION_UPDATE_ACCOUNT, (array)$service->getConfiguration()->actions)) {
-                continue;
-            }
-
-            $implementation = $this->serviceRegistration->getServiceImplementation($service);
-            if (!$implementation) {
-                continue;
-            }
-
-            $accounts = [];
-            try {
-                $accounts = $this->serviceRegistration->getAccounts($implementation, $player->getCharacters());
-            } catch (Exception $e) {
-                // Do nothing, service should log its errors
-            }
-
-            foreach ($accounts as $account) {
-                $character = $player->getCharacter($account->getCharacterId());
-                if (!$character) {
-                    $this->log->error('ServiceController::updateAllAccounts: Character not found on account.');
-                    continue;
-                }
-                $error = $this->updateServiceAccount($character, $implementation);
-                if ($error === null) {
-                    $updated[] = [
-                        'serviceName' => $service->getName(),
-                        'characterId' => $account->getCharacterId()
-                    ];
-                } else {
-                    $serviceName = $service->getName();
-                    $this->log->error("ServiceController::updateAllAccounts: $serviceName: $error");
-                }
-            }
-        }
+        $updated = $this->serviceRegistration->updatePlayerAccounts($player);
 
         return $this->withJson($updated);
     }
@@ -605,28 +567,5 @@ class ServiceController extends BaseController
             return null;
         }
         return $this->getAccountOfCharacter($serviceImplementation, $validCharacter);
-    }
-
-    /**
-     * @return string|null Error message (can be empty) or null on success.
-     */
-    private function updateServiceAccount(Character $character, ServiceInterface $serviceImplementation): ?string
-    {
-        $main = null;
-        if ($character->getPlayer()->getMain() !== null) {
-            $main = $character->getPlayer()->getMain()->toCoreCharacter();
-        }
-
-        try {
-            $serviceImplementation->updateAccount(
-                $character->toCoreCharacter(),
-                $this->accountGroup->getCoreGroups($character->getPlayer()),
-                $main
-            );
-        } catch (Exception $e) {
-            return $e->getMessage();
-        }
-
-        return null;
     }
 }

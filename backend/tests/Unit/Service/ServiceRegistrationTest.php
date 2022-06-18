@@ -12,9 +12,11 @@ use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Service;
 use Neucore\Entity\ServiceConfiguration;
+use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
+use Neucore\Service\AccountGroup;
 use Neucore\Service\ServiceRegistration;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
@@ -37,6 +39,8 @@ class ServiceRegistrationTest extends TestCase
 
     private ServiceRegistration $serviceRegistration;
 
+    private ServiceInterface $serviceImplementation;
+
     public static function setUpBeforeClass(): void
     {
         /** @noinspection PhpIncludeInspection */
@@ -47,7 +51,14 @@ class ServiceRegistrationTest extends TestCase
     {
         $this->log = new Logger('Test');
         $this->helper = new Helper();
-        $this->serviceRegistration = new ServiceRegistration($this->log);
+        $om = $this->helper->getObjectManager();
+        $repoFactory = RepositoryFactory::getInstance($om);
+        $accountGroup = new AccountGroup($repoFactory);
+        $this->serviceRegistration = new ServiceRegistration($this->log, $repoFactory, $accountGroup);
+        $this->serviceImplementation = new ServiceRegistrationTest_TestService(
+            $this->log,
+            new \Neucore\Plugin\ServiceConfiguration(0, [], '')
+        );
     }
 
     protected function tearDown(): void
@@ -109,13 +120,7 @@ class ServiceRegistrationTest extends TestCase
     {
         $this->assertSame(
             [],
-            $this->serviceRegistration->getAccounts(
-                new ServiceRegistrationTest_TestService(
-                    $this->log,
-                    new \Neucore\Plugin\ServiceConfiguration(0, [], '')
-                ),
-                []
-            )
+            $this->serviceRegistration->getAccounts($this->serviceImplementation, [])
         );
     }
 
@@ -123,7 +128,7 @@ class ServiceRegistrationTest extends TestCase
     {
         $player = (new Player())->addGroup(new Group());
         $actual = $this->serviceRegistration->getAccounts(
-            new ServiceRegistrationTest_TestService($this->log, new \Neucore\Plugin\ServiceConfiguration(0, [], '')),
+            $this->serviceImplementation,
             [(new Character())->setId(123)->setPlayer($player)]
         );
 
@@ -147,7 +152,7 @@ class ServiceRegistrationTest extends TestCase
 
         $player = (new Player())->addGroup(new Group())->addCharacter($character);
         $actual = $this->serviceRegistration->getAccounts(
-            new ServiceRegistrationTest_TestService($this->log, new \Neucore\Plugin\ServiceConfiguration(0, [], '')),
+            $this->serviceImplementation,
             [(new Character())->setId(123)->setPlayer($player)]
         );
 
@@ -158,8 +163,36 @@ class ServiceRegistrationTest extends TestCase
     {
         $this->expectException(Exception::class);
         $this->serviceRegistration->getAccounts(
-            new ServiceRegistrationTest_TestService($this->log, new \Neucore\Plugin\ServiceConfiguration(0, [], '')),
+            $this->serviceImplementation,
             [(new Character())->setId(999)->setPlayer(new Player())]
         );
+    }
+
+    /**
+     * @see ServiceControllerTest::testUpdateAllAccounts_200()
+     */
+    public function testUpdatePlayerAccounts()
+    {
+        // Note: This is properly, but not completely, tested in ServiceControllerTest::testUpdateAllAccounts_200
+
+        $result = $this->serviceRegistration->updatePlayerAccounts(new Player());
+
+        $this->assertSame([], $result);
+        $this->assertSame([], $this->log->getMessages());
+    }
+
+    public function testUpdateServiceAccount()
+    {
+        $char = (new Character())->setMain(true);
+        $player = new Player();
+        $char->setPlayer($player);
+        $player->addCharacter($char);
+
+        $result1 = $this->serviceRegistration->updateServiceAccount($char, $this->serviceImplementation);
+        $this->assertNull($result1);
+
+        $char->setId(10);
+        $result2 = $this->serviceRegistration->updateServiceAccount($char, $this->serviceImplementation);
+        $this->assertSame('Test Error', $result2);
     }
 }

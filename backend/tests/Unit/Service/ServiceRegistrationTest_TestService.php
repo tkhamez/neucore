@@ -43,6 +43,9 @@ class ServiceRegistrationTest_TestService implements ServiceInterface
 
     public function updateAccount(CoreCharacter $character, array $groups, ?CoreCharacter $mainCharacter): void
     {
+        if ($character->id === 10) {
+            throw new Exception('Test Error');
+        }
     }
 
     public function updatePlayerAccount(CoreCharacter $mainCharacter, array $groups): void
