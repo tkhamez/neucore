@@ -169,7 +169,7 @@ class Alliance implements \JsonSerializable
      */
     public function getCorporations(): array
     {
-        return $this->corporations->toArray();
+        return array_values($this->corporations->toArray());
     }
 
     public function addGroup(Group $group): self
@@ -192,7 +192,7 @@ class Alliance implements \JsonSerializable
      */
     public function getGroups(): array
     {
-        return $this->groups->toArray();
+        return array_values($this->groups->toArray());
     }
 
     public function hasGroup(int $groupId): bool

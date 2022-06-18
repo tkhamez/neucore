@@ -1,4 +1,5 @@
 <?php
+/** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
 
@@ -29,7 +30,7 @@ class AppTest extends TestCase
 
     public function testGetId()
     {
-        $this->assertNull((new App)->getId());
+        $this->assertSame(0, (new App)->getId());
     }
 
     public function testSetGetName()
@@ -116,9 +117,6 @@ class AppTest extends TestCase
         $this->assertSame([$p1], $app->getManagers());
     }
 
-    /**
-     * @throws \ReflectionException
-     */
     public function testIsManager()
     {
         $app = new App();

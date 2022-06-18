@@ -26,23 +26,20 @@ class Watchlist implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
-     * @var integer
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @OA\Property()
      * @ORM\Column(type="string", length=32)
-     * @var string
      */
-    private $name;
+    private ?string $name = null;
 
     /**
      * @OA\Property()
      * @ORM\Column(type="boolean", name="lock_watchlist_settings")
-     * @var bool
      */
-    private $lockWatchlistSettings = false;
+    private bool $lockWatchlistSettings = false;
 
     /**
      * Player accounts that are on the allowlist.
@@ -50,9 +47,8 @@ class Watchlist implements \JsonSerializable
      * @ORM\ManyToMany(targetEntity="Player")
      * @ORM\JoinTable(name="watchlist_exemption")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $exemptions;
+    private Collection $exemptions;
 
     /**
      * Corporations whose members are on this list if their player accounts also have
@@ -60,27 +56,24 @@ class Watchlist implements \JsonSerializable
      *
      * @ORM\ManyToMany(targetEntity="Corporation")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $corporations;
+    private Collection $corporations;
 
     /**
      * Same as $corporations but for alliances.
      *
      * @ORM\ManyToMany(targetEntity="Alliance")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $alliances;
+    private Collection $alliances;
 
     /**
      * Members of theses groups have read access to this list.
      *
      * @ORM\ManyToMany(targetEntity="Group")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $groups;
+    private Collection $groups;
 
     /**
      * Members of theses groups can change settings for this list.
@@ -88,9 +81,8 @@ class Watchlist implements \JsonSerializable
      * @ORM\ManyToMany(targetEntity="Group")
      * @ORM\JoinTable(name="watchlist_manager_group")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $managerGroups;
+    private Collection $managerGroups;
 
     /**
      * Accounts that are on the list and have members in one of these corporations
@@ -99,9 +91,8 @@ class Watchlist implements \JsonSerializable
      * @ORM\ManyToMany(targetEntity="Corporation")
      * @ORM\JoinTable(name="watchlist_kicklist_corporation")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $kicklistCorporations;
+    private Collection $kicklistCorporations;
 
     /**
      * Same as $kicklistCorporations but for alliances.
@@ -109,9 +100,8 @@ class Watchlist implements \JsonSerializable
      * @ORM\ManyToMany(targetEntity="Alliance")
      * @ORM\JoinTable(name="watchlist_kicklist_alliance")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $kicklistAlliances;
+    private Collection $kicklistAlliances;
 
     /**
      * Corporations that should be treated like NPC corporations, for example personal alt corps.
@@ -120,9 +110,8 @@ class Watchlist implements \JsonSerializable
      * @ORM\ManyToMany(targetEntity="Corporation")
      * @ORM\JoinTable(name="watchlist_allowlist_corporation")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $allowlistCorporations;
+    private Collection $allowlistCorporations;
 
     /**
      * Same as $allowlistCorporations but for alliances.
@@ -130,9 +119,8 @@ class Watchlist implements \JsonSerializable
      * @ORM\ManyToMany(targetEntity="Alliance")
      * @ORM\JoinTable(name="watchlist_allowlist_alliance")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $allowlistAlliances;
+    private Collection $allowlistAlliances;
 
     public function jsonSerialize(): array
     {
@@ -159,12 +147,9 @@ class Watchlist implements \JsonSerializable
         $this->allowlistAlliances = new ArrayCollection();
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
-        return $this->id;
+        return (int) $this->id;
     }
 
     public function setName(string $name): Watchlist
@@ -213,7 +198,7 @@ class Watchlist implements \JsonSerializable
      */
     public function getExemptions(): array
     {
-        return $this->exemptions->toArray();
+        return array_values($this->exemptions->toArray());
     }
 
     public function addCorporation(Corporation $corporation): Watchlist
@@ -238,7 +223,7 @@ class Watchlist implements \JsonSerializable
      */
     public function getCorporations(): array
     {
-        return $this->corporations->toArray();
+        return array_values($this->corporations->toArray());
     }
 
     public function addAlliance(Alliance $alliance): Watchlist
@@ -263,7 +248,7 @@ class Watchlist implements \JsonSerializable
      */
     public function getAlliances(): array
     {
-        return $this->alliances->toArray();
+        return array_values($this->alliances->toArray());
     }
 
     public function addGroup(Group $group): Watchlist
@@ -288,7 +273,7 @@ class Watchlist implements \JsonSerializable
      */
     public function getGroups(): array
     {
-        return $this->groups->toArray();
+        return array_values($this->groups->toArray());
     }
 
     public function addManagerGroup(Group $group): Watchlist
@@ -313,7 +298,7 @@ class Watchlist implements \JsonSerializable
      */
     public function getManagerGroups(): array
     {
-        return $this->managerGroups->toArray();
+        return array_values($this->managerGroups->toArray());
     }
 
     public function addKicklistCorporation(Corporation $kicklistCorporation): self
@@ -342,7 +327,7 @@ class Watchlist implements \JsonSerializable
      */
     public function getKicklistCorporations(): array
     {
-        return $this->kicklistCorporations->toArray();
+        return array_values($this->kicklistCorporations->toArray());
     }
 
     public function addKicklistAlliance(Alliance $kicklistAlliance): self
@@ -370,7 +355,7 @@ class Watchlist implements \JsonSerializable
      */
     public function getKicklistAlliances(): array
     {
-        return $this->kicklistAlliances->toArray();
+        return array_values($this->kicklistAlliances->toArray());
     }
 
     public function addAllowlistCorporation(Corporation $allowlistCorporation): self
@@ -400,7 +385,7 @@ class Watchlist implements \JsonSerializable
      */
     public function getAllowlistCorporations(): array
     {
-        return $this->allowlistCorporations->toArray();
+        return array_values($this->allowlistCorporations->toArray());
     }
 
     public function addAllowlistAlliance(Alliance $allowlistAlliance): self
@@ -429,6 +414,6 @@ class Watchlist implements \JsonSerializable
      */
     public function getAllowlistAlliances(): array
     {
-        return $this->allowlistAlliances->toArray();
+        return array_values($this->allowlistAlliances->toArray());
     }
 }

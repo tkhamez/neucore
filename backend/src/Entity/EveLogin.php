@@ -224,6 +224,6 @@ class EveLogin implements \JsonSerializable
      */
     public function getEsiTokens(): array
     {
-        return $this->esiTokens->toArray();
+        return array_values($this->esiTokens->toArray());
     }
 }

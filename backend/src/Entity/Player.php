@@ -54,9 +54,8 @@ class Player implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
-     * @var integer|null
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * A name for the player.
@@ -66,17 +65,15 @@ class Player implements \JsonSerializable
      *
      * @OA\Property()
      * @ORM\Column(type="string", length=255)
-     * @var string
      */
-    private $name = '';
+    private string $name = '';
 
     /**
      * Last automatic group assignment.
      *
      * @ORM\Column(type="datetime", name="last_update", nullable=true)
-     * @var \DateTime|null
      */
-    private $lastUpdate;
+    private ?\DateTime $lastUpdate = null;
 
     /**
      * Player account status.
@@ -85,9 +82,8 @@ class Player implements \JsonSerializable
      *     enum={"standard", "managed"})
      * )
      * @ORM\Column(type="string", length=16)
-     * @var string
      */
-    private $status = self::STATUS_STANDARD;
+    private string $status = self::STATUS_STANDARD;
 
     /**
      * Set to true when the "account deactivated" mail was sent or has a permanent error
@@ -97,9 +93,8 @@ class Player implements \JsonSerializable
      * have valid tokens.
      *
      * @ORM\Column(type="boolean", name="deactivation_mail_sent")
-     * @var bool
      */
-    private $deactivationMailSent = false;
+    private bool $deactivationMailSent = false;
 
     /**
      * Roles for authorization.
@@ -234,10 +229,7 @@ class Player implements \JsonSerializable
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return (int) $this->id;
     }
@@ -305,7 +297,7 @@ class Player implements \JsonSerializable
      */
     public function getRoles(): array
     {
-        return $this->roles->toArray();
+        return array_values($this->roles->toArray());
     }
 
     /**
@@ -354,7 +346,7 @@ class Player implements \JsonSerializable
      */
     public function getCharacters(): array
     {
-        return $this->characters->toArray();
+        return array_values($this->characters->toArray());
     }
 
     public function getCharactersId(): array
@@ -459,7 +451,7 @@ class Player implements \JsonSerializable
      */
     public function getGroupApplications(): array
     {
-        return $this->groupApplications->toArray();
+        return array_values($this->groupApplications->toArray());
     }
 
     public function addGroup(Group $group): self
@@ -491,7 +483,7 @@ class Player implements \JsonSerializable
      */
     public function getGroups(): array
     {
-        return $this->groups->toArray();
+        return array_values($this->groups->toArray());
     }
 
     /**
@@ -579,7 +571,7 @@ class Player implements \JsonSerializable
      */
     public function getManagerGroups(): array
     {
-        return $this->managerGroups->toArray();
+        return array_values($this->managerGroups->toArray());
     }
 
     public function hasManagerGroup(Group $group): bool
@@ -612,7 +604,7 @@ class Player implements \JsonSerializable
      */
     public function getManagerApps(): array
     {
-        return $this->managerApps->toArray();
+        return array_values($this->managerApps->toArray());
     }
 
     public function addRemovedCharacter(RemovedCharacter $removedCharacter): self
@@ -634,7 +626,7 @@ class Player implements \JsonSerializable
      */
     public function getRemovedCharacters(): array
     {
-        return $this->removedCharacters->toArray();
+        return array_values($this->removedCharacters->toArray());
     }
 
     public function addIncomingCharacters(RemovedCharacter $incomingCharacters): self
@@ -648,6 +640,6 @@ class Player implements \JsonSerializable
      */
     public function getIncomingCharacters(): array
     {
-        return $this->incomingCharacters->toArray();
+        return array_values($this->incomingCharacters->toArray());
     }
 }

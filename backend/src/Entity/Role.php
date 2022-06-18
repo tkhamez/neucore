@@ -59,17 +59,15 @@ class Role implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="NONE")
-     * @var integer
      */
-    private $id;
+    private int $id;
 
     /**
      * Role name.
      *
      * @ORM\Column(type="string", unique=true, length=64)
-     * @var string
      */
-    private $name;
+    private ?string $name = null;
 
     /**
      * @ORM\ManyToMany(targetEntity="Player", mappedBy="roles")
@@ -106,109 +104,60 @@ class Role implements \JsonSerializable
         $this->apps = new ArrayCollection();
     }
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * Set name.
-     *
-     * @param string $name
-     *
-     * @return Role
-     */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * Get name.
-     *
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * Add player.
-     *
-     * @param Player $player
-     *
-     * @return Role
-     */
-    public function addPlayer(Player $player)
+    public function addPlayer(Player $player): self
     {
         $this->players[] = $player;
 
         return $this;
     }
 
-    /**
-     * Remove player.
-     *
-     * @param Player $player
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removePlayer(Player $player)
+    public function removePlayer(Player $player): bool
     {
         return $this->players->removeElement($player);
     }
 
     /**
-     * Get players.
-     *
      * @return Player[]
      */
-    public function getPlayers()
+    public function getPlayers(): array
     {
-        return $this->players->toArray();
+        return array_values($this->players->toArray());
     }
 
-    /**
-     * Add app.
-     *
-     * @param App $app
-     *
-     * @return Role
-     */
-    public function addApp(App $app)
+    public function addApp(App $app): self
     {
         $this->apps[] = $app;
 
         return $this;
     }
 
-    /**
-     * Remove app.
-     *
-     * @param App $app
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeApp(App $app)
+    public function removeApp(App $app): bool
     {
         return $this->apps->removeElement($app);
     }
 
     /**
-     * Get apps.
-     *
      * @return App[]
      */
-    public function getApps()
+    public function getApps(): array
     {
-        return $this->apps->toArray();
+        return array_values($this->apps->toArray());
     }
 }

@@ -27,24 +27,21 @@ class App implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
-     * @var int
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * App name
      *
      * @OA\Property(maxLength=255)
      * @ORM\Column(type="string", length=255)
-     * @var string
      */
-    private $name;
+    private ?string $name = null;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @var string|null
      */
-    private $secret;
+    private ?string $secret = null;
 
     /**
      * Roles for authorization.
@@ -52,9 +49,8 @@ class App implements \JsonSerializable
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Role"))
      * @ORM\ManyToMany(targetEntity="Role", inversedBy="apps")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $roles;
+    private Collection $roles;
 
     /**
      * Groups the app can see.
@@ -62,26 +58,23 @@ class App implements \JsonSerializable
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      * @ORM\ManyToMany(targetEntity="Group", inversedBy="apps")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $groups;
+    private Collection $groups;
 
     /**
      * @ORM\ManyToMany(targetEntity="Player", inversedBy="managerApps")
      * @ORM\JoinTable(name="app_manager")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $managers;
+    private Collection $managers;
 
     /**
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/EveLogin"))
      * @ORM\ManyToMany(targetEntity="EveLogin")
      * @ORM\JoinTable(name="app_eve_login")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $eveLogins;
+    private Collection $eveLogins;
 
     /**
      * Contains only information that is of interest to clients.
@@ -111,14 +104,9 @@ class App implements \JsonSerializable
         $this->eveLogins = new ArrayCollection();
     }
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
-        return $this->id;
+        return (int) $this->id;
     }
 
     public function setName(string $name): self
@@ -165,7 +153,7 @@ class App implements \JsonSerializable
      */
     public function getRoles(): array
     {
-        return $this->roles->toArray();
+        return array_values($this->roles->toArray());
     }
 
     /**
@@ -203,7 +191,7 @@ class App implements \JsonSerializable
      */
     public function getGroups(): array
     {
-        return $this->groups->toArray();
+        return array_values($this->groups->toArray());
     }
 
     public function addManager(Player $manager): self
@@ -223,7 +211,7 @@ class App implements \JsonSerializable
      */
     public function getManagers(): array
     {
-        return $this->managers->toArray();
+        return array_values($this->managers->toArray());
     }
 
     public function isManager(Player $player): bool
@@ -257,6 +245,6 @@ class App implements \JsonSerializable
      */
     public function getEveLogins(): array
     {
-        return $this->eveLogins->toArray();
+        return array_values($this->eveLogins->toArray());
     }
 }

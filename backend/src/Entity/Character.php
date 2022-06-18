@@ -239,7 +239,7 @@ class Character implements \JsonSerializable
      */
     public function getEsiTokens(): array
     {
-        return $this->esiTokens->toArray();
+        return array_values($this->esiTokens->toArray());
     }
 
     /**
@@ -336,7 +336,7 @@ class Character implements \JsonSerializable
      */
     public function getCharacterNameChanges(): array
     {
-        return $this->characterNameChanges->toArray();
+        return array_values($this->characterNameChanges->toArray());
     }
 
     public function toCoreCharacter(): CoreCharacter

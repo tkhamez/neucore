@@ -30,43 +30,38 @@ class Corporation implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(type="bigint")
      * @ORM\GeneratedValue(strategy="NONE")
-     * @var integer
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * EVE corporation name.
      *
      * @OA\Property(nullable=true)
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @var string
      */
-    private $name;
+    private ?string $name = null;
 
     /**
      * Corporation ticker.
      *
      * @OA\Property(nullable=true)
      * @ORM\Column(type="string", length=16, nullable=true)
-     * @var string
      */
-    private $ticker;
+    private ?string $ticker = null;
 
     /**
      * Last ESI update.
      *
      * @ORM\Column(type="datetime", name="last_update", nullable=true)
-     * @var \DateTime
      */
-    private $lastUpdate;
+    private ?\DateTime $lastUpdate = null;
 
     /**
      *
      * @OA\Property(ref="#/components/schemas/Alliance", nullable=true)
      * @ORM\ManyToOne(targetEntity="Alliance", inversedBy="corporations")
-     * @var Alliance|null
      */
-    private $alliance;
+    private ?Alliance $alliance = null;
 
     /**
      * Groups for automatic assignment (API: not included by default).
@@ -75,9 +70,8 @@ class Corporation implements \JsonSerializable
      * @ORM\ManyToMany(targetEntity="Group", inversedBy="corporations")
      * @ORM\JoinTable(name="corporation_group")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $groups;
+    private Collection $groups;
 
     /**
      * Groups those members may see this corporation member tracking data.
@@ -85,42 +79,37 @@ class Corporation implements \JsonSerializable
      * @ORM\ManyToMany(targetEntity="Group")
      * @ORM\JoinTable(name="corporation_group_tracking")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $groupsTracking;
+    private Collection $groupsTracking;
 
     /**
      * Last update of corporation member tracking data (API: not included by default).
      *
      * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", name="tracking_last_update", nullable=true)
-     * @var \DateTime|null
      */
-    private $trackingLastUpdate;
+    private ?\DateTime $trackingLastUpdate = null;
 
     /**
      *
      * @ORM\OneToMany(targetEntity="Character", mappedBy="corporation")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $characters;
+    private Collection $characters;
 
     /**
      * @ORM\OneToMany(targetEntity="CorporationMember", mappedBy="corporation")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $members;
+    private Collection $members;
 
     /**
      * True if this corporation was automatically placed on the allowlist of a watchlist (API: not included by default).
      *
      * @OA\Property(type="boolean")
      * @ORM\Column(type="boolean", name="auto_allowlist", nullable=false, options={"default" : 0})
-     * @var bool
      */
-    private $autoAllowlist = false;
+    private bool $autoAllowlist = false;
 
     /**
      * Contains only information that is of interest for clients.
@@ -161,14 +150,7 @@ class Corporation implements \JsonSerializable
         $this->members = new ArrayCollection();
     }
 
-    /**
-     * Set id.
-     *
-     * @param int $id
-     *
-     * @return Corporation
-     */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
@@ -184,136 +166,72 @@ class Corporation implements \JsonSerializable
         return (int) $this->id;
     }
 
-    /**
-     * Set name.
-     *
-     * @param string $name
-     *
-     * @return Corporation
-     */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * Get name.
-     *
-     * @return string
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * Set ticker.
-     *
-     * @param string $ticker
-     *
-     * @return Corporation
-     */
-    public function setTicker(string $ticker)
+    public function setTicker(string $ticker): self
     {
         $this->ticker = $ticker;
 
         return $this;
     }
 
-    /**
-     * Get ticker.
-     *
-     * @return string
-     */
-    public function getTicker()
+    public function getTicker(): ?string
     {
         return $this->ticker;
     }
 
-    /**
-     * Set lastUpdate.
-     *
-     * @param \DateTime $lastUpdate
-     *
-     * @return Corporation
-     */
-    public function setLastUpdate($lastUpdate)
+    public function setLastUpdate(\DateTime $lastUpdate): self
     {
         $this->lastUpdate = clone $lastUpdate;
 
         return $this;
     }
 
-    /**
-     * Get lastUpdate.
-     *
-     * @return \DateTime|null
-     */
-    public function getLastUpdate()
+    public function getLastUpdate(): ?\DateTime
     {
         return $this->lastUpdate;
     }
 
-    /**
-     * Set alliance.
-     *
-     * @param Alliance|null $alliance
-     *
-     * @return Corporation
-     */
-    public function setAlliance(Alliance $alliance = null)
+    public function setAlliance(?Alliance $alliance = null): self
     {
         $this->alliance = $alliance;
 
         return $this;
     }
 
-    /**
-     * Get alliance.
-     *
-     * @return Alliance|null
-     */
-    public function getAlliance()
+    public function getAlliance(): ?Alliance
     {
         return $this->alliance;
     }
 
-    /**
-     * Add group.
-     *
-     * @param Group $group
-     *
-     * @return Corporation
-     */
-    public function addGroup(Group $group)
+    public function addGroup(Group $group): self
     {
         $this->groups[] = $group;
 
         return $this;
     }
 
-    /**
-     * Remove group.
-     *
-     * @param Group $group
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeGroup(Group $group)
+    public function removeGroup(Group $group): bool
     {
         return $this->groups->removeElement($group);
     }
 
     /**
-     * Get groups.
-     *
      * @return Group[]
      */
-    public function getGroups()
+    public function getGroups(): array
     {
-        return $this->groups->toArray();
+        return array_values($this->groups->toArray());
     }
 
     public function hasGroup(int $groupId): bool
@@ -343,7 +261,7 @@ class Corporation implements \JsonSerializable
      */
     public function getGroupsTracking(): array
     {
-        return $this->groupsTracking->toArray();
+        return array_values($this->groupsTracking->toArray());
     }
 
     /**
@@ -353,7 +271,7 @@ class Corporation implements \JsonSerializable
     {
         return array_map(function (Group $group) {
             return $group->getId();
-        }, $this->groupsTracking->toArray());
+        }, array_values($this->groupsTracking->toArray()));
     }
 
     public function hasGroupTracking(int $groupId): bool
@@ -378,76 +296,44 @@ class Corporation implements \JsonSerializable
         return $this->trackingLastUpdate;
     }
 
-    /**
-     * Add character.
-     *
-     * @param Character $character
-     *
-     * @return Corporation
-     */
-    public function addCharacter(Character $character)
+    public function addCharacter(Character $character): self
     {
         $this->characters[] = $character;
 
         return $this;
     }
 
-    /**
-     * Remove character.
-     *
-     * @param Character $character
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeCharacter(Character $character)
+    public function removeCharacter(Character $character): bool
     {
         return $this->characters->removeElement($character);
     }
 
     /**
-     * Get characters.
-     *
      * @return Character[]
      */
-    public function getCharacters()
+    public function getCharacters(): array
     {
-        return $this->characters->toArray();
+        return array_values($this->characters->toArray());
     }
 
-    /**
-     * Add member.
-     *
-     * @param CorporationMember $member
-     *
-     * @return Corporation
-     */
-    public function addMember(CorporationMember $member)
+    public function addMember(CorporationMember $member): self
     {
         $this->members[] = $member;
 
         return $this;
     }
 
-    /**
-     * Remove member.
-     *
-     * @param CorporationMember $member
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeMember(CorporationMember $member)
+    public function removeMember(CorporationMember $member): bool
     {
         return $this->members->removeElement($member);
     }
 
     /**
-     * Get members.
-     *
      * @return CorporationMember[]
      */
-    public function getMembers()
+    public function getMembers(): array
     {
-        return $this->members->toArray();
+        return array_values($this->members->toArray());
     }
 
     public function setAutoAllowlist(bool $autoAllowlist): self

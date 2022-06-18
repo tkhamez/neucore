@@ -513,8 +513,8 @@ class AccountTest extends TestCase
         $this->om->clear();
 
         $this->assertSame(1, count($player->getCharacters()));
-        $this->assertSame('char2', $player->getCharacters()[1]->getName()); // index 0 was removed
-        $this->assertTrue($player->getCharacters()[1]->getMain());
+        $this->assertSame('char2', $player->getCharacters()[0]->getName());
+        $this->assertTrue($player->getCharacters()[0]->getMain());
         $removedChar = $player->getRemovedCharacters()[0];
         $this->assertSame(10, $removedChar->getCharacterId());
         $this->assertSame('char1', $removedChar->getCharacterName());
@@ -562,8 +562,8 @@ class AccountTest extends TestCase
         $this->assertSame(RemovedCharacter::REASON_DELETED_MANUALLY, $removedChars[0]->getReason());
         $this->assertSame($player->getId(), $removedChars[0]->getDeletedBy()->getId());
         $this->assertSame(1, count($player->getCharacters()));
-        $this->assertSame('char2', $player->getCharacters()[1]->getName()); // index 0 was removed
-        $this->assertTrue($player->getCharacters()[1]->getMain());
+        $this->assertSame('char2', $player->getCharacters()[0]->getName());
+        $this->assertTrue($player->getCharacters()[0]->getMain());
     }
 
     public function testDeleteCharacterByAdmin()

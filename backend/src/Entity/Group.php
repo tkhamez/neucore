@@ -260,7 +260,7 @@ class Group implements \JsonSerializable
      */
     public function getApplications(): array
     {
-        return $this->applications->toArray();
+        return array_values($this->applications->toArray());
     }
 
     /**
@@ -268,7 +268,7 @@ class Group implements \JsonSerializable
      */
     public function getPlayers(): array
     {
-        return $this->players->toArray();
+        return array_values($this->players->toArray());
     }
 
     public function addManager(Player $manager): self
@@ -291,7 +291,7 @@ class Group implements \JsonSerializable
      */
     public function getManagers(): array
     {
-        return $this->managers->toArray();
+        return array_values($this->managers->toArray());
     }
 
     public function addApp(App $app): self
@@ -315,7 +315,7 @@ class Group implements \JsonSerializable
      */
     public function getApps(): array
     {
-        return $this->apps->toArray();
+        return array_values($this->apps->toArray());
     }
 
     public function addCorporation(Corporation $corporation): self
@@ -335,7 +335,7 @@ class Group implements \JsonSerializable
 
     public function getCorporations(): array
     {
-        return $this->corporations->toArray();
+        return array_values($this->corporations->toArray());
     }
 
     public function addAlliance(Alliance $alliance): self
@@ -359,7 +359,7 @@ class Group implements \JsonSerializable
      */
     public function getAlliances(): array
     {
-        return $this->alliances->toArray();
+        return array_values($this->alliances->toArray());
     }
 
     public function addRequiredGroup(Group $requiredGroup): self
@@ -389,7 +389,7 @@ class Group implements \JsonSerializable
      */
     public function getRequiredGroups(): array
     {
-        return $this->requiredGroups->toArray();
+        return array_values($this->requiredGroups->toArray());
     }
 
     public function addForbiddenGroup(Group $forbiddenGroups): self
@@ -419,6 +419,6 @@ class Group implements \JsonSerializable
      */
     public function getForbiddenGroups(): array
     {
-        return $this->forbiddenGroups->toArray();
+        return array_values($this->forbiddenGroups->toArray());
     }
 }
