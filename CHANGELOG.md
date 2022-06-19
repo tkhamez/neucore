@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 1.33.0
 
-dd mm yyyy
+19 Jun 2022
 
 - **BC Break** Updated [neucore-plugin](https://github.com/tkhamez/neucore-plugin) to 0.8.0, all plugins
   must be updated, or they will stop working.
