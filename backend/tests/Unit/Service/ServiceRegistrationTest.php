@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Service;
 
 use Composer\Autoload\ClassLoader;
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Application;
 use Neucore\Entity\Character;
 use Neucore\Entity\Group;
@@ -35,6 +36,8 @@ class ServiceRegistrationTest extends TestCase
 
     private Logger $log;
 
+    private ObjectManager $om;
+
     private Helper $helper;
 
     private ServiceRegistration $serviceRegistration;
@@ -51,14 +54,15 @@ class ServiceRegistrationTest extends TestCase
     {
         $this->log = new Logger('Test');
         $this->helper = new Helper();
-        $om = $this->helper->getObjectManager();
-        $repoFactory = RepositoryFactory::getInstance($om);
+        $this->om = $this->helper->getObjectManager();
+        $repoFactory = RepositoryFactory::getInstance($this->om);
         $accountGroup = new AccountGroup($repoFactory);
         $this->serviceRegistration = new ServiceRegistration($this->log, $repoFactory, $accountGroup);
         $this->serviceImplementation = new ServiceRegistrationTest_TestService(
             $this->log,
             new \Neucore\Plugin\ServiceConfiguration(0, [], '')
         );
+        ServiceRegistrationTest_TestService::$getAccountException = false;
     }
 
     protected function tearDown(): void
@@ -164,21 +168,74 @@ class ServiceRegistrationTest extends TestCase
         $this->expectException(Exception::class);
         $this->serviceRegistration->getAccounts(
             $this->serviceImplementation,
-            [(new Character())->setId(999)->setPlayer(new Player())]
+            [(new Character())->setId(202)->setPlayer(new Player())]
         );
     }
 
-    /**
-     * @see ServiceControllerTest::testUpdateAllAccounts_200()
-     */
     public function testUpdatePlayerAccounts()
     {
-        // Note: This is properly, but not completely, tested in ServiceControllerTest::testUpdateAllAccounts_200
+        $this->helper->emptyDb();
 
-        $result = $this->serviceRegistration->updatePlayerAccounts(new Player());
+        $conf1 = new ServiceConfiguration();
+        $conf1->actions = [ServiceConfiguration::ACTION_UPDATE_ACCOUNT];
+        $conf1->phpClass = ServiceRegistrationTest_TestService::class;
+        $service1 = (new Service())->setName('S1')->setConfiguration($conf1);
+
+        $conf2 = new ServiceConfiguration();
+        $conf2->phpClass = ServiceRegistrationTest_TestService::class;
+        $service2 = (new Service())->setName('S2')->setConfiguration($conf2);
+
+        $conf3 = (new ServiceConfiguration());
+        $conf3->phpClass = 'Does\Bot\Exist';
+        $conf3->actions = [ServiceConfiguration::ACTION_UPDATE_ACCOUNT];
+        $service3 = (new Service())->setName('S3')->setConfiguration($conf3);
+
+        $player1 = (new Player())->setName('P1');
+        $char1 = (new Character())->setId(101)->setName('C1')->setPlayer($player1);
+        $char2 = (new Character())->setId(102)->setName('C2')->setPlayer($player1);
+        $player1->addCharacter($char1);
+        $player1->addCharacter($char2);
+
+        $this->om->persist($service1);
+        $this->om->persist($service2);
+        $this->om->persist($service3);
+        $this->om->persist($player1);
+        $this->om->persist($char1);
+        $this->om->persist($char2);
+        $this->om->flush();
+
+        $result = $this->serviceRegistration->updatePlayerAccounts($player1);
+
+        $this->assertSame([
+            ['serviceName' => 'S1', 'characterId' => 101],
+        ], $result);
+        $this->assertSame([
+            'ServiceController::updateAllAccounts: S1: Test error',
+        ], $this->log->getMessages());
+    }
+
+    public function testUpdatePlayerAccounts_GetAccountException()
+    {
+        $this->helper->emptyDb();
+
+        $conf1 = new ServiceConfiguration();
+        $conf1->actions = [ServiceConfiguration::ACTION_UPDATE_ACCOUNT];
+        $conf1->phpClass = ServiceRegistrationTest_TestService::class;
+        $service1 = (new Service())->setName('S1')->setConfiguration($conf1);
+
+        $player2 = (new Player())->setName('P2');
+        $char22 = (new Character())->setId(202)->setName('C22')->setPlayer($player2);
+        $player2->addCharacter($char22);
+
+        $this->om->persist($service1);
+        $this->om->persist($player2);
+        $this->om->persist($char22);
+        $this->om->flush();
+
+        $result = $this->serviceRegistration->updatePlayerAccounts($player2);
 
         $this->assertSame([], $result);
-        $this->assertSame([], $this->log->getMessages());
+        $this->assertTrue(ServiceRegistrationTest_TestService::$getAccountException);
     }
 
     public function testUpdateServiceAccount()
@@ -188,11 +245,14 @@ class ServiceRegistrationTest extends TestCase
         $char->setPlayer($player);
         $player->addCharacter($char);
 
+        $result0 = $this->serviceRegistration->updateServiceAccount(null, $this->serviceImplementation);
+        $this->assertSame('No character provided.', $result0);
+
         $result1 = $this->serviceRegistration->updateServiceAccount($char, $this->serviceImplementation);
         $this->assertNull($result1);
 
-        $char->setId(10);
+        $char->setId(102);
         $result2 = $this->serviceRegistration->updateServiceAccount($char, $this->serviceImplementation);
-        $this->assertSame('Test Error', $result2);
+        $this->assertSame('Test error', $result2);
     }
 }

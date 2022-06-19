@@ -16,14 +16,23 @@ use Psr\Log\LoggerInterface;
 
 class ServiceRegistrationTest_TestService implements ServiceInterface
 {
+    public static bool $getAccountException = false;
+
     public function __construct(LoggerInterface $logger, ServiceConfiguration $serviceConfiguration)
     {
     }
 
     public function getAccounts(array $characters): array
     {
-        if ($characters[0]->id === 999) {
+        if ($characters[0]->id === 202) {
+            self::$getAccountException = true;
             throw new Exception();
+        }
+        if ($characters[0]->id === 101) {
+            return [
+                new ServiceAccountData(101),
+                new ServiceAccountData(102),
+            ];
         }
         return [
             new ServiceAccountData($characters[0]->id, 'u', 'p', 'e'),
@@ -43,8 +52,8 @@ class ServiceRegistrationTest_TestService implements ServiceInterface
 
     public function updateAccount(CoreCharacter $character, array $groups, ?CoreCharacter $mainCharacter): void
     {
-        if ($character->id === 10) {
-            throw new Exception('Test Error');
+        if ($character->id === 102) {
+            throw new Exception('Test error');
         }
     }
 

@@ -525,9 +525,6 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    /**
-     * @see ServiceRegistrationTest::testUpdatePlayerAccounts()
-     */
     public function testUpdateAllAccounts_200()
     {
         $this->setupDb();
@@ -683,7 +680,7 @@ class ServiceControllerTest extends WebTestCase
 
         $conf1 = new ServiceConfiguration();
         $conf1->actions = [ServiceConfiguration::ACTION_RESET_PASSWORD];
-        $conf1->phpClass = 'Tests\Functional\Controller\User\ServiceControllerTest_TestService';
+        $conf1->phpClass = ServiceControllerTest_TestService::class;
         if (!$noRequiredGroupsForService1) {
             $conf1->requiredGroups = [$group1->getId()];
         }
@@ -695,7 +692,7 @@ class ServiceControllerTest extends WebTestCase
 
         $conf3 = new ServiceConfiguration();
         $conf3->actions = [ServiceConfiguration::ACTION_UPDATE_ACCOUNT];
-        $conf3->phpClass = 'Tests\Functional\Controller\User\ServiceControllerTest_TestService';
+        $conf3->phpClass = ServiceControllerTest_TestService::class;
         $conf3->requiredGroups = [$group2->getId(), $group7->getId()];
         $service3 = (new Service())->setName('S3')->setConfiguration($conf3);
 

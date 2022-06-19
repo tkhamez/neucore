@@ -143,10 +143,6 @@ class ServiceRegistration
 
             foreach ($accounts as $account) {
                 $character = $player->getCharacter($account->getCharacterId());
-                if (!$character) {
-                    $this->log->error('ServiceController::updateAllAccounts: Character not found on account.');
-                    continue;
-                }
                 $error = $this->updateServiceAccount($character, $implementation);
                 if ($error === null) {
                     $updated[] = [
@@ -166,8 +162,13 @@ class ServiceRegistration
     /**
      * @return string|null Error message (can be empty) or null on success.
      */
-    public function updateServiceAccount(Character $character, ServiceInterface $serviceImplementation): ?string
+    public function updateServiceAccount(?Character $character, ServiceInterface $serviceImplementation): ?string
     {
+        if (!$character) {
+            // Does not happen, but makes it easier in other places.
+            return 'No character provided.';
+        }
+
         $main = null;
         if ($character->getPlayer()->getMain() !== null) {
             $main = $character->getPlayer()->getMain()->toCoreCharacter();
