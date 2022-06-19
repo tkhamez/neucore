@@ -47,6 +47,7 @@ use Neucore\Service\AutoGroupAssignment;
 use Neucore\Service\Config;
 use Neucore\Service\EsiData;
 use Neucore\Service\OAuthToken;
+use Neucore\Service\ServiceRegistration;
 use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
 
@@ -164,7 +165,8 @@ class Helper
         $esiData = new EsiData($logger, $esiApiFactory, $objectManager, $repoFactory, $characterService, $config);
         $autoGroups = new AutoGroupAssignment($repoFactory);
         $token = new OAuthToken($this->getAuthenticationProvider($client), $objectManager, $logger);
-        return new Account($logger, $objectManager, $repoFactory, $esiData, $autoGroups, $token);
+        $serviceRegistration = new ServiceRegistration($logger, $repoFactory, new AccountGroup($repoFactory));
+        return new Account($logger, $objectManager, $repoFactory, $esiData, $autoGroups, $token, $serviceRegistration);
     }
 
     public function getUserAuthService(Logger $logger, Client $client): UserAuth

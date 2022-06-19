@@ -15,7 +15,6 @@ use Neucore\Entity\PlayerLogins;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Plugin\CoreGroup;
 use Psr\Log\LoggerInterface;
 
 class Account
@@ -57,13 +56,16 @@ class Account
 
     private OAuthToken $tokenService;
 
+    private ServiceRegistration $serviceRegistration;
+
     public function __construct(
         LoggerInterface $log,
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         EsiData $esiData,
         AutoGroupAssignment $autoGroupAssignment,
-        OAuthToken $tokenService
+        OAuthToken $tokenService,
+        ServiceRegistration $serviceRegistration
     ) {
         $this->log = $log;
         $this->objectManager = $objectManager;
@@ -71,6 +73,7 @@ class Account
         $this->esiData = $esiData;
         $this->autoGroupAssignment = $autoGroupAssignment;
         $this->tokenService = $tokenService;
+        $this->serviceRegistration = $serviceRegistration;
     }
 
     /**
@@ -322,13 +325,42 @@ class Account
         return $result;
     }
 
+    public function mergeAccounts(Player $player1, Player $player2): Player
+    {
+        $from = $player2;
+        $to = $player1;
+        if ($player2->getId() < $player1->getId()) {
+            $from = $player1;
+            $to = $player2;
+        }
+
+        foreach ($from->getCharacters() as $characterToMove) {
+            $this->moveCharacter($characterToMove, $to, RemovedCharacter::REASON_MOVED); // does not flush
+            $characterToMove->setMain(false);
+        }
+
+        foreach ($from->getGroups() as $groupToMove) {
+            if (!$to->hasGroup($groupToMove->getId())) {
+                $to->addGroup($groupToMove);
+            }
+        }
+        $this->updateGroups($to->getId()); // flushes entity manager
+        $this->updateGroups($from->getId());
+
+        $this->serviceRegistration->updatePlayerAccounts($to);
+
+        return $to;
+    }
+
     /**
      * Removes a character from its current player account,
      * adds it to the new player and creates a RemovedCharacter record.
      *
      * Does not flush the entity manager at the end.
+     *
+     * TODO move down
      */
-    public function moveCharacter(Character $character, Player $newPlayer, string $reason): void
+    private function moveCharacter(Character $character, Player $newPlayer, string $reason): void
     {
         $this->createRemovedCharacter($character, $reason, $newPlayer);
 
@@ -337,8 +369,6 @@ class Account
         $oldPlayer->removeCharacter($character);
         $character->setPlayer($newPlayer);
         $newPlayer->addCharacter($character);
-
-        $this->assureMain($oldPlayer);
     }
 
     /**

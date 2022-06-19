@@ -238,7 +238,7 @@ class UserAuthTest extends TestCase
         $this->assertSame(RemovedCharacter::REASON_MOVED_OWNER_CHANGED, $removedChar->getReason());
     }
 
-    public function testLogin_AddAltNoRefreshToken()
+    public function testLogin_AddAltOrMergeAccounts_NoRefreshToken()
     {
         $_SESSION['character_id'] = 100;
         $main = $this->helper->addCharacterMain('Main', 100, [Role::USER]);
@@ -267,7 +267,7 @@ class UserAuthTest extends TestCase
         $this->assertFalse($chars[1]->getMain());
     }
 
-    public function testLogin_AddAltNewCharAddsGroups()
+    public function testLogin_AddAltOrMergeAccounts_NewCharAddsGroups()
     {
         $_SESSION['character_id'] = 100;
         $this->helper->addRoles([Role::GROUP_MANAGER, Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
@@ -305,7 +305,7 @@ class UserAuthTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testLogin_AddAltExistingCharAndMove()
+    public function testLogin_AddAltOrMergeAccounts_ExistingCharAndMove()
     {
         $_SESSION['character_id'] = 100;
         $corp = (new Corporation())->setId(101);
@@ -319,7 +319,7 @@ class UserAuthTest extends TestCase
         $accessToken = Helper::generateToken()[0];
         $token = new AccessToken(['access_token' => $accessToken, 'expires' => 1525456785, 'refresh_token' => 'rf']);
         $result = $this->service->login(new EveAuthentication(200, 'Main2 renamed', 'hash', $token));
-        $this->assertSame(UserAuth::LOGIN_CHARACTER_ADDED_SUCCESS, $result);
+        $this->assertSame(UserAuth::LOGIN_ACCOUNTS_MERGED, $result);
 
         $chars = $main1->getPlayer()->getCharacters();
         $this->assertSame(2, count($chars));
@@ -344,7 +344,7 @@ class UserAuthTest extends TestCase
         $this->assertNotNull($newPlayerId);
     }
 
-    public function testLogin_AddAltLoggedInChar()
+    public function testLogin_AddAltOrMergeAccounts_LoggedInChar()
     {
         $_SESSION['character_id'] = 100;
         $main = $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
@@ -361,7 +361,7 @@ class UserAuthTest extends TestCase
         $this->assertSame('Main1', $chars[0]->getName()); // name changed but is *not* updated here
     }
 
-    public function testLogin_AddAltNotAuthenticated()
+    public function testLogin_AddAltOrMergeAccounts_NotAuthenticated()
     {
         $_SESSION['character_id'] = 100;
         $this->helper->addCharacterMain('Main1', 100, [Role::USER]);

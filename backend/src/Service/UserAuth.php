@@ -9,7 +9,6 @@ use Neucore\Entity\Character;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
-use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
 use Neucore\Exception\RuntimeException;
@@ -35,6 +34,8 @@ class UserAuth implements RoleProviderInterface
     const LOGIN_CHARACTER_ADDED_SUCCESS = 3;
 
     const LOGIN_CHARACTER_ADDED_FAIL = 4;
+
+    const LOGIN_ACCOUNTS_MERGED = 5;
 
     private SessionData $session;
 
@@ -109,11 +110,7 @@ class UserAuth implements RoleProviderInterface
                 return self::LOGIN_AUTHENTICATED_FAIL;
             }
         } else {
-            if ($this->addAlt($eveAuth, $this->user->getPlayer())) {
-                return self::LOGIN_CHARACTER_ADDED_SUCCESS;
-            } else {
-                return self::LOGIN_CHARACTER_ADDED_FAIL;
-            }
+            return $this->addAltOrMergeAccounts($eveAuth, $this->user->getPlayer());
         }
     }
 
@@ -232,7 +229,7 @@ class UserAuth implements RoleProviderInterface
         return true;
     }
 
-    private function addAlt(EveAuthentication $eveAuth, Player $player): bool
+    private function addAltOrMergeAccounts(EveAuthentication $eveAuth, Player $player): int
     {
         $characterId = $eveAuth->getCharacterId();
 
@@ -254,18 +251,16 @@ class UserAuth implements RoleProviderInterface
 
         $success = $this->accountService->updateAndStoreCharacterWithPlayer($alt, $eveAuth); // flushes
         if (!$success) {
-            return false;
+            return self::LOGIN_CHARACTER_ADDED_FAIL;
         }
 
         if ($existingChar && $alt->getPlayer()->getId() !== $player->getId()) {
-            $oldPlayerId = $alt->getPlayer()->getId();
-            $this->accountService->moveCharacter($alt, $player, RemovedCharacter::REASON_MOVED);
-            $this->accountService->updateGroups($oldPlayerId); // flushes
+            $this->accountService->mergeAccounts($player, $alt->getPlayer());
+            return self::LOGIN_ACCOUNTS_MERGED;
+        } else {
+            $this->accountService->updateGroups($player->getId()); // flushes
+            return self::LOGIN_CHARACTER_ADDED_SUCCESS;
         }
-
-        $this->accountService->updateGroups($player->getId()); // flushes
-
-        return true;
     }
 
     /**

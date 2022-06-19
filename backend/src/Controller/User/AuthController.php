@@ -178,6 +178,10 @@ class AuthController extends BaseController
                     $success = true;
                     $successMessage = 'Character added to player account.';
                     $redirectUrl = $this->getRedirectUrl(EveLogin::NAME_DEFAULT, true);
+                } elseif ($result === UserAuth::LOGIN_ACCOUNTS_MERGED) {
+                    $success = true;
+                    $successMessage = 'Accounts successfully merged.';
+                    $redirectUrl = $this->getRedirectUrl(EveLogin::NAME_DEFAULT, true);
                 } elseif ($result === UserAuth::LOGIN_CHARACTER_ADDED_FAIL) {
                     $errorMessage = 'Failed to add character to account.';
                     $redirectUrl = $this->getRedirectUrl(EveLogin::NAME_DEFAULT, true);

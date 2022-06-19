@@ -14,12 +14,11 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\SessionData;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
-use Monolog\Handler\TestHandler;
-use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Tests\Helper;
 use Tests\Functional\WebTestCase;
 use Tests\Client;
+use Tests\Logger;
 use Tests\WriteErrorListener;
 
 class AuthControllerTest extends WebTestCase
@@ -34,6 +33,8 @@ class AuthControllerTest extends WebTestCase
 
     private Helper $helper;
 
+    private Logger $log;
+
     public static function setupBeforeClass(): void
     {
         self::$em = (new Helper())->getEm();
@@ -46,6 +47,7 @@ class AuthControllerTest extends WebTestCase
         $this->client = new Client();
         $this->helper = new Helper();
         $this->helper->emptyDb();
+        $this->log = new Logger('Test');
     }
 
     public function tearDown(): void
@@ -375,15 +377,12 @@ class AuthControllerTest extends WebTestCase
             new Response(200, [], '{"keys": ' . json_encode($keySet). '}') // for JTW key set
         );
 
-        $log = new Logger('ignore');
-        $log->pushHandler(new TestHandler());
-
         $response = $this->runApp(
             'GET',
             '/login-callback?state='.$state,
             null,
             null,
-            [ClientInterface::class => $this->client, LoggerInterface::class => $log],
+            [ClientInterface::class => $this->client, LoggerInterface::class => $this->log],
             ['NEUCORE_EVE_SCOPES=read-this', 'NEUCORE_EVE_DATASOURCE=tranquility']
         );
         $this->assertSame(302, $response->getStatusCode());
@@ -448,9 +447,6 @@ class AuthControllerTest extends WebTestCase
             new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
         );
 
-        $log = new Logger('ignore');
-        $log->pushHandler(new TestHandler());
-
         self::$em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
         $response = $this->runApp(
             'GET',
@@ -459,7 +455,7 @@ class AuthControllerTest extends WebTestCase
             null,
             [
                 ClientInterface::class => $this->client,
-                LoggerInterface::class => $log,
+                LoggerInterface::class => $this->log,
             ],
             ['NEUCORE_EVE_SCOPES=read-this', 'NEUCORE_EVE_DATASOURCE=tranquility']
         );
@@ -507,6 +503,46 @@ class AuthControllerTest extends WebTestCase
 
         $this->assertSame(
             ['success' => true, 'message' => 'Character added to player account.'],
+            $_SESSION['auth_result']
+        );
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testCallback_AccountsMerged()
+    {
+        $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER, Role::GROUP_MANAGER]);
+
+        $this->helper->addCharacterMain('User1', 654);
+        $this->helper->addCharacterMain('User2', 123); // the ID used in Helper::generateToken
+        $this->loginUser(654);
+
+        list($token, $keySet) = Helper::generateToken(['read-this']);
+        $state = $this->getStatePrefix(EveLogin::NAME_DEFAULT) . self::$state;
+        $_SESSION['auth_state'] = $state;
+
+        $this->client->setResponse(
+            new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'), // for getAccessToken()
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
+            new Response(200, [], '{"name": "char name", "corporation_id": 102}'), // getCharactersCharacterId()
+            new Response(200, [], '[]'), // postCharactersAffiliation())
+            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}') // getCorporationsCorporationId()
+        );
+
+        $response = $this->runApp(
+            'GET',
+            '/login-callback?state='.$state,
+            null,
+            null,
+            [ClientInterface::class => $this->client, LoggerInterface::class => $this->log],
+            ['NEUCORE_EVE_SCOPES=read-this', 'NEUCORE_EVE_DATASOURCE=tranquility']
+        );
+        $this->assertSame(302, $response->getStatusCode());
+
+        $this->assertSame([], $this->log->getMessages());
+        $this->assertSame(
+            ['success' => true, 'message' => 'Accounts successfully merged.'],
             $_SESSION['auth_result']
         );
     }

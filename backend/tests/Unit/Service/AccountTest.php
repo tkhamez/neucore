@@ -21,6 +21,8 @@ use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
+use Neucore\Entity\Service;
+use Neucore\Entity\ServiceConfiguration;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterNameChangeRepository;
@@ -73,19 +75,19 @@ class AccountTest extends TestCase
 
     private Group $group2;
 
+    private Role $role0;
+
     private Role $role1;
 
-    /**
-     * @var Role
-     */
-    private $role2;
+    private Role $role2;
 
     protected function setUp(): void
     {
         $this->helper = new Helper();
         $this->helper->emptyDb();
-        list($this->role1, $this->role2) =
-            $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
+        list($this->role0, $this->role1, $this->role2) = $this->helper->addRoles(
+            [Role::GROUP_MANAGER, Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]
+        );
         $this->om = $this->helper->getObjectManager();
 
         $this->log = new Logger('Test');
@@ -100,6 +102,8 @@ class AccountTest extends TestCase
         $this->removedCharRepo = $repoFactory->getRemovedCharacterRepository();
         $this->playerLoginsRepo = $repoFactory->getPlayerLoginsRepository();
         $this->characterNameChangeRepo = $repoFactory->getCharacterNameChangeRepository();
+
+        AccountTest_TestService::$updateAccount = [];
     }
 
     public function testCreateNewPlayerWithMain()
@@ -486,39 +490,125 @@ class AccountTest extends TestCase
         $this->assertSame(RemovedCharacter::REASON_DELETED_OWNER_CHANGED, $removedChar->getReason());
     }
 
-    public function testMoveCharacter()
+    public function testMergeAccounts_MoveCharacter()
     {
         $player = (new Player())->setName('player 1');
         $newPlayer = (new Player())->setName('player 2');
         $char1 = (new Character())->setId(10)->setName('char1')->setPlayer($player)->setMain(true);
-        $char2 = (new Character())->setId(11)->setName('char2')->setPlayer($player)->setMain(false);
+        $char2 = (new Character())->setId(11)->setName('char2')->setPlayer($newPlayer)->setMain(true);
+        $char3 = (new Character())->setId(12)->setName('char3')->setPlayer($newPlayer)->setMain(false);
         $player->addCharacter($char1);
-        $player->addCharacter($char2);
+        $newPlayer->addCharacter($char2);
+        $newPlayer->addCharacter($char3);
         $this->om->persist($player);
         $this->om->persist($newPlayer);
         $this->om->persist($char1);
         $this->om->persist($char2);
+        $this->om->persist($char3);
         $this->om->flush();
 
-        $this->service->moveCharacter($char1, $newPlayer, RemovedCharacter::REASON_MOVED);
-
-        $this->om->flush();
+        $mergedPlayer = $this->service->mergeAccounts($player, $newPlayer);
         $this->om->clear();
 
-        $this->assertSame(1, count($player->getCharacters()));
-        $this->assertSame('char2', $player->getCharacters()[0]->getName());
-        $this->assertTrue($player->getCharacters()[0]->getMain());
-        $removedChar = $player->getRemovedCharacters()[0];
-        $this->assertSame(10, $removedChar->getCharacterId());
-        $this->assertSame('char1', $removedChar->getCharacterName());
-        $this->assertSame('char2', $removedChar->getPlayer()->getName()); // assureMain() changed the name
-        $this->assertEqualsWithDelta(time(), $removedChar->getRemovedDate()->getTimestamp(), 10);
-        $this->assertSame($newPlayer, $removedChar->getNewPlayer());
-        $this->assertSame(RemovedCharacter::REASON_MOVED, $removedChar->getReason());
+        $this->assertSame([], $this->log->getMessages());
+        $players = $this->playerRepo->findBy([]);
+        $this->assertSame($players[0]->getId(), $mergedPlayer->getId());
+        $this->assertSame('player 1', $players[0]->getName());
+        $this->assertSame('player 2', $players[1]->getName());
+
+        $this->assertSame(3, count($players[0]->getCharacters()));
+        $this->assertSame(0, count($players[1]->getCharacters()));
+        $this->assertSame('char2', $players[0]->getCharacters()[1]->getName());
+        $this->assertTrue($players[0]->getCharacter(10)->getMain());
+        $this->assertFalse($players[0]->getCharacter(11)->getMain()); // flag changed
+        $removedChar1 = $players[1]->getRemovedCharacters()[0];
+        $removedChar2 = $players[1]->getRemovedCharacters()[1];
+        $this->assertSame(11, $removedChar1->getCharacterId());
+        $this->assertSame(12, $removedChar2->getCharacterId());
+        $this->assertSame('char2', $removedChar1->getCharacterName());
+        $this->assertEqualsWithDelta(time(), $removedChar1->getRemovedDate()->getTimestamp(), 10);
+        $this->assertSame($players[0]->getId(), $removedChar1->getNewPlayer()->getId());
+        $this->assertSame(RemovedCharacter::REASON_MOVED, $removedChar1->getReason());
 
         // tests that the new object was persisted.
         $removedChars = $this->removedCharRepo->findBy([]);
-        $this->assertSame(10, $removedChars[0]->getCharacterId());
+        $this->assertSame(11, $removedChars[0]->getCharacterId());
+        $this->assertSame(12, $removedChars[1]->getCharacterId());
+    }
+
+    public function testMergeAccounts_AddsAndUpdatesGroups()
+    {
+        $player1 = (new Player())->setName('player 1');
+        $player2 = (new Player())->setName('player 2');
+        $group1 = (new Group())->setName('group 1');
+        $group2 = (new Group())->setName('group 2');
+        $groupAuto1 = (new Group())->setName('auto group 1'); // is removed via autoGroupAssignment
+        $groupAuto2 = (new Group())->setName('auto group 2'); // is added via autoGroupAssignment
+        $corporation = (new Corporation())->setId(10)->addGroup($groupAuto1)->addGroup($groupAuto2);
+        $char1 = (new Character())->setId(10)->setName('char 1')->setPlayer($player1)->setMain(true);
+        $char2 = (new Character())->setId(11)->setName('char 2')->setPlayer($player2)->setMain(true)
+            ->setCorporation($corporation);
+        $player1->addCharacter($char1);
+        $player2->addCharacter($char2);
+        $player1->addGroup($group1);
+        $player2->addGroup($group2);
+        $player2->addGroup($groupAuto1);
+        $this->om->persist($player1);
+        $this->om->persist($player2);
+        $this->om->persist($corporation);
+        $this->om->persist($char1);
+        $this->om->persist($char2);
+        $this->om->persist($group1);
+        $this->om->persist($group2);
+        $this->om->persist($groupAuto1);
+        $this->om->persist($groupAuto2);
+        $this->om->flush();
+
+        $mergedPlayer = $this->service->mergeAccounts($player2, $player1);
+        $this->om->clear();
+
+        $this->assertSame([], $this->log->getMessages());
+        $players = $this->playerRepo->findBy([]);
+        $this->assertSame($players[0]->getId(), $mergedPlayer->getId());
+        $this->assertSame('player 1', $players[0]->getName());
+        $this->assertSame('player 2', $players[1]->getName());
+
+        $this->assertSame(
+            [$groupAuto1->getId(), $groupAuto2->getId(), $group1->getId(), $group2->getId()],
+            $players[0]->getGroupIds()
+        );
+        $this->assertSame([$group2->getId()], $players[1]->getGroupIds());
+    }
+
+    public function testMergeAccounts_UpdatesServices()
+    {
+        $conf1 = new ServiceConfiguration();
+        $conf1->actions = [ServiceConfiguration::ACTION_UPDATE_ACCOUNT];
+        $conf1->phpClass = AccountTest_TestService::class;
+        $service1 = (new Service())->setName('S1')->setConfiguration($conf1);
+
+        $player1 = (new Player())->setName('player 1');
+        $player2 = (new Player())->setName('player 2');
+        $char1 = (new Character())->setId(10)->setName('char 1')->setPlayer($player1)->setMain(true);
+        $char2 = (new Character())->setId(11)->setName('char 2')->setPlayer($player2)->setMain(true);
+        $player1->addCharacter($char1);
+        $player2->addCharacter($char2);
+        $this->om->persist($service1);
+        $this->om->persist($player1);
+        $this->om->persist($player2);
+        $this->om->persist($char1);
+        $this->om->persist($char2);
+        $this->om->flush();
+
+        $mergedPlayer = $this->service->mergeAccounts($player1, $player2);
+        $this->om->clear();
+
+        $this->assertSame([], $this->log->getMessages());
+        $players = $this->playerRepo->findBy([]);
+        $this->assertSame($players[0]->getId(), $mergedPlayer->getId());
+        $this->assertSame('player 1', $players[0]->getName());
+        $this->assertSame('player 2', $players[1]->getName());
+        $this->assertSame([10, 11], AccountTest_TestService::$updateAccount);
     }
 
     public function testDeleteCharacter()
@@ -793,7 +883,7 @@ class AccountTest extends TestCase
 
     public function testSyncManagerRole()
     {
-        $role1 = (new Role(10))->setName(Role::GROUP_MANAGER);
+        $role1 = $this->role0;
         $role2 = (new Role(11))->setName(Role::APP_MANAGER);
         $player1 = (new Player())->setName('P1');
         $player2 = (new Player())->setName('P2')->addRole($role1)->addRole($role2);

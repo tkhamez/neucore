@@ -6,6 +6,8 @@ dd mm yyyy
 
 - **BC Break**: The `/core.alt` and `/core.managed-alt` login URLs have been removed. Use `core.default` and 
   `core.managed` respectively.
+- Change: It is no longer possible to freely move characters between accounts. Instead, accounts are now merged when 
+  someone logs in with a character from another account while already logged in.
 - Added new reason for character deletion for admins: lost access.
 - The character's corporation is now also set to Doomheim if the character update returns a 404
   "Character has been deleted" response. This can be faster than an update via affiliations.
