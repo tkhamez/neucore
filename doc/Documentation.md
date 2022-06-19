@@ -16,7 +16,8 @@
 - [Groups](#groups)
   * [Automatic Group Assignment](#automatic-group-assignment)
   * [Group Deactivation](#group-deactivation)
-  * [Required Groups](#required-groups)
+  * [Required and Forbidden Groups](#required-and-forbidden-groups)
+  * [Group Applications](#group-applications)
 - [Member Tracking](#member-tracking)
 - [Watchlist](#watchlist)
 - [Mail Notifications](#mail-notifications)
@@ -30,23 +31,22 @@
 ## Features
 
 * EVE SSO login with configurable permission scopes.
+* Customization of texts, links and images specific to your organization, including themes.
 * Player accounts with alts.
 * Multiple ESI tokens with different configurable scopes for each character.
 * Role based permission system.
-* Creation of groups and apps.
-* Group and app manager.
-* Customization of texts, links and images specific to your organization, including themes.
+* Creation of groups and apps with managers.
+* Service registration via [plugins](https://github.com/tkhamez/neucore-plugin).
+* An API for applications to query group membership of characters and other data.
+* An ESI proxy for all characters and their tokens, optionally configurable for apps 
+  (see [Examples](app-esi-examples.php)).
 * Automatic group assignment for players based on corporations and alliances from all of their characters.
 * Optional automatic account deactivation when ESI tokens are invalid.
-* Manually managed accounts that do not require any ESI scopes.
-* Service registration via [plugins](https://github.com/tkhamez/neucore-plugin).
+* Optional alternative login that does not require any ESI scopes (e.g. for guest account).
 * Corporation member tracking.
-* Watchlist with accounts that have characters in other alliances or corporations.
-* Optional EVE mail notifications for invalid ESI tokens and missing characters.
+* Configurable watchlists with accounts that have characters in other alliances or corporations.
+* Optional EVE mail notifications for invalid ESI tokens and missing characters (via member tracking).
 * CLI commands for data updates from ESI.
-* An API for applications to query group membership of characters and other data.
-* ESI request for authorized scopes for any character 
-  (via frontend and for apps, see [Examples](app-esi-examples.php)).
 * Mobile-friendly.
 
 All API functions are documented with OpenAPI and can be found at 
@@ -114,7 +114,7 @@ yet been added to the main account.
 
 ### Removing Characters
 
-When it was detected that an EVE character is deleted or was transferred to another EVE account, 
+When it was detected that an EVE character was deleted or was transferred to another EVE account, 
 it will be removed from its current player account.
 
 An admin can also manually delete a character, a player can do this if that is enabled in the system setting.
@@ -147,6 +147,9 @@ Visibility
 - public: everyone can see them and apply to them.
 - private: hidden from non-members
 
+A group can be configured to be added to every account. This still obeys the configurable requirements to
+be in that group.
+
 ### Automatic Group Assignment
 
 Alliances and corporations can be assigned to groups. These groups are then managed automatically. 
@@ -169,12 +172,19 @@ account can be delayed, e. g. by 24 hours after a token became invalid.
 
 As soon as the token was updated by logging in with the appropriate character, the account will be reactivated.
 
-### Required Groups
+### Required and Forbidden Groups
 
 Other groups can be added to a group as a prerequisite. This means that players must be members of at least one of 
 these other groups, otherwise they will be automatically removed from the group.
 
-This check is also done for "managed" Player accounts (see "Account status" above).
+It is also possible to configure groups that an account cannot be a member of to be a member of that group.
+
+Those check is also done for "managed" Player accounts (see "Account status" above).
+
+### Group Applications
+
+Groups can be configured to be available for members to apply to. Managers can then accept or deny those applications,
+it's also possible to automatically accept applications.
 
 ## Member Tracking
 
@@ -213,12 +223,16 @@ same number of days.
 ## Console Application
 
 The console application has commands to:
-- update characters with information from ESI, like corporation etc. 
-- check ESI tokens of all character
-- perform automatic group assignment based on corporation and alliance to group configuration
-- update member tracking data
-- send EVE mail to accounts with deactivated groups
-- delete expired HTTP cache entries
+- update characters with information from ESI, like corporation etc.
+- check ESI tokens of all characters.
+- perform automatic group assignments.
+- update member tracking data.
+- update auto allowlist of watchlists.
+- update service accounts.
+- send EVE mail to accounts with deactivated groups.
+- delete expired HTTP cache entries.
+
+See `backend/bin/run-jobs.sh` for a script that runs them all.
 
 ## Data Structure (Backend)
 
