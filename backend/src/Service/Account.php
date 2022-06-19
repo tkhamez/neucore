@@ -353,25 +353,6 @@ class Account
     }
 
     /**
-     * Removes a character from its current player account,
-     * adds it to the new player and creates a RemovedCharacter record.
-     *
-     * Does not flush the entity manager at the end.
-     *
-     * TODO move down
-     */
-    private function moveCharacter(Character $character, Player $newPlayer, string $reason): void
-    {
-        $this->createRemovedCharacter($character, $reason, $newPlayer);
-
-        $oldPlayer = $character->getPlayer();
-
-        $oldPlayer->removeCharacter($character);
-        $character->setPlayer($newPlayer);
-        $newPlayer->addCharacter($character);
-    }
-
-    /**
      * Deletes a character and creates a RemovedCharacter record.
      *
      * Does not flush the entity manager at the end.
@@ -548,6 +529,23 @@ class Account
         } elseif (! $addRole && $player->hasRole($role->getName())) {
             $player->removeRole($role);
         }
+    }
+
+    /**
+     * Removes a character from its current player account,
+     * adds it to the new player and creates a RemovedCharacter record.
+     *
+     * Does not flush the entity manager at the end.
+     */
+    private function moveCharacter(Character $character, Player $newPlayer, string $reason): void
+    {
+        $this->createRemovedCharacter($character, $reason, $newPlayer);
+
+        $oldPlayer = $character->getPlayer();
+
+        $oldPlayer->removeCharacter($character);
+        $character->setPlayer($newPlayer);
+        $newPlayer->addCharacter($character);
     }
 
     /**
