@@ -11,6 +11,7 @@ dd mm yyyy
 - Added new reason for character deletion for admins: lost access.
 - The character's corporation is now also set to Doomheim if the character update returns a 404
   "Character has been deleted" response. This can be faster than an update via affiliations.
+- Small UI improvements.
 
 ESI endpoint for apps:
 - Added `/app/v2/esi` and deprecated `/app/v1/esi`. The new version contains error messages in the body
@@ -19,7 +20,7 @@ ESI endpoint for apps:
   yet expired, Core now returns a 429 error itself instead of making the ESI request.
 - Added `Retry-After` header for 429 errors from `/app/v2/esi` that are from Core, not ESI.
 - The `Retry-After` header from ESI is now also passed through, if it is present.
-- Fixed type of `Expires` header from `integer` to `string` in OpenAPI definition file for /app/v1/esi.
+- Fixed type of `Expires` header from `integer` to `string` in OpenAPI definition file for `/app/v1/esi`.
 
 ## 1.32.0
 
