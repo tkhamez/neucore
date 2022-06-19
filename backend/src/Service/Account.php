@@ -347,7 +347,7 @@ class Account
         $this->updateGroups($to->getId()); // flushes entity manager
         $this->updateGroups($from->getId());
 
-        $this->serviceRegistration->updatePlayerAccounts($to);
+        $this->serviceRegistration->updatePlayerAccounts($to, $from);
 
         return $to;
     }

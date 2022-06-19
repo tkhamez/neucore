@@ -4,6 +4,8 @@
 
 dd mm yyyy
 
+- **BC Break** Updated [neucore-plugin](https://github.com/tkhamez/neucore-plugin) to 0.8.0, all plugins
+  must be updated, or they will stop working.
 - **BC Break**: The `/core.alt` and `/core.managed-alt` login URLs have been removed. Use `core.default` and 
   `core.managed` respectively.
 - Change: It is no longer possible to freely move characters between accounts. Instead, accounts are now merged when 

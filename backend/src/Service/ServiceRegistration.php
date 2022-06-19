@@ -118,7 +118,7 @@ class ServiceRegistration
         return $accountData;
     }
 
-    public function updatePlayerAccounts(Player $player): array
+    public function updatePlayerAccounts(Player $player, ?Player $from = null): array
     {
         $updated = [];
 
@@ -132,6 +132,14 @@ class ServiceRegistration
             $implementation = $this->getServiceImplementation($service);
             if (!$implementation) {
                 continue;
+            }
+
+            if ($from) {
+                try {
+                    $implementation->moveServiceAccount($player->getId(), $from->getId());
+                } catch (Exception $e) {
+                    // Ignore, plugin should log errors.
+                }
             }
 
             $accounts = [];

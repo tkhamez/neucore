@@ -18,6 +18,8 @@ class ServiceRegistrationTest_TestService implements ServiceInterface
 {
     public static bool $getAccountException = false;
 
+    public static ?string $moved = null;
+
     public function __construct(LoggerInterface $logger, ServiceConfiguration $serviceConfiguration)
     {
     }
@@ -59,6 +61,12 @@ class ServiceRegistrationTest_TestService implements ServiceInterface
 
     public function updatePlayerAccount(CoreCharacter $mainCharacter, array $groups): void
     {
+    }
+
+    public function moveServiceAccount(int $toPlayerId, int $fromPlayerId): bool
+    {
+        self::$moved = "$fromPlayerId -> $toPlayerId";
+        return true;
     }
 
     public function resetPassword(int $characterId): string

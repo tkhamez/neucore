@@ -62,6 +62,11 @@ class ServiceControllerTest_TestService implements ServiceInterface
     {
     }
 
+    public function moveServiceAccount(int $toPlayerId, int $fromPlayerId): bool
+    {
+        return true;
+    }
+
     public function resetPassword(int $characterId): string
     {
         if ($characterId === 3) {

@@ -63,6 +63,7 @@ class ServiceRegistrationTest extends TestCase
             new \Neucore\Plugin\ServiceConfiguration(0, [], '')
         );
         ServiceRegistrationTest_TestService::$getAccountException = false;
+        ServiceRegistrationTest_TestService::$moved = null;
     }
 
     protected function tearDown(): void
@@ -191,6 +192,7 @@ class ServiceRegistrationTest extends TestCase
         $service3 = (new Service())->setName('S3')->setConfiguration($conf3);
 
         $player1 = (new Player())->setName('P1');
+        $player2 = (new Player())->setName('P2');
         $char1 = (new Character())->setId(101)->setName('C1')->setPlayer($player1);
         $char2 = (new Character())->setId(102)->setName('C2')->setPlayer($player1);
         $player1->addCharacter($char1);
@@ -200,18 +202,16 @@ class ServiceRegistrationTest extends TestCase
         $this->om->persist($service2);
         $this->om->persist($service3);
         $this->om->persist($player1);
+        $this->om->persist($player2);
         $this->om->persist($char1);
         $this->om->persist($char2);
         $this->om->flush();
 
-        $result = $this->serviceRegistration->updatePlayerAccounts($player1);
+        $result = $this->serviceRegistration->updatePlayerAccounts($player1, $player2);
 
-        $this->assertSame([
-            ['serviceName' => 'S1', 'characterId' => 101],
-        ], $result);
-        $this->assertSame([
-            'ServiceController::updateAllAccounts: S1: Test error',
-        ], $this->log->getMessages());
+        $this->assertSame([['serviceName' => 'S1', 'characterId' => 101]], $result);
+        $this->assertSame(['ServiceController::updateAllAccounts: S1: Test error'], $this->log->getMessages());
+        $this->assertSame($player2->getId() . ' -> ' . $player1->getId(), ServiceRegistrationTest_TestService::$moved);
     }
 
     public function testUpdatePlayerAccounts_GetAccountException()

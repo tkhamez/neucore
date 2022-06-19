@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "825e6e6069796ac2c85f104992b6eaf5",
+    "content-hash": "13318814da7a383a20d347f392c3db92",
     "packages": [
         {
             "name": "brick/math",
@@ -4877,21 +4877,21 @@
         },
         {
             "name": "tkhamez/neucore-plugin",
-            "version": "0.7.1",
+            "version": "0.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/neucore-plugin.git",
-                "reference": "893016e2a2ca0ee7a2e79ecc1e9cce6a088b96f0"
+                "reference": "f36f0a70cfcfb9585a57a308dc443fbe88c9a7c4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/neucore-plugin/zipball/893016e2a2ca0ee7a2e79ecc1e9cce6a088b96f0",
-                "reference": "893016e2a2ca0ee7a2e79ecc1e9cce6a088b96f0",
+                "url": "https://api.github.com/repos/tkhamez/neucore-plugin/zipball/f36f0a70cfcfb9585a57a308dc443fbe88c9a7c4",
+                "reference": "f36f0a70cfcfb9585a57a308dc443fbe88c9a7c4",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "php": "^7.3|^8.0",
+                "php": "^7.4|^8.0",
                 "psr/http-message": "^1.0",
                 "psr/log": "^1.1"
             },
@@ -4912,9 +4912,9 @@
             "description": "Necessary classes to write a Neucore plugin.",
             "support": {
                 "issues": "https://github.com/tkhamez/neucore-plugin/issues",
-                "source": "https://github.com/tkhamez/neucore-plugin/tree/0.7.1"
+                "source": "https://github.com/tkhamez/neucore-plugin/tree/0.8.0"
             },
-            "time": "2022-05-21T20:47:27+00:00"
+            "time": "2022-06-19T14:26:04+00:00"
         },
         {
             "name": "tkhamez/slim-role-auth",

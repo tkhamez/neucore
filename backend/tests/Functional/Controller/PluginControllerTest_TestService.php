@@ -42,6 +42,11 @@ class PluginControllerTest_TestService implements ServiceInterface
     {
     }
 
+    public function moveServiceAccount(int $toPlayerId, int $fromPlayerId): bool
+    {
+        return true;
+    }
+
     public function resetPassword(int $characterId): string
     {
         throw new Exception();
