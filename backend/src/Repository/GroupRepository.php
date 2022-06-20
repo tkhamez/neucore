@@ -24,12 +24,12 @@ class GroupRepository extends EntityRepository
     {
         $query = $this
             ->createQueryBuilder('g')
-            ->select(
+            ->select([
                 'p.id AS player_id',
                 'p.name AS player_name',
                 'c.id AS corporation_id',
                 'c.name AS corporation_name',
-            )
+            ])
             ->innerJoin('g.players', 'p')
             ->leftJoin('p.characters', 'char', Join::WITH, 'char.main = :main')
             ->leftJoin('char.corporation', 'c')

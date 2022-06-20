@@ -67,7 +67,7 @@ class Role implements \JsonSerializable
      *
      * @ORM\Column(type="string", unique=true, length=64)
      */
-    private ?string $name = null;
+    private string $name = '';
 
     /**
      * @ORM\ManyToMany(targetEntity="Player", mappedBy="roles")
@@ -89,7 +89,7 @@ class Role implements \JsonSerializable
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
      */
-    public function jsonSerialize(): ?string
+    public function jsonSerialize(): string
     {
         return $this->name;
     }

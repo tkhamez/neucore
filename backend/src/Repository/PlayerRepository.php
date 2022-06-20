@@ -211,12 +211,12 @@ class PlayerRepository extends EntityRepository
         // current characters
         $query1 = $this
             ->createQueryBuilder('p')
-            ->select(
+            ->select([
                 'c.id AS character_id',
                 'c.name AS character_name',
                 'p.id AS player_id',
                 'p.name AS player_name',
-            )
+            ])
             ->leftJoin('p.characters', 'c')
             ->where('c.name LIKE :name')
             ->orWhere('c.id = :id')
@@ -228,12 +228,12 @@ class PlayerRepository extends EntityRepository
             // removed characters
             $query2 = $this
                 ->createQueryBuilder('p')
-                ->select(
+                ->select([
                     'rc.characterId AS character_id',
                     'rc.characterName AS character_name',
                     'p.id AS player_id',
                     'p.name AS player_name',
-                )
+                ])
                 ->distinct()
                 ->leftJoin('p.removedCharacters', 'rc')
                 ->where('rc.characterName LIKE :name')
@@ -243,13 +243,13 @@ class PlayerRepository extends EntityRepository
             // character name changes
             $query3 = $this
                 ->createQueryBuilder('p')
-                ->select(
+                ->select([
                     'c.id AS character_id',
                     #'IDENTITY(ccn.character) AS character_id',
                     'ccn.oldName AS character_name',
                     'p.id AS player_id',
                     'p.name AS player_name',
-                )
+                ])
                 ->leftJoin('p.characters', 'c')
                 ->leftJoin('c.characterNameChanges', 'ccn')
                 ->where('ccn.oldName LIKE :name')

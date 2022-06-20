@@ -148,7 +148,7 @@ class CorporationMemberRepository extends EntityRepository
             ->leftJoin('c.player', 'p')
             ->leftJoin('Neucore\Entity\EveLogin', 'el', 'WITH', 'el.name = :loginName')
             ->leftJoin('el.esiTokens', 'e', 'WITH', 'e.character = c.id')
-            ->select(
+            ->select([
                 'm.id',
                 'm.name',
                 'm.logoffDate',
@@ -172,7 +172,7 @@ class CorporationMemberRepository extends EntityRepository
                 'e.lastChecked',
                 'p.id AS playerId',
                 'p.name AS playerName'
-            )
+            ])
             ->where('m.corporation = :corporation_id')
             ->orderBy('m.logonDate', 'DESC')
             ->setParameter('loginName', EveLogin::NAME_DEFAULT)

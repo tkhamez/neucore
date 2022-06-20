@@ -30,11 +30,11 @@ class AppRequestsRepository extends EntityRepository
     public function monthlySummary(): array
     {
         $qb = $this->createQueryBuilder('ar')
-            ->select(
+            ->select([
                 'SUM(ar.count) AS requests',
                 'ar.year',
                 'ar.month',
-            )
+            ])
             ->groupBy('ar.year', 'ar.month')
             ->orderBy('ar.year', 'DESC')->addOrderBy('ar.month', 'DESC')
             ->setMaxResults(13)
@@ -69,14 +69,14 @@ class AppRequestsRepository extends EntityRepository
 
         $qb = $this->createQueryBuilder('ar');
         $qb->join('ar.app', 'a')
-            ->select(
+            ->select([
                 'a.id AS app_id',
                 'a.name AS app_name',
                 'SUM(ar.count) AS requests',
                 'ar.year',
                 'ar.month',
                 //'(ar.year * 100) + ar.month',
-            )
+            ])
             ->where($qb->expr()->gt('(ar.year * 100) + ar.month', ':yearMonth'))
             ->setParameter('yearMonth', $yearMonthBeforeMin)
             ->groupBy('app_id', 'ar.year', 'ar.month')
@@ -113,13 +113,13 @@ class AppRequestsRepository extends EntityRepository
         $yearMonthMinus2 = ($yearOfMonthMinus2 * 100) + $monthMinus2;
 
         $qb = $this->createQueryBuilder('ar');
-        $qb->select(
+        $qb->select([
             'SUM(ar.count) AS requests',
             'ar.year',
             'ar.month',
             'ar.dayOfMonth AS day_of_month',
             //'(ar.year * 100) + ar.month',
-        )
+        ])
             ->where($qb->expr()->gt('(ar.year * 100) + ar.month', ':yearMonth'))
             ->setParameter('yearMonth', $yearMonthMinus2)
             ->groupBy('ar.year', 'ar.month', 'ar.dayOfMonth')

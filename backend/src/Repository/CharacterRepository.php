@@ -61,10 +61,10 @@ class CharacterRepository extends EntityRepository
     public function getAllCharactersFromPlayers(array $playerIds): array
     {
         $qb = $this->createQueryBuilder('c');
-        $qb->select(
+        $qb->select([
             'c.id',
             'IDENTITY(c.player) AS playerId'
-        )
+        ])
             ->where($qb->expr()->in('c.player', ':ids'))
             ->setParameter('ids', $playerIds);
 

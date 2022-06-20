@@ -134,7 +134,7 @@ class RemovedCharacter implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'player' => $this->player->jsonSerialize(true),
+            'player' => $this->player ? $this->player->jsonSerialize(true) : null,
             'characterId' => $this->getCharacterId(),
             'characterName' => $this->characterName,
             'removedDate' => $this->getRemovedDate() !== null ?

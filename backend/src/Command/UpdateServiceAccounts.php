@@ -14,7 +14,6 @@ use Neucore\Plugin\ServiceInterface;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\ServiceRepository;
-use Neucore\Service\Account;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\ServiceRegistration;
 use Psr\Log\LoggerInterface;
@@ -38,8 +37,6 @@ class UpdateServiceAccounts extends Command
 
     private ServiceRegistration $serviceRegistration;
 
-    private Account $account;
-
     private AccountGroup $accountGroup;
 
     private ?int $accountsUpdated = null;
@@ -53,7 +50,6 @@ class UpdateServiceAccounts extends Command
         EntityManagerInterface $entityManager,
         RepositoryFactory $repositoryFactory,
         ServiceRegistration $serviceRegistration,
-        Account $account,
         AccountGroup $accountGroup
     ) {
         parent::__construct();
@@ -64,7 +60,6 @@ class UpdateServiceAccounts extends Command
         $this->characterRepository = $repositoryFactory->getCharacterRepository();
         $this->playerRepository = $repositoryFactory->getPlayerRepository();
         $this->serviceRegistration = $serviceRegistration;
-        $this->account = $account;
         $this->accountGroup = $accountGroup;
     }
 

@@ -31,12 +31,12 @@ class PlayerLoginsRepository extends EntityRepository
     public function monthlySummary(): array
     {
         $qb = $this->createQueryBuilder('pl')
-            ->select(
+            ->select([
                 'COUNT(pl.player) AS unique_logins',
                 'SUM(pl.count) AS total_logins',
                 'pl.year',
                 'pl.month',
-            )
+            ])
             ->groupBy('pl.year', 'pl.month')
             ->orderBy('pl.year', 'DESC')->addOrderBy('pl.month', 'DESC')
             ->setMaxResults(13)
