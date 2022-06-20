@@ -47,11 +47,11 @@
     "@vue/cli-plugin-babel": "^5.0.4",
     "@vue/cli-service": "^5.0.4",
     "@vue/compiler-sfc": "^3.2.33",
-    "compression-webpack-plugin": "^9.2.0",
-    "imports-loader": "^3.1.1",
+    "compression-webpack-plugin": "^10.0.0",
+    "imports-loader": "^4.0.0",
     "license-webpack-plugin": "^4.0.2",
     "sass": "^1.51.0",
-    "sass-loader": "^12.6.0"
+    "sass-loader": "^13.0.0"
   },
   "bundledDependencies": [
     "neucore-js-client"
@@ -60,5 +60,8 @@
     "node": ">=14.15.0",
     "npm": ">=6.14.8"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "bundleDependencies": [
+    "neucore-js-client"
+  ]
 }

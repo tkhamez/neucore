@@ -46,7 +46,7 @@ To run the application:
 
 Additionally, to build the application:
 * Composer 2.
-* Node.js, only tested with version 16.13.0 with npm 8.1.0.
+* Node.js, only tested with version 16.15.1 with npm 8.11.0.
 * Java runtime >=8 (but only tested with v11) to generate the OpenAPI JavaScript client.
 
 ### Install/Update
