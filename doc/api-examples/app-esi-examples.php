@@ -2,21 +2,27 @@
 
 declare(strict_types=1);
 
+use Seat\Eseye\Containers\EsiAuthentication;
+use Seat\Eseye\Eseye;
+use Swagger\Client\Eve\Api\AssetsApi;
+use Swagger\Client\Eve\ApiException;
+use Swagger\Client\Eve\Configuration;
+
 include __DIR__ . '/vendor/autoload.php';
 
 /**
- * The endpoint /api/app/v1/esi can be used for any protected ESI GET or POST request.
+ * The endpoint /api/app/v2/esi can be used for any protected ESI GET or POST request.
  *
  * There are two ways to call it, the following examples are for the ESI path and query string:
  * /v3/characters/96061222/assets/?page=1
  *
  * 1. Compatible with generated OpenAPI clients from the ESI definition file (see example below),
  *    simply append the ESI path to the Neucore path and add the ESI query parameters:
- *    https://neucore.tld/api/app/v1/esi/v3/characters/96061222/assets/?page=1&datasource=96061222
+ *    https://neucore.tld/api/app/v2/esi/v3/characters/96061222/assets/?page=1&datasource=96061222
  *
  * 2. Compatible with generated OpenAPI clients from the Neucore interface definition file (see example below),
  *    the query parameter "esi-path-query" contains the url-encoded ESI path and query string:
- *    https://neucore.tld/api/app/v1/esi?esi-path-query=%2Fv3%2Fcharacters%2F96061222%2Fassets%2F%3Fpage%3D1&datasource=96061222
+ *    https://neucore.tld/api/app/v2/esi?esi-path-query=%2Fv3%2Fcharacters%2F96061222%2Fassets%2F%3Fpage%3D1&datasource=96061222
  *
  * Both use the "datasource" parameter to tell Neucore from which character the ESI token should be used for the
  * request. The ESI datasource (tranquility) is decided by the Neucore configuration.
@@ -41,11 +47,11 @@ $coreCharId = '96061222'; // Character with token in Neucore
 //
 
 // Change the host to the Neucore domain including the API path and add the app token
-$configuration = new \Swagger\Client\Eve\Configuration();
-$configuration->setHost($coreHttpScheme .'://'. $coreDomain . '/api/app/v1/esi');
+$configuration = new Configuration();
+$configuration->setHost($coreHttpScheme .'://'. $coreDomain . '/api/app/v2/esi');
 $configuration->setAccessToken($coreAppToken);
 
-$assetsApiInstance = new Swagger\Client\Eve\Api\AssetsApi(null, $configuration);
+$assetsApiInstance = new AssetsApi(null, $configuration);
 $itemId = 0; // used in example 2
 try {
     // The first parameter (character_id) is the EVE character ID for ESI,
@@ -54,7 +60,7 @@ try {
 
     $itemId = $result[0]->getItemId();
     echo 'item id: ', $itemId, PHP_EOL;
-} catch (\Swagger\Client\Eve\ApiException $e) {
+} catch (ApiException $e) {
     echo $e->getMessage(), PHP_EOL;
 }
 echo PHP_EOL;
@@ -71,7 +77,7 @@ $config->setAccessToken($coreAppToken);
 
 $esiApiInstance = new Brave\NeucoreApi\Api\ApplicationESIApi(null, $config);
 try {
-    $result = $esiApiInstance->esiPostV1WithHttpInfo(
+    $result = $esiApiInstance->esiPostV2WithHttpInfo(
         '/latest/characters/'.$coreCharId.'/assets/names/',
         $coreCharId,
         json_encode([$itemId])
@@ -86,7 +92,7 @@ try {
     print_r($header);
     echo 'name: ', json_decode($result[0], true)[0]['name'], PHP_EOL;
 } catch (Exception $e) {
-    echo 'Exception when calling ApplicationApi->esiV1: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling ApplicationApi->esiV2: ', $e->getMessage(), PHP_EOL;
 }
 echo PHP_EOL;
 
@@ -94,7 +100,7 @@ echo PHP_EOL;
 // Example 2a: Public ESI routes are not passed through:
 
 try {
-    $esiApiInstance->esiV1('/lastest/alliances/', $coreCharId);
+    $esiApiInstance->esiV2('/lastest/alliances/', $coreCharId);
 } catch (\Brave\NeucoreApi\ApiException $e) {
     echo $e->getMessage(), PHP_EOL;
 }
@@ -109,10 +115,10 @@ echo PHP_EOL;
 $configuration = \Seat\Eseye\Configuration::getInstance();
 $configuration->datasource = $coreCharId;
 $configuration->esi_scheme = $coreHttpScheme;
-$configuration->esi_host = $coreDomain . '/api/app/v1/esi';
+$configuration->esi_host = $coreDomain . '/api/app/v2/esi';
 
 // Create an authorization object with the Core app token that does not expire
-$authentication = new \Seat\Eseye\Containers\EsiAuthentication([
+$authentication = new EsiAuthentication([
     'access_token'  => $coreAppToken,
     'token_expires' => date('Y-m-d H:i:s', time() + 3600),
     'scopes' => [
@@ -121,13 +127,11 @@ $authentication = new \Seat\Eseye\Containers\EsiAuthentication([
     ],
 ]);
 
-$esi = new \Seat\Eseye\Eseye($authentication);
+$esi = new Eseye($authentication);
 try {
-    $result = $esi->setQueryString([
-        'page' => 1,
-    ])->invoke('get', '/characters/{character_id}/assets/', [
-        'character_id' => $coreCharId,
-    ]);
+    $result = $esi
+        ->setQueryString(['page' => 1])
+        ->invoke('get', '/characters/{character_id}/assets/', ['character_id' => $coreCharId]);
 
     echo 'Status: ', $result->getErrorCode(), PHP_EOL;
     echo 'Headers: ';
