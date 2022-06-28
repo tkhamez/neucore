@@ -44,6 +44,7 @@ services:
     depends_on: [neucore_db]
     volumes: [
         ".:/app",
+        #"/path/to/service-plugin:/plugins/plugin-name",
     ]
     environment:
       PHP_IDE_CONFIG: serverName=docker # for PhpStorm
