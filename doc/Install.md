@@ -3,17 +3,14 @@
 <!-- toc -->
 
 - [EVE API Setup](#eve-api-setup)
-- [App Setup](#app-setup)
-  * [Server Requirements](#server-requirements)
-  * [Install/Update](#installupdate)
-    + [Pre-built Distribution file](#pre-built-distribution-file)
-    + [Git](#git)
-  * [Post Installation](#post-installation)
-- [Other Installation Methods](#other-installation-methods)
-  * [Docker - Development Environment](#docker---development-environment)
-  * [Vagrant](#vagrant)
+- [Application Setup](#application-setup)
+  * [Run Docker Image](#run-docker-image)
+  * [Manual Installation](#manual-installation)
+  * [Docker Development Environment](#docker-development-environment)
   * [Deploy on Heroku](#deploy-on-heroku)
   * [Deploy on AWS Beanstalk](#deploy-on-aws-beanstalk)
+- [Post Installation](#post-installation)
+- [Build Distribution](#build-distribution)
 
 <!-- tocstop -->
 
@@ -25,38 +22,159 @@
   feature for the Watchlist, the scopes must include `esi-corporations.read_corporation_membership.v1`.
 - Set the callback to `https://your.domain/login-callback`.
 
-## App Setup
+## Application Setup
 
-### Server Requirements
+Below are several alternatives for running Neucore.
+
+All methods share the same configuration via environment variables, see [.env.dist](../backend/.env.dist).
+
+### Run Docker Image
+
+You can run Neucore using the [Docker](https://www.docker.com/) image from 
+https://hub.docker.com/r/tkhamez/neucore.
+
+First start a database, for example:
+
+```shell
+docker network create neucore_prod
+
+docker run \
+  --volume="$(pwd)/docker-db":/var/lib/mysql \
+  --env=MARIADB_USER=neucore \
+  --env=MARIADB_PASSWORD=neucore \
+  --env=MARIADB_DATABASE=neucore \
+  --env=MARIADB_ROOT_PASSWORD=neucore \
+  --network=neucore_prod \
+  --name=neucore_db_prod \
+  --detach=true \
+  --rm \
+  mariadb:10.5
+
+# to stop it again:
+docker stop neucore_db_prod
+```
+
+Next, start Neucore (adjust EVE client ID and secret):
+
+```shell
+docker run \
+  --env=NEUCORE_APP_ENV=prod \
+  --env=NEUCORE_DATABASE_URL=mysql://neucore:neucore@neucore_db_prod/neucore \
+  --env=NEUCORE_EVE_CALLBACK_URL=http://localhost:8080/login-callback \
+  --env=NEUCORE_EVE_CLIENT_ID=123 \
+  --env=NEUCORE_EVE_SECRET_KEY=abc \
+  --env=NEUCORE_EVE_SCOPES="esi-corporations.read_corporation_membership.v1" \
+  --env=NEUCORE_SESSION_SECURE=0 \
+  --workdir=/var/www/backend \
+  --publish=127.0.0.1:8080:80 \
+  --network=neucore_prod \
+  --name=neucore_prod_http \
+  --rm \
+  tkhamez/neucore
+```
+
+Then create the database schema and add the initial data:
+
+```shell
+docker exec neucore_prod_http vendor/bin/doctrine-migrations migrations:migrate --no-interaction
+docker exec neucore_prod_http bin/console doctrine-fixtures-load
+```
+
+Now login at http://localhost:8080/ and then make yourself an admin:
+
+```shell
+docker exec neucore_prod_http bin/console make-admin 1
+```
+
+#### Further Configuration
+
+To access the database from the host, add the following argument when running the database container, for example:
+
+```
+  --publish=127.0.0.1:33060:3306 \
+```
+
+If you are not using a database via Docker, you can remove the `--network` argument.
+
+To store the logs on the host, create a directory, change its permission, and add the following argument
+when running the Neucore container, for example:
+
+```shell
+mkdir docker-logs && sudo chown 33 docker-logs
+```
+
+```
+  --volume="$(pwd)/docker-logs":/var/www/backend/var/logs \
+```
+
+To use a custom [theme.js](../frontend/public/theme.js) file, add the following argument, for example:
+
+```
+--volume="$(pwd)/theme.js":/var/www/html/dist/theme.js \
+```
+
+To add a service plugin, for example the [Discord Plugin](https://github.com/tkhamez/neucore-discord-plugin), add
+the following arguments, for example:
+
+```
+  --volume=$(pwd)/neucore-discord-plugin:/var/www/backend/plugins/discord \
+  --env=NEUCORE_DISCORD_PLUGIN_DB_DSN="mysql:dbname=neucore_discord;host=192.168.1.2" \
+  --env=NEUCORE_DISCORD_PLUGIN_DB_USERNAME=neucore \
+  --env=NEUCORE_DISCORD_PLUGIN_DB_PASSWORD=neucore \
+```
+
+In a real production environment you want to set up a reverse proxy server with SSL and remove the 
+`NEUCORE_SESSION_SECURE=0` environment variable. Also, remove `--rm` and add instead:
+
+```
+  --restart=always \
+  --detach=true \
+```
+
+#### Create the Image
+
+You can also create the image yourself. Clone the repository and build a distribution (see below) or 
+[download](https://github.com/tkhamez/neucore/releases) it and place it in the subdirectory `dist`
+(create it if it doesn't exist). Then execute the following (adjust the filename):
+
+```shell
+rm -Rf dist/neucore && tar -xf dist/neucore-1.33.0.tar.gz -C dist
+docker build -t neucore .
+```
+
+### Manual Installation
+
+#### Server Requirements
 
 A Linux server (others may work, but were not tested).
 
 To run the application:
-* PHP >=7.4.0 (64bit version), see `backend/composer.json` for necessary and suggested extensions (APCu highly 
+* PHP >=7.4.0 (64bit version), see `backend/composer.json` for necessary and suggested extensions (APCu highly
   recommended).
 * MariaDB or MySQL Server (currently only tested with MySQL 8.0 and MariaDB 10.2, 10.5). Other databases supported by
-  [Doctrine DBAL](https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/platforms.html) 
-  may work if you generate the  database schema yourself (see [backend README](../backend/README.md)), but there are 
+  [Doctrine DBAL](https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/platforms.html)
+  may work if you generate the  database schema yourself (see [backend README](../backend/README.md)), but there are
   only migration files for MySQL/MariaDB. Unit tests can also be run using an SQLite in-memory database.
 * An HTTP Server with support for PHP.
-    * Set the document root to the `web` directory.
-    * A sample Apache configuration is included in the [Vagrantfile](./Vagrantfile) file and there 
-      is a [.htaccess](../web/.htaccess) file in the `web` directory for Apache.
-    * A sample [Nginx configuration](docker-nginx.conf) file can be found in the `doc` directory.
+  * Set the document root to the `web` directory.
+  * A sample Apache configuration is included in the [Vagrantfile](./Vagrantfile) file and there
+    is a [.htaccess](../web/.htaccess) file in the `web` directory for Apache.
+  * A sample [Nginx configuration](docker-nginx.conf) file can be found in the `doc` directory.
 
 Additionally, to build the application:
 * Composer 2.
 * Node.js, only tested with version 16.15.1 with npm 8.11.0.
 * Java runtime >=8 (but only tested with v11) to generate the OpenAPI JavaScript client.
 
-### Install/Update
+#### Install/Update
 
-Clone the repository or [download](https://github.com/tkhamez/neucore/releases) the pre-built distribution.
+Clone the repository or [download](https://github.com/tkhamez/neucore/releases) the pre-built distribution
+file and extract it.
 
 Copy `backend/.env.dist` file to `backend/.env` and adjust values or
 set the required environment variables accordingly.
 
-Make sure that the web server can write to the log and cache directories, by default 
+Make sure that the web server can write to the log and cache directories, by default
 `backend/var/logs` and `backend/var/cache`.
 
 Please note that both the web server and console user write the same files to the cache directory,
@@ -66,7 +184,7 @@ so make sure they can override each other's files, e.g. by putting them into eac
 If available, the app uses an APCu cache in production mode. This must be cleared during an update:
 depending on the setup, restart the web server or php-fpm.
 
-#### Pre-built Distribution file
+##### Pre-built Distribution file
 
 If you downloaded the pre-built app, you only need to run the database migrations and seeds and clear the cache.
 
@@ -86,7 +204,7 @@ vendor/bin/doctrine-migrations migrations:migrate --no-interaction
 bin/console doctrine-fixtures-load
 ```
 
-#### Git
+##### Git
 
 If you have cloned the repository, you must install the dependencies and build the backend and frontend:
 ```
@@ -95,21 +213,7 @@ If you have cloned the repository, you must install the dependencies and build t
 ./install.sh prod
 ```
 
-### Post Installation
-
-Adjust `web/dist/theme.js` if you want another default theme, or add additional JavaScript code, e.g. for user 
-tracking.
-
-Set up necessary cron jobs, e.g. every 8 hours using a lock file (adjust user and paths):
-```
-0 4,12,20 * * * neucore /usr/bin/flock -n /tmp/neucore-run-jobs.lock /var/www/neucore/backend/bin/run-jobs.sh
-```
-
-The output is logged to backend/var/logs.
-
-## Other Installation Methods
-
-### Docker - Development Environment
+### Docker Development Environment
 
 Only tested on Linux and once on macOS.
 
@@ -128,10 +232,6 @@ the database host is `db`.
 
 The web application is available at http://localhost:8080, the frontend development server at http://localhost:3000.
 The database is also available at `127.0.0.1:30306` and it's data is stored in the `.db` subdirectory.
-
-### Vagrant
-
-See [Vagrantfile](./Vagrantfile) for an outdated example.
 
 ### Deploy on Heroku
 
@@ -152,3 +252,20 @@ heroku buildpacks:add heroku/php
 ### Deploy on AWS Beanstalk
 
 See [bravecollective/neucore-beanstalk](https://github.com/bravecollective/neucore-beanstalk) for an example.
+
+## Post Installation
+
+Adjust `web/dist/theme.js` if you want another default theme or add additional JavaScript code, e.g. for user
+tracking.
+
+Set up necessary cron jobs, e.g. every 8 hours using a lock file (adjust user and paths):
+```
+0 4,12,20 * * * neucore /usr/bin/flock -n /tmp/neucore-run-jobs.lock /var/www/neucore/backend/bin/run-jobs.sh
+```
+
+The output is logged to backend/var/logs.
+
+## Build Distribution
+
+There are scripts that build the distribution package, `dist.sh` or `dist-docker.sh`. They need a 
+working development environment.

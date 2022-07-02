@@ -1,5 +1,10 @@
 # Changelog
 
+## next
+
+- Added Dockerfile for production and an image at https://hub.docker.com/r/tkhamez/neucore.
+- Renamed the Docker network in docker-compose.yml from `neucore_network` to `neucore_dev`.
+
 ## 1.33.0
 
 19 Jun 2022
