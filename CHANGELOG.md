@@ -1,10 +1,12 @@
 # Changelog
 
-## next
+## 1.33.1
+
+02 Jul 2022
 
 - Fixed: When adding the main character again, the main flag was removed.
 - Added Dockerfile for production and an image at https://hub.docker.com/r/tkhamez/neucore.
-- Renamed the Docker network in docker-compose.yml from `neucore_network` to `neucore_dev`.
+- Dev: Renamed the Docker network in docker-compose.yml from `neucore_network` to `neucore_dev`.
 
 ## 1.33.0
 
