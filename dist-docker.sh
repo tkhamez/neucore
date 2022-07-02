@@ -24,24 +24,15 @@ docker-compose run neucore_node sh -c "cd ../dist/build/frontend/neucore-js-clie
 docker-compose run neucore_node sh -c "cd ../dist/build/frontend && npm install"
 docker-compose run neucore_node sh -c "cd ../dist/build/frontend && npm run build"
 
-cd dist || exit
-mkdir neucore
-mv build/backend neucore/backend
-rm neucore/backend/.env
-rm -r neucore/backend/.phan
-rm -r neucore/backend/tests
-mv build/doc neucore/doc
-rm -r neucore/doc/screenshots
-mv build/web neucore/web
-mv build/LICENSE neucore/LICENSE
-mv build/CHANGELOG.md neucore/CHANGELOG.md
-mv build/README.md neucore/README.md
+cd dist/build || exit
+./dist-collect-files.sh
 
 if [[ "$1" ]]; then
     NAME=$1
 else
     NAME=$(git rev-parse --short HEAD)
 fi
+cd .. || exit
 tar -czf neucore-"${NAME}".tar.gz neucore
 sha256sum neucore-"${NAME}".tar.gz > neucore-"${NAME}".sha256
 

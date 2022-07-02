@@ -1,0 +1,81 @@
+name: Release
+
+on:
+  push:
+    tags: ['*']
+
+jobs:
+  release:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: dist/build
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: 17
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.5
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          extensions: gmp
+          tools: composer:v2
+      - name: Build backend
+        run: |
+          cd dist/build/backend
+          composer install --no-dev --optimize-autoloader --no-interaction
+          bin/doctrine orm:generate-proxies
+          composer openapi
+        env:
+          NEUCORE_APP_ENV: prod
+          NEUCORE_DATABASE_URL: 'mysql://root:@127.0.0.1/test?serverVersion=mariadb-10.2.7'
+      - name: Generate OpenAPI client
+        run: |
+          cd dist/build/frontend
+          ./openapi.sh
+      - name: Build OpenAPI client
+        run: |
+          cd dist/build/frontend/neucore-js-client
+          npm install
+          npm run build
+      - name: Build frontend
+        run: |
+          cd dist/build/frontend
+          npm install
+          npm run build
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+      - name: Create archive
+        run: |
+          cd dist/build
+          ./dist-collect-files.sh
+          cd ..
+          tar -czf neucore-${{ steps.get_version.outputs.VERSION }}.tar.gz neucore
+          sha256sum neucore-${{ steps.get_version.outputs.VERSION }}.tar.gz > neucore-${{ steps.get_version.outputs.VERSION }}.sha256
+      - name: GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/neucore-${{ steps.get_version.outputs.VERSION }}.tar.gz
+            dist/neucore-${{ steps.get_version.outputs.VERSION }}.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Docker image
+        run:  |
+          cp dist/build/Dockerfile Dockerfile
+          docker build --no-cache -t tkhamez/neucore:${{ steps.get_version.outputs.VERSION }} .
+          docker tag tkhamez/neucore:${{ steps.get_version.outputs.VERSION }} tkhamez/neucore:latest
+      - name: Publish Docker image
+        run: |
+          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u tkhamez --password-stdin
+          docker push tkhamez/neucore:${{ steps.get_version.outputs.VERSION }}
+          docker push tkhamez/neucore:latest
+          docker logout
