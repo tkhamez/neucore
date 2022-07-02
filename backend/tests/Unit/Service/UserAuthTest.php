@@ -325,6 +325,11 @@ class UserAuthTest extends TestCase
         $this->assertSame(2, count($chars));
 
         $this->assertSame($main2, $chars[1]);
+        $this->assertTrue($chars[0]->getMain());
+        $this->assertFalse($chars[1]->getMain());
+        $this->assertSame('Main1', $main1->getPlayer()->getName());
+        $this->assertSame('Main1', $main2->getPlayer()->getName());
+        $this->assertSame('Main1', $chars[0]->getName());
         $this->assertSame('Main2', $chars[1]->getName()); // name is *not* updated here
         $this->assertSame('hash', $chars[1]->getCharacterOwnerHash());
         $this->assertSame($accessToken, $chars[1]->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken());
@@ -359,6 +364,7 @@ class UserAuthTest extends TestCase
         $chars = $main->getPlayer()->getCharacters();
         $this->assertSame(1, count($chars));
         $this->assertSame('Main1', $chars[0]->getName()); // name changed but is *not* updated here
+        $this->assertTrue($chars[0]->getMain());
     }
 
     public function testLogin_AddAltOrMergeAccounts_NotAuthenticated()

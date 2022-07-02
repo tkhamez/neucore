@@ -247,7 +247,6 @@ class UserAuth implements RoleProviderInterface
             $player->addCharacter($alt);
             $alt->setPlayer($player);
         }
-        $alt->setMain(false);
 
         $success = $this->accountService->updateAndStoreCharacterWithPlayer($alt, $eveAuth); // flushes
         if (!$success) {
