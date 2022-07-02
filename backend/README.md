@@ -67,11 +67,6 @@ in "Command" classes.
 
 The `operationId` must be a unique string among all operations described in the API.
 
-This must be followed for the `Neucore\Api\App` namespace.
-
-For the `Neucore\Api\User` namespace it works (for now), if the `operationId` is
-unique only within each tag.
-
 ### Documentation
 
 The file [doc/API.md](../doc/API.md) is automatically generated from the template file `doc/API.tpl.md`, 

@@ -41,6 +41,7 @@
 * An ESI proxy for all characters and their tokens, optionally available for apps, compatible with the ESI OpenAPI
   definition file. See also [api-examples](api-examples).
 * Automatic group assignment for players based on corporations and alliances from all of their characters.
+* Group applications for groups, optionally automatically acceptable.
 * Optional automatic account deactivation when ESI tokens are invalid.
 * Optional alternative login that does not require any ESI scopes (e.g. for guest account).
 * Corporation member tracking.

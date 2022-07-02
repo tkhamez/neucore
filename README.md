@@ -2,7 +2,7 @@
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=brvneucore&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=brvneucore)
 [![](https://www.openhub.net/p/neucore/widgets/project_thin_badge?format=gif)](https://www.openhub.net/p/neucore/)
 
-# Neucore
+# Neucore - Alliance Core Services
 
 An application for managing access for [EVE Online](https://www.eveonline.com/) players to external services 
 of an alliance.
@@ -31,8 +31,8 @@ Main features:
 - Login via EVE SSO, no e-mail address required.
 - Group membership management (automatic and manual).
 - Service registration via [plugins](https://github.com/tkhamez/neucore-plugin).
-- Member tracking and watchlists.
-- Access to [ESI](http://esi.evetech.net) data of all members.
+- [ESI](http://esi.evetech.net) proxy for all characters.
+- Corporation member tracking and watchlists.
 - An API for applications to read group membership, ESI data, and more.
 
 For more information, see the `doc` directory, including [**Documentation**](doc/Documentation.md), 
@@ -55,7 +55,7 @@ Read the backend documentation on how to [make yourself an admin](backend/README
 then you can navigate to "Admin" -> "Settings" and change texts, links and images that are specific to your 
 installation.
 
-### Setting up Member Tracking and Watchlist
+### Setting up Member Tracking and Watchlists
 
 Group for permissions
 - Go to Administration -> Groups, add a new group and add yourself as a manager. (If you want to make it a 
