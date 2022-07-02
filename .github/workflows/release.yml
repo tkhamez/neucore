@@ -6,6 +6,7 @@ on:
 
 jobs:
   release:
+    if: ${{ github.repository_owner == 'tkhamez' }}
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
