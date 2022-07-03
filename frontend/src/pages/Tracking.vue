@@ -169,6 +169,11 @@ export default {
         getCorporations(this);
     },
 
+    unmounted () {
+        this.table.clear();
+        this.table.destroy();
+    },
+
     watch: {
         route () {
             setOptionsFromPath(this);
@@ -282,18 +287,20 @@ function setPathFromOptions(vm) {
 }
 
 function configureDataTable(vm) {
-    $.fn.dataTable.ext.search.push((settings, searchData) => {
-        const term = $('.dataTables_filter input').val().toLowerCase().trim();
-        for (let index = 0; index < vm.columns.length; index++) {
-            if (! vm.columns[index].searchable) {
-                continue;
+    if ($.fn.dataTable.ext.search.length === 0) {
+        $.fn.dataTable.ext.search.push((settings, searchData) => {
+            const term = $('.dataTables_filter input').val().toLowerCase().trim();
+            for (let index = 0; index < vm.columns.length; index++) {
+                if (! vm.columns[index].searchable) {
+                    continue;
+                }
+                if (searchData[index].toLowerCase().indexOf(term) !== -1) {
+                    return true;
+                }
             }
-            if (searchData[index].toLowerCase().indexOf(term) !== -1) {
-                return true;
-            }
-        }
-        return false;
-    });
+            return false;
+        });
+    }
 
     // fix: sort by text instead of html
     $.fn.dataTable.ext.type.order['html-pre'] = function (a) {
@@ -425,7 +432,7 @@ function configureDataTable(vm) {
         width: 80px;
     }
     @supports (position: sticky) {
-        .member-table thead th {
+        .member-table thead tr {
             position: sticky;
             top: 51px;
         }
