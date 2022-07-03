@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.33.2
+
+03 Jul 2022
+
+- Fixed member tracking table.
+
 ## 1.33.1
 
 02 Jul 2022
