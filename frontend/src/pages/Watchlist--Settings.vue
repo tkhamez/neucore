@@ -69,7 +69,7 @@ export default {
 
     data: function() {
         return {
-            sticky: 100,
+            sticky: 87,
         }
     },
 
