@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [[ ! -d ../../dist || ! -d ../build ]]; then
+    echo "This script must be called from the dist/build directory."
+    exit 1
+fi
+
 mkdir ../neucore
 mv backend ../neucore/backend
 rm -f ../neucore/backend/.env

@@ -76,8 +76,8 @@ docker run \
 Then create the database schema and add the initial data:
 
 ```shell
-docker exec neucore_prod_http vendor/bin/doctrine-migrations migrations:migrate --no-interaction
-docker exec neucore_prod_http bin/console doctrine-fixtures-load
+docker exec -u www-data neucore_prod_http vendor/bin/doctrine-migrations migrations:migrate --no-interaction
+docker exec -u www-data neucore_prod_http bin/console doctrine-fixtures-load
 ```
 
 Now login at http://localhost:8080/ and then make yourself an admin:
@@ -218,7 +218,7 @@ If you have cloned the repository, you must install the dependencies and build t
 Only tested on Linux and once on macOS.
 
 Copy `backend/.env.dist` file to `backend/.env` and adjust values, the database password and user are both `neucore`,
-the database host is `db`.
+the database host is `neucore_db` and the database name also `neucore`.
 
 - Build the containers with  
   `export UID && docker-compose build`

@@ -1,6 +1,7 @@
 [![build](https://github.com/tkhamez/neucore/workflows/build/badge.svg)](https://github.com/tkhamez/neucore/actions)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=brvneucore&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=brvneucore)
-[![](https://www.openhub.net/p/neucore/widgets/project_thin_badge?format=gif)](https://www.openhub.net/p/neucore/)
+[![Open Hub](https://www.openhub.net/p/neucore/widgets/project_thin_badge?format=gif)](https://www.openhub.net/p/neucore/)
+[![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/VGsTwvtw)
 
 # Neucore - Alliance Core Services
 
