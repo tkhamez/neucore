@@ -1,4 +1,7 @@
+/.idea
 /cache
 /logs
 /vendor
+/venv
 /composer.lock
+/latest_swagger_core.json

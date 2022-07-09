@@ -1,0 +1,16 @@
+certifi==2022.6.15
+charset-normalizer==2.1.0
+ecdsa==0.18.0
+EsiPy==1.2.3
+idna==3.3
+pyaml==21.10.1
+pyasn1==0.4.8
+pyswagger==0.8.39
+python-jose==3.3.0
+pytz==2022.1
+PyYAML==6.0
+requests==2.28.1
+rsa==4.8
+six==1.16.0
+urllib3==1.26.10
+validate-email==1.3
