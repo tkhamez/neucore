@@ -1,7 +1,7 @@
 [![build](https://github.com/tkhamez/neucore/workflows/build/badge.svg)](https://github.com/tkhamez/neucore/actions)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=brvneucore&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=brvneucore)
 [![Open Hub](https://www.openhub.net/p/neucore/widgets/project_thin_badge?format=gif)](https://www.openhub.net/p/neucore/)
-[![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/VGsTwvtw)
+[![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/memUh56u8z)
 
 # Neucore - Alliance Core Services
 
@@ -39,9 +39,6 @@ Main features:
 For more information, see the `doc` directory, including [**Documentation**](doc/Documentation.md), 
 an [**API**](doc/API.md) overview, and some [screenshots](doc/screenshots).
 
-This project consists of two applications, the [**Backend**](backend/README.md) 
-and the [**Frontend**](frontend/README.md).
-
 A preview/demo installation is available at https://neucore.herokuapp.com.
 
 ## Getting started
@@ -59,8 +56,7 @@ installation.
 ### Setting up Member Tracking and Watchlists
 
 Group for permissions
-- Go to Administration -> Groups, add a new group and add yourself as a manager. (If you want to make it a 
-  requestable group, edit it and make it public.)
+- Go to Administration -> Groups, add a new group and add yourself as a manager.
 - Go to Management -> Groups, select the new group and add yourself as a member.
 
 Member Tracking
@@ -104,7 +100,7 @@ This is also where the name "Neucore" (new Core) comes from.
 
 ### Contact
 
-If you have any questions or feedback, you can join the [Neucore Discord Server](https://discord.gg/VGsTwvtw) or
+If you have any questions or feedback, you can join the [Neucore Discord Server](https://discord.gg/memUh56u8z) or
 contact [Tian Khamez](https://evewho.com/character/96061222) on 
 [Tweetfleet Slack](https://tweetfleet.slack.com) (get invites 
 [here](https://www.fuzzwork.co.uk/tweetfleet-slack-invites/)).
