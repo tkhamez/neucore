@@ -31,22 +31,22 @@
 ## Features
 
 * EVE SSO login with configurable permission scopes.
+* Player accounts with multiple characters.
+* Multiple ESI tokens per character with different configurable scopes.
 * Customization of texts, links and images specific to your organization, including themes.
-* Player accounts with alts.
-* Multiple ESI tokens with different configurable scopes for each character.
 * Role based permission system.
 * Creation of groups and apps with managers.
-* Service registration via [plugins](https://github.com/tkhamez/neucore-plugin).
-* An API for applications to query group membership of characters and other data.
-* An ESI proxy for all characters and their tokens, optionally available for apps, compatible with the ESI OpenAPI
-  definition file. See also [api-examples](api-examples).
 * Automatic group assignment for players based on corporations and alliances from all of their characters.
 * Group applications for groups, optionally automatically acceptable.
-* Optional automatic account deactivation when ESI tokens are invalid.
+* Optional automatic temporary removal of groups if ESI tokens are invalid.
 * Optional alternative login that does not require any ESI scopes (e.g. for guest account).
 * Corporation member tracking.
-* Configurable watchlists with accounts that have characters in other alliances or corporations.
 * Optional EVE mail notifications for invalid ESI tokens and missing characters (via member tracking).
+* Configurable watchlists with accounts that have characters in other alliances or corporations.
+* An API for applications to query group membership of characters, ESI data and more.
+* An [ESI](http://esi.evetech.net) proxy for all characters and their tokens, optionally available for apps, 
+  compatible with the ESI OpenAPI definition file. See also [api-examples](api-examples).
+* Service registration via [plugins](https://github.com/tkhamez/neucore-plugin).
 * CLI commands for data updates from ESI.
 * Mobile-friendly.
 
