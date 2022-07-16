@@ -226,7 +226,7 @@ class EsiController extends BaseController
      *         The HTTP status code from ESI is also passed through, so there may be more than the documented ones.<br>
      *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,
                this allows to use OpenAPI clients that were generated for the ESI API,
-               see doc/app-esi-examples.php for more.",
+               see doc/api-examples for more.",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
