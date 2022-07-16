@@ -5,4 +5,4 @@
 // Set the default theme. See frontend/src/mixin.js for possible values.
 window.setTheme('Darkly');
 
-// Add other code below this line - e.g. for user tracking
+// Add other code below this line, e.g. for user analytics software.
