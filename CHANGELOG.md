@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 1.33.3
 
-dd mm yyyy
+19 Jul 2022
 
 - Fix: Do not merge accounts when the character owner hash changed, only move the character.
 
