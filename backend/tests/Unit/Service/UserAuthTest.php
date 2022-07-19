@@ -1,4 +1,5 @@
 <?php
+/** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
 
@@ -19,7 +20,9 @@ use Neucore\Entity\Service;
 use Neucore\Entity\ServiceConfiguration;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\EsiTokenRepository;
+use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
@@ -44,6 +47,10 @@ class UserAuthTest extends TestCase
     private UserAuth $service;
 
     private RemovedCharacterRepository $removedCharRepo;
+
+    private CharacterRepository $characterRepo;
+
+    private PlayerRepository $playerRepo;
 
     private EsiTokenRepository $esiTokenRepo;
 
@@ -70,6 +77,8 @@ class UserAuthTest extends TestCase
         $this->service = $this->helper->getUserAuthService($this->log, $this->client);
 
         $this->removedCharRepo = $repoFactory->getRemovedCharacterRepository();
+        $this->characterRepo = $repoFactory->getCharacterRepository();
+        $this->playerRepo = $repoFactory->getPLayerRepository();
         $this->esiTokenRepo = $repoFactory->getEsiTokenRepository();
     }
 
@@ -110,7 +119,7 @@ class UserAuthTest extends TestCase
         $this->assertSame(9013, $user->getId());
     }
 
-    public function testLogin_AuthenticateNoUserRoleError()
+    public function testLogin_Authenticate_NoUserRoleError()
     {
         $token = new AccessToken(['access_token' => 'token']);
         $result = $this->service->login(new EveAuthentication(888, 'New User', 'char-owner-hash', $token));
@@ -125,7 +134,7 @@ class UserAuthTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testLogin_AuthenticateNewUser()
+    public function testLogin_Authenticate_NewUser()
     {
         $this->helper->getEm()->persist((new EveLogin())->setName(EveLogin::NAME_DEFAULT));
         $this->helper->addRoles([Role::USER]);
@@ -166,7 +175,7 @@ class UserAuthTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testLogin_AuthenticateExistingUser()
+    public function testLogin_Authenticate_ExistingUser()
     {
         SessionData::setReadOnly(false);
         $corp = (new Corporation())->setId(101);
@@ -203,7 +212,7 @@ class UserAuthTest extends TestCase
         $this->assertSame($user->getPlayer()->getId(), $player->getId());
     }
 
-    public function testLogin_AuthenticateNewOwner()
+    public function testLogin_Authenticate_NewOwner()
     {
         SessionData::setReadOnly(false);
         $corp = (new Corporation())->setId(101);
@@ -238,7 +247,7 @@ class UserAuthTest extends TestCase
         $this->assertSame(RemovedCharacter::REASON_MOVED_OWNER_CHANGED, $removedChar->getReason());
     }
 
-    public function testLogin_AddAltOrMergeAccounts_NoRefreshToken()
+    public function testLogin_addAltMoveOrMergeAccounts_NoRefreshToken()
     {
         $_SESSION['character_id'] = 100;
         $main = $this->helper->addCharacterMain('Main', 100, [Role::USER]);
@@ -267,7 +276,7 @@ class UserAuthTest extends TestCase
         $this->assertFalse($chars[1]->getMain());
     }
 
-    public function testLogin_AddAltOrMergeAccounts_NewCharAddsGroups()
+    public function testLogin_addAltMoveOrMergeAccounts_NewCharAddsGroups()
     {
         $_SESSION['character_id'] = 100;
         $this->helper->addRoles([Role::GROUP_MANAGER, Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
@@ -305,43 +314,54 @@ class UserAuthTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testLogin_AddAltOrMergeAccounts_ExistingCharAndMove()
+    public function testLogin_addAltMoveOrMergeAccounts_ExistingCharMerge()
     {
         $_SESSION['character_id'] = 100;
         $corp = (new Corporation())->setId(101);
         $this->om->persist($corp);
         $main1 = $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
         $main2 = $this->helper->addCharacterMain('Main2', 200, [Role::USER]);
+        $this->helper->addCharacterToPlayer('Alt2', 201, $main2->getPlayer());
         $main2->setCorporation($corp);
         $newPlayerId = $main1->getPlayer()->getId();
         $oldPlayerId = $main2->getPlayer()->getId();
 
         $accessToken = Helper::generateToken()[0];
         $token = new AccessToken(['access_token' => $accessToken, 'expires' => 1525456785, 'refresh_token' => 'rf']);
-        $result = $this->service->login(new EveAuthentication(200, 'Main2 renamed', 'hash', $token));
+
+        // Login with same owner hash
+        $result = $this->service->login(new EveAuthentication(200, 'Main2 renamed', '123', $token));
+        $this->om->clear();
+
         $this->assertSame(UserAuth::LOGIN_ACCOUNTS_MERGED, $result);
+        $main1Loaded = $this->characterRepo->find(100);
+        $main2Loaded = $this->characterRepo->find(200);
+        $player2 = $this->playerRepo->find($oldPlayerId);
 
-        $chars = $main1->getPlayer()->getCharacters();
-        $this->assertSame(2, count($chars));
+        $chars = $main1Loaded->getPlayer()->getCharacters();
+        $this->assertSame(3, count($chars));
+        $this->assertSame(0, count($player2->getCharacters()));
 
-        $this->assertSame($main2, $chars[1]);
-        $this->assertTrue($chars[0]->getMain());
-        $this->assertFalse($chars[1]->getMain());
-        $this->assertSame('Main1', $main1->getPlayer()->getName());
-        $this->assertSame('Main1', $main2->getPlayer()->getName());
-        $this->assertSame('Main1', $chars[0]->getName());
-        $this->assertSame('Main2', $chars[1]->getName()); // name is *not* updated here
-        $this->assertSame('hash', $chars[1]->getCharacterOwnerHash());
-        $this->assertSame($accessToken, $chars[1]->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken());
-        $this->assertSame(1525456785, $chars[1]->getEsiToken(EveLogin::NAME_DEFAULT)->getExpires());
-        $this->assertSame('rf', $chars[1]->getEsiToken(EveLogin::NAME_DEFAULT)->getRefreshToken());
-        $this->assertTrue($chars[1]->getEsiToken(EveLogin::NAME_DEFAULT)->getValidToken());
+        $this->assertSame($main2Loaded->getId(), $chars[2]->getId());
+        $this->assertFalse($chars[0]->getMain());
+        $this->assertTrue($chars[1]->getMain());
+        $this->assertFalse($chars[2]->getMain());
+        $this->assertSame('Main1', $main1Loaded->getPlayer()->getName());
+        $this->assertSame('Main1', $main2Loaded->getPlayer()->getName());
+        $this->assertSame('Alt2', $chars[0]->getName());
+        $this->assertSame('Main1', $chars[1]->getName());
+        $this->assertSame('Main2', $chars[2]->getName()); // name is *not* updated here
+        $this->assertSame('123', $chars[2]->getCharacterOwnerHash());
+        $this->assertSame($accessToken, $chars[2]->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken());
+        $this->assertSame(1525456785, $chars[2]->getEsiToken(EveLogin::NAME_DEFAULT)->getExpires());
+        $this->assertSame('rf', $chars[2]->getEsiToken(EveLogin::NAME_DEFAULT)->getRefreshToken());
+        $this->assertTrue($chars[2]->getEsiToken(EveLogin::NAME_DEFAULT)->getValidToken());
 
         // check RemovedCharacter
         $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 200]);
-        $this->assertSame($main2->getId(), $removedChar->getcharacterId());
-        $this->assertNotSame($main2->getPlayer()->getId(), $removedChar->getPlayer()->getId());
-        $this->assertNotNull($main2->getPlayer()->getId());
+        $this->assertSame($main2Loaded->getId(), $removedChar->getcharacterId());
+        $this->assertNotSame($main2Loaded->getPlayer()->getId(), $removedChar->getPlayer()->getId());
+        $this->assertNotNull($main2Loaded->getPlayer()->getId());
         $this->assertSame($oldPlayerId, $removedChar->getPlayer()->getId());
         $this->assertNotNull($oldPlayerId);
         $this->assertSame($newPlayerId, $removedChar->getNewPlayer()->getId());
@@ -349,7 +369,66 @@ class UserAuthTest extends TestCase
         $this->assertNotNull($newPlayerId);
     }
 
-    public function testLogin_AddAltOrMergeAccounts_LoggedInChar()
+    /**
+     * @throws \Exception
+     */
+    public function testLogin_addAltMoveOrMergeAccounts_ExistingCharMove()
+    {
+        $_SESSION['character_id'] = 100;
+        $corp = (new Corporation())->setId(101);
+        $this->om->persist($corp);
+        $main1 = $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
+        $main2 = $this->helper->addCharacterMain('Main2', 200, [Role::USER]);
+        $this->helper->addCharacterToPlayer('Alt2', 201, $main2->getPlayer());
+        $main2->setCorporation($corp);
+        $newPlayerId = $main1->getPlayer()->getId();
+        $oldPlayerId = $main2->getPlayer()->getId();
+
+        $accessToken = Helper::generateToken()[0];
+        $token = new AccessToken(['access_token' => $accessToken, 'expires' => 1525456785, 'refresh_token' => 'rf']);
+
+        // Login with different owner hash
+        $result = $this->service->login(new EveAuthentication(200, 'Main2 renamed', '456', $token));
+        $this->om->clear();
+
+        $this->assertSame(UserAuth::LOGIN_CHARACTER_ADDED_SUCCESS, $result);
+        $main1Loaded = $this->characterRepo->find(100);
+        $main2Loaded = $this->characterRepo->find(200);
+        $player2 = $this->playerRepo->find($oldPlayerId);
+
+        $chars = $main1Loaded->getPlayer()->getCharacters();
+        $this->assertSame(2, count($chars));
+        $this->assertSame(1, count($player2->getCharacters()));
+        $alt2Loaded = $player2->getCharacters()[0];
+
+        $this->assertSame($main2Loaded->getId(), $chars[1]->getId());
+        $this->assertTrue($chars[0]->getMain());
+        $this->assertFalse($chars[1]->getMain());
+        $this->assertTrue($alt2Loaded->getMain()); // main was moved, this is the only char on that account now
+        $this->assertSame('Main1', $main1Loaded->getPlayer()->getName());
+        $this->assertSame('Main1', $main2Loaded->getPlayer()->getName());
+        $this->assertSame('Alt2', $alt2Loaded->getName());
+        $this->assertSame('Main1', $chars[0]->getName());
+        $this->assertSame('Main2', $chars[1]->getName()); // name is *not* updated here
+        $this->assertSame('456', $chars[1]->getCharacterOwnerHash());
+        $this->assertSame($accessToken, $chars[1]->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken());
+        $this->assertSame(1525456785, $chars[1]->getEsiToken(EveLogin::NAME_DEFAULT)->getExpires());
+        $this->assertSame('rf', $chars[1]->getEsiToken(EveLogin::NAME_DEFAULT)->getRefreshToken());
+        $this->assertTrue($chars[1]->getEsiToken(EveLogin::NAME_DEFAULT)->getValidToken());
+
+        // check RemovedCharacter
+        $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 200]);
+        $this->assertSame($main2Loaded->getId(), $removedChar->getcharacterId());
+        $this->assertNotSame($main2Loaded->getPlayer()->getId(), $removedChar->getPlayer()->getId());
+        $this->assertNotNull($main2Loaded->getPlayer()->getId());
+        $this->assertSame($oldPlayerId, $removedChar->getPlayer()->getId());
+        $this->assertNotNull($oldPlayerId);
+        $this->assertSame($newPlayerId, $removedChar->getNewPlayer()->getId());
+        $this->assertSame(RemovedCharacter::REASON_MOVED_OWNER_CHANGED, $removedChar->getReason());
+        $this->assertNotNull($newPlayerId);
+    }
+
+    public function testLogin_addAltMoveOrMergeAccounts_LoggedInChar()
     {
         $_SESSION['character_id'] = 100;
         $main = $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
@@ -367,7 +446,7 @@ class UserAuthTest extends TestCase
         $this->assertTrue($chars[0]->getMain());
     }
 
-    public function testLogin_AddAltOrMergeAccounts_NotAuthenticated()
+    public function testLogin_addAltMoveOrMergeAccounts_NotAuthenticated()
     {
         $_SESSION['character_id'] = 100;
         $this->helper->addCharacterMain('Main1', 100, [Role::USER]);

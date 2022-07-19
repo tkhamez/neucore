@@ -9,6 +9,7 @@ use Neucore\Entity\Character;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
+use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
 use Neucore\Exception\RuntimeException;
@@ -110,7 +111,7 @@ class UserAuth implements RoleProviderInterface
                 return self::LOGIN_AUTHENTICATED_FAIL;
             }
         } else {
-            return $this->addAltOrMergeAccounts($eveAuth, $this->user->getPlayer());
+            return $this->addAltMoveOrMergeAccounts($eveAuth, $this->user->getPlayer());
         }
     }
 
@@ -213,6 +214,7 @@ class UserAuth implements RoleProviderInterface
             $char->getPlayer()->addRole($userRole[0]);
         }
 
+        $char->setCharacterOwnerHash($eveAuth->getCharacterOwnerHash());
         $success = $this->accountService->updateAndStoreCharacterWithPlayer($char, $eveAuth); // flushes
         if ($updateAutoGroups) {
             $this->accountService->updateGroups($char->getPlayer()->getId()); // flushes
@@ -229,7 +231,7 @@ class UserAuth implements RoleProviderInterface
         return true;
     }
 
-    private function addAltOrMergeAccounts(EveAuthentication $eveAuth, Player $player): int
+    private function addAltMoveOrMergeAccounts(EveAuthentication $eveAuth, Player $player): int
     {
         $characterId = $eveAuth->getCharacterId();
 
@@ -254,9 +256,21 @@ class UserAuth implements RoleProviderInterface
         }
 
         if ($existingChar && $alt->getPlayer()->getId() !== $player->getId()) {
-            $this->accountService->mergeAccounts($player, $alt->getPlayer());
-            return self::LOGIN_ACCOUNTS_MERGED;
+            if ($alt->getCharacterOwnerHash() !== $eveAuth->getCharacterOwnerHash()) {
+                $oldPlayer = $alt->getPlayer();
+                $alt->setCharacterOwnerHash($eveAuth->getCharacterOwnerHash());
+                $alt->setMain(false);
+                $this->accountService->moveCharacter($alt, $player, RemovedCharacter::REASON_MOVED_OWNER_CHANGED);
+                $this->accountService->assureMain($oldPlayer);
+                $this->objectManager->flush();
+                return self::LOGIN_CHARACTER_ADDED_SUCCESS;
+            } else {
+                $alt->setCharacterOwnerHash($eveAuth->getCharacterOwnerHash());
+                $this->accountService->mergeAccounts($player, $alt->getPlayer()); // flushes
+                return self::LOGIN_ACCOUNTS_MERGED;
+            }
         } else {
+            $alt->setCharacterOwnerHash($eveAuth->getCharacterOwnerHash());
             $this->accountService->updateGroups($player->getId()); // flushes
             return self::LOGIN_CHARACTER_ADDED_SUCCESS;
         }

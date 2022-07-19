@@ -160,6 +160,47 @@ class AccountTest extends TestCase
         $this->assertSame(100, $newPlayerLoaded->getIncomingCharacters()[0]->getCharacterId());
     }
 
+    public function testMoveCharacter()
+    {
+        (new Helper())->emptyDb();
+
+        $char = new Character();
+        $char->setId(100);
+        $char->setName('char name');
+        $player = new Player();
+        $player->setId(5);
+        $player->setName($char->getName());
+        $player->addCharacter($char);
+        $char->setPlayer($player);
+
+        $newPlayer = new Player();
+        $newPlayer->setName('old name');
+
+        $this->om->persist($player);
+        $this->om->persist($newPlayer);
+        $this->om->persist($char);
+        $this->om->flush();
+
+        $this->service->moveCharacter($char, $newPlayer, RemovedCharacter::REASON_MOVED_OWNER_CHANGED);
+
+        $newPlayer = $char->getPlayer();
+        $this->assertSame('old name', $newPlayer->getName()); // not changed
+
+        $this->assertSame(100, $player->getRemovedCharacters()[0]->getCharacterId());
+        $this->assertSame($newPlayer, $player->getRemovedCharacters()[0]->getNewPlayer());
+        $this->assertSame(
+            RemovedCharacter::REASON_MOVED_OWNER_CHANGED,
+            $player->getRemovedCharacters()[0]->getReason()
+        );
+        $this->assertSame($newPlayer, $player->getRemovedCharacters()[0]->getNewPlayer());
+
+        // test relation after persist
+        $this->om->flush();
+        $this->om->clear();
+        $newPlayerLoaded = $this->playerRepo->find($newPlayer->getId());
+        $this->assertSame(100, $newPlayerLoaded->getIncomingCharacters()[0]->getCharacterId());
+    }
+
     public function testUpdateAndStoreCharacterWithPlayer_NoEveLogin()
     {
         $result = $this->service->updateAndStoreCharacterWithPlayer(
@@ -215,7 +256,7 @@ class AccountTest extends TestCase
         $this->assertSame('char name changed', $character->getName());
         $this->assertTrue($character->getMain());
         $this->assertSame('char name changed', $player->getName());
-        $this->assertSame('character-owner-hash', $character->getCharacterOwnerHash());
+        $this->assertNull($character->getCharacterOwnerHash()); // no longer set in this method
         $this->assertSame($token[0], $esiToken->getAccessToken());
         $this->assertSame('r-t', $esiToken->getRefreshToken());
         $this->assertSame($expires, $esiToken->getExpires());

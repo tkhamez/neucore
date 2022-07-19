@@ -518,7 +518,9 @@ class AuthControllerTest extends WebTestCase
         $this->helper->addCharacterMain('User2', 123); // the ID used in Helper::generateToken
         $this->loginUser(654);
 
-        list($token, $keySet) = Helper::generateToken(['read-this']);
+        // 123 is the character owner hash used in addCharacterMain()
+        list($token, $keySet) = Helper::generateToken(['read-this'], 'Name', '123');
+
         $state = $this->getStatePrefix(EveLogin::NAME_DEFAULT) . self::$state;
         $_SESSION['auth_state'] = $state;
 

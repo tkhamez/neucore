@@ -133,16 +133,14 @@ class Account
      */
     public function updateAndStoreCharacterWithPlayer(Character $char, EveAuthentication $eveAuth): bool
     {
-        // update character
         $token = $eveAuth->getToken();
-        // Do not update the character name: after a character rename the name from SSO is/can be? the old name.
+        // Do not update the character name here: after a character rename the name from SSO is/can be? the old name.
         // https://github.com/ccpgames/sso-issues/issues/68
         try {
             $char->setLastLogin(new \DateTime());
         } catch (\Exception $e) {
             // ignore
         }
-        $char->setCharacterOwnerHash($eveAuth->getCharacterOwnerHash());
 
         // Get and update, create or remove default ESI token.
         $esiToken = $char->getEsiToken(EveLogin::NAME_DEFAULT);
@@ -537,7 +535,7 @@ class Account
      *
      * Does not flush the entity manager at the end.
      */
-    private function moveCharacter(Character $character, Player $newPlayer, string $reason): void
+    public function moveCharacter(Character $character, Player $newPlayer, string $reason): void
     {
         $this->createRemovedCharacter($character, $reason, $newPlayer);
 
