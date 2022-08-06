@@ -48,7 +48,7 @@ docker run \
   --name=neucore_db_prod \
   --detach=true \
   --rm \
-  mariadb:10.5
+  mariadb:10.6
 
 # to stop it again:
 docker stop neucore_db_prod
@@ -153,8 +153,8 @@ To run the application:
   recommended).
 * MariaDB or MySQL Server (tested with MySQL 8.0 and MariaDB 10.2, 10.6 and 10.8). Other databases supported by
   [Doctrine DBAL](https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/platforms.html)
-  may work if you generate the  database schema yourself (see [backend README](../backend/README.md)), but there are
-  only migration files for MySQL/MariaDB. Unit tests can also be run using an SQLite in-memory database.
+  may work if you generate the database schema yourself (see [backend README](../backend/README.md)), but there are
+  only migration files for MySQL/MariaDB. Unit tests can also be run using a SQLite in-memory database.
 * An HTTP Server with support for PHP.
   * Set the document root to the `web` directory.
   * A sample Apache configuration is included in the [Vagrantfile](./Vagrantfile) file and there
