@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Entity;
 
 use Neucore\Entity\App;
+use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use PHPUnit\Framework\TestCase;
@@ -62,5 +63,21 @@ class RoleTest extends TestCase
 
         $role->removeApp($a2);
         $this->assertSame([$a1], $role->getApps());
+    }
+
+    public function testAddGetRemoveRequiredGroup()
+    {
+        $role = new Role(1);
+        $g1 = new Group();
+        $g2 = new Group();
+
+        $this->assertSame([], $role->getRequiredGroups());
+
+        $role->addRequiredGroup($g1);
+        $role->addRequiredGroup($g2);
+        $this->assertSame([$g1, $g2], $role->getRequiredGroups());
+
+        $role->removeRequiredGroup($g2);
+        $this->assertSame([$g1], $role->getRequiredGroups());
     }
 }

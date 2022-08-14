@@ -106,6 +106,11 @@ Player API
 - List all players with a role. `GET /user/player/with-role/{name}`
 - Lists all players with characters who have a certain status. `GET /user/player/with-status/{name}`
 
+Role API
+- List all required groups of a role. `GET /user/role/{roleName}/required-groups`
+- Add a group as a requirement to the role. `PUT /user/role/{roleName}/add-required-group/{groupId}`
+- Remove a group from being a requirement from the role. `PUT /user/role/{roleName}/remove-required-group/{groupId}`
+
 Service API
 - Update all service accounts of one player. `PUT /user/service/update-all-accounts/{playerId}`
 

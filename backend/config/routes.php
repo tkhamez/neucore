@@ -16,6 +16,7 @@ use Neucore\Controller\User\CorporationController;
 use Neucore\Controller\User\EsiController;
 use Neucore\Controller\User\GroupController;
 use Neucore\Controller\User\PlayerController;
+use Neucore\Controller\User\RoleController;
 use Neucore\Controller\User\ServiceAdminController;
 use Neucore\Controller\User\ServiceController;
 use Neucore\Controller\User\SettingsController;
@@ -160,6 +161,10 @@ return [
     '/api/user/player/group-characters-by-account' => ['POST',   [PlayerController::class, 'groupCharactersByAccount']],
     '/api/user/player/with-role/{name}'            => ['GET',    [PlayerController::class, 'withRole']],
     '/api/user/player/with-status/{name}'          => ['GET',    [PlayerController::class, 'withStatus']],
+
+    '/api/user/role/{roleName}/required-groups'                  => ['GET', [RoleController::class, 'getRequiredGroups']],
+    '/api/user/role/{roleName}/add-required-group/{groupId}'     => ['PUT', [RoleController::class, 'addRequiredGroups']],
+    '/api/user/role/{roleName}/remove-required-group/{groupId}'  => ['PUT', [RoleController::class, 'removeRequiredGroups']],
 
     '/api/user/settings/system/list'                        => ['GET',  [SettingsController::class, 'systemList']],
     '/api/user/settings/system/change/{name}'               => ['PUT',  [SettingsController::class, 'systemChange']],

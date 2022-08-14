@@ -104,6 +104,8 @@ return [
     '/api/user/player/{id}/set-status/'            => [Role::USER_MANAGER],
     '/api/user/player'                             => [Role::USER_ADMIN],
 
+    '/api/user/role'                               => [Role::USER_ADMIN],
+
     '/api/user/settings/system/list'        => [Role::ANONYMOUS, Role::USER],
     '/api/user/settings/system'             => [Role::SETTINGS],
     '/api/user/settings/eve-login/list'     => [Role::USER],

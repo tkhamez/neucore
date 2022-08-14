@@ -258,6 +258,8 @@ class Helper
             }
         }
 
+        self::$roleSequence = 0;
+
         $em->clear();
     }
 

@@ -72,22 +72,24 @@ class Role implements \JsonSerializable
     /**
      * @ORM\ManyToMany(targetEntity="Player", mappedBy="roles")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $players;
+    private Collection $players;
 
     /**
      * @ORM\ManyToMany(targetEntity="App", mappedBy="roles")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $apps;
+    private Collection $apps;
 
     /**
-     * Contains only information that is of interest for clients.
-     *
-     * {@inheritDoc}
-     * @see \JsonSerializable::jsonSerialize()
+     * @ORM\ManyToMany(targetEntity="Group")
+     * @ORM\JoinTable(name="role_required_group")
+     * @ORM\OrderBy({"name" = "ASC"})
+     */
+    private Collection $requiredGroups;
+
+    /**
+     * Contains only information that is of interest to clients.
      */
     public function jsonSerialize(): string
     {
@@ -102,6 +104,7 @@ class Role implements \JsonSerializable
         $this->id = $id;
         $this->players = new ArrayCollection();
         $this->apps = new ArrayCollection();
+        $this->requiredGroups = new ArrayCollection();
     }
 
     public function getId(): int
@@ -159,5 +162,31 @@ class Role implements \JsonSerializable
     public function getApps(): array
     {
         return array_values($this->apps->toArray());
+    }
+
+    /**
+     * @return Group[]
+     */
+    public function getRequiredGroups(): array
+    {
+        return array_values($this->requiredGroups->toArray());
+    }
+
+    public function addRequiredGroup(Group $requiredGroup): self
+    {
+        foreach ($this->getRequiredGroups() as $entity) {
+            if ($requiredGroup->getId() && $entity->getId() === $requiredGroup->getId()) {
+                return $this;
+            }
+        }
+
+        $this->requiredGroups[] = $requiredGroup;
+
+        return $this;
+    }
+
+    public function removeRequiredGroup(Group $requiredGroup): bool
+    {
+        return $this->requiredGroups->removeElement($requiredGroup);
     }
 }
