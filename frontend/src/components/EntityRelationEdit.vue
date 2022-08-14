@@ -48,6 +48,10 @@ Select and table to add and remove objects from other objects.
             ">
                 Players in these {{contentType}} are automatically added to the group and removed when they leave.
             </p>
+            <p v-cloak v-if="type === 'Role' && contentType === 'requiredGroups'">
+                <strong>Required Groups</strong><br>
+                Add groups that are required (<em>any one</em> of them) to keep the role.
+            </p>
             <div class="row mb-1" v-cloak v-if="type === 'App' && contentType === 'groups'">
                 <p class="col-9">
                     The application can only see the membership of players to groups that are listed here.
@@ -105,7 +109,7 @@ Select and table to add and remove objects from other objects.
         </div>
 
         <div :class="{ 'table-responsive': !sticky}">
-            <table v-cloak v-if="typeId" class="table table-hover mb-0 nc-table-sm"
+            <table v-cloak v-if="typeId || typeName" class="table table-hover mb-0 nc-table-sm"
                    aria-describedby="Elements already added">
                 <thead class="table-light" :class="{ 'sticky': sticky > 0}">
                     <tr>
@@ -211,7 +215,16 @@ Select and table to add and remove objects from other objects.
 <script>
 import {Modal} from "bootstrap";
 import Multiselect from '@suadelabs/vue3-multiselect';
-import {AllianceApi, AppApi, CorporationApi, GroupApi, PlayerApi, SettingsApi, WatchlistApi} from 'neucore-js-client';
+import {
+    AllianceApi,
+    AppApi,
+    CorporationApi,
+    GroupApi,
+    PlayerApi,
+    RoleApi,
+    SettingsApi,
+    WatchlistApi
+} from 'neucore-js-client';
 import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterResult from '../components/CharacterResult.vue';
 
@@ -237,6 +250,11 @@ export default {
          * ID of entity to add/remove items from, e. g. 12
          */
         typeId: Number,
+
+        /**
+         * Unique name of entity to add/remove items from, e. g. user-chars
+         */
+        typeName: String,
 
         /**
          * Optional offset top for a sticky table head.
@@ -278,7 +296,7 @@ export default {
         setUseSearch(this);
         this.customPlaceholder();
         this.getSelectContent();
-        if (this.typeId) {
+        if (this.typeId || this.typeName) {
             this.getTableContent();
             this.getWithGroups();
             fetchDirector(this);
@@ -294,12 +312,20 @@ export default {
             }
         },
 
+        typeName: function() {
+            this.newObject = "";
+            if (this.typeName) {
+                this.getTableContent();
+                fetchDirector(this);
+            }
+        },
+
         contentType: function() {
             setUseSearch(this);
             this.newObject = "";
             this.customPlaceholder();
             this.getSelectContent();
-            if (this.typeId) {
+            if (this.typeId || this.typeName) {
                 this.getTableContent();
                 this.getWithGroups();
             }
@@ -375,8 +401,21 @@ export default {
                 api = new AllianceApi();
                 method = 'all';
             } else if (
-                vm.contentType === 'groups' || vm.contentType === 'groupsManage' ||
-                this.contentType === 'requiredGroups' || this.contentType === 'forbiddenGroups'
+                (
+                    vm.type === 'App' ||
+                    vm.type === 'Corporation' ||
+                    vm.type === 'Group' ||
+                    vm.type === 'Player' ||
+                    vm.type === 'Role' ||
+                    vm.type === 'Watchlist'
+                )
+                &&
+                (
+                    vm.contentType === 'groups' ||
+                    vm.contentType === 'groupsManage' ||
+                    vm.contentType === 'requiredGroups' ||
+                    vm.contentType === 'forbiddenGroups'
+                )
             ) {
                 api = new GroupApi();
                 method = 'userGroupAll';
@@ -431,6 +470,8 @@ export default {
                 this.type === 'WatchlistAllowlist'
             ) {
                 api = new WatchlistApi();
+            } else if (this.type === 'Role') {
+                api = new RoleApi();
             }
             if (this.type === 'Group' && this.contentType === 'managers') {
                 method = 'userGroupManagers';
@@ -473,12 +514,18 @@ export default {
             ) {
                 method = this.type === 'WatchlistKicklist' ?
                     'watchlistKicklistCorporationList' : 'watchlistAllowlistCorporationList';
+            } else if (this.type === 'Role') {
+                method = 'userRoleRequiredGroups';
             }
-            if (! api || ! method) {
+            if (!api || !method) {
                 return;
             }
 
-            api[method].apply(api, [this.typeId, function(error, data) {
+            let typeParam = vm.typeId;
+            if (this.type === 'Role') {
+                typeParam = vm.typeName;
+            }
+            api[method].apply(api, [typeParam, function(error, data) {
                 if (error) { // 403 usually
                     if (vm.type === 'Player') {
                         vm.$emit('activePlayer', null); // pass data to parent
@@ -664,8 +711,13 @@ export default {
                 }
                 param1 = this.typeId;
                 param2 = id;
+            } else if (this.type === 'Role') {
+                api = new RoleApi();
+                method = action === 'add' ? 'userRoleAddRequiredGroup' : 'userRoleRemoveRequiredGroup';
+                param1 = this.typeName;
+                param2 = id;
             }
-            if (! api || ! method) {
+            if (!api || !method) {
                 return;
             }
 
@@ -691,7 +743,7 @@ export default {
         },
 
         addAllGroupsToApp: function() {
-            if (! this.typeId || this.type !== 'App') {
+            if (!this.typeId || this.type !== 'App') {
                 return;
             }
             const vm = this;

@@ -68,6 +68,9 @@
                         <a v-if="hasRole('user-admin')"
                            class="dropdown-item" :class="{ active: page === 'UserAdmin' }"
                            href="#UserAdmin">Users</a>
+                        <a v-if="hasRole('user-admin')"
+                           class="dropdown-item" :class="{ active: page === 'RoleAdmin' }"
+                           href="#RoleAdmin">Roles</a>
                         <a v-if="hasRole('tracking-admin')"
                            class="dropdown-item" :class="{ active: page === 'TrackingAdmin' }"
                            href="#TrackingAdmin">Tracking</a>

@@ -48,6 +48,7 @@ import GroupAdmin from './pages/GroupAdmin.vue';
 import AppAdmin from './pages/AppAdmin.vue';
 import ServiceAdmin from './pages/ServiceAdmin.vue';
 import UserAdmin from './pages/UserAdmin.vue';
+import RoleAdmin from './pages/RoleAdmin.vue';
 import TrackingAdmin from './pages/TrackingAdmin.vue';
 import WatchlistAdmin from './pages/WatchlistAdmin.vue';
 import SystemSettings from './pages/SystemSettings.vue';
@@ -74,6 +75,7 @@ export default {
         AppAdmin,
         ServiceAdmin,
         UserAdmin,
+        RoleAdmin,
         TrackingAdmin,
         WatchlistAdmin,
         SystemSettings,
@@ -114,6 +116,7 @@ export default {
                 'AppAdmin',
                 'ServiceAdmin',
                 'UserAdmin',
+                'RoleAdmin',
                 'TrackingAdmin',
                 'WatchlistAdmin',
                 'SystemSettings',

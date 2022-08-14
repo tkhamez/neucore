@@ -430,6 +430,7 @@ import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterNameChanges from '../components/CharacterNameChanges.vue';
 import EsiTokens from '../components/EsiTokens.vue';
 import Character from "../classes/Character";
+import Data from "../classes/Data";
 import Player from "../classes/Player";
 
 export default {
@@ -460,24 +461,7 @@ export default {
             eveLogins: null,
 
             playerEditDeactivated: false,
-            availableRoles: [
-                'app-admin',
-                'app-manager',
-                'group-admin',
-                'group-manager',
-                'user-admin',
-                'user-manager',
-                'user-chars',
-                'esi',
-                'service-admin',
-                'statistics',
-                'settings',
-                'tracking',
-                'tracking-admin',
-                'watchlist',
-                'watchlist-manager',
-                'watchlist-admin',
-            ],
+            availableRoles: Data.userRoles,
             autoRoles: [
                 'app-manager',
                 'group-manager',
