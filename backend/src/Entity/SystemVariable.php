@@ -387,16 +387,17 @@ class SystemVariable implements \JsonSerializable
                 break;
             case self::MAIL_INVALID_TOKEN_BODY:
             case self::MAIL_MISSING_CHARACTER_BODY:
+            case self::CUSTOMIZATION_LOGIN_TEXT:
             case self::CUSTOMIZATION_HOME_MARKDOWN:
                 $this->value = $value;
                 break;
             case self::CUSTOMIZATION_HOME_LOGO:
             case self::CUSTOMIZATION_NAV_LOGO:
-                if (preg_match('#^data:image/[a-z]+;base64,[a-zA-Z0-9+/]+={0,2}$#', $value)) {
+                if (preg_match('#^data:image/[a-z]+;base64,[a-zA-Z\d+/]+={0,2}$#', $value)) {
                     $this->value = $value;
                 }
                 break;
-            default:
+            default: // e.g. MAIL_INVALID_TOKEN_SUBJECT
                 $this->value = trim(str_replace(["\r\n", "\n"], ' ', $value));
         }
 

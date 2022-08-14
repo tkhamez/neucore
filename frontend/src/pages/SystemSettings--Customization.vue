@@ -48,16 +48,15 @@
         <span class="form-text">Organization logo used on the home page.</span>
         <hr>
         <label class="col-form-label" for="customizationLoginText">Login Text</label>
-        <input id="customizationLoginText" type="text" class="form-control"
-               v-model="settings.customization_login_text"
-               v-on:input="$emit('changeSettingDelayed', 'customization_login_text', $event.target.value)">
-        <span class="form-text">
-            Optional text below the login button, supports Markdown (see below).
-        </span>
+        <textarea id="customizationLoginText" class="form-control" rows="3"
+                  v-model="settings.customization_login_text"
+               v-on:input="$emit('changeSettingDelayed', 'customization_login_text', $event.target.value)"></textarea>
+        <span class="form-text">Optional text below the login button, supports Markdown (see next field).</span>
         <hr>
         <label for="customizationHomeMarkdown" class="col-form-label">Home Page Text Area</label><br>
-        <textarea v-model="settings.customization_home_markdown" class="form-control"
-                  id="customizationHomeMarkdown" rows="9"></textarea>
+        <textarea id="customizationHomeMarkdown" class="form-control" rows="9"
+                  v-model="settings.customization_home_markdown"
+                  v-on:input="$emit('changeSettingDelayed', 'customization_home_markdown', $event.target.value)"></textarea>
         <span class="form-text">
             Optional text area on the home page. Supports
             <a href="https://markdown-it.github.io/" target="_blank" rel="noopener noreferrer">Markdown</a>,
@@ -79,10 +78,6 @@
             <a href="https://github.com/markdown-it/markdown-it-abbr"
                target="_blank" rel="noopener noreferrer">abbr</a>.
         </span><br>
-        <button class="btn btn-success"
-                v-on:click="$emit(
-                    'changeSetting', 'customization_home_markdown', settings.customization_home_markdown
-                )">save</button>
         <hr>
         <label class="col-form-label" for="customizationFooterText">Footer Text</label>
         <input id="customizationFooterText" type="text" class="form-control"
