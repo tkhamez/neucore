@@ -139,7 +139,7 @@ You can also create the image yourself. Clone the repository and build a distrib
 
 ```shell
 rm -Rf dist/neucore && tar -xf dist/neucore-1.33.0.tar.gz -C dist
-docker build -t neucore .
+docker build --no-cache -t neucore .
 ```
 
 ### Manual Installation
