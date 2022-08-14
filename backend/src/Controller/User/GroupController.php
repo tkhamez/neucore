@@ -1323,11 +1323,11 @@ class GroupController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        if ($onlyIfManager && ! $this->checkManager($this->group) && ! $this->isUserManager()) {
+        if ($onlyIfManager && !$this->checkManager($this->group) && !$this->isUserManager()) {
             return $this->response->withStatus(403);
         }
 
-        if ($type === 'manager' && ! $this->player->hasManagerGroup($this->group)) {
+        if ($type === 'manager' && !$this->player->hasManagerGroup($this->group->getId())) {
             $this->group->addManager($this->player); // needed to persist
             $this->player->addManagerGroup($this->group); // needed for check in syncManagerRole()
             $account->syncManagerRole($this->player, Role::GROUP_MANAGER);

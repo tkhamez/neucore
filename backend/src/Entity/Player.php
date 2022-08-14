@@ -574,11 +574,10 @@ class Player implements \JsonSerializable
         return array_values($this->managerGroups->toArray());
     }
 
-    public function hasManagerGroup(Group $group): bool
+    public function hasManagerGroup(int $groupId): bool
     {
         foreach ($this->getManagerGroups() as $mg) {
-            // name is unique, id could be null, so this is easier
-            if ($mg->getName() === $group->getName()) {
+            if ($mg->getId() === $groupId) {
                 return true;
             }
         }

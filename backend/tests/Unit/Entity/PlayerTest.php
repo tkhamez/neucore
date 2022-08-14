@@ -540,13 +540,18 @@ class PlayerTest extends TestCase
 
     public function testHasManagerGroup()
     {
-        $player = new Player();
         $group1 = (new Group())->setName('g1');
         $group2 = (new Group())->setName('g2');
+        $rp = new \ReflectionProperty(Group::class, 'id');
+        $rp->setAccessible(true);
+        $rp->setValue($group1, 1);
+        $rp->setValue($group2, 2);
+
+        $player = new Player();
         $player->addManagerGroup($group1);
 
-        $this->assertTrue($player->hasManagerGroup($group1));
-        $this->assertFalse($player->hasManagerGroup($group2));
+        $this->assertTrue($player->hasManagerGroup($group1->getId()));
+        $this->assertFalse($player->hasManagerGroup($group2->getId()));
     }
 
     public function testAddGetRemoveManagerApps()
