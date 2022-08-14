@@ -176,10 +176,10 @@ class GroupTest extends TestCase
 
         $group->addRequiredGroup($required1);
         $group->addRequiredGroup($required2);
-        $this->assertSame([$required1], $group->getRequiredGroups());
+        $this->assertSame([$required1, $required2], $group->getRequiredGroups());
 
         $group->removeRequiredGroup($required1);
-        $this->assertSame([], $group->getRequiredGroups());
+        $this->assertSame([$required2], $group->getRequiredGroups());
     }
 
     public function testAddGetRemoveForbiddenGroups()
@@ -192,9 +192,9 @@ class GroupTest extends TestCase
 
         $group->addForbiddenGroup($forbidden1);
         $group->addForbiddenGroup($forbidden2);
-        $this->assertSame([$forbidden1], $group->getForbiddenGroups());
+        $this->assertSame([$forbidden1, $forbidden2], $group->getForbiddenGroups());
 
         $group->removeForbiddenGroup($forbidden1);
-        $this->assertSame([], $group->getForbiddenGroups());
+        $this->assertSame([$forbidden2], $group->getForbiddenGroups());
     }
 }

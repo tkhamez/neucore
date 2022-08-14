@@ -45,10 +45,10 @@ class WatchlistTest extends TestCase
 
         $watchlist->addExemption($p1);
         $watchlist->addExemption($p2);
-        $this->assertSame([$p1], $watchlist->getExemptions());
+        $this->assertSame([$p1, $p2], $watchlist->getExemptions());
 
         $watchlist->removeExemption($p1);
-        $this->assertSame([], $watchlist->getExemptions());
+        $this->assertSame([$p2], $watchlist->getExemptions());
     }
 
     public function testAddGetRemoveCorporation()
@@ -61,10 +61,10 @@ class WatchlistTest extends TestCase
 
         $watchlist->addCorporation($c1);
         $watchlist->addCorporation($c2);
-        $this->assertSame([$c1], $watchlist->getCorporations());
+        $this->assertSame([$c1, $c2], $watchlist->getCorporations());
 
         $watchlist->removeCorporation($c1);
-        $this->assertSame([], $watchlist->getCorporations());
+        $this->assertSame([$c2], $watchlist->getCorporations());
     }
 
     public function testAddGetRemoveAlliance()
@@ -77,10 +77,10 @@ class WatchlistTest extends TestCase
 
         $watchlist->addAlliance($a1);
         $watchlist->addAlliance($a2);
-        $this->assertSame([$a1], $watchlist->getAlliances());
+        $this->assertSame([$a1, $a2], $watchlist->getAlliances());
 
         $watchlist->removeAlliance($a1);
-        $this->assertSame([], $watchlist->getAlliances());
+        $this->assertSame([$a2], $watchlist->getAlliances());
     }
 
     public function testAddGetRemoveGroup()
@@ -93,10 +93,10 @@ class WatchlistTest extends TestCase
 
         $watchlist->addGroup($group1);
         $watchlist->addGroup($group2);
-        $this->assertSame([$group1], $watchlist->getGroups());
+        $this->assertSame([$group1, $group2], $watchlist->getGroups());
 
         $watchlist->removeGroup($group1);
-        $this->assertSame([], $watchlist->getGroups());
+        $this->assertSame([$group2], $watchlist->getGroups());
     }
 
     public function testAddGetRemoveManagerGroup()
@@ -109,10 +109,10 @@ class WatchlistTest extends TestCase
 
         $watchlist->addManagerGroup($group1);
         $watchlist->addManagerGroup($group2);
-        $this->assertSame([$group1], $watchlist->getManagerGroups());
+        $this->assertSame([$group1, $group2], $watchlist->getManagerGroups());
 
         $watchlist->removeManagerGroup($group1);
-        $this->assertSame([], $watchlist->getManagerGroups());
+        $this->assertSame([$group2], $watchlist->getManagerGroups());
     }
 
     public function testAddGetRemoveKicklistCorporation()
@@ -125,10 +125,10 @@ class WatchlistTest extends TestCase
 
         $watchlist->addKicklistCorporation($e1);
         $watchlist->addKicklistCorporation($e2);
-        $this->assertSame([$e1], $watchlist->getKicklistCorporations());
+        $this->assertSame([$e1, $e2], $watchlist->getKicklistCorporations());
 
         $watchlist->removeKicklistCorporation($e1);
-        $this->assertSame([], $watchlist->getKicklistCorporations());
+        $this->assertSame([$e2], $watchlist->getKicklistCorporations());
     }
 
     public function testAddGetRemoveKicklistAlliance()
@@ -141,10 +141,10 @@ class WatchlistTest extends TestCase
 
         $watchlist->addKicklistAlliance($e1);
         $watchlist->addKicklistAlliance($e2);
-        $this->assertSame([$e1], $watchlist->getKicklistAlliances());
+        $this->assertSame([$e1, $e2], $watchlist->getKicklistAlliances());
 
         $watchlist->removeKicklistAlliance($e1);
-        $this->assertSame([], $watchlist->getKicklistAlliances());
+        $this->assertSame([$e2], $watchlist->getKicklistAlliances());
     }
 
     public function testAddGetRemoveAllowlistCorporation()
@@ -157,10 +157,10 @@ class WatchlistTest extends TestCase
 
         $watchlist->addAllowlistCorporation($e1);
         $watchlist->addAllowlistCorporation($e2);
-        $this->assertSame([$e1], $watchlist->getAllowlistCorporations());
+        $this->assertSame([$e1, $e2], $watchlist->getAllowlistCorporations());
 
         $watchlist->removeAllowlistCorporation($e1);
-        $this->assertSame([], $watchlist->getAllowlistCorporations());
+        $this->assertSame([$e2], $watchlist->getAllowlistCorporations());
         $this->assertFalse($e1->getAutoAllowlist());
     }
 
@@ -174,9 +174,9 @@ class WatchlistTest extends TestCase
 
         $watchlist->addAllowlistAlliance($e1);
         $watchlist->addAllowlistAlliance($e2);
-        $this->assertSame([$e1], $watchlist->getAllowlistAlliances());
+        $this->assertSame([$e1, $e2], $watchlist->getAllowlistAlliances());
 
         $watchlist->removeAllowlistAlliance($e1);
-        $this->assertSame([], $watchlist->getAllowlistAlliances());
+        $this->assertSame([$e2], $watchlist->getAllowlistAlliances());
     }
 }

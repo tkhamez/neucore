@@ -137,12 +137,9 @@ class Group implements \JsonSerializable
     private $forbiddenGroups;
 
     /**
-     * Contains only information that is of interest for clients.
-     *
-     * {@inheritDoc}
-     * @see \JsonSerializable::jsonSerialize(): array
+     * Contains only information that is of interest to clients.
      */
-    public function jsonSerialize(bool $includeRequiredGroups = false): array
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,
@@ -365,7 +362,7 @@ class Group implements \JsonSerializable
     public function addRequiredGroup(Group $requiredGroup): self
     {
         foreach ($this->getRequiredGroups() as $entity) {
-            if ($entity->getId() === $requiredGroup->getId()) {
+            if ($requiredGroup->getId() && $entity->getId() === $requiredGroup->getId()) {
                 return $this;
             }
         }
@@ -395,7 +392,7 @@ class Group implements \JsonSerializable
     public function addForbiddenGroup(Group $forbiddenGroups): self
     {
         foreach ($this->getForbiddenGroups() as $entity) {
-            if ($entity->getId() === $forbiddenGroups->getId()) {
+            if ($forbiddenGroups->getId() && $entity->getId() === $forbiddenGroups->getId()) {
                 return $this;
             }
         }

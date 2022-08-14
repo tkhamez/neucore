@@ -179,7 +179,7 @@ class Watchlist implements \JsonSerializable
     public function addExemption(Player $exemption): Watchlist
     {
         foreach ($this->getExemptions() as $entity) {
-            if ($entity->getId() === $exemption->getId()) {
+            if ($exemption->getId() && $entity->getId() === $exemption->getId()) {
                 return $this;
             }
         }
@@ -204,7 +204,7 @@ class Watchlist implements \JsonSerializable
     public function addCorporation(Corporation $corporation): Watchlist
     {
         foreach ($this->getCorporations() as $entity) {
-            if ($entity->getId() === $corporation->getId()) {
+            if ($corporation->getId() && $entity->getId() === $corporation->getId()) {
                 return $this;
             }
         }
@@ -229,7 +229,7 @@ class Watchlist implements \JsonSerializable
     public function addAlliance(Alliance $alliance): Watchlist
     {
         foreach ($this->getAlliances() as $entity) {
-            if ($entity->getId() === $alliance->getId()) {
+            if ($alliance->getId() && $entity->getId() === $alliance->getId()) {
                 return $this;
             }
         }
@@ -254,7 +254,7 @@ class Watchlist implements \JsonSerializable
     public function addGroup(Group $group): Watchlist
     {
         foreach ($this->getGroups() as $entity) {
-            if ($entity->getId() === $group->getId()) {
+            if ($group->getId() && $entity->getId() === $group->getId()) {
                 return $this;
             }
         }
@@ -279,7 +279,7 @@ class Watchlist implements \JsonSerializable
     public function addManagerGroup(Group $group): Watchlist
     {
         foreach ($this->getManagerGroups() as $entity) {
-            if ($entity->getId() === $group->getId()) {
+            if ($group->getId() && $entity->getId() === $group->getId()) {
                 return $this;
             }
         }
@@ -304,7 +304,7 @@ class Watchlist implements \JsonSerializable
     public function addKicklistCorporation(Corporation $kicklistCorporation): self
     {
         foreach ($this->getKicklistCorporations() as $entity) {
-            if ($entity->getId() === $kicklistCorporation->getId()) {
+            if ($kicklistCorporation->getId() && $entity->getId() === $kicklistCorporation->getId()) {
                 return $this;
             }
         }
@@ -333,7 +333,7 @@ class Watchlist implements \JsonSerializable
     public function addKicklistAlliance(Alliance $kicklistAlliance): self
     {
         foreach ($this->getKicklistAlliances() as $entity) {
-            if ($entity->getId() === $kicklistAlliance->getId()) {
+            if ($kicklistAlliance->getId() && $entity->getId() === $kicklistAlliance->getId()) {
                 return $this;
             }
         }
@@ -361,7 +361,7 @@ class Watchlist implements \JsonSerializable
     public function addAllowlistCorporation(Corporation $allowlistCorporation): self
     {
         foreach ($this->getAllowlistCorporations() as $entity) {
-            if ($entity->getId() === $allowlistCorporation->getId()) {
+            if ($allowlistCorporation->getId() && $entity->getId() === $allowlistCorporation->getId()) {
                 return $this;
             }
         }
@@ -391,7 +391,7 @@ class Watchlist implements \JsonSerializable
     public function addAllowlistAlliance(Alliance $allowlistAlliance): self
     {
         foreach ($this->getAllowlistAlliances() as $entity) {
-            if ($entity->getId() === $allowlistAlliance->getId()) {
+            if ($allowlistAlliance->getId() && $entity->getId() === $allowlistAlliance->getId()) {
                 return $this;
             }
         }
