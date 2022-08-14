@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+DD MM YYYY
+
+- The link on the login page has been changed to the new SSO article.
+
 ## 1.33.3
 
 19 Jul 2022
