@@ -75,9 +75,8 @@
                         <tr>
                             <td v-if="hasProperty('username')">{{ account.username }}</td>
                             <td v-if="hasProperty('name')">{{ account.name }}</td>
-                            <td v-if="hasProperty('password') && service.configuration.showPassword">
-                                <span>{{ account.password }}</span>
-                            </td>
+                            <td v-if="hasProperty('password') &&
+                                      service.configuration.showPassword">{{ account.password }}</td>
                             <td v-if="hasProperty('email')">{{ account.email }}</td>
                             <td v-if="hasProperty('status')">{{ account.status }}</td>
                             <td v-if="service.configuration.URLs.length > 0">

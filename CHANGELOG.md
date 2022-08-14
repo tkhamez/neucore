@@ -5,6 +5,8 @@
 DD MM YYYY
 
 - The link on the login page has been changed to the new SSO article.
+- Service plugin page: The HTML around the password has been changed so that it does not contain spaces at the 
+  beginning or end when copied in some browsers.
 
 ## 1.33.3
 
