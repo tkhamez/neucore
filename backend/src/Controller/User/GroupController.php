@@ -727,7 +727,7 @@ class GroupController extends BaseController
 
         $this->group->addRequiredGroup($requiredGroup);
 
-        return $this->flushAndReturn(204, $this->group);
+        return $this->flushAndReturn(204);
     }
 
     /**
@@ -777,7 +777,7 @@ class GroupController extends BaseController
 
         $this->group->removeRequiredGroup($requiredGroup);
 
-        return $this->flushAndReturn(204, $this->group);
+        return $this->flushAndReturn(204);
     }
 
     /**
@@ -867,7 +867,7 @@ class GroupController extends BaseController
 
         $this->group->addForbiddenGroup($forbiddenGroup);
 
-        return $this->flushAndReturn(204, $this->group);
+        return $this->flushAndReturn(204);
     }
 
     /**
@@ -917,7 +917,7 @@ class GroupController extends BaseController
 
         $this->group->removeForbiddenGroup($forbiddenGroup);
 
-        return $this->flushAndReturn(204, $this->group);
+        return $this->flushAndReturn(204);
     }
 
     /**
