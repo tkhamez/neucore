@@ -161,7 +161,8 @@ To run the application:
     is a [.htaccess](../web/.htaccess) file in the `web` directory for Apache.
   * A sample [Nginx configuration](docker-nginx.conf) file can be found in the `doc` directory.
 
-Additionally, to build the application:
+Additionally, for a development environment and to build the application:
+* PHP extensions: ast (optional for phan), pdo_sqlite (optional for unit tests), xdebug (optional for debugging)
 * Composer 2.
 * Node.js, only tested with version 16.15.1 with npm 8.11.0.
 * Java runtime >=8 (but only tested with v11, v17) to generate the OpenAPI JavaScript client.

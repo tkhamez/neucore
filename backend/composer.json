@@ -55,10 +55,7 @@
     },
     "suggest": {
         "ext-apcu": "*",
-        "ext-ast": "*",
         "ext-bcmath": "*",
-        "ext-pdo_sqlite": "*",
-        "ext-xdebug": "*",
         "ext-zend-opcache": "*"
     },
     "autoload": {
