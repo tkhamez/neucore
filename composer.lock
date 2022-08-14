@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "51983117e1519f90cc0bb9e159352019",
+    "content-hash": "c92954231cac18bf293b57e7cc1b1f1a",
     "packages": [],
     "packages-dev": [],
     "aliases": [],
@@ -15,19 +15,21 @@
     "platform": {
         "php": "^8.0",
         "ext-apcu": "*",
+        "ext-bcmath": "*",
         "ext-curl": "*",
         "ext-dom": "*",
         "ext-gmp": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
         "ext-json": "*",
+        "ext-libxml": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
         "ext-pdo": "*",
         "ext-pdo_mysql": "*",
-        "ext-phar": "*",
-        "ext-tokenizer": "*",
-        "ext-zend-opcache": "*"
+        "ext-simplexml": "*",
+        "ext-zend-opcache": "*",
+        "ext-zlib": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.1.0"

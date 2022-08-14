@@ -6,10 +6,18 @@
     "require": {
         "php-64bit": "^7.4|^8.0",
         "ext-curl": "*",
+        "ext-dom": "*",
+        "ext-gmp": "*",
         "ext-iconv": "*",
+        "ext-intl": "*",
         "ext-json": "*",
+        "ext-libxml": "*",
         "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "ext-pdo": "*",
         "ext-pdo_mysql": "*",
+        "ext-simplexml": "*",
+        "ext-zlib": "*",
         "doctrine/cache": "^2.2",
         "doctrine/common": "^3.3",
         "doctrine/deprecations": "^1.0",
@@ -48,8 +56,7 @@
     "suggest": {
         "ext-apcu": "*",
         "ext-ast": "*",
-        "ext-gmp": "*",
-        "ext-intl": "*",
+        "ext-bcmath": "*",
         "ext-pdo_sqlite": "*",
         "ext-xdebug": "*",
         "ext-zend-opcache": "*"

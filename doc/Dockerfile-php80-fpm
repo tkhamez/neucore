@@ -6,15 +6,16 @@ RUN mkdir -p /usr/src/php/ext/ast && \
     curl -fsSL https://pecl.php.net/get/ast-1.0.16.tgz | tar xvz -C "/usr/src/php/ext/ast" --strip 1
 RUN mkdir -p /usr/src/php/ext/xdebug && \
     curl -fsSL https://pecl.php.net/get/xdebug-3.1.1.tgz | tar xvz -C "/usr/src/php/ext/xdebug" --strip 1
-RUN docker-php-ext-install pdo_mysql mysqli gmp zip intl ast apcu xdebug opcache
+RUN docker-php-ext-install pdo_mysql mysqli bcmath gmp zip intl ast apcu xdebug opcache
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_HOME /app/.composer
-RUN echo "memory_limit=256M"                                 > /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
-    echo "display_errors=Off"                               >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
-    echo "error_log=/app/backend/var/logs/error.log"        >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
-    echo "log_errors=On"                                    >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
-    echo "xdebug.mode=develop,coverage,profile,debug,trace" >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
-    echo "xdebug.output_dir=/app/backend/var/xdebug"        >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
-    echo "xdebug.start_with_request=trigger"                >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
-    echo "xdebug.client_host=172.17.0.1"                    >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
-    echo "apc.enable_cli=1"                                 >> /usr/local/etc/php/conf.d/docker-php-neucore.ini
+RUN echo "memory_limit = 256M"                                 > /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
+    echo "display_errors = Off"                               >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
+    echo "error_log = /app/backend/var/logs/error.log"        >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
+    echo "log_errors = On"                                    >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
+    echo "xdebug.mode = develop,coverage,profile,debug,trace" >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
+    echo "xdebug.output_dir = /app/backend/var/xdebug"        >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
+    echo "xdebug.start_with_request = trigger"                >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
+    echo "xdebug.client_host = 172.17.0.1"                    >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
+    echo "xdebug.max_nesting_level = 1024"                    >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
+    echo "apc.enable_cli = 1"                                 >> /usr/local/etc/php/conf.d/docker-php-neucore.ini
