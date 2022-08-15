@@ -243,6 +243,7 @@ You can deploy the application on a free [Heroku](https://www.heroku.com) accoun
 - Add a compatible database, e.g. JawsDB Maria.
 - Add the necessary config vars (see `backend/.env.dist` file) and set the following:
   - NEUCORE_LOG_PATH=php://stderr
+  - NEUCORE_CACHE_DIR=/tmp
 - Add build packs in this order:
 
 ```

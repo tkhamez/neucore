@@ -169,12 +169,6 @@ class Application
         /** @noinspection PhpIncludeInspection */
         $settings = require self::ROOT_DIR . '/config/settings.php';
 
-        if (getenv('PATH') !== false && strpos(getenv('PATH'), '/app/.heroku/php/') !== false) {
-            /** @noinspection PhpIncludeInspection */
-            $heroku = require self::ROOT_DIR . '/config/settings_heroku.php';
-            $settings = array_replace_recursive($settings, $heroku);
-        }
-
         if ($this->env === self::ENV_DEV) {
             /** @noinspection PhpIncludeInspection */
             $dev = require self::ROOT_DIR . '/config/settings_dev.php';
