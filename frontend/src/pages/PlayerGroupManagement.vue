@@ -5,7 +5,6 @@
                 <h1>Player Groups Management</h1>
                 <p class="mb-0">
                     Login URL:
-                    <!--suppress JSUnresolvedVariable -->
                     <a :href="`${httpBaseUrl}/login/${loginNames.managed}`">
                         {{ httpBaseUrl }}/login/{{ loginNames.managed }}
                     </a>
@@ -102,6 +101,7 @@
 
 <script>
 import { PlayerApi }   from 'neucore-js-client';
+import Data            from "../classes/Data";
 import Admin           from '../components/EntityRelationEdit.vue';
 import CharacterSearch from '../components/CharacterSearch.vue';
 
@@ -119,6 +119,7 @@ export default {
 
     data: function() {
         return {
+            loginNames: Data.loginNames,
             players: [],
             playerId: null, // current player
             playerData: null, // current player

@@ -15,7 +15,6 @@
                         again to create a new token.
                     </p>
                     <p class="align-center">
-                        <!--suppress JSUnresolvedVariable -->
                         <a :href="`${loginHost}/login/${loginNames.default}`">
                             <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online">
                         </a>
@@ -76,6 +75,7 @@
 
 <script>
 import {Modal} from "bootstrap";
+import Data from "../classes/Data";
 
 export default {
     props: {
@@ -85,6 +85,7 @@ export default {
 
     data () {
         return {
+            loginNames: Data.loginNames,
             character: null,
             showInvalid: false,
             loginHost: '',

@@ -225,6 +225,7 @@ import {
     SettingsApi,
     WatchlistApi
 } from 'neucore-js-client';
+import Data from '../classes/Data';
 import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterResult from '../components/CharacterResult.vue';
 
@@ -441,7 +442,7 @@ export default {
                 }
                 if (vm.contentType === 'eveLogins') {
                     for (let i = 0; i < data.length; i++) {
-                        if (data[i].name === vm.loginNames.default) {
+                        if (data[i].name === Data.loginNames.default) {
                             data.splice(i, 1);
                         }
                     }
@@ -769,7 +770,7 @@ export default {
 function callApi(vm, api, method, param1, param2, callback) {
     api[method].apply(api, [param1, param2, function(error, data, response) {
         if (vm.type === 'Player' && method === 'addMember' && response.statusCode === 400) {
-            vm.message(vm.messages.errorRequiredForbiddenGroup, 'warning');
+            vm.message(Data.messages.errorRequiredForbiddenGroup, 'warning');
         }
         if (error) { // 403 usually
             return;

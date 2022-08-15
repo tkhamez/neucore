@@ -51,7 +51,8 @@
 </template>
 
 <script>
-import { SettingsApi } from 'neucore-js-client';
+import {SettingsApi} from 'neucore-js-client';
+import Data from "../classes/Data";
 
 export default {
     props: {
@@ -69,7 +70,7 @@ export default {
         readSettings(this);
 
         // login URL for director chars
-        this.loginUrlDirector = `${this.$root.envVars.backendHost}/login/${this.loginNames.director}`
+        this.loginUrlDirector = `${this.$root.envVars.backendHost}/login/${Data.loginNames.director}`
     },
 
     watch: {

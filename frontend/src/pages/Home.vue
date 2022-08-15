@@ -78,7 +78,6 @@
     <div v-cloak v-if="!authChar" class="mt-3">
         <title-logo :settings="settings"></title-logo>
         <p>Click the button below to login through <em>EVE Online SSO</em>.</p>
-        <!--suppress JSUnresolvedVariable -->
         <a :href="`${loginHost}/login/${loginNames.default}${redirectQuery}`">
             <img src="../assets/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
         </a>
@@ -98,7 +97,6 @@
             <title-logo :settings="settings"></title-logo>
             <p>Add your other characters by logging in with EVE SSO.</p>
             <p>
-                <!--suppress JSUnresolvedVariable -->
                 <a :href="`${loginHost}/login/${loginNames.default}`">
                     <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online"
                          title="Login to add another character.">
@@ -171,7 +169,6 @@
                                 >
                                     ESI tokens
                                 </a>
-                                <!--suppress JSUnresolvedVariable -->
                                 <a v-if="char.validToken === false" :href="`${loginHost}/login/${loginNames.default}`"
                                    class="char-login-button" :title="`Login in with: ${char.name}`">
                                     <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
@@ -220,6 +217,7 @@ import mdIns from 'markdown-it-ins';
 import mdAbbr from 'markdown-it-abbr';
 import mdMark from 'markdown-it-mark';
 import mdAttrs from 'markdown-it-attrs';
+import Data from "../classes/Data";
 import Character from "../classes/Character";
 import TitleLogo from './Home--title-logo.vue';
 import EsiTokens from "../components/EsiTokens.vue";
@@ -239,6 +237,7 @@ export default {
 
     data: function() {
         return {
+            loginNames: Data.loginNames,
             deactivated: false,
             charToDelete: null,
             markdownHtml: '',

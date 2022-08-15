@@ -91,6 +91,7 @@ import _ from 'lodash';
 import $ from 'jquery';
 import Multiselect from '@suadelabs/vue3-multiselect';
 import {ESIApi, CharacterApi, SettingsApi} from 'neucore-js-client';
+import Data from "../classes/Data";
 
 export default {
     components: {
@@ -197,7 +198,7 @@ function getEveLogin(vm) {
             return;
         }
         vm.eveLogins = data;
-        vm.selectedLoginName = vm.loginNames.default;
+        vm.selectedLoginName = Data.loginNames.default;
     });
 }
 

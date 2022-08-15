@@ -134,6 +134,7 @@
 
 <script>
 import {ServiceApi} from "neucore-js-client";
+import Util from "../classes/Util";
 
 export default {
     props: {
@@ -162,8 +163,8 @@ export default {
         getData(this);
 
         // Message from redirect
-        const message = this.getHashParameter('message');
-        this.removeHashParameter('message');
+        const message = Util.getHashParameter('message');
+        Util.removeHashParameter('message');
         if (message) {
             this.message(message);
         }

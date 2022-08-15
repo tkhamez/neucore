@@ -113,6 +113,7 @@ Modal windows to create, delete and edit entities
 <script>
 import {Modal} from 'bootstrap';
 import {GroupApi} from 'neucore-js-client';
+import Data from '../classes/Data';
 
 export default {
     props: {
@@ -124,6 +125,7 @@ export default {
 
     data: function() {
         return {
+            messages: Data.messages,
             newName: '',
             groupVisibility: '',
             groupAutoAccept: '',

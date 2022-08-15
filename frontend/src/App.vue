@@ -36,6 +36,7 @@
 <script>
 import { ApiClient, AuthApi, CharacterApi, PlayerApi, SettingsApi } from 'neucore-js-client';
 import superAgentPlugin from './superagent-plugin.js';
+import Util from "./classes/Util";
 import NavBar from './components/NavBar.vue';
 import CharactersModal from './components/Characters.vue';
 import Home from './pages/Home.vue';
@@ -171,8 +172,8 @@ export default {
         ApiClient.instance.plugins = [superAgentPlugin(this, setCsrfHeader)];
 
         // Store redirect param from login
-        this.loginRedirect = this.getHashParameter('redirect', '');
-        this.removeHashParameter('redirect');
+        this.loginRedirect = Util.getHashParameter('redirect', '');
+        Util.removeHashParameter('redirect');
 
         // initial route
         this.updateRoute();

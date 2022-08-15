@@ -3,7 +3,6 @@
     <div class="card-header"><h6>Sender</h6></div>
     <div class="card-body">
         <span v-if="settings.mail_character === ''">
-            <!--suppress JSUnresolvedVariable -->
             <a :href="`${loginHost}/login/${loginNames.mail}`">
                 <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online">
             </a>
@@ -112,6 +111,7 @@
 <script>
 import Multiselect from '@suadelabs/vue3-multiselect';
 import {CorporationApi, SettingsApi} from 'neucore-js-client';
+import Data from "../classes/Data";
 
 export default {
     components: {
@@ -126,6 +126,7 @@ export default {
 
     data () {
         return {
+            loginNames: Data.loginNames,
             loginHost: '',
             allAlliancesLoaded: false,
             allCorporationsLoaded: false,

@@ -53,10 +53,7 @@
                                    v-model="activeLogin.name" maxlength="20">
                         </label>
                         <p class="text-muted small lh-sm">
-                            {{
-                                // noinspection JSUnresolvedVariable
-                                messages.itemNameAllowedCharsHelp
-                            }}<br>
+                            {{ messages.itemNameAllowedCharsHelp }}<br>
                             Maximum length 20.
                         </p>
                         <label class="col-form-label w-100">
@@ -101,6 +98,7 @@
 import $ from "jquery";
 import {SettingsApi} from "neucore-js-client";
 import Multiselect from '@suadelabs/vue3-multiselect';
+import Data from '../classes/Data';
 import Edit from '../components/EntityEdit.vue';
 
 export default {
@@ -115,6 +113,7 @@ export default {
 
     data: function() {
         return {
+            messages: Data.messages,
             logins: [],
             protectedLoginsPrefix: 'core.',
             activeLogin: null,

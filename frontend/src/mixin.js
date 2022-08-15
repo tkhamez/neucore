@@ -2,47 +2,6 @@
 import portrait from './assets/portrait_32.jpg';
 
 export default {
-    data: function () {
-        return {
-            themes: [
-                'Basic',
-                'Cerulean',
-                'Cosmo',
-                'Cyborg',
-                'Darkly',
-                'Flatly',
-                'Journal',
-                'Litera',
-                'Lumen',
-                'Lux',
-                'Materia',
-                'Minty',
-                'Pulse',
-                'Sandstone',
-                'Simplex',
-                'Sketchy',
-                'Slate',
-                'Solar',
-                'Spacelab',
-                'Superhero',
-                'United',
-                'Yeti',
-            ],
-
-            messages: {
-                errorRequiredForbiddenGroup: 'This player is not a member of any of the required groups or a member' +
-                    ' of one of the forbidden groups.',
-                itemNameAllowedCharsHelp: 'Allowed characters (no spaces): A-Z a-z 0-9 - . _',
-            },
-
-            loginNames: {
-                default:    'core.default',
-                managed:    'core.managed',
-                mail:       'core.mail',
-                director:   'core.director',
-            }
-        }
-    },
 
     methods: {
         ajaxLoading: function(status) {
@@ -51,48 +10,6 @@ export default {
             } else {
                 this.$root.loadingCount --;
             }
-        },
-
-        /**
-         * @param {string} name
-         * @param {string|null} [defaultValue]
-         * @returns {string|null}
-         */
-        getHashParameter: function(name, defaultValue = null) {
-            const parts = window.location.hash.substring(1).split('?');
-            if (parts.length < 2) {
-                return defaultValue;
-            }
-            const parameters = parts[1].split('&');
-            for (const parameter of parameters) {
-                const parameterParts = parameter.split('=');
-                if (parameterParts[0] === name) {
-                    if (!parameterParts[1]) {
-                        return '';
-                    }
-                    return decodeURIComponent(parameterParts[1]);
-                }
-            }
-            return defaultValue;
-        },
-
-        /**
-         * @param {string} name
-         */
-        removeHashParameter: function(name) {
-            const parts = window.location.hash.substring(1).split('?');
-            if (parts.length < 2) {
-                return null;
-            }
-            const remainingVariables = [];
-            const parameters = parts[1].split('&');
-            for (const parameter of parameters) {
-                const parameterParts = parameter.split('=');
-                if (parameterParts[0] !== name) {
-                    remainingVariables.push(parameter);
-                }
-            }
-            window.location.hash = `${parts[0]}?${remainingVariables.join('&')}`;
         },
 
         /**

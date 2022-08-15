@@ -136,6 +136,7 @@
 
 <script>
 import $ from 'jquery';
+import Data from '../classes/Data';
 import {Collapse, Dropdown} from 'bootstrap';
 
 export default {
@@ -154,6 +155,7 @@ export default {
             ],
             memberDataPages: ['Tracking', 'Watchlist', 'Esi', 'Characters'],
             page: '',
+            themes: Data.themes,
             selectedTheme: '',
         }
     },

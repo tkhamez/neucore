@@ -162,6 +162,7 @@
 
 <script>
 import { GroupApi } from 'neucore-js-client';
+import Data from '../classes/Data';
 import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterResult from '../components/CharacterResult.vue';
 
@@ -250,7 +251,7 @@ export default {
             const vm = this;
             new GroupApi().addMember(this.groupId, playerId, function(error, data, response) {
                 if (response.statusCode === 400) {
-                    vm.message(vm.messages.errorRequiredForbiddenGroup, 'warning');
+                    vm.message(Data.messages.errorRequiredForbiddenGroup, 'warning');
                 }
                 addRemoveResult(vm, playerId, error);
             });
