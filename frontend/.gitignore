@@ -1,7 +1,6 @@
 /neucore-js-client
 /node_modules
 /openapi-generator-cli-*.jar
-/dist
 
 # local env files
 .env.local

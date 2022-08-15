@@ -245,12 +245,11 @@ You can deploy the application on a free [Heroku](https://www.heroku.com) accoun
   - NEUCORE_LOG_PATH=php://stderr
   - NEUCORE_CACHE_DIR=/tmp
 - Add build packs in this order:
-
-```
-heroku buildpacks:add heroku/java
-heroku buildpacks:add heroku/nodejs
-heroku buildpacks:add heroku/php
-```
+  ```
+  heroku buildpacks:add heroku/java
+  heroku buildpacks:add heroku/nodejs
+  heroku buildpacks:add heroku/php
+  ```
 
 ### Deploy on AWS Beanstalk
 

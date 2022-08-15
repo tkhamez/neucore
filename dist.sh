@@ -9,10 +9,10 @@ mkdir -p dist
 rm -Rf dist/*
 
 git checkout-index -a -f --prefix=./dist/build/
-if [[ -f backend/.env ]]; then
-    # database connection parameters are required to generate the doctrine proxy classes
-    cp backend/.env dist/build/backend/.env
-fi
+
+# A minimum configuration is required to generate the doctrine proxy classes
+echo "NEUCORE_APP_ENV=prod"                                                          > dist/build/backend/.env
+echo "NEUCORE_DATABASE_URL=mysql://user:@127.0.0.1/db?serverVersion=mariadb-10.2.7" >> dist/build/backend/.env
 
 cd dist/build/backend || exit
 composer install --no-dev --optimize-autoloader --no-interaction
