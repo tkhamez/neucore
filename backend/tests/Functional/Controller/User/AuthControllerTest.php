@@ -383,7 +383,7 @@ class AuthControllerTest extends WebTestCase
             null,
             null,
             [ClientInterface::class => $this->client, LoggerInterface::class => $this->log],
-            ['NEUCORE_EVE_SCOPES=read-this', 'NEUCORE_EVE_DATASOURCE=tranquility']
+            [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']]
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -423,7 +423,7 @@ class AuthControllerTest extends WebTestCase
             null,
             null,
             [ClientInterface::class => $this->client],
-            ['NEUCORE_EVE_SCOPES=read-this   and-this', 'NEUCORE_EVE_DATASOURCE=tranquility']
+            [['NEUCORE_EVE_SCOPES', 'read-this   and-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']]
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -457,7 +457,7 @@ class AuthControllerTest extends WebTestCase
                 ClientInterface::class => $this->client,
                 LoggerInterface::class => $this->log,
             ],
-            ['NEUCORE_EVE_SCOPES=read-this', 'NEUCORE_EVE_DATASOURCE=tranquility']
+            [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']]
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -497,7 +497,7 @@ class AuthControllerTest extends WebTestCase
             null,
             null,
             [ClientInterface::class => $this->client],
-            ['NEUCORE_EVE_SCOPES=read-this', 'NEUCORE_EVE_DATASOURCE=tranquility']
+            [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']]
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -538,7 +538,7 @@ class AuthControllerTest extends WebTestCase
             null,
             null,
             [ClientInterface::class => $this->client, LoggerInterface::class => $this->log],
-            ['NEUCORE_EVE_SCOPES=read-this', 'NEUCORE_EVE_DATASOURCE=tranquility']
+            [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']]
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -578,7 +578,7 @@ class AuthControllerTest extends WebTestCase
             null,
             null,
             [ClientInterface::class => $this->client],
-            ['NEUCORE_EVE_DATASOURCE=tranquility']
+            [['NEUCORE_EVE_DATASOURCE', 'tranquility']]
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -617,7 +617,7 @@ class AuthControllerTest extends WebTestCase
             null,
             null,
             [ClientInterface::class => $this->client],
-            ['NEUCORE_EVE_DATASOURCE=tranquility']
+            [['NEUCORE_EVE_DATASOURCE', 'tranquility']]
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -648,7 +648,7 @@ class AuthControllerTest extends WebTestCase
             null,
             null,
             [ClientInterface::class => $this->client],
-            ['NEUCORE_EVE_DATASOURCE=tranquility']
+            [['NEUCORE_EVE_DATASOURCE', 'tranquility']]
         );
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(
@@ -692,7 +692,7 @@ class AuthControllerTest extends WebTestCase
             null,
             null,
             [ClientInterface::class => $this->client],
-            ['NEUCORE_EVE_DATASOURCE=tranquility']
+            [['NEUCORE_EVE_DATASOURCE', 'tranquility']]
         );
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(

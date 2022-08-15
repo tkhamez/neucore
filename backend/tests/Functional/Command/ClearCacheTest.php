@@ -10,7 +10,7 @@ class ClearCacheTest extends ConsoleTestCase
 {
     protected function tearDown(): void
     {
-        putenv('NEUCORE_CACHE_DIR=');
+        unset($_ENV['NEUCORE_CACHE_DIR']);
     }
 
     public function testExecute()
@@ -33,7 +33,7 @@ class ClearCacheTest extends ConsoleTestCase
         touch($cacheDir . '/http/dc/5b656339383535321313437375d5b315d.doctrinecache.data');
 
         // this test cannot run in prod mode because the CompiledContainer class is missing otherwise
-        $output = $this->runConsoleApp('clear-cache', [], [], ['NEUCORE_CACHE_DIR=' . $cacheDir], true);
+        $output = $this->runConsoleApp('clear-cache', [], [], [['NEUCORE_CACHE_DIR', $cacheDir]], true);
         $actual = explode("\n", $output);
 
         $this->assertStringStartsWith(

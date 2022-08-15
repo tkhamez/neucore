@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class ConfigTest extends TestCase
 {
-    private $config;
+    private Config $config;
 
     protected function setUp(): void
     {
@@ -20,16 +20,18 @@ class ConfigTest extends TestCase
             'envVars' => [
                 'one' => 'One ${CONFIG_TEST_ONE}.',
                 'two' => '${CONFIG_TEST_TWO}',
-                'three' => '${CONFIG_TEST_THREE}'
+                'three' => '${CONFIG_TEST_THREE}',
+                'four' => '${NEUCORE_TEST_FOUR}',
             ],
         ]);
     }
 
     public function testReplaceEnvVars()
     {
-        putenv("CONFIG_TEST_ONE=env-value");
+        $_ENV['CONFIG_TEST_ONE'] = 'env-value';
+        $_ENV['BRAVECORE_TEST_FOUR'] = '4';
         $this->assertSame(
-            ['one' => 'One env-value.', 'two' => '', 'three' => 'default'],
+            ['one' => 'One env-value.', 'two' => '', 'three' => 'default', 'four' => '4'],
             $this->config['envVars']
         );
     }

@@ -69,7 +69,7 @@ class Config implements \ArrayAccess
             return $value;
         }
 
-        if (preg_match('/\${([A-Z0-9_]+)}/', (string) $value, $matches)) {
+        if (preg_match('/\${([A-Z\d_]+)}/', (string) $value, $matches)) {
             $value = str_replace('${' . $matches[1] . '}', $this->getEnv($matches[1]), $value);
         }
 
@@ -78,9 +78,9 @@ class Config implements \ArrayAccess
 
     private function getEnv(string $name): string
     {
-        $value = getenv($name);
-        if ($value === false) {
-            $value = getenv(str_replace('NEUCORE_', 'BRAVECORE_', $name));
+        $value = $_ENV[$name] ?? null;
+        if ($value === null) {
+            $value = $_ENV[(str_replace('NEUCORE_', 'BRAVECORE_', $name))] ?? null;
         }
 
         if ((string) $value === '' && isset($this->config['env_var_defaults'][$name])) {

@@ -29,35 +29,17 @@ use Tests\WriteErrorListener;
 
 class SettingsControllerTest extends WebTestCase
 {
-    /**
-     * @var WriteErrorListener
-     */
-    private static $writeErrorListener;
+    private static WriteErrorListener $writeErrorListener;
 
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
+    private EntityManagerInterface $em;
 
-    /**
-     * @var SystemVariableRepository
-     */
-    private $systemVariableRepository;
+    private SystemVariableRepository $systemVariableRepository;
 
-    /**
-     * @var Service
-     */
-    private $service1;
+    private Service $service1;
 
-    /**
-     * @var Service
-     */
-    private $service2;
+    private Service $service2;
 
     public static function setupBeforeClass(): void
     {
@@ -88,7 +70,7 @@ class SettingsControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
-            ['name' => 'esiDataSource', 'value' => getenv('NEUCORE_EVE_DATASOURCE') ?: 'tranquility'],
+            ['name' => 'esiDataSource', 'value' => $_ENV['NEUCORE_EVE_DATASOURCE'] ?? 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
             ['name' => 'navigationShowGroups', 'value' => '0'],
             ['name' => 'navigationServices', 'value' => \json_encode([])],
@@ -104,7 +86,7 @@ class SettingsControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
-            ['name' => 'esiDataSource', 'value' => getenv('NEUCORE_EVE_DATASOURCE') ?: 'tranquility'],
+            ['name' => 'esiDataSource', 'value' => $_ENV['NEUCORE_EVE_DATASOURCE'] ?? 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
             ['name' => 'navigationShowGroups', 'value' => '1'],
             ['name' => 'navigationServices', 'value' => \json_encode([
@@ -127,7 +109,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => SystemVariable::DIRECTOR_CHAR . 1, 'value' => '{"character_id": 10, "corporation_id": 101}'],
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
             ['name' => SystemVariable::MAIL_CHARACTER, 'value' => 'The char'],
-            ['name' => 'esiDataSource', 'value' => getenv('NEUCORE_EVE_DATASOURCE') ?: 'tranquility'],
+            ['name' => 'esiDataSource', 'value' => $_ENV['NEUCORE_EVE_DATASOURCE'] ?? 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
             ['name' => 'navigationShowGroups', 'value' => '1'],
             ['name' => 'navigationServices', 'value' => \json_encode([$this->service1->jsonSerialize()])],

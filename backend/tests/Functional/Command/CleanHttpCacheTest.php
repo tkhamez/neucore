@@ -13,12 +13,12 @@ use Tests\Functional\ConsoleTestCase;
 
 class CleanHttpCacheTest extends ConsoleTestCase
 {
-    private $file1;
-    private $file2;
+    private string $file1;
+    private string $file2;
 
     protected function tearDown(): void
     {
-        putenv('NEUCORE_CACHE_DIR=');
+        unset($_ENV['NEUCORE_CACHE_DIR']);
 
         @unlink($this->file1);
         @unlink($this->file2);
@@ -42,7 +42,7 @@ class CleanHttpCacheTest extends ConsoleTestCase
         $file1Content[0] = time() - 10;
         file_put_contents($this->file2, implode("\n", $file1Content));
 
-        $output = $this->runConsoleApp('clean-http-cache', [], [], ['NEUCORE_CACHE_DIR=' . $dir], true);
+        $output = $this->runConsoleApp('clean-http-cache', [], [], [['NEUCORE_CACHE_DIR', $dir]], true);
         $actual = explode("\n", $output);
 
         $this->assertStringContainsString('Guzzle cache cleaned.', $actual[0]);

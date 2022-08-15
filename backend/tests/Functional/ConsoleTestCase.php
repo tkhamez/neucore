@@ -25,7 +25,7 @@ class ConsoleTestCase extends TestCase
         $app->loadSettings(true, $forceDevMode);
 
         foreach ($envVars as $envVar) {
-            putenv($envVar);
+            $_ENV[$envVar[0]] = $envVar[1];
         }
 
         // Add existing db connection

@@ -24,7 +24,7 @@ class WebTestCase extends TestCase
      * @param string|array|object|null $requestData the request data
      * @param array|null $headers
      * @param array $mocks key/value paris for the dependency injection container
-     * @param string[] $envVars var=value
+     * @param string[][] $envVars [[var, value]]
      * @return ResponseInterface|null
      */
     protected function runApp(
@@ -88,7 +88,7 @@ class WebTestCase extends TestCase
         $app->loadSettings(true);
 
         foreach ($envVars as $envVar) {
-            putenv($envVar);
+            $_ENV[$envVar[0]] = $envVar[1];
         }
 
         // Add existing db connection

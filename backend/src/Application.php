@@ -140,17 +140,19 @@ class Application
         // Load environment variables from file if it exists.
         if (file_exists(Application::ROOT_DIR . '/.env')) {
             $dotEnv = new Dotenv();
-            $dotEnv->usePutenv();
             try {
                 $dotEnv->load(Application::ROOT_DIR . '/.env');
             } catch (FormatException $e) {
                 $this->logException($e);
             }
+        } elseif (empty($_ENV)) {
+            // It's empty if it's not included in variables_order
+            $_ENV = getenv();
         }
 
-        $appEnv = getenv('NEUCORE_APP_ENV');
+        $appEnv = $_ENV['NEUCORE_APP_ENV'] ?? null;
         if ($appEnv === false) {
-            $appEnv = getenv('BRAVECORE_APP_ENV');
+            $appEnv = $_ENV['BRAVECORE_APP_ENV'] ?? null;
         }
         if ($appEnv === false) {
             throw new RuntimeException(
