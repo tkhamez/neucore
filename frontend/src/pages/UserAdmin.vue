@@ -612,8 +612,10 @@ export default {
             const playerId = this.playerEdit.id;
             const api = new PlayerApi();
             const vm = this;
-            api[method].apply(api, [playerId, param, (error) => {
-                if (error) {
+            api[method].apply(api, [playerId, param, (error, data, response) => {
+                if (method === 'userPlayerAddRole' && response.statusCode === 400) {
+                    vm.message(Data.messages.errorRoleRequiredGroup, 'warning');
+                } else if (error) {
                     return;
                 }
                 getPlayer(vm);

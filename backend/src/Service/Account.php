@@ -478,6 +478,29 @@ class Account
     }
 
     /**
+     * @var Player $player Player object that is attached to the entity manager
+     */
+    public function mayHaveRole(Player $player, string $roleName): bool
+    {
+        $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $roleName]);
+        if ($role === null) {
+            return false;
+        }
+
+        if (empty($role->getRequiredGroups())) {
+            return true;
+        }
+
+        foreach ($role->getRequiredGroups() as $role) {
+            if ($player->hasGroup($role->getId())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Adds or removes the "tracking" role to players based on group membership and corporation configuration.
      *
      * This function modifies one or more players and does *not* flush the object manager.

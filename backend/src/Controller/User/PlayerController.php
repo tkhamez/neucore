@@ -748,11 +748,15 @@ class PlayerController extends BaseController
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
 
-        if (! $player || ! $role || ! in_array($role->getName(), $this->assignableRoles)) {
+        if (!$player || !$role || !in_array($role->getName(), $this->assignableRoles)) {
             return $this->response->withStatus(404);
         }
 
-        if (! $player->hasRole($role->getName())) {
+        if (!$this->account->mayHaveRole($player, $role->getName())) {
+            return $this->response->withStatus(400);
+        }
+
+        if (!$player->hasRole($role->getName())) {
             $player->addRole($role);
         }
 

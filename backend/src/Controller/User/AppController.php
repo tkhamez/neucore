@@ -346,7 +346,7 @@ class AppController extends BaseController
      */
     public function addManager(string $id, string $pid, Account $account): ResponseInterface
     {
-        if (! $this->findAppAndPlayer($id, $pid)) {
+        if (!$this->findAppAndPlayer($id, $pid)) {
             return $this->response->withStatus(404);
         }
 
@@ -354,7 +354,10 @@ class AppController extends BaseController
         foreach ($this->application->getManagers() as $mg) {
             $isManager[] = $mg->getId();
         }
-        if (! in_array($this->player->getId(), $isManager)) {
+        if (!in_array($this->player->getId(), $isManager)) {
+            if (!$account->mayHaveRole($this->player, Role::APP_MANAGER)) {
+                return $this->response->withStatus(400);
+            }
             $this->application->addManager($this->player); // needed to persist
             $this->player->addManagerApp($this->application); // needed for check in syncManagerRole()
             $account->syncManagerRole($this->player, Role::APP_MANAGER);

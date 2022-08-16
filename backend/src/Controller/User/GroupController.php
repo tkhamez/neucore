@@ -35,7 +35,7 @@ class GroupController extends BaseController
 
     private Account $account;
 
-    private string $namePattern = "/^[-._a-zA-Z0-9]+$/";
+    private string $namePattern = "/^[-._a-zA-Z\d]+$/";
 
     private ?Group $group = null;
 
@@ -1328,6 +1328,9 @@ class GroupController extends BaseController
         }
 
         if ($type === 'manager' && !$this->player->hasManagerGroup($this->group->getId())) {
+            if (!$this->account->mayHaveRole($this->player, Role::GROUP_MANAGER)) {
+                return $this->response->withStatus(400);
+            }
             $this->group->addManager($this->player); // needed to persist
             $this->player->addManagerGroup($this->group); // needed for check in syncManagerRole()
             $account->syncManagerRole($this->player, Role::GROUP_MANAGER);

@@ -771,6 +771,14 @@ function callApi(vm, api, method, param1, param2, callback) {
     api[method].apply(api, [param1, param2, function(error, data, response) {
         if (vm.type === 'Player' && method === 'addMember' && response.statusCode === 400) {
             vm.message(Data.messages.errorRequiredForbiddenGroup, 'warning');
+        } else if (
+            (
+                (vm.type === 'Group' && method === 'userGroupAddManager') ||
+                (vm.type === 'App' && method === 'addManager')
+            ) &&
+            response.statusCode === 400
+        ) {
+            vm.message(Data.messages.errorRoleRequiredGroup, 'warning');
         }
         if (error) { // 403 usually
             return;

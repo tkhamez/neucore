@@ -820,6 +820,27 @@ class AccountTest extends TestCase
         $this->assertSame([], $playerLoaded->getManagerGroups());
     }
 
+    public function testMayHaveRole()
+    {
+        $group1 = (new Group())->setName('group 1');
+        $group2 = (new Group())->setName('group 2');
+        $this->om->persist($group1);
+        $this->om->persist($group2);
+        $this->role0->addRequiredGroup($group1); # GROUP_MANAGER
+        $this->role4->addRequiredGroup($group2); # USER_CHARS
+        $player = $this->helper->addCharacterMain(
+            'Player 1',
+            1,
+            [Role::GROUP_MANAGER, Role::APP_MANAGER, Role::WATCHLIST_MANAGER, Role::USER_CHARS, Role::ESI],
+            ['group 1']
+        )->getPlayer();
+
+        $this->assertFalse($this->service->mayHaveRole($player, 'invalid'));
+        $this->assertTrue($this->service->mayHaveRole($player, Role::APP_MANAGER));
+        $this->assertTrue($this->service->mayHaveRole($player, Role::GROUP_MANAGER));
+        $this->assertFalse($this->service->mayHaveRole($player, Role::USER_CHARS));
+    }
+
     public function testSyncTrackingRoleInvalidCall()
     {
         $this->service->syncTrackingRole();
