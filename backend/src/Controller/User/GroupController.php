@@ -1336,9 +1336,7 @@ class GroupController extends BaseController
                 return $this->response->withStatus(400);
             }
             $this->player->addGroup($this->group);
-            $this->account->syncTrackingRole($this->player);
-            $this->account->syncWatchlistRole($this->player);
-            $this->account->syncWatchlistManagerRole($this->player);
+            $this->account->updateGroups($this->player->getId());
         }
 
         return $this->flushAndReturn(204);
@@ -1376,9 +1374,7 @@ class GroupController extends BaseController
                 $this->objectManager->remove($groupApplication);
             }
 
-            $this->account->syncTrackingRole($this->player);
-            $this->account->syncWatchlistRole($this->player);
-            $this->account->syncWatchlistManagerRole($this->player);
+            $this->account->updateGroups($this->player->getId());
         }
 
         return $this->flushAndReturn(204);

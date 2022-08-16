@@ -4,6 +4,7 @@
 
 DD MM YYYY
 
+- Groups are now synchronized immediately when a player is added to or removed from a group.
 - The customizable text on the login page can now contain new lines.
 - The link on the login page has been changed to the new SSO article.
 - Service plugin page: The HTML around the password has been changed so that it does not contain spaces at the 
