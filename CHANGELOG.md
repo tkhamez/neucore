@@ -4,6 +4,7 @@
 
 DD MM YYYY
 
+- New: Roles can now be configured with groups a player must belong to. This allows roles to be removed automatically.
 - Groups are now synchronized immediately when a player is added to or removed from a group.
 - The customizable text on the login page can now contain new lines.
 - The link on the login page has been changed to the new SSO article.

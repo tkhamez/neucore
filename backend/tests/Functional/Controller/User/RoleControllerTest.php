@@ -84,8 +84,11 @@ class RoleControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/role/user/add-required-group/' . $this->group2);
-        $this->assertEquals(403, $response->getStatusCode());
+        $response1 = $this->runApp('PUT', '/api/user/role/user/add-required-group/' . $this->group2);
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $response2 = $this->runApp('PUT', '/api/user/role/tracking/add-required-group/' . $this->group2);
+        $this->assertEquals(403, $response2->getStatusCode());
     }
 
     public function testAddRequiredGroups404()
@@ -171,7 +174,7 @@ class RoleControllerTest extends WebTestCase
     {
         $this->helper->emptyDb();
 
-        $roles = $this->helper->addRoles([Role::USER, Role::USER_CHARS, Role::USER_ADMIN]);
+        $roles = $this->helper->addRoles([Role::USER, Role::USER_CHARS, Role::USER_ADMIN, Role::TRACKING]);
 
         $this->helper->addCharacterMain('User', 6, [Role::USER]);
         $this->helper->addCharacterMain('Admin', 8, [Role::USER, Role::USER_ADMIN]);

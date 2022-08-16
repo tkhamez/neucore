@@ -408,7 +408,8 @@ class Account
     }
 
     /**
-     * Executes the auto group assignment, syncs tracking and watchlist roles and checks required groups.
+     * Executes the auto group assignment, checks required groups for groups, tracking and watchlist roles and
+     * checks required groups for roles.
      */
     public function updateGroups(int $playerId): bool
     {
@@ -420,20 +421,68 @@ class Account
         $this->autoGroupAssignment->assignDefaultGroups($player);
         $this->autoGroupAssignment->assign($player);
         $this->autoGroupAssignment->checkRequiredGroups($player);
-        $this->syncManagerRole($player, Role::GROUP_MANAGER); // fix roles that were not remove due to errors
+        $this->syncManagerRole($player, Role::GROUP_MANAGER); // Only to fix roles that were not remove due to errors
         $this->syncTrackingRole($player);
         $this->syncWatchlistRole($player);
         $this->syncWatchlistManagerRole($player);
 
+        $this->checkRoles($player);
+
         return $this->objectManager->flush();
+    }
+
+    /**
+     * Removes roles if the player does not have a required group.
+     *
+     * Also removed player as a manager of groups or apps if the corresponding role was removed.
+     *
+     * @var Player $player Player object that is attached to the entity manager
+     */
+    public function checkRoles(Player $player): bool
+    {
+        $rolesToRemove = [];
+        foreach ($player->getRoles() as $role) {
+            $keepRole = empty($role->getRequiredGroups());
+            foreach ($role->getRequiredGroups() as $requiredGroup) {
+                if ($player->hasGroup($requiredGroup->getId())) {
+                    $keepRole = true;
+                }
+            }
+            if (!$keepRole && in_array($role->getName(), Role::$rolesWithGroupRequirement)) {
+                $rolesToRemove[] = $role;
+            }
+        }
+
+        foreach ($rolesToRemove as $role) {
+            if ($role->getName() === Role::GROUP_MANAGER) {
+                foreach ($player->getManagerGroups() as $managerGroup) {
+                    $managerGroup->removeManager($player);
+                }
+            } elseif ($role->getName() === Role::APP_MANAGER) {
+                foreach ($player->getManagerApps() as $managerApp) {
+                    $managerApp->removeManager($player);
+                }
+            }
+
+            // Note: tracking, watchlist and 'watchlist-manager cannot have a group requirement,
+            // so there's no conflict with that assignment which is solely based on groups.
+
+            $player->removeRole($role);
+        }
+
+        if ($this->objectManager->flush() && !empty($rolesToRemove)) {
+            $this->log->info("Removed role(s) from player {$player->getId()}.");
+            return true;
+        }
+        return false;
     }
 
     /**
      * Adds or removes the "tracking" role to players based on group membership and corporation configuration.
      *
      * This function modifies one or more players and does *not* flush the object manager.
-     * If the player object is provided, the corporation/group relations must be up to date in the database.
-     * If the corporation object is provided, the player/group relations must be up to date in the database.
+     * If the player object is provided, the corporation/group relations must be up-to-date in the database.
+     * If the corporation object is provided, the player/group relations must be up-to-date in the database.
      */
     public function syncTrackingRole(Player $changedPlayer = null, Corporation $changedCorporation = null): void
     {

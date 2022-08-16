@@ -55,7 +55,10 @@ export default {
     data: function() {
         return {
             currentRoleName: '',
-            availableRoles: Data.userRoles,
+            availableRoles: Data.userRoles.filter(val =>
+                // These roles are only assigned based on groups.
+                ['tracking', 'watchlist', 'watchlist-manager'].indexOf(val) === -1
+            ),
         }
     },
 

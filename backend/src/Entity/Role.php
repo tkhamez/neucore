@@ -55,6 +55,23 @@ class Role implements \JsonSerializable
     public const WATCHLIST = 'watchlist';
     public const WATCHLIST_MANAGER = 'watchlist-manager';
 
+    public static array $rolesWithGroupRequirement = [
+        Role::USER_ADMIN,
+        Role::USER_MANAGER,
+        Role::USER_CHARS,
+        Role::GROUP_ADMIN,
+        Role::SERVICE_ADMIN,
+        Role::STATISTICS,
+        Role::APP_ADMIN,
+        Role::ESI,
+        Role::SETTINGS,
+        Role::TRACKING_ADMIN,
+        Role::WATCHLIST_ADMIN,
+        Role::GROUP_MANAGER,
+        Role::APP_MANAGER,
+        // Not tracking, watchlist and watchlist-manager because these are only assigned based on groups.
+    ];
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")

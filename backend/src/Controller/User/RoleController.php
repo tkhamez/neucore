@@ -20,25 +20,6 @@ use Psr\Http\Message\ResponseInterface;
  */
 class RoleController extends BaseController
 {
-    private array $allowedRoles = [
-        Role::USER_ADMIN,
-        Role::USER_MANAGER,
-        Role::USER_CHARS,
-        Role::GROUP_ADMIN,
-        Role::SERVICE_ADMIN,
-        Role::STATISTICS,
-        Role::APP_ADMIN,
-        Role::ESI,
-        Role::SETTINGS,
-        Role::TRACKING_ADMIN,
-        Role::WATCHLIST_ADMIN,
-        Role::GROUP_MANAGER,
-        Role::APP_MANAGER,
-        Role::TRACKING,
-        Role::WATCHLIST,
-        Role::WATCHLIST_MANAGER,
-    ];
-
     private ?Role $role = null;
 
     private ?Group $group = null;
@@ -193,7 +174,7 @@ class RoleController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        if (!in_array($this->role->getName(), $this->allowedRoles)) {
+        if (!in_array($this->role->getName(), Role::$rolesWithGroupRequirement)) {
             return $this->response->withStatus(403);
         }
 

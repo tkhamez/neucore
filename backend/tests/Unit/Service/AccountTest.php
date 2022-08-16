@@ -75,19 +75,45 @@ class AccountTest extends TestCase
 
     private Group $group2;
 
+    /**
+     * group-manager
+     */
     private Role $role0;
 
+    /**
+     * tracking
+     */
     private Role $role1;
 
+    /**
+     * watchlist
+     */
     private Role $role2;
+
+    /**
+     * app-manager
+     */
+    private Role $role3;
+
+    /**
+     * user-chars
+     */
+    private Role $role4;
+
+    /**
+     * esi
+     */
+    private Role $role5;
 
     protected function setUp(): void
     {
         $this->helper = new Helper();
         $this->helper->emptyDb();
-        list($this->role0, $this->role1, $this->role2) = $this->helper->addRoles(
-            [Role::GROUP_MANAGER, Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]
-        );
+        list($this->role0, $this->role1, $this->role2, $this->role3, $this->role4, $this->role5) =
+            $this->helper->addRoles([
+                Role::GROUP_MANAGER, Role::TRACKING, Role::WATCHLIST, Role::APP_MANAGER, Role::USER_CHARS,
+                Role::ESI, Role::USER_ADMIN, Role::WATCHLIST_MANAGER
+            ]);
         $this->om = $this->helper->getObjectManager();
 
         $this->log = new Logger('Test');
@@ -745,7 +771,7 @@ class AccountTest extends TestCase
 
     public function testUpdateGroups()
     {
-        $this->setUpUpdateGroupsData(); // adds 2 default group, one with a required group
+        $this->setUpUpdateGroupsData(); // adds 2 default groups, one with a required group
 
         $player = $this->helper->addCharacterMain('Player 1', 1, [Role::GROUP_MANAGER])->getPlayer();
         $this->assertSame([Role::GROUP_MANAGER], $player->getRoleNames());
@@ -757,6 +783,41 @@ class AccountTest extends TestCase
         $player = $this->playerRepo->find($player->getId());
         $this->assertSame([], $player->getRoleNames());
         $this->assertSame([$this->group2->getId()], $player->getGroupIds());
+    }
+
+    public function testCheckRoles()
+    {
+        $app = (new App())->setName('app')->setSecret('abc');
+        $group1 = (new Group())->setName('group 1');
+        $group2 = (new Group())->setName('group 2');
+        $group3 = (new Group())->setName('group 3');
+        $this->om->persist($app);
+        $this->om->persist($group1);
+        $this->om->persist($group2);
+        $this->om->persist($group3);
+        $this->om->flush();
+        $player = $this->helper->addCharacterMain(
+            'Player 1',
+            1,
+            [Role::GROUP_MANAGER, Role::APP_MANAGER, Role::WATCHLIST_MANAGER, Role::USER_CHARS, Role::ESI],
+            ['group 2']
+        )->getPlayer();
+        $this->role0->addRequiredGroup($group1); # GROUP_MANAGER
+        $this->role3->addRequiredGroup($group1); # APP_MANAGER
+        $this->role4->addRequiredGroup($group1); # USER_CHARS
+        $this->role5->addRequiredGroup($group2); # ESI
+        $this->role5->addRequiredGroup($group3); # ESI
+        $player->addManagerApp($app);
+        $player->addManagerGroup($group1);
+        $this->om->flush();
+
+        $this->service->checkRoles($player);
+        $this->om->clear();
+
+        $playerLoaded = $this->playerRepo->find($player->getId());
+        $this->assertSame([Role::ESI, Role::WATCHLIST_MANAGER], $playerLoaded->getRoleNames());
+        $this->assertSame([], $playerLoaded->getManagerApps());
+        $this->assertSame([], $playerLoaded->getManagerGroups());
     }
 
     public function testSyncTrackingRoleInvalidCall()
@@ -925,13 +986,11 @@ class AccountTest extends TestCase
     public function testSyncManagerRole()
     {
         $role1 = $this->role0;
-        $role2 = (new Role(11))->setName(Role::APP_MANAGER);
         $player1 = (new Player())->setName('P1');
-        $player2 = (new Player())->setName('P2')->addRole($role1)->addRole($role2);
+        $player2 = (new Player())->setName('P2')->addRole($role1)->addRole($this->role3);
         $group = (new Group())->setName('G')->addManager($player1);
         $app = (new App())->setName('A')->setSecret('abc')->addManager($player1);
         $this->om->persist($role1);
-        $this->om->persist($role2);
         $this->om->persist($group);
         $this->om->persist($app);
         $this->om->persist($player1);

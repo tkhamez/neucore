@@ -42,6 +42,9 @@ class AutoGroupAssignment
         $this->groupRepo = $repositoryFactory->getGroupRepository();
     }
 
+    /**
+     * Adds default groups to account unless the status is "managed".
+     */
     public function assignDefaultGroups(Player $player): void
     {
         if ($player->getStatus() === Player::STATUS_MANAGED) {
