@@ -53,7 +53,9 @@ class AutoGroupAssignment
 
         $defaultGroups = $this->groupRepo->findBy(['isDefault' => true]);
         foreach ($defaultGroups as $defaultGroup) {
-            $player->addGroup($defaultGroup);
+            if (!$player->hasGroup($defaultGroup->getId())) {
+                $player->addGroup($defaultGroup);
+            }
         }
     }
 
@@ -142,16 +144,14 @@ class AutoGroupAssignment
      */
     public function checkRequiredGroups(Player $player): void
     {
-        $lastGroupCount = 0;
-        while ($lastGroupCount !== count($player->getGroups())) {
-            $groups = $player->getGroups();
-            foreach ($groups as $group) {
+        do {
+            $lastGroupCount = count($player->getGroups());
+            foreach ($player->getGroups() as $group) {
                 if (!$player->isAllowedMember($group)) {
                     $player->removeGroup($group);
                 }
             }
-            $lastGroupCount = count($player->getGroups());
-        }
+        } while ($lastGroupCount !== count($player->getGroups()));
     }
 
     private function loadMapping(): void
