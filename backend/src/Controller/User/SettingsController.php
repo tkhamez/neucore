@@ -84,6 +84,9 @@ class SettingsController extends BaseController
             ], [
                 self::COLUMN_NAME => 'navigationServices',
                 self::COLUMN_VALUE => \json_encode($services)
+            ], [
+                self::COLUMN_NAME => 'repository',
+                self::COLUMN_VALUE => $config['repository']
             ],
         ]);
 

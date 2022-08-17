@@ -222,13 +222,6 @@ class SystemVariable implements \JsonSerializable
     public const CUSTOMIZATION_WEBSITE = 'customization_website';
 
     /**
-     * URL of GitHub repository for various links to the documentation.
-     *
-     * Scope = public
-     */
-    public const CUSTOMIZATION_GITHUB = 'customization_github';
-
-    /**
      * Organization name used in navigation bar.
      *
      * Scope = public

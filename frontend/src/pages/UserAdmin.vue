@@ -96,7 +96,7 @@
                 <div class="card-body">
                     <p v-cloak>
                         See
-                        <a :href="`${settings.customization_github}/blob/master/doc/API.md`"
+                        <a :href="`${settings.repository}/blob/master/doc/API.md`"
                            target="_blank" rel="noopener noreferrer">doc/API.md</a>
                         for permissions for each role.
                     </p>

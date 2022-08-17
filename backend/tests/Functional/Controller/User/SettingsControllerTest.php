@@ -74,6 +74,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
             ['name' => 'navigationShowGroups', 'value' => '0'],
             ['name' => 'navigationServices', 'value' => \json_encode([])],
+            ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
         ], $this->parseJsonBody($response));
     }
 
@@ -93,6 +94,7 @@ class SettingsControllerTest extends WebTestCase
                 $this->service1->jsonSerialize(),
                 $this->service2->jsonSerialize(),
             ])],
+            ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
         ], $this->parseJsonBody($response));
     }
 
@@ -113,6 +115,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
             ['name' => 'navigationShowGroups', 'value' => '1'],
             ['name' => 'navigationServices', 'value' => \json_encode([$this->service1->jsonSerialize()])],
+            ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
         ], $this->parseJsonBody($response));
     }
 

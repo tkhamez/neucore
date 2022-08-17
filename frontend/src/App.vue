@@ -21,7 +21,7 @@
         <footer class="footer border-top text-muted small">
             <div class="container-fluid">
                 <span v-cloak>{{ settings.customization_footer_text }}</span>
-                <a v-cloak :href="settings.customization_github" class="github text-dark text-muted"
+                <a v-cloak :href="settings.repository" class="github text-dark text-muted"
                    target="_blank" rel="noopener noreferrer"
                    title="Neucore on GitHub"><span class="fab fa-github"></span></a>
             </div>

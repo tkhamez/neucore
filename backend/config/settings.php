@@ -43,6 +43,8 @@ return [
 
     'error_reporting' => '${NEUCORE_ERROR_REPORTING}',
 
+    'repository' => 'https://github.com/tkhamez/neucore',
+
     'CORS' => [
         'allow_origin' => '${NEUCORE_ALLOW_ORIGIN}',
     ],

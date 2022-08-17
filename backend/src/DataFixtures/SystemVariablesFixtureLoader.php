@@ -66,10 +66,6 @@ class SystemVariablesFixtureLoader
                 'Documentation is available on GitHub.',
                 SystemVariable::SCOPE_PUBLIC
             ],
-            SystemVariable::CUSTOMIZATION_GITHUB                => [
-                'https://github.com/tkhamez/neucore',
-                SystemVariable::SCOPE_PUBLIC
-            ],
             SystemVariable::API_RATE_LIMIT_MAX_REQUESTS         => ['', SystemVariable::SCOPE_SETTINGS],
             SystemVariable::API_RATE_LIMIT_RESET_TIME           => ['', SystemVariable::SCOPE_SETTINGS],
             SystemVariable::API_RATE_LIMIT_ACTIVE               => ['', SystemVariable::SCOPE_SETTINGS],
@@ -88,6 +84,7 @@ class SystemVariablesFixtureLoader
             'show_preview_banner', // removed in version > 0.8.0
             'esi_error_limit', // removed in version > 1.11.5
             'customization_default_theme', // removed in v1.15.0
+            'customization_github', // removed in v1.34.0
         ];
         foreach ($varsRemove as $nameRemove) {
             $varRemove = $repository->find($nameRemove);

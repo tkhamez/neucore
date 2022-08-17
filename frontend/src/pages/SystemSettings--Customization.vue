@@ -84,14 +84,6 @@
                v-model="settings.customization_footer_text"
                v-on:input="$emit('changeSettingDelayed', 'customization_footer_text', $event.target.value)">
         <span class="form-text">Text for the footer.</span>
-        <hr>
-        <label class="col-form-label" for="customizationGithub">GitHub</label>
-        <input id="customizationGithub" type="text" class="form-control"
-               v-model="settings.customization_github"
-               v-on:input="$emit('changeSettingDelayed', 'customization_github', $event.target.value)">
-        <span class="form-text">
-            URL of GitHub repository for various links to the documentation.
-        </span>
     </div>
 </div>
 </template>

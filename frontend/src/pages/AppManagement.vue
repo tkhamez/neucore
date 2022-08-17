@@ -37,8 +37,8 @@
                             This will <em>invalidate</em> the existing secret.<br>
                             See also
                             <a v-cloak target="_blank" rel="noopener noreferrer"
-                               :href="`${settings.customization_github}/blob/master/doc/Documentation.md#authentication`">
-                                Authentication of applications</a>.
+                               :href="`${settings.repository}/blob/master/doc/Documentation.md#authentication`">
+                                Authentication for applications</a>.
                         </p>
                         <p>
                             <button type="button" class="btn btn-warning" v-on:click="generateSecret()">

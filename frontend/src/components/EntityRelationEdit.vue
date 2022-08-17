@@ -64,7 +64,7 @@ Select and table to add and remove objects from other objects.
             </div>
             <p v-cloak v-if="type === 'App' && contentType === 'roles'">
                 See
-                <a :href="`${settings.customization_github}/blob/master/doc/API.md`"
+                <a :href="`${settings.repository}/blob/master/doc/API.md`"
                    target="_blank" rel="noopener noreferrer">doc/API.md</a>
                 for permissions for each role.
             </p>
