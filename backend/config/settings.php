@@ -44,6 +44,7 @@ return [
     'error_reporting' => '${NEUCORE_ERROR_REPORTING}',
 
     'repository' => 'https://github.com/tkhamez/neucore',
+    'discord'    => 'https://discord.gg/memUh56u8z',
 
     'CORS' => [
         'allow_origin' => '${NEUCORE_ALLOW_ORIGIN}',

@@ -87,6 +87,9 @@ class SettingsController extends BaseController
             ], [
                 self::COLUMN_NAME => 'repository',
                 self::COLUMN_VALUE => $config['repository']
+            ], [
+                self::COLUMN_NAME => 'discord',
+                self::COLUMN_VALUE => $config['discord']
             ],
         ]);
 

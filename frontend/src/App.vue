@@ -21,9 +21,12 @@
         <footer class="footer border-top text-muted small">
             <div class="container-fluid">
                 <span v-cloak>{{ settings.customization_footer_text }}</span>
-                <a v-cloak :href="settings.repository" class="github text-dark text-muted"
+                <a v-cloak :href="settings.repository" class="icon-link text-dark text-muted"
                    target="_blank" rel="noopener noreferrer"
-                   title="Neucore on GitHub"><span class="fab fa-github"></span></a>
+                   title="GitHub"><span class="fa-brands fa-github"></span></a>
+                <a v-cloak :href="settings.discord" class="icon-link text-dark text-muted"
+                   target="_blank" rel="noopener noreferrer"
+                   title="Discord"><span class="fa-brands fa-discord"></span></a>
             </div>
             <div class="container-fluid small">
                 "EVE", "EVE Online", "CCP" and all related logos and images are trademarks or registered trademarks of
@@ -405,8 +408,9 @@ function setCsrfHeader(vm, request) {
     .footer .container-fluid {
         text-align: center;
     }
-    .footer .github {
+    .footer .icon-link {
         float: right;
+        margin-left: 4px;
     }
 </style>
 
