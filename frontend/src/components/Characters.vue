@@ -180,7 +180,7 @@ export default {
 
     updated () {
         document.querySelectorAll('#playerModal [data-bs-toggle="tooltip"]').forEach(tooltip => {
-            new Tooltip(tooltip)
+            this.tooltip = new Tooltip(tooltip)
         });
     },
 

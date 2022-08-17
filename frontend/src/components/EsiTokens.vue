@@ -21,14 +21,14 @@
                     </p>
                 </div>
 
-                <table class="table">
+                <table class="table" aria-describedby="ESI tokens">
                     <thead>
                         <tr>
-                            <td>Name</td>
-                            <td>Status</td>
-                            <td v-if="page === 'UserAdmin'">Status changed*</td>
-                            <td>Last check*</td>
-                            <td>Has required in-game roles</td>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th v-if="page === 'UserAdmin'">Status changed*</th>
+                            <th>Last check*</th>
+                            <th>Has required in-game roles</th>
                         </tr>
                     </thead>
                     <tbody>

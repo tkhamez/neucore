@@ -320,7 +320,7 @@ function configureDataTable(vm) {
         order: [[3, "desc"]],
         'drawCallback': function() {
             document.querySelectorAll('.page-tracking [data-bs-toggle="tooltip"]').forEach(tooltip => {
-                new Tooltip(tooltip)
+                this.tooltip = new Tooltip(tooltip)
             });
             const $link = $('a[data-player-id]');
             $link.off('click');

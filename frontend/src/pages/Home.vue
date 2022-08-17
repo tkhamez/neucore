@@ -16,14 +16,14 @@
                     If you want to add more characters to your account use the EVE login button on the main page.
                 </p>
                 <div class="table-responsive">
-                    <table class="table">
+                    <table class="table" aria-describedby="EVE logins">
                         <thead>
                             <tr>
-                                <td>Name</td>
-                                <td>Login</td>
-                                <td>Description</td>
-                                <td>Scopes</td>
-                                <td title="Required roles in the game" class="text-with-tooltip">Roles</td>
+                                <th>Name</th>
+                                <th>Login</th>
+                                <th>Description</th>
+                                <th>Scopes</th>
+                                <th title="Required roles in the game" class="text-with-tooltip">Roles</th>
                             </tr>
                         </thead>
                         <tbody>
