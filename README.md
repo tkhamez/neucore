@@ -17,11 +17,12 @@ monitor them and provide access to external services.
 - [Getting started](#getting-started)
   * [Installation](#installation)
   * [First login and Customization](#first-login-and-customization)
-  * [Setting up Member Tracking and Watchlist](#setting-up-member-tracking-and-watchlist)
+  * [Setting up Member Tracking and Watchlists](#setting-up-member-tracking-and-watchlists)
 - [Final Notes](#final-notes)
   * [Origin](#origin)
   * [Related Software](#related-software)
   * [Contact](#contact)
+  * [Report Vulnerabilities](#report-vulnerabilities)
   * [Copyright notice](#copyright-notice)
 
 <!-- tocstop -->
@@ -105,6 +106,10 @@ If you have any questions or feedback, you can join the [Neucore Discord Server]
 contact [Tian Khamez](https://evewho.com/character/96061222) on 
 [Tweetfleet Slack](https://tweetfleet.slack.com) (get invites 
 [here](https://www.fuzzwork.co.uk/tweetfleet-slack-invites/)).
+
+### Report Vulnerabilities
+
+Vulnerabilities can be reported privately to tkhamez@gmail.com.
 
 ### Copyright notice
 

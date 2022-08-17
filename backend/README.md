@@ -11,6 +11,7 @@ with the [PHP-DI container](http://php-di.org/).
 - [Style Guide](#style-guide)
 - [Guidelines](#guidelines)
   * [Clear Entity Manager](#clear-entity-manager)
+  * [Tests](#tests)
 - [API](#api)
   * [operationId](#operationid)
   * [Documentation](#documentation)
@@ -60,6 +61,10 @@ composer style:fix
 
 Some commands clear the entity manager to save memory. Never do this anywhere else, only
 in "Command" classes.
+
+### Tests
+
+Any new code should be covered by unit tests.
 
 ## API
 

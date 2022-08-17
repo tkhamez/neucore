@@ -2,8 +2,8 @@
 
 All API endpoints from the backend are protected by roles.
 
-The API is documented with OpenAPI, it is available at
-[https://[domain]/api.html](https://neucore.herokuapp.com/api.html).
+The API is documented with OpenAPI. It is available with every installation at `/api.html`, e.g.
+https://neucore.herokuapp.com/api.
 
 ## Roles Overview
 
