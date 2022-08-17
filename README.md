@@ -1,7 +1,8 @@
 [![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/memUh56u8z)
 [![Docker](https://img.shields.io/badge/dockerhub-images-important.svg?logo=Docker)](https://hub.docker.com/r/tkhamez/neucore)
 [![build](https://github.com/tkhamez/neucore/workflows/build/badge.svg)](https://github.com/tkhamez/neucore/actions)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=brvneucore&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=brvneucore)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=tkhamez_neucore&metric=coverage)](https://sonarcloud.io/summary/new_code?id=tkhamez_neucore)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=tkhamez_neucore&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=tkhamez_neucore) <!-- previous project: https://sonarcloud.io/dashboard?id=brvneucore -->
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/4573/badge)](https://bestpractices.coreinfrastructure.org/projects/4573)
 [![Open Hub](https://www.openhub.net/p/neucore/widgets/project_thin_badge?format=gif)](https://www.openhub.net/p/neucore/)
 
