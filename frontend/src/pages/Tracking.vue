@@ -291,7 +291,7 @@ function configureDataTable(vm) {
         $.fn.dataTable.ext.search.push((settings, searchData) => {
             const term = $('.dataTables_filter input').val().toLowerCase().trim();
             for (let index = 0; index < vm.columns.length; index++) {
-                if (! vm.columns[index].searchable) {
+                if (!vm.columns[index].searchable) {
                     continue;
                 }
                 if (searchData[index].toLowerCase().indexOf(term) !== -1) {
@@ -301,14 +301,6 @@ function configureDataTable(vm) {
             return false;
         });
     }
-
-    // fix: sort by text instead of html
-    $.fn.dataTable.ext.type.order['html-pre'] = function (a) {
-        if (a.indexOf('<a ') !== -1 || a.indexOf('<div ') !== -1) {
-            return a.replace(/<[^>]+>/g, '').trim().toLowerCase();
-        }
-        return a;
-    };
 
     vm.table = $('.member-table').DataTable({
         lengthMenu: [
@@ -330,36 +322,47 @@ function configureDataTable(vm) {
             });
         },
         columns: [{
-            data (row) {
-                return `
-                    <a href="https://evewho.com/character/${row.id}"
-                        target="_blank" rel="noopener noreferrer" title="Eve Who">
-                        ${(row.name ? row.name : row.id)}
-                        <span role="img" style="color: grey;"
-                              class="small fa-solid fa-arrow-up-right-from-square"></span>
-                    </a>`;
-            }
-        }, {
-            data (row) {
-                if (row.player) {
+            render: {
+                _: function (data, type, row) {
                     return `
-                        <a href="#" data-player-id="${row.player.id}">
-                            ${row.player.name} #${row.player.id}
+                        <a href="https://evewho.com/character/${row.id}"
+                              target="_blank" rel="noopener noreferrer" title="Eve Who">
+                            ${(row.name ? row.name : row.id)}
+                            <span role="img" style="color: grey;"
+                                  class="small fa-solid fa-arrow-up-right-from-square"></span>
                         </a>`;
-                } else if (row.missingCharacterMailSentNumber > 0) {
-                    return `
-                        <div class="text-with-tooltip" data-bs-toggle="tooltip" data-bs-html="true" title="
-                            Number mails sent: ${row.missingCharacterMailSentNumber}<br>
-                            Last mail: ${vm.$root.formatDate(row.missingCharacterMailSentDate)}<br>
-                            Result: ${row.missingCharacterMailSentResult ? row.missingCharacterMailSentResult : ''}
-                        ">n/a</div>`;
-                } else {
-                    return '';
-                }
+                },
+                sort: function (data, type, row) {
+                    return row.name;
+                },
+            }
+        }, {
+            render: {
+                _: function (data, type, row) {
+                    if (row.player) {
+                        return `
+                            <a href="#" data-player-id="${row.player.id}">
+                                ${row.player.name} #${row.player.id}
+                            </a>`;
+                    } else if (row.missingCharacterMailSentNumber > 0) {
+                        return `
+                            <div class="text-with-tooltip" data-bs-toggle="tooltip" data-bs-html="true" title="
+                                Number mails sent: ${row.missingCharacterMailSentNumber}<br>
+                                Last mail: ${vm.$root.formatDate(row.missingCharacterMailSentDate)}<br>
+                                Result: ${row.missingCharacterMailSentResult ? row.missingCharacterMailSentResult : ''}
+                            ">n/a</div>`;
+                    } else {
+                        return '';
+                    }
+                },
+                sort: function (data, type, row) {
+                    return row.player ? row.player.name :
+                        (row.missingCharacterMailSentNumber > 0 ? 'n/a' : '');
+                },
             }
         }, {
             data (row) {
-                if (! row.character) {
+                if (!row.character) {
                     return '';
                 }
                 let text = '';
