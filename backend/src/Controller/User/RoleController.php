@@ -174,7 +174,7 @@ class RoleController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        if (!in_array($this->role->getName(), Role::$rolesWithGroupRequirement)) {
+        if (!in_array($this->role->getName(), Role::ROLES_WITH_GROUP_REQUIREMENT)) {
             return $this->response->withStatus(403);
         }
 

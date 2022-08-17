@@ -55,7 +55,7 @@ class Role implements \JsonSerializable
     public const WATCHLIST = 'watchlist';
     public const WATCHLIST_MANAGER = 'watchlist-manager';
 
-    public static array $rolesWithGroupRequirement = [
+    public const ROLES_WITH_GROUP_REQUIREMENT = [
         Role::USER_ADMIN,
         Role::USER_MANAGER,
         Role::USER_CHARS,

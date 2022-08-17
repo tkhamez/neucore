@@ -448,7 +448,7 @@ class Account
                     $keepRole = true;
                 }
             }
-            if (!$keepRole && in_array($role->getName(), Role::$rolesWithGroupRequirement)) {
+            if (!$keepRole && in_array($role->getName(), Role::ROLES_WITH_GROUP_REQUIREMENT)) {
                 $rolesToRemove[] = $role;
             }
         }
