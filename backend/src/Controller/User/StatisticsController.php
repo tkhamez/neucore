@@ -31,7 +31,13 @@ class StatisticsController extends BaseController
      *     @OA\Parameter(
      *         name="until",
      *         in="query",
-     *         description="Unix Timestamp",
+     *         description="Date: YYYY-MM",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="periods",
+     *         in="query",
+     *         description="Number of periods (months)",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
@@ -47,8 +53,15 @@ class StatisticsController extends BaseController
      */
     public function playerLogins(ServerRequestInterface $request): ResponseInterface
     {
-        $until = $this->getQueryParam($request, 'until', time());
-        return $this->withJson($this->repositoryFactory->getPlayerLoginsRepository()->monthlySummary((int)$until));
+        $dateString = $this->getQueryParam($request, 'until', date('Y-m-01'));
+        try {
+            $date = new \DateTime($dateString);
+        } catch (\Exception $e) {
+            $date = date_create();
+        }
+        $periods = abs((int)$this->getQueryParam($request, 'periods', 12));
+        return $this->withJson($this->repositoryFactory->getPlayerLoginsRepository()
+            ->monthlySummary($date->getTimestamp(), $periods));
     }
 
     /**
@@ -62,7 +75,13 @@ class StatisticsController extends BaseController
      *     @OA\Parameter(
      *         name="until",
      *         in="query",
-     *         description="Unix Timestamp",
+     *         description="Date: YYYY-MM",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="periods",
+     *         in="query",
+     *         description="Number of periods (months)",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
@@ -78,8 +97,15 @@ class StatisticsController extends BaseController
      */
     public function totalMonthlyAppRequests(ServerRequestInterface $request): ResponseInterface
     {
-        $until = $this->getQueryParam($request, 'until', time());
-        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()->monthlySummary((int)$until));
+        $dateString = $this->getQueryParam($request, 'until', date('Y-m-01'));
+        try {
+            $date = new \DateTime($dateString);
+        } catch (\Exception $e) {
+            $date = date_create();
+        }
+        $periods = abs((int)$this->getQueryParam($request, 'periods', 12));
+        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()
+            ->monthlySummary($date->getTimestamp(), $periods));
     }
 
     /**
@@ -93,7 +119,13 @@ class StatisticsController extends BaseController
      *     @OA\Parameter(
      *         name="until",
      *         in="query",
-     *         description="Unix Timestamp",
+     *         description="Date: YYYY-MM",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="periods",
+     *         in="query",
+     *         description="Number of periods (months)",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
@@ -109,9 +141,15 @@ class StatisticsController extends BaseController
      */
     public function monthlyAppRequests(ServerRequestInterface $request): ResponseInterface
     {
-        $until = $this->getQueryParam($request, 'until', time());
+        $dateString = $this->getQueryParam($request, 'until', date('Y-m-01'));
+        try {
+            $date = new \DateTime($dateString);
+        } catch (\Exception $e) {
+            $date = date_create();
+        }
+        $periods = abs((int)$this->getQueryParam($request, 'periods', 12));
         return $this->withJson($this->repositoryFactory->getAppRequestsRepository()
-            ->monthlySummaryByApp((int)$until));
+            ->monthlySummaryByApp($date->getTimestamp(), $periods));
     }
 
     /**
@@ -125,7 +163,13 @@ class StatisticsController extends BaseController
      *     @OA\Parameter(
      *         name="until",
      *         in="query",
-     *         description="Unix Timestamp",
+     *         description="Date: YYYY-MM-DD",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="periods",
+     *         in="query",
+     *         description="Number of periods (weeks)",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
@@ -141,8 +185,15 @@ class StatisticsController extends BaseController
      */
     public function totalDailyAppRequests(ServerRequestInterface $request): ResponseInterface
     {
-        $until = $this->getQueryParam($request, 'until', time());
-        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()->dailySummary((int)$until));
+        $dateString = $this->getQueryParam($request, 'until', date('Y-m-d'));
+        try {
+            $date = new \DateTime($dateString);
+        } catch (\Exception $e) {
+            $date = date_create();
+        }
+        $periods = abs((int)$this->getQueryParam($request, 'periods', 4));
+        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()
+            ->dailySummary($date->getTimestamp(), $periods));
     }
 
     /**
@@ -156,7 +207,13 @@ class StatisticsController extends BaseController
      *     @OA\Parameter(
      *         name="until",
      *         in="query",
-     *         description="Unix Timestamp",
+     *         description="Date: YYYY-MM-DD HH",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="periods",
+     *         in="query",
+     *         description="Number of periods (days)",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
@@ -172,7 +229,15 @@ class StatisticsController extends BaseController
      */
     public function hourlyAppRequests(ServerRequestInterface $request): ResponseInterface
     {
-        $until = $this->getQueryParam($request, 'until', time());
-        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()->hourlySummary((int)$until));
+        $dateString = $this->getQueryParam($request, 'until', date('Y-m-d H'));
+        $dateString .= ':00';
+        try {
+            $date = new \DateTime($dateString);
+        } catch (\Exception $e) {
+            $date = date_create();
+        }
+        $periods = abs((int)$this->getQueryParam($request, 'periods', 7));
+        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()
+            ->hourlySummary($date->getTimestamp(), $periods));
     }
 }

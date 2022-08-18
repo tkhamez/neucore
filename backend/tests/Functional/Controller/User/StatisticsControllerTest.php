@@ -55,8 +55,10 @@ class StatisticsControllerTest extends WebTestCase
     {
         $this->loginUser(2);
 
-        $startTime = strtotime('2021-03-27');
-        $response = $this->runApp('GET', '/api/user/statistics/player-logins?until='.$startTime);
+        $response0 = $this->runApp('GET', '/api/user/statistics/player-logins?until=invalid');
+        $this->assertEquals(200, $response0->getStatusCode()); // test that this will work (until = current date)
+
+        $response = $this->runApp('GET', '/api/user/statistics/player-logins?until=2021-03&periods=12');
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
@@ -80,13 +82,14 @@ class StatisticsControllerTest extends WebTestCase
     {
         $this->loginUser(2);
 
-        $startTime = strtotime('2021-03-27');
-        $response = $this->runApp('GET', '/api/user/statistics/total-monthly-app-requests?until='.$startTime);
+        $response0 = $this->runApp('GET', '/api/user/statistics/total-monthly-app-requests?until=invalid');
+        $this->assertEquals(200, $response0->getStatusCode()); // test that this will work (until = current date)
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $response1 = $this->runApp('GET', '/api/user/statistics/total-monthly-app-requests?until=2021-03&periods=12');
+        $this->assertEquals(200, $response1->getStatusCode());
         $this->assertSame(
             [['requests' => 43, 'year' => 2021, 'month' => 1]],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response1)
         );
     }
 
@@ -105,8 +108,10 @@ class StatisticsControllerTest extends WebTestCase
     {
         $this->loginUser(2);
 
-        $startTime = strtotime('2021-03-27');
-        $response = $this->runApp('GET', '/api/user/statistics/monthly-app-requests?until='.$startTime);
+        $response0 = $this->runApp('GET', '/api/user/statistics/monthly-app-requests?until=invalid');
+        $this->assertEquals(200, $response0->getStatusCode()); // test that this will work (until = current date)
+
+        $response = $this->runApp('GET', '/api/user/statistics/monthly-app-requests?until=2021-03&periods=12');
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
@@ -130,8 +135,10 @@ class StatisticsControllerTest extends WebTestCase
     {
         $this->loginUser(2);
 
-        $startTime = strtotime('2021-01-30');
-        $response = $this->runApp('GET', '/api/user/statistics/total-daily-app-requests?until='.$startTime);
+        $response0 = $this->runApp('GET', '/api/user/statistics/total-daily-app-requests?until=invalid');
+        $this->assertEquals(200, $response0->getStatusCode()); // test that this will work (until = current date)
+
+        $response = $this->runApp('GET', '/api/user/statistics/total-daily-app-requests?until=2021-01-30&periods=4');
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
@@ -155,8 +162,10 @@ class StatisticsControllerTest extends WebTestCase
     {
         $this->loginUser(2);
 
-        $startTime = strtotime('2021-01-25');
-        $response = $this->runApp('GET', '/api/user/statistics/hourly-app-requests?until='.$startTime);
+        $response0 = $this->runApp('GET', '/api/user/statistics/hourly-app-requests?until=invalid');
+        $this->assertEquals(200, $response0->getStatusCode()); // test that this will work (until = current date)
+
+        $response = $this->runApp('GET', '/api/user/statistics/hourly-app-requests?until=2021-01-25%2001&periods=7');
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(

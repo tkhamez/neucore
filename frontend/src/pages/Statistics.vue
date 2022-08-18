@@ -7,20 +7,25 @@
     </div>
     <div class="row">
         <div class="col-lg-12">
-            Periods <input v-model="periodsPlayerLogins" type="text"> months
+            until <input v-model="untilPlayerLogins" type="text" class="until">,
+            Periods <input v-model="periodsPlayerLogins" type="text" class="periods"> months
             <div id="statisticsPlayerLogins"></div>
 
-            Periods <input v-model="periodsRequestsMonthly" type="text"> months
-            <div id="statisticsRequestsMonthly"></div>
+            until <input v-model="untilTotalMonthlyApp" type="text" class="until">,
+            Periods <input v-model="periodsTotalMonthlyApp" type="text" class="periods"> months
+            <div id="statisticsTotalMonthlyApp"></div>
 
-            Periods <input v-model="periodsRequestsMonthlyPerApp" type="text"> months
-            <div id="statisticsRequestsMonthlyPerApp"></div>
+            until <input v-model="untilMonthlyAppRequests" type="text" class="until">,
+            Periods <input v-model="periodsMonthlyAppRequests" type="text" class="periods"> months
+            <div id="statisticsMonthlyAppRequests"></div>
 
-            Periods <input v-model="periodsRequestsDaily" type="text"> weeks
-            <div id="statisticsRequestsDaily"></div>
+            until <input v-model="untilTotalDailyApp" type="text" class="until">,
+            Periods <input v-model="periodsTotalDailyApp" type="text" class="periods"> weeks
+            <div id="statisticsTotalDailyApp"></div>
 
-            Periods <input v-model="periodsRequestsHourly" type="text"> days
-            <div id="statisticsRequestsHourly"></div>
+            until <input v-model="untilHourlyAppRequests" type="text" class="until">,
+            Periods <input v-model="periodsHourlyAppRequests" type="text" class="periods"> days
+            <div id="statisticsHourlyAppRequests"></div>
         </div>
     </div>
 </div>
@@ -35,12 +40,16 @@ export default {
         return {
             charts: {},
             api: new StatisticsApi(),
-            until: Math.floor(Date.now() / 1000),
             periodsPlayerLogins: 12,
-            periodsRequestsMonthly: 12,
-            periodsRequestsMonthlyPerApp: 12,
-            periodsRequestsDaily: 4,
-            periodsRequestsHourly: 7,
+            periodsTotalMonthlyApp: 12,
+            periodsMonthlyAppRequests: 12,
+            periodsTotalDailyApp: 4,
+            periodsHourlyAppRequests: 7,
+            untilPlayerLogins: null,
+            untilTotalMonthlyApp: null,
+            untilMonthlyAppRequests: null,
+            untilTotalDailyApp: null,
+            untilHourlyAppRequests: null,
         }
     },
 
@@ -57,22 +66,45 @@ export default {
                 vm.charts[prop].resize();
             }
         });
+
+        const now = new Date();
+        this.untilPlayerLogins = `${now.getUTCFullYear()}-${now.getUTCMonth() + 1}`;
+        this.untilTotalMonthlyApp = `${now.getUTCFullYear()}-${now.getUTCMonth() + 1}`;
+        this.untilMonthlyAppRequests = `${now.getUTCFullYear()}-${now.getUTCMonth() + 1}`;
+        this.untilTotalDailyApp = `${now.getUTCFullYear()}-${now.getUTCMonth() + 1}-${now.getUTCDate()}`;
+        this.untilHourlyAppRequests =
+            `${now.getUTCFullYear()}-${now.getUTCMonth() + 1}-${now.getUTCDate()} ${now.getUTCHours()}`;
     },
 
     watch: {
         periodsPlayerLogins () {
             getPlayerLoginsData(this);
         },
-        periodsRequestsMonthly () {
-            getTotalMonthlyAppRequestsData(this);
+        periodsTotalMonthlyApp () {
+            getTotalMonthlyAppData(this);
         },
-        periodsRequestsMonthlyPerApp () {
+        periodsMonthlyAppRequests () {
             getMonthlyAppRequestsData(this);
         },
-        periodsRequestsDaily () {
-            getTotalDailyAppRequestsData(this);
+        periodsTotalDailyApp () {
+            getTotalDailyAppData(this);
         },
-        periodsRequestsHourly () {
+        periodsHourlyAppRequests () {
+            getHourlyAppRequestsData(this)
+        },
+        untilPlayerLogins () {
+            getPlayerLoginsData(this);
+        },
+        untilTotalMonthlyApp () {
+            getTotalMonthlyAppData(this)
+        },
+        untilMonthlyAppRequests () {
+            getMonthlyAppRequestsData(this)
+        },
+        untilTotalDailyApp () {
+            getTotalDailyAppData(this)
+        },
+        untilHourlyAppRequests () {
             getHourlyAppRequestsData(this)
         },
     },
@@ -80,50 +112,58 @@ export default {
 
 function getData(vm) {
     getPlayerLoginsData(vm);
-    getTotalMonthlyAppRequestsData(vm);
+    getTotalMonthlyAppData(vm);
     getMonthlyAppRequestsData(vm);
-    getTotalDailyAppRequestsData(vm);
+    getTotalDailyAppData(vm);
     getHourlyAppRequestsData(vm);
 }
 
 function getPlayerLoginsData(vm) {
-    vm.api.statisticsPlayerLogins({until: vm.until, periods: vm.periodsPlayerLogins}, (error, data) => {
+    vm.api.statisticsPlayerLogins({until: vm.untilPlayerLogins, periods: vm.periodsPlayerLogins}, (error, data) => {
         if (!error) {
             chartPlayerLogins(vm, data.reverse());
         }
     });
 }
 
-function getTotalMonthlyAppRequestsData(vm) {
-    vm.api.statisticsTotalMonthlyAppRequests({until: vm.until, periods: vm.periodsRequestsMonthly}, (error, data) => {
-        if (!error) {
-            chartRequestsMonthly(vm, data.reverse());
+function getTotalMonthlyAppData(vm) {
+    vm.api.statisticsTotalMonthlyAppRequests(
+        {until: vm.untilTotalMonthlyApp, periods: vm.periodsTotalMonthlyApp}, (error, data) => {
+            if (!error) {
+                chartTotalMonthlyApp(vm, data.reverse());
+            }
         }
-    });
+    );
 }
 
 function getMonthlyAppRequestsData(vm) {
-    vm.api.statisticsMonthlyAppRequests({until: vm.until, periods: vm.periodsRequestsMonthlyPerApp}, (error, data) => {
-        if (!error) {
-            chartAppsRequests(vm, data.reverse(), 'App requests, monthly', 'months', 'statisticsRequestsMonthlyPerApp');
+    vm.api.statisticsMonthlyAppRequests(
+        {until: vm.untilMonthlyAppRequests, periods: vm.periodsMonthlyAppRequests}, (error, data) => {
+            if (!error) {
+                chartAppRequests(vm, data.reverse(), 'App requests, monthly', 'months', 'statisticsMonthlyAppRequests');
+            }
         }
-    });
+    );
 }
 
-function getTotalDailyAppRequestsData(vm) {
-    vm.api.statisticsTotalDailyAppRequests({until: vm.until, periods: vm.periodsRequestsDaily}, (error, data) => {
-        if (!error) {
-            chartRequestsDaily(vm, data.reverse());
+function getTotalDailyAppData(vm) {
+    vm.api.statisticsTotalDailyAppRequests(
+        {until: vm.untilTotalDailyApp, periods: vm.periodsTotalDailyApp}, (error, data) => {
+            if (!error) {
+                chartTotalDailyApp(vm, data.reverse());
+            }
         }
-    });
+    );
 }
 
 function getHourlyAppRequestsData(vm) {
-    vm.api.statisticsHourlyAppRequests({until: vm.until, periods: vm.periodsRequestsHourly}, (error, data) => {
-        if (!error) {
-            chartAppsRequests(vm, data.reverse(), 'App requests, hourly', 'hours', 'statisticsRequestsHourly');
+    vm.api.statisticsHourlyAppRequests(
+        {until: vm.untilHourlyAppRequests, periods: vm.periodsHourlyAppRequests}, (error, data) => {
+            if (!error) {
+                chartAppRequests(vm, data.reverse(), 'App requests, hourly', 'hours', 'statisticsHourlyAppRequests');
+            }
         }
-    });
+    );
 }
 
 const chartOption = {
@@ -187,7 +227,7 @@ function chartPlayerLogins(vm, items) {
     initChart(vm, 'statisticsPlayerLogins', options);
 }
 
-function chartRequestsMonthly(vm, items) {
+function chartTotalMonthlyApp(vm, items) {
     const options = JSON.parse(JSON.stringify(chartOption));
     options.title.text = 'App requests, monthly total';
     options.series.push(copyObjectData(chartSeries));
@@ -197,10 +237,10 @@ function chartRequestsMonthly(vm, items) {
         options.series[0].data.push(data.requests);
     }
 
-    initChart(vm, 'statisticsRequestsMonthly', options);
+    initChart(vm, 'statisticsTotalMonthlyApp', options);
 }
 
-function chartAppsRequests(vm, items, title, ticks, charId) {
+function chartAppRequests(vm, items, title, ticks, charId) {
     const options = JSON.parse(JSON.stringify(chartOption));
     options.title.text = title;
     options.grid.bottom = 81; // more space for legend (2 rows)
@@ -254,7 +294,7 @@ function chartAppsRequests(vm, items, title, ticks, charId) {
     initChart(vm, charId, options);
 }
 
-function chartRequestsDaily(vm, items) {
+function chartTotalDailyApp(vm, items) {
     const options = JSON.parse(JSON.stringify(chartOption));
 
     options.title.text = 'App requests, daily total';
@@ -264,7 +304,7 @@ function chartRequestsDaily(vm, items) {
         options.series[0].data.push(data.requests);
     }
 
-    initChart(vm, 'statisticsRequestsDaily', options);
+    initChart(vm, 'statisticsTotalDailyApp', options);
 }
 
 function initChart(vm, id, options) {
@@ -279,21 +319,24 @@ function initChart(vm, id, options) {
 
 <style scoped>
     #statisticsPlayerLogins,
-    #statisticsRequestsMonthly,
-    #statisticsRequestsMonthlyPerApp,
-    #statisticsRequestsDaily,
-    #statisticsRequestsHourly {
+    #statisticsTotalMonthlyApp,
+    #statisticsMonthlyAppRequests,
+    #statisticsTotalDailyApp,
+    #statisticsHourlyAppRequests {
         width: 100%;
         height: 400px;
     }
     #statisticsPlayerLogins,
-    #statisticsRequestsMonthly,
-    #statisticsRequestsMonthlyPerApp,
-    #statisticsRequestsDaily {
+    #statisticsTotalMonthlyApp,
+    #statisticsMonthlyAppRequests,
+    #statisticsTotalDailyApp {
         margin-bottom: 30px;
     }
 
-    input {
+    input.periods {
         width: 50px;
+    }
+    input.until {
+        width: 120px;
     }
 </style>
