@@ -46,7 +46,7 @@ class PlayerLoginsTest extends TestCase
     public function testSetGetCount()
     {
         $pl = new PlayerLogins();
-        $this->assertNull($pl->getCount());
+        $this->assertSame(0, $pl->getCount());
 
         $pl->setCount(31);
         $this->assertSame(31, $pl->getCount());

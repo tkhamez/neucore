@@ -231,4 +231,5 @@ return [
     '/api/user/statistics/total-monthly-app-requests'   => ['GET', [StatisticsController::class, 'totalMonthlyAppRequests']],
     '/api/user/statistics/monthly-app-requests'         => ['GET', [StatisticsController::class, 'monthlyAppRequests']],
     '/api/user/statistics/total-daily-app-requests'     => ['GET', [StatisticsController::class, 'totalDailyAppRequests']],
+    '/api/user/statistics/hourly-app-requests'          => ['GET', [StatisticsController::class, 'hourlyAppRequests']],
 ];

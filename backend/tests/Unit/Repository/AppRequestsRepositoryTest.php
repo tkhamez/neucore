@@ -13,20 +13,11 @@ use Tests\Helper;
 
 class AppRequestsRepositoryTest extends TestCase
 {
-    /**
-     * @var AppRequestsRepository
-     */
-    private static $repository;
+    private static AppRequestsRepository $repository;
 
-    /**
-     * @var App
-     */
-    private static $app1;
+    private static App $app1;
 
-    /**
-     * @var App
-     */
-    private static $app2;
+    private static App $app2;
 
     public static function setUpBeforeClass(): void
     {
@@ -36,39 +27,43 @@ class AppRequestsRepositoryTest extends TestCase
         self::$app1 = (new App())->setName('a1')->setSecret('s');
         self::$app2 = (new App())->setName('a2')->setSecret('s');
         $om->persist((new AppRequests())->setApp(self::$app1)->setCount(45)
-            ->setYear(2019)->setMonth(12)->setDayOfMonth(15));
+            ->setYear(2019)->setMonth(12)->setDayOfMonth(15)->setHour(0));
         $om->persist((new AppRequests())->setApp(self::$app1)->setCount(1)
-            ->setYear(2020)->setMonth(1)->setDayOfMonth(15));
+            ->setYear(2020)->setMonth(1)->setDayOfMonth(15)->setHour(1));
         $om->persist((new AppRequests())->setApp(self::$app1)->setCount(1)
-            ->setYear(2020)->setMonth(2)->setDayOfMonth(15));
+            ->setYear(2020)->setMonth(2)->setDayOfMonth(15)->setHour(2));
         $om->persist((new AppRequests())->setApp(self::$app1)->setCount(1)
-            ->setYear(2020)->setMonth(3)->setDayOfMonth(15));
+            ->setYear(2020)->setMonth(3)->setDayOfMonth(15)->setHour(3));
         $om->persist((new AppRequests())->setApp(self::$app1)->setCount(1)
-            ->setYear(2020)->setMonth(4)->setDayOfMonth(15));
+            ->setYear(2020)->setMonth(4)->setDayOfMonth(15)->setHour(4));
         $om->persist((new AppRequests())->setApp(self::$app1)->setCount(1)
-            ->setYear(2020)->setMonth(5)->setDayOfMonth(15));
+            ->setYear(2020)->setMonth(5)->setDayOfMonth(15)->setHour(5));
         $om->persist((new AppRequests())->setApp(self::$app1)->setCount(1)
-            ->setYear(2020)->setMonth(6)->setDayOfMonth(15));
+            ->setYear(2020)->setMonth(6)->setDayOfMonth(15)->setHour(6));
         $om->persist((new AppRequests())->setApp(self::$app1)->setCount(1)
-            ->setYear(2020)->setMonth(7)->setDayOfMonth(15));
+            ->setYear(2020)->setMonth(7)->setDayOfMonth(15)->setHour(7));
         $om->persist((new AppRequests())->setApp(self::$app1)->setCount(1)
-            ->setYear(2020)->setMonth(8)->setDayOfMonth(15));
+            ->setYear(2020)->setMonth(8)->setDayOfMonth(15)->setHour(8));
         $om->persist((new AppRequests())->setApp(self::$app1)->setCount(1)
-            ->setYear(2020)->setMonth(9)->setDayOfMonth(15));
+            ->setYear(2020)->setMonth(9)->setDayOfMonth(15)->setHour(9));
         $om->persist((new AppRequests())->setApp(self::$app1)->setCount(1)
-            ->setYear(2020)->setMonth(10)->setDayOfMonth(15));
+            ->setYear(2020)->setMonth(10)->setDayOfMonth(15)->setHour(10));
         $om->persist((new AppRequests())->setApp(self::$app1)->setCount(1)
-            ->setYear(2020)->setMonth(11)->setDayOfMonth(15));
+            ->setYear(2020)->setMonth(11)->setDayOfMonth(15)->setHour(11));
         $om->persist((new AppRequests())->setApp(self::$app1)->setCount(50)
-            ->setYear(2020)->setMonth(12)->setDayOfMonth(30));
+            ->setYear(2020)->setMonth(12)->setDayOfMonth(30)->setHour(12));
         $om->persist((new AppRequests())->setApp(self::$app1)->setCount(55)
-            ->setYear(2020)->setMonth(12)->setDayOfMonth(31));
+            ->setYear(2020)->setMonth(12)->setDayOfMonth(31)->setHour(13));
         $om->persist((new AppRequests())->setApp(self::$app1)->setCount(45)
-            ->setYear(2021)->setMonth(1)->setDayOfMonth(1));
-        $om->persist((new AppRequests())->setApp(self::$app2)->setCount(30)
-            ->setYear(2021)->setMonth(1)->setDayOfMonth(1));
+            ->setYear(2021)->setMonth(1)->setDayOfMonth(1)->setHour(14));
+        $om->persist((new AppRequests())->setApp(self::$app2)->setCount(20)
+            ->setYear(2021)->setMonth(1)->setDayOfMonth(1)->setHour(14));
+        $om->persist((new AppRequests())->setApp(self::$app2)->setCount(10)
+            ->setYear(2021)->setMonth(1)->setDayOfMonth(1)->setHour(15));
         $om->persist((new AppRequests())->setApp(self::$app2)->setCount(35)
-            ->setYear(2021)->setMonth(1)->setDayOfMonth(2));
+            ->setYear(2021)->setMonth(1)->setDayOfMonth(2)->setHour(16));
+        $om->persist((new AppRequests())->setApp(self::$app2)->setCount(65)
+            ->setYear(2021)->setMonth(2)->setDayOfMonth(2)->setHour(17));
         $om->persist(self::$app1);
         $om->persist(self::$app2);
         $om->flush();
@@ -93,7 +88,7 @@ class AppRequestsRepositoryTest extends TestCase
             ['requests' => 1, 'year' => 2020, 'month' => 2],
             ['requests' => 1, 'year' => 2020, 'month' => 1],
             //['requests' => 45, 'year' => 2019, 'month' => 12],
-        ], self::$repository->monthlySummary());
+        ], self::$repository->monthlySummary(strtotime('2021-01-15'), 13));
     }
 
     public function testMonthlySummaryByApp()
@@ -113,8 +108,7 @@ class AppRequestsRepositoryTest extends TestCase
             ['app_id' => self::$app1->getId(), 'app_name' => 'a1', 'requests' => 1, 'year' => 2020, 'month' => 3],
             ['app_id' => self::$app1->getId(), 'app_name' => 'a1', 'requests' => 1, 'year' => 2020, 'month' => 2],
             ['app_id' => self::$app1->getId(), 'app_name' => 'a1', 'requests' => 1, 'year' => 2020, 'month' => 1],
-            //['app_id' => self::$app1->getId(), 'app_name' => 'a1', 'requests' => 45, 'year' => 2019, 'month' => 12],
-        ], self::$repository->monthlySummaryByApp(strtotime('2021-01-15')));
+        ], self::$repository->monthlySummaryByApp(strtotime('2021-01-15'), 13));
     }
 
     public function testDailySummary()
@@ -124,18 +118,24 @@ class AppRequestsRepositoryTest extends TestCase
             ['requests' => 75, 'year' => 2021, 'month' => 1, 'day_of_month' => 1],
             ['requests' => 55, 'year' => 2020, 'month' => 12, 'day_of_month' => 31],
             ['requests' => 50, 'year' => 2020, 'month' => 12, 'day_of_month' => 30],
-            /*['requests' => 1, 'year' => 2020, 'month' => 11, 'day_of_month' => 15],
-            ['requests' => 1, 'year' => 2020, 'month' => 10, 'day_of_month' => 15],
-            ['requests' => 1, 'year' => 2020, 'month' => 9, 'day_of_month' => 15],
-            ['requests' => 1, 'year' => 2020, 'month' => 8, 'day_of_month' => 15],
-            ['requests' => 1, 'year' => 2020, 'month' => 7, 'day_of_month' => 15],
-            ['requests' => 1, 'year' => 2020, 'month' => 6, 'day_of_month' => 15],
-            ['requests' => 1, 'year' => 2020, 'month' => 5, 'day_of_month' => 15],
-            ['requests' => 1, 'year' => 2020, 'month' => 4, 'day_of_month' => 15],
-            ['requests' => 1, 'year' => 2020, 'month' => 3, 'day_of_month' => 15],
-            ['requests' => 1, 'year' => 2020, 'month' => 2, 'day_of_month' => 15],
-            ['requests' => 1, 'year' => 2020, 'month' => 1, 'day_of_month' => 15],
-            ['requests' => 45, 'year' => 2019, 'month' => 12, 'day_of_month' => 15],*/
-        ], self::$repository->dailySummary(strtotime('2021-01-15')));
+        ], self::$repository->dailySummary(strtotime('2021-01-15'), 8));
+    }
+
+    public function testHourlySummary()
+    {
+        $this->assertSame([
+            ['app_id' => self::$app2->getId(), 'app_name' => 'a2', 'requests' => 35, 'year' => 2021,
+                'month' => 1, 'day_of_month' => 2, 'hour' => 16],
+            ['app_id' => self::$app2->getId(), 'app_name' => 'a2', 'requests' => 10, 'year' => 2021,
+                'month' => 1, 'day_of_month' => 1, 'hour' => 15],
+            ['app_id' => self::$app1->getId(), 'app_name' => 'a1', 'requests' => 45, 'year' => 2021,
+                'month' => 1, 'day_of_month' => 1, 'hour' => 14],
+            ['app_id' => self::$app2->getId(), 'app_name' => 'a2', 'requests' => 20, 'year' => 2021,
+                'month' => 1, 'day_of_month' => 1, 'hour' => 14],
+            ['app_id' => self::$app1->getId(), 'app_name' => 'a1', 'requests' => 55, 'year' => 2020,
+                'month' => 12, 'day_of_month' => 31, 'hour' => 13],
+            ['app_id' => self::$app1->getId(), 'app_name' => 'a1', 'requests' => 50, 'year' => 2020,
+                'month' => 12, 'day_of_month' => 30, 'hour' => 12],
+        ], self::$repository->hourlySummary(strtotime('2021-01-03 03:30:00'), 5));
     }
 }

@@ -6,6 +6,7 @@ namespace Neucore\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\PlayerLogins;
+use Neucore\Repository\Traits\DateHelper;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 
@@ -16,6 +17,8 @@ use OpenApi\Annotations as OA;
  */
 class PlayerLoginsRepository extends EntityRepository
 {
+    use DateHelper;
+
     /**
      * @OA\Schema(
      *     schema="PlayerLoginStatistics",
@@ -25,21 +28,27 @@ class PlayerLoginsRepository extends EntityRepository
      *     @OA\Property(property="year", type="integer"),
      *     @OA\Property(property="month", type="integer"),
      * )
-     *
-     * Returns max. 13 rows, newest first.
      */
-    public function monthlySummary(): array
+    public function monthlySummary(int $endDate = null, int $months = 12): array
     {
-        $qb = $this->createQueryBuilder('pl')
-            ->select([
+        $endDate ??= time();
+        $startDate = strtotime(date('Y-m-d H:i:s', $endDate) . " -$months months");
+        $start = $this->getDateNumber($startDate);
+        $end = $this->getDateNumber($endDate);
+
+        $qb = $this->createQueryBuilder('pl');
+        $qb->select([
                 'COUNT(pl.player) AS unique_logins',
                 'SUM(pl.count) AS total_logins',
                 'pl.year',
                 'pl.month',
             ])
+            ->where($qb->expr()->gt('(pl.year * 100) + pl.month', ':start'))
+            ->setParameter('start', $start)
+            ->andWhere($qb->expr()->lte('(pl.year * 100) + pl.month', ':end'))
+            ->setParameter('end', $end)
             ->groupBy('pl.year', 'pl.month')
             ->orderBy('pl.year', 'DESC')->addOrderBy('pl.month', 'DESC')
-            ->setMaxResults(13)
         ;
 
         return array_map(function (array $r) {

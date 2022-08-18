@@ -11,6 +11,7 @@
             <div id="statisticsRequestsMonthly"></div>
             <div id="statisticsRequestsMonthlyPerApp"></div>
             <div id="statisticsRequestsDaily"></div>
+            <div id="statisticsRequestsHourly"></div>
         </div>
     </div>
 </div>
@@ -23,10 +24,6 @@ import * as echarts from 'echarts';
 export default {
     data () {
         return {
-            playerLogins: [],
-            requestsMonthly: [],
-            requestsMonthlyPerApp: [],
-            requestsDaily: [],
             charts: [],
         }
     },
@@ -46,32 +43,31 @@ export default {
 
 function getData(vm) {
     vm.logins = [];
-    vm.requestsMonthly = [];
-    vm.requestsMonthlyPerApp = [];
-    vm.requestsDaily = [];
     const api = new StatisticsApi();
-    api.statisticsPlayerLogins((error, data) => {
+    const now = Math.floor(Date.now() / 1000);
+    api.statisticsPlayerLogins({until: now}, (error, data) => {
         if (!error) {
-            vm.playerLogins = data.reverse();
-            chartPlayerLogins(vm);
+            chartPlayerLogins(vm, data.reverse());
         }
     });
-    api.statisticsTotalMonthlyAppRequests((error, data) => {
+    api.statisticsTotalMonthlyAppRequests({until: now}, (error, data) => {
         if (!error) {
-            vm.requestsMonthly = data.reverse();
-            chartRequestsMonthly(vm);
+            chartRequestsMonthly(vm, data.reverse());
         }
     });
-    api.statisticsMonthlyAppRequests({startTime: 0}, (error, data) => {
+    api.statisticsMonthlyAppRequests({until: now}, (error, data) => {
         if (!error) {
-            vm.requestsMonthlyPerApp = data.reverse();
-            chartRequestsMonthlyPerApp(vm);
+            chartAppsRequests(vm, data.reverse(), 'App requests, monthly', 'months', 'statisticsRequestsMonthlyPerApp');
         }
     });
-    api.statisticsTotalDailyAppRequests({startTime: 0}, (error, data) => {
+    api.statisticsTotalDailyAppRequests({until: now}, (error, data) => {
         if (!error) {
-            vm.requestsDaily = data.reverse();
-            chartRequestsDaily(vm);
+            chartRequestsDaily(vm, data.reverse());
+        }
+    });
+    api.statisticsHourlyAppRequests({until: now}, (error, data) => {
+        if (!error) {
+            chartAppsRequests(vm, data.reverse(), 'App requests, hourly', 'hours', 'statisticsRequestsHourly');
         }
     });
 }
@@ -119,7 +115,7 @@ function copyObjectData(object) {
     return JSON.parse(JSON.stringify(object));
 }
 
-function chartPlayerLogins(vm) {
+function chartPlayerLogins(vm, items) {
     const options = copyObjectData(chartOption);
     options.title.text = 'Player logins';
     options.series.push(copyObjectData(chartSeries));
@@ -128,7 +124,7 @@ function chartPlayerLogins(vm) {
     options.series[0].name = 'total logins';
     options.series[1].name = 'unique logins';
 
-    for (const data of vm.playerLogins) {
+    for (const data of items) {
         options.xAxis.data.push(`${data.year}-${data.month}`);
         options.series[0].data.push(data.total_logins);
         options.series[1].data.push(data.unique_logins);
@@ -137,12 +133,12 @@ function chartPlayerLogins(vm) {
     initChart(vm, 'statisticsPlayerLogins', options);
 }
 
-function chartRequestsMonthly(vm) {
+function chartRequestsMonthly(vm, items) {
     const options = JSON.parse(JSON.stringify(chartOption));
     options.title.text = 'App requests, monthly total';
     options.series.push(copyObjectData(chartSeries));
 
-    for (const data of vm.requestsMonthly) {
+    for (const data of items) {
         options.xAxis.data.push(`${data.year}-${data.month}`);
         options.series[0].data.push(data.requests);
     }
@@ -150,36 +146,46 @@ function chartRequestsMonthly(vm) {
     initChart(vm, 'statisticsRequestsMonthly', options);
 }
 
-function chartRequestsMonthlyPerApp(vm) {
+function chartAppsRequests(vm, items, title, ticks, charId) {
     const options = JSON.parse(JSON.stringify(chartOption));
-    options.title.text = 'App requests, monthly';
+    options.title.text = title;
     options.grid.bottom = 81; // more space for legend (2 rows)
 
     const appToSeries = {};
-    const monthToData = {};
+    const ticksToData = {};
     let nextSeries = -1;
     let nextData = -1;
-    for (const data of vm.requestsMonthlyPerApp) {
-        const month = `${data.year}-${data.month}`;
-
-        // Note: the data is ordered by date (year-month) ascending
-
-        // add axis labels
-        if (options.xAxis.data.indexOf(month) === -1) {
-            options.xAxis.data.push(month);
+    for (const data of items) {
+        let ident;
+        let label;
+        if (ticks === 'months') {
+            ident = `${data.year}-${data.month}`;
+            label = `${data.year}-${data.month}`;
+        } else if (ticks === 'hours') {
+            ident = `${data.year}-${data.month}-${data.day_of_month}-${data.hour}`;
+            label = `${data.month}-${data.day_of_month} ${data.hour}h`;
+        } else {
+            return;
         }
+
+        // Note: the data is ordered by date (time) ascending
 
         // get current series and data index
         if (!appToSeries.hasOwnProperty(data.app_id)) {
             nextSeries ++;
             appToSeries[data.app_id] = nextSeries;
         }
-        if (!monthToData.hasOwnProperty(month)) {
+        if (!ticksToData.hasOwnProperty(ident)) {
             nextData ++;
-            monthToData[month] = nextData;
+            ticksToData[ident] = nextData;
         }
         const seriesIndex = appToSeries[data.app_id];
-        const dataIndex = monthToData[month];
+        const dataIndex = ticksToData[ident];
+
+        // add axis labels
+        if (options.xAxis.data.length - 1 < dataIndex) {
+            options.xAxis.data.push(label);
+        }
 
         // create new series and data if missing
         if (options.series.length - 1 < seriesIndex) {
@@ -194,15 +200,15 @@ function chartRequestsMonthlyPerApp(vm) {
         options.series[seriesIndex].data[dataIndex] = data.requests;
     }
 
-    initChart(vm, 'statisticsRequestsMonthlyPerApp', options);
+    initChart(vm, charId, options);
 }
 
-function chartRequestsDaily(vm) {
+function chartRequestsDaily(vm, items) {
     const options = JSON.parse(JSON.stringify(chartOption));
 
     options.title.text = 'App requests, daily total';
     options.series.push(copyObjectData(chartSeries));
-    for (const data of vm.requestsDaily) {
+    for (const data of items) {
         options.xAxis.data.push(`${data.year}-${data.month}-${data.day_of_month}`);
         options.series[0].data.push(data.requests);
     }
@@ -221,13 +227,15 @@ function initChart(vm, id, options) {
     #statisticsPlayerLogins,
     #statisticsRequestsMonthly,
     #statisticsRequestsMonthlyPerApp,
-    #statisticsRequestsDaily {
+    #statisticsRequestsDaily,
+    #statisticsRequestsHourly {
         width: 100%;
         height: 400px;
     }
     #statisticsRequestsMonthly,
     #statisticsRequestsMonthlyPerApp,
-    #statisticsRequestsDaily {
+    #statisticsRequestsDaily,
+    #statisticsRequestsHourly {
         margin-top: 30px;
     }
 </style>

@@ -2,8 +2,12 @@
 
 All API endpoints from the backend are protected by roles.
 
-The API is documented with OpenAPI, it is available at
-[https://[domain]/api.html](https://neucore.herokuapp.com/api.html).
+The API is documented with OpenAPI. It is available with every installation at `/api.html`, e.g.
+https://neucore.herokuapp.com/api.
+
+Please note that schema properties that are not required and are of the type of another schema can
+also be null. Unfortunately, this cannot be documented in this way. For example, `Character.corporation`
+can be a `Corporation` object, be null, or not exist at all.
 
 ## Roles Overview
 

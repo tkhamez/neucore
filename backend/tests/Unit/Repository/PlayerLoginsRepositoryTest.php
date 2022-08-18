@@ -34,6 +34,7 @@ class PlayerLoginsRepositoryTest extends TestCase
         $om->persist((new PlayerLogins())->setPlayer($player1)->setCount(8) ->setYear(2020)->setMonth(12));
         $om->persist((new PlayerLogins())->setPlayer($player1)->setCount(3)->setYear(2021)->setMonth(1));
         $om->persist((new PlayerLogins())->setPlayer($player2)->setCount(1)->setYear(2021)->setMonth(1));
+        $om->persist((new PlayerLogins())->setPlayer($player2)->setCount(11)->setYear(2021)->setMonth(2));
         $om->persist($player1);
         $om->persist($player2);
         $om->flush();
@@ -53,6 +54,6 @@ class PlayerLoginsRepositoryTest extends TestCase
             ['unique_logins' => 1, 'total_logins' => 1, 'year' => 2020, 'month' => 2],
             ['unique_logins' => 1, 'total_logins' => 4, 'year' => 2020, 'month' => 1],
             //['unique_logins' => 1, 'total_logins' => 1, 'year' => 2019, 'month' => 12],
-        ], (new RepositoryFactory($om))->getPlayerLoginsRepository()->monthlySummary());
+        ], (new RepositoryFactory($om))->getPlayerLoginsRepository()->monthlySummary(strtotime('2021-01-01'), 13));
     }
 }

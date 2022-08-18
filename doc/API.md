@@ -5,8 +5,8 @@ All API endpoints from the backend are protected by roles.
 The API is documented with OpenAPI. It is available with every installation at `/api.html`, e.g.
 https://neucore.herokuapp.com/api.
 
-Please note that schema properties that are not required and are of the type of another schema can 
-also be null. Unfortunately, this cannot be documented in this way. For example, `Character.corporation` 
+Please note that schema properties that are not required and are of the type of another schema can
+also be null. Unfortunately, this cannot be documented in this way. For example, `Character.corporation`
 can be a `Corporation` object, be null, or not exist at all.
 
 ## Roles Overview
@@ -241,6 +241,7 @@ Statistics API
 - Returns total monthly app request numbers, max. last 13 entries. `GET /user/statistics/total-monthly-app-requests`
 - Returns monthly app request numbers. `GET /user/statistics/monthly-app-requests`
 - Returns total daily app request numbers. `GET /user/statistics/total-daily-app-requests`
+- Returns hourly app request numbers. `GET /user/statistics/hourly-app-requests`
 
 #### app-admin
 

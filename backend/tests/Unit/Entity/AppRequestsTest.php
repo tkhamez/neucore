@@ -46,10 +46,17 @@ class AppRequestsTest extends TestCase
         $this->assertSame(16, $pl->setDayOfMonth(16)->getDayOfMonth());
     }
 
+    public function testSetGetHour()
+    {
+        $pl = new AppRequests();
+        $this->assertNull($pl->getHour());
+        $this->assertSame(23, $pl->setHour(23)->getHour());
+    }
+
     public function testSetGetCount()
     {
         $pl = new AppRequests();
-        $this->assertNull($pl->getCount());
+        $this->assertSame(0, $pl->getCount());
 
         $pl->setCount(31);
         $this->assertSame(31, $pl->getCount());

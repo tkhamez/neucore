@@ -12,8 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(
  *     name="player_logins",
  *     indexes={
- *         @ORM\Index(name="pl_year_idx", columns={"year"}),
- *         @ORM\Index(name="pl_month_idx", columns={"month"})
+ *         @ORM\Index(name="pl_year_idx", columns={"request_year"}),
+ *         @ORM\Index(name="pl_month_idx", columns={"request_month"})
  *     }
  * )
  */
@@ -23,34 +23,29 @@ class PlayerLogins
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
-     * @var integer
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="Player")
      * @ORM\JoinColumn(nullable=false)
-     * @var Player
      */
-    private $player;
+    private ?Player $player = null;
 
     /**
-     * @ORM\Column(type="integer")
-     * @var int
+     * @ORM\Column(name="request_year", type="integer")
      */
-    private $year;
+    private ?int $year = null;
 
     /**
-     * @ORM\Column(type="integer")
-     * @var int
+     * @ORM\Column(name="request_month", type="integer")
      */
-    private $month;
+    private ?int $month = null;
 
     /**
-     * @ORM\Column(type="integer")
-     * @var int
+     * @ORM\Column(name="request_count", type="integer")
      */
-    private $count;
+    private int $count = 0;
 
     public function getId(): ?int
     {

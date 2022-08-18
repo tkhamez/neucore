@@ -318,7 +318,7 @@ class SystemVariable implements \JsonSerializable
      * Variable value.
      *
      * @OA\Property(nullable=true)
-     * @ORM\Column(type="text", length=16777215, nullable=true)
+     * @ORM\Column(name="variable_value", type="text", length=16777215, nullable=true)
      */
     private ?string $value = null;
 

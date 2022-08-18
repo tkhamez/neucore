@@ -12,8 +12,10 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(
  *     name="app_requests",
  *     indexes={
- *         @ORM\Index(name="ar_year_idx", columns={"year"}),
- *         @ORM\Index(name="ar_month_idx", columns={"month"})
+ *         @ORM\Index(name="ar_year_idx", columns={"request_year"}),
+ *         @ORM\Index(name="ar_month_idx", columns={"request_month"}),
+ *         @ORM\Index(name="ar_day_of_month_idx", columns={"request_day_of_month"}),
+ *         @ORM\Index(name="ar_hour_idx", columns={"request_hour"})
  *     },
  * )
  */
@@ -21,42 +23,41 @@ class AppRequests
 {
     /**
      * @ORM\Id
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="bigint")
      * @ORM\GeneratedValue
-     * @var integer
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App")
      * @ORM\JoinColumn(nullable=false)
-     * @var App
      */
-    private $app;
+    private ?App $app = null;
 
     /**
-     * @ORM\Column(type="integer")
-     * @var int|null
+     * @ORM\Column(name="request_year", type="integer")
      */
-    private $year;
+    private ?int $year = null;
 
     /**
-     * @ORM\Column(type="integer")
-     * @var int|null
+     * @ORM\Column(name="request_month", type="integer")
      */
-    private $month;
+    private ?int $month = null;
 
     /**
-     * @ORM\Column(name="day_of_month", type="integer")
-     * @var int|null
+     * @ORM\Column(name="request_day_of_month", type="integer")
      */
-    private $dayOfMonth;
+    private ?int $dayOfMonth = null;
 
     /**
-     * @ORM\Column(type="integer")
-     * @var int
+     * @ORM\Column(name="request_hour", type="integer")
      */
-    private $count;
+    private ?int $hour = null;
+
+    /**
+     * @ORM\Column(name="request_count", type="integer")
+     */
+    private int $count = 0;
 
     public function getId(): ?int
     {
@@ -79,7 +80,7 @@ class AppRequests
         return $this->year;
     }
 
-    public function setYear(int $year): AppRequests
+    public function setYear(int $year): self
     {
         $this->year = $year;
         return $this;
@@ -90,7 +91,7 @@ class AppRequests
         return $this->month;
     }
 
-    public function setMonth(int $month): AppRequests
+    public function setMonth(int $month): self
     {
         $this->month = $month;
         return $this;
@@ -101,9 +102,20 @@ class AppRequests
         return $this->dayOfMonth;
     }
 
-    public function setDayOfMonth(int $dayOfMonth): AppRequests
+    public function setDayOfMonth(int $dayOfMonth): self
     {
         $this->dayOfMonth = $dayOfMonth;
+        return $this;
+    }
+
+    public function getHour(): ?int
+    {
+        return $this->hour;
+    }
+
+    public function setHour(int $hour): self
+    {
+        $this->hour = $hour;
         return $this;
     }
 

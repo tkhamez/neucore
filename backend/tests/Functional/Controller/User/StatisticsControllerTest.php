@@ -14,10 +14,7 @@ use Tests\Helper;
 
 class StatisticsControllerTest extends WebTestCase
 {
-    /**
-     * @var App
-     */
-    private static $app;
+    private static App $app;
 
     public static function setUpBeforeClass(): void
     {
@@ -26,7 +23,8 @@ class StatisticsControllerTest extends WebTestCase
         $player = new Player();
         $login = (new PlayerLogins())->setPlayer($player)->setCount(4)->setYear(2021)->setMonth(1);
         self::$app = (new App())->setName('a1')->setSecret('s');
-        $req = (new AppRequests())->setApp(self::$app)->setCount(43)->setYear(2021)->setMonth(1)->setDayOfMonth(23);
+        $req = (new AppRequests())->setApp(self::$app)->setCount(43)
+            ->setYear(2021)->setMonth(1)->setDayOfMonth(23)->setHour(13);
         $helper->getEm()->persist($player);
         $helper->getEm()->persist($login);
         $helper->getEm()->persist(self::$app);
@@ -57,7 +55,8 @@ class StatisticsControllerTest extends WebTestCase
     {
         $this->loginUser(2);
 
-        $response = $this->runApp('GET', '/api/user/statistics/player-logins');
+        $startTime = strtotime('2021-03-27');
+        $response = $this->runApp('GET', '/api/user/statistics/player-logins?until='.$startTime);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
@@ -81,7 +80,8 @@ class StatisticsControllerTest extends WebTestCase
     {
         $this->loginUser(2);
 
-        $response = $this->runApp('GET', '/api/user/statistics/total-monthly-app-requests');
+        $startTime = strtotime('2021-03-27');
+        $response = $this->runApp('GET', '/api/user/statistics/total-monthly-app-requests?until='.$startTime);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
@@ -106,7 +106,7 @@ class StatisticsControllerTest extends WebTestCase
         $this->loginUser(2);
 
         $startTime = strtotime('2021-03-27');
-        $response = $this->runApp('GET', '/api/user/statistics/monthly-app-requests?start-time='.$startTime);
+        $response = $this->runApp('GET', '/api/user/statistics/monthly-app-requests?until='.$startTime);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
@@ -130,12 +130,45 @@ class StatisticsControllerTest extends WebTestCase
     {
         $this->loginUser(2);
 
-        $startTime = strtotime('2021-01-15');
-        $response = $this->runApp('GET', '/api/user/statistics/total-daily-app-requests?start-time='.$startTime);
+        $startTime = strtotime('2021-01-30');
+        $response = $this->runApp('GET', '/api/user/statistics/total-daily-app-requests?until='.$startTime);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [['requests' => 43, 'year' => 2021, 'month' => 1, 'day_of_month' => 23]],
+            $this->parseJsonBody($response)
+        );
+    }
+
+    public function testHourlyAppRequests403()
+    {
+        $response1 = $this->runApp('GET', '/api/user/statistics/hourly-app-requests');
+
+        $this->loginUser(1);
+        $response2 = $this->runApp('GET', '/api/user/statistics/hourly-app-requests');
+
+        $this->assertEquals(403, $response1->getStatusCode());
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testHourlyAppRequests200()
+    {
+        $this->loginUser(2);
+
+        $startTime = strtotime('2021-01-25');
+        $response = $this->runApp('GET', '/api/user/statistics/hourly-app-requests?until='.$startTime);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(
+            [[
+                'app_id' => self::$app->getId(),
+                'app_name' => 'a1',
+                'requests' => 43,
+                'year' => 2021,
+                'month' => 1,
+                'day_of_month' => 23,
+                'hour' => 13,
+            ]],
             $this->parseJsonBody($response)
         );
     }

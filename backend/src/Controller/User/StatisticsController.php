@@ -28,6 +28,12 @@ class StatisticsController extends BaseController
      *     description="Needs role: statistics",
      *     tags={"Statistics"},
      *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="until",
+     *         in="query",
+     *         description="Unix Timestamp",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response="200",
      *         description="Player logins.",
@@ -39,9 +45,10 @@ class StatisticsController extends BaseController
      *     )
      * )
      */
-    public function playerLogins(): ResponseInterface
+    public function playerLogins(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->withJson($this->repositoryFactory->getPlayerLoginsRepository()->monthlySummary());
+        $until = $this->getQueryParam($request, 'until', time());
+        return $this->withJson($this->repositoryFactory->getPlayerLoginsRepository()->monthlySummary((int)$until));
     }
 
     /**
@@ -52,6 +59,12 @@ class StatisticsController extends BaseController
      *     description="Needs role: statistics",
      *     tags={"Statistics"},
      *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="until",
+     *         in="query",
+     *         description="Unix Timestamp",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response="200",
      *         description="App requests.",
@@ -63,9 +76,10 @@ class StatisticsController extends BaseController
      *     )
      * )
      */
-    public function totalMonthlyAppRequests(): ResponseInterface
+    public function totalMonthlyAppRequests(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()->monthlySummary());
+        $until = $this->getQueryParam($request, 'until', time());
+        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()->monthlySummary((int)$until));
     }
 
     /**
@@ -77,7 +91,7 @@ class StatisticsController extends BaseController
      *     tags={"Statistics"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
-     *         name="start-time",
+     *         name="until",
      *         in="query",
      *         description="Unix Timestamp",
      *         @OA\Schema(type="integer")
@@ -95,9 +109,9 @@ class StatisticsController extends BaseController
      */
     public function monthlyAppRequests(ServerRequestInterface $request): ResponseInterface
     {
-        $startTime = $this->getQueryParam($request, 'start-time', time());
+        $until = $this->getQueryParam($request, 'until', time());
         return $this->withJson($this->repositoryFactory->getAppRequestsRepository()
-            ->monthlySummaryByApp((int)$startTime));
+            ->monthlySummaryByApp((int)$until));
     }
 
     /**
@@ -109,7 +123,7 @@ class StatisticsController extends BaseController
      *     tags={"Statistics"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
-     *         name="start-time",
+     *         name="until",
      *         in="query",
      *         description="Unix Timestamp",
      *         @OA\Schema(type="integer")
@@ -127,7 +141,38 @@ class StatisticsController extends BaseController
      */
     public function totalDailyAppRequests(ServerRequestInterface $request): ResponseInterface
     {
-        $startTime = $this->getQueryParam($request, 'start-time', time());
-        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()->dailySummary((int)$startTime));
+        $until = $this->getQueryParam($request, 'until', time());
+        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()->dailySummary((int)$until));
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/user/statistics/hourly-app-requests",
+     *     operationId="statisticsHourlyAppRequests",
+     *     summary="Returns hourly app request numbers.",
+     *     description="Needs role: statistics",
+     *     tags={"Statistics"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="until",
+     *         in="query",
+     *         description="Unix Timestamp",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="App requests.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/HourlyAppRequests"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function hourlyAppRequests(ServerRequestInterface $request): ResponseInterface
+    {
+        $until = $this->getQueryParam($request, 'until', time());
+        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()->hourlySummary((int)$until));
     }
 }
