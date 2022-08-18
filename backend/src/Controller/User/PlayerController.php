@@ -11,6 +11,7 @@ use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
+use Neucore\Entity\ServiceAccount;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
@@ -1223,15 +1224,14 @@ class PlayerController extends BaseController
                 }
             }
             foreach ($accounts as $account) {
-                // This is the OpenAPI schema "ServiceAccount" defined in Neucore\Api class
-                $result[] = [
-                    'serviceId' => $service->getId(),
-                    'serviceName' => $service->getName(),
-                    'characterId' => $account->getCharacterId(),
-                    'username' => $account->getUsername(),
-                    'status' => $account->getStatus(),
-                    'name' => $account->getName(),
-                ];
+                $result[] = new ServiceAccount(
+                    $service->getId(),
+                    $service->getName(),
+                    $account->getCharacterId(),
+                    $account->getUsername(),
+                    $account->getStatus(),
+                    $account->getName(),
+                );
             }
         }
 

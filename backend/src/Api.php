@@ -18,18 +18,6 @@ use OpenApi\Annotations as OA;
  *         url="https://localhost/api"
  *     )
  * )
- *
- * @OA\Schema(
- *     schema="ServiceAccount",
- *     required={"serviceId", "serviceName", "characterId", "username", "status", "name"},
- *     @OA\Property(property="serviceId", type="integer"),
- *     @OA\Property(property="serviceName", type="string", nullable=true),
- *     @OA\Property(property="characterId", type="integer", format="int64"),
- *     @OA\Property(property="username", type="string", nullable=true),
- *     @OA\Property(property="status", type="string", nullable=true,
- *                  enum={"Pending", "Active", "Deactivated", "Unknown"}),
- *     @OA\Property(property="name", type="string", nullable=true),
- * )
  */
 class Api
 {
