@@ -15,6 +15,9 @@ $result = file_get_contents(__DIR__ . '/../../doc/API.tpl.md');
 $roles = new ReflectionClass(Role::class);
 
 foreach ($roles->getConstants() as $role) {
+    if (!is_string($role)) {
+        continue;
+    }
     $apiGroups = [];
     foreach (getRoutesForRole($role, $routesDef, $securityDef) as $route) {
         $routeDef = getApiForRoute($route, $apiDef['paths']);
