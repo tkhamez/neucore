@@ -88,7 +88,7 @@
                         <input type="text" class="form-control" v-model="requiredGroups">
                         <span class="form-text">
                             Comma-separated list of group IDs that an account must have (one of them)
-                            to see this service.
+                            to see this service and not be kicked off the server (if kicks are enabled).
                         </span>
                     </label>
                     <label class="col-form-label w-100">
