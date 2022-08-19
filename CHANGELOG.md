@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 1.34.0
 
-DD MM YYYY
+19 Aug 2022
 
 - New: Roles can now be configured with groups a player must belong to. This allows roles to be removed automatically.
 - Change: App request statistics are now recorded hourly instead of daily.
