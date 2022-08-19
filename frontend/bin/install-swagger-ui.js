@@ -2,11 +2,11 @@
 
 const fs = require('fs');
 
-const sourcePath = __dirname + '/../node_modules/swagger-ui-dist';
-const targetPath = __dirname + '/../../web/swagger-ui-dist';
+const sourcePath = `${__dirname}/../node_modules/swagger-ui-dist`;
+const targetPath = `${__dirname}/../../web/swagger-ui-dist`;
 
 if (fs.existsSync(targetPath)) {
-    fs.rmdirSync(targetPath, { recursive: true });
+    fs.rmSync(targetPath, { recursive: true });
 }
 fs.mkdirSync(targetPath);
 
