@@ -40,7 +40,7 @@ Modal window with all characters of one player.
                                                       'bg-danger': character.validToken === false,
                                                       'bg-info': character.validToken === null,
                                                   }"
-                                                  data-bs-toggle="tooltip"
+                                                  :data-bs-toggle="getTokenTitle(character) ? 'tooltip' : ''"
                                                   data-bs-html="true"
                                                   data-bs-custom-class="character-token"
                                                   :title="getTokenTitle(character)">
@@ -235,6 +235,9 @@ export default {
         },
 
         getTokenTitle(character) {
+            if (!character.validTokenTime && !character.tokenLastChecked) {
+                return '';
+            }
             return `Status changed: ${this.formatDate(character.validTokenTime)}<br>
                 Last checked: ${this.formatDate(character.tokenLastChecked)}`;
         }
