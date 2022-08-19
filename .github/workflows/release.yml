@@ -75,6 +75,7 @@ jobs:
           docker build --no-cache -t tkhamez/neucore:${{ steps.get_version.outputs.VERSION }} .
           docker tag tkhamez/neucore:${{ steps.get_version.outputs.VERSION }} tkhamez/neucore:latest
       - name: Publish Docker image
+        if: ${{ github.repository_owner == 'tkhamez' }}
         run: |
           echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u tkhamez --password-stdin
           docker push tkhamez/neucore:${{ steps.get_version.outputs.VERSION }}
