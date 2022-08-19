@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
+use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
@@ -13,9 +14,12 @@ class AccountGroup
 {
     private RepositoryFactory $repositoryFactory;
 
-    public function __construct(RepositoryFactory $repositoryFactory)
+    private \Doctrine\Persistence\ObjectManager $objectManager;
+
+    public function __construct(RepositoryFactory $repositoryFactory, \Doctrine\Persistence\ObjectManager $objectManager)
     {
         $this->repositoryFactory = $repositoryFactory;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -79,5 +83,22 @@ class AccountGroup
             return [];
         }
         return $player->getCoreGroups();
+    }
+
+    /**
+     * Remove player from group and corresponding application, should there be one.
+     */
+    public function removeGroupAndApplication(Player $player, Group $group): void
+    {
+        $player->removeGroup($group);
+
+        // Remove application if one exists.
+        $groupApplication = $this->repositoryFactory->getGroupApplicationRepository()->findOneBy([
+            'player' => $player->getId(),
+            'group' => $group->getId()
+        ]);
+        if ($groupApplication) {
+            $this->objectManager->remove($groupApplication);
+        }
     }
 }

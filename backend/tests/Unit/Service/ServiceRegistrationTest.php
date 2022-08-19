@@ -56,7 +56,7 @@ class ServiceRegistrationTest extends TestCase
         $this->helper = new Helper();
         $this->om = $this->helper->getObjectManager();
         $repoFactory = RepositoryFactory::getInstance($this->om);
-        $accountGroup = new AccountGroup($repoFactory);
+        $accountGroup = new AccountGroup($repoFactory, $this->om);
         $this->serviceRegistration = new ServiceRegistration($this->log, $repoFactory, $accountGroup);
         $this->serviceImplementation = new ServiceRegistrationTest_TestService(
             $this->log,

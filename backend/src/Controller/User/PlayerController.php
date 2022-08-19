@@ -375,17 +375,14 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function leaveGroup(string $gid): ResponseInterface
+    public function leaveGroup(string $gid, AccountGroup $accountGroup): ResponseInterface
     {
         $group = $this->repositoryFactory->getGroupRepository()->findOneBy(['id' => (int) $gid]);
         if ($group === null) {
             return $this->response->withStatus(404);
         }
 
-        $this->getUser($this->userAuth)->getPlayer()->removeGroup($group);
-
-        // also remove the application
-        $this->removeApplication($gid);
+        $accountGroup->removeGroupAndApplication($this->getUser($this->userAuth)->getPlayer(), $group);
 
         return $this->flushAndReturn(204);
     }
@@ -477,8 +474,12 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function setStatus(string $id, string $status, Account $account): ResponseInterface
-    {
+    public function setStatus(
+        string $id,
+        string $status,
+        Account $account,
+        AccountGroup $accountGroup
+    ): ResponseInterface {
         $validStatus = [
             Player::STATUS_STANDARD,
             Player::STATUS_MANAGED,
@@ -491,7 +492,7 @@ class PlayerController extends BaseController
         if ($status !== $player->getStatus()) {
             // remove all groups and change status
             foreach ($player->getGroups() as $group) {
-                $player->removeGroup($group);
+                $accountGroup->removeGroupAndApplication($player, $group);
             }
             $player->setStatus($status);
 

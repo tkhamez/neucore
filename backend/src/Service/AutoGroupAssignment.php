@@ -20,6 +20,8 @@ class AutoGroupAssignment
 
     private GroupRepository $groupRepo;
 
+    private AccountGroup $accountGroup;
+
     /**
      * Alliance ID to group IDs mapping.
      */
@@ -35,11 +37,12 @@ class AutoGroupAssignment
      */
     private ?array $autoGroups = null;
 
-    public function __construct(RepositoryFactory $repositoryFactory)
+    public function __construct(RepositoryFactory $repositoryFactory, AccountGroup $accountGroup)
     {
         $this->allianceRepo = $repositoryFactory->getAllianceRepository();
         $this->corpRepo = $repositoryFactory->getCorporationRepository();
         $this->groupRepo = $repositoryFactory->getGroupRepository();
+        $this->accountGroup = $accountGroup;
     }
 
     /**
@@ -114,7 +117,7 @@ class AutoGroupAssignment
         foreach ($removeIds as $removeId) {
             $removeGroup = $player->findGroupById($removeId);
             if ($removeGroup) {
-                $player->removeGroup($removeGroup);
+                $this->accountGroup->removeGroupAndApplication($player, $removeGroup);
             }
         }
 
@@ -148,7 +151,7 @@ class AutoGroupAssignment
             $lastGroupCount = count($player->getGroups());
             foreach ($player->getGroups() as $group) {
                 if (!$player->isAllowedMember($group)) {
-                    $player->removeGroup($group);
+                    $this->accountGroup->removeGroupAndApplication($player, $group);
                 }
             }
         } while ($lastGroupCount !== count($player->getGroups()));

@@ -13,6 +13,7 @@ use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\AccountGroup;
 use Neucore\Service\AutoGroupAssignment;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
@@ -56,7 +57,8 @@ class AutoGroupAssignmentTest extends TestCase
         $repositoryFactory = new RepositoryFactory($this->om);
         $this->playerRepo = $repositoryFactory->getPlayerRepository();
 
-        $this->aga = new AutoGroupAssignment($repositoryFactory);
+        $accountGroup = new AccountGroup($repositoryFactory, $this->om);
+        $this->aga = new AutoGroupAssignment($repositoryFactory, $accountGroup);
     }
 
     public function testAssignManaged()

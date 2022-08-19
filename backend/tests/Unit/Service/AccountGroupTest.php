@@ -33,7 +33,7 @@ class AccountGroupTest extends TestCase
         $this->helper = new Helper();
         $this->helper->emptyDb();
         $this->om = $this->helper->getObjectManager();
-        $this->service = new AccountGroup(new RepositoryFactory($this->om));
+        $this->service = new AccountGroup(new RepositoryFactory($this->om), $this->om);
     }
 
     public function testGroupsDeactivatedValidToken()

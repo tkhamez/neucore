@@ -163,9 +163,10 @@ class Helper
         $characterService = new \Neucore\Service\Character($objectManager, $repoFactory);
         $esiApiFactory = new EsiApiFactory($client, $config);
         $esiData = new EsiData($logger, $esiApiFactory, $objectManager, $repoFactory, $characterService, $config);
-        $autoGroups = new AutoGroupAssignment($repoFactory);
+        $accountGroup = new AccountGroup($repoFactory, $this->getObjectManager());
+        $autoGroups = new AutoGroupAssignment($repoFactory, $accountGroup);
         $token = new OAuthToken($this->getAuthenticationProvider($client), $objectManager, $logger);
-        $serviceRegistration = new ServiceRegistration($logger, $repoFactory, new AccountGroup($repoFactory));
+        $serviceRegistration = new ServiceRegistration($logger, $repoFactory, $accountGroup);
         return new Account($logger, $objectManager, $repoFactory, $esiData, $autoGroups, $token, $serviceRegistration);
     }
 
@@ -174,7 +175,7 @@ class Helper
         $repoFactory = RepositoryFactory::getInstance($this->getObjectManager());
         $objectManager = new \Neucore\Service\ObjectManager($this->getObjectManager(), $logger);
         $accountService = $this->getAccountService($logger, $client);
-        $accountGroupService = new AccountGroup($repoFactory);
+        $accountGroupService = new AccountGroup($repoFactory, $this->getObjectManager());
         return new UserAuth(
             new SessionData(),
             $accountService,

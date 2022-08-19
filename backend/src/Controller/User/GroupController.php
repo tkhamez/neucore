@@ -12,6 +12,7 @@ use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
+use Neucore\Service\AccountGroup;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
@@ -35,6 +36,8 @@ class GroupController extends BaseController
 
     private Account $account;
 
+    private AccountGroup $accountGroup;
+
     private string $namePattern = "/^[-._a-zA-Z\d]+$/";
 
     private ?Group $group = null;
@@ -46,12 +49,14 @@ class GroupController extends BaseController
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         UserAuth $userAuth,
-        Account $account
+        Account $account,
+        AccountGroup $accountGroup
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
 
         $this->userAuth = $userAuth;
         $this->account = $account;
+        $this->accountGroup = $accountGroup;
     }
 
     /**
@@ -957,9 +962,9 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function addManager(string $id, string $pid, Account $account): ResponseInterface
+    public function addManager(string $id, string $pid): ResponseInterface
     {
-        return $this->addPlayerAs($id, $pid, 'manager', false, $account);
+        return $this->addPlayerAs($id, $pid, 'manager', false);
     }
 
     /**
@@ -999,9 +1004,9 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function removeManager(string $id, string $pid, Account $account): ResponseInterface
+    public function removeManager(string $id, string $pid): ResponseInterface
     {
-        return $this->removePlayerFrom($id, $pid, self::TYPE_MANAGERS, false, $account);
+        return $this->removePlayerFrom($id, $pid, self::TYPE_MANAGERS, false);
     }
 
     /**
@@ -1161,9 +1166,9 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function addMember(string $id, string $pid, Account $account): ResponseInterface
+    public function addMember(string $id, string $pid): ResponseInterface
     {
-        return $this->addPlayerAs($id, $pid, 'member', true, $account);
+        return $this->addPlayerAs($id, $pid, 'member', true);
     }
 
     /**
@@ -1203,9 +1208,9 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function removeMember(string $id, string $pid, Account $account): ResponseInterface
+    public function removeMember(string $id, string $pid): ResponseInterface
     {
-        return $this->removePlayerFrom($id, $pid, self::TYPE_MEMBERS, true, $account);
+        return $this->removePlayerFrom($id, $pid, self::TYPE_MEMBERS, true);
     }
 
     /**
@@ -1315,8 +1320,7 @@ class GroupController extends BaseController
         string $groupId,
         string $playerId,
         string $type,
-        bool $onlyIfManager,
-        Account $account
+        bool $onlyIfManager
     ): ResponseInterface {
         $this->findGroupAndPlayer($groupId, $playerId);
         if (!$this->group || !$this->player) {
@@ -1333,7 +1337,7 @@ class GroupController extends BaseController
             }
             $this->group->addManager($this->player); // needed to persist
             $this->player->addManagerGroup($this->group); // needed for check in syncManagerRole()
-            $account->syncManagerRole($this->player, Role::GROUP_MANAGER);
+            $this->account->syncManagerRole($this->player, Role::GROUP_MANAGER);
         } elseif ($type === 'member' && !$this->player->hasGroup($this->group->getId())) {
             if (!$this->player->isAllowedMember($this->group)) {
                 return $this->response->withStatus(400);
@@ -1349,8 +1353,7 @@ class GroupController extends BaseController
         string $groupId,
         string $playerId,
         string $type,
-        bool $onlyIfManager,
-        Account $account
+        bool $onlyIfManager
     ): ResponseInterface {
         $this->findGroupAndPlayer($groupId, $playerId);
         if (!$this->group || !$this->player) {
@@ -1364,19 +1367,9 @@ class GroupController extends BaseController
         if ($type === self::TYPE_MANAGERS) {
             $this->group->removeManager($this->player); // needed to persist
             $this->player->removeManagerGroup($this->group); // needed for check in syncManagerRole()
-            $account->syncManagerRole($this->player, Role::GROUP_MANAGER);
+            $this->account->syncManagerRole($this->player, Role::GROUP_MANAGER);
         } elseif ($type === self::TYPE_MEMBERS) {
-            $this->player->removeGroup($this->group);
-
-            // Remove application if one exists.
-            $groupApplication = $this->repositoryFactory->getGroupApplicationRepository()->findOneBy([
-                'player' => $this->player->getId(),
-                'group' => $this->group->getId()
-            ]);
-            if ($groupApplication) {
-                $this->objectManager->remove($groupApplication);
-            }
-
+            $this->accountGroup->removeGroupAndApplication($this->player, $this->group);
             $this->account->updateGroups($this->player->getId());
         }
 
