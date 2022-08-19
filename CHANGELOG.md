@@ -5,13 +5,18 @@
 DD MM YYYY
 
 - New: Roles can now be configured with groups a player must belong to. This allows roles to be removed automatically.
-- Groups are now synchronized immediately when a player is added to or removed from a group.
-- The customizable text on the login page can now contain new lines.
-- The link on the login page has been changed to the new SSO article.
-- Service plugin page: The HTML around the password has been changed so that it does not contain spaces at the 
-  beginning or end when copied in some browsers.
-- Removed "GitHub" configuration option, it's now always https://github.com/tkhamez/neucore.
-- Other small improvements and fixes.
+- Change: App request statistics are now recorded hourly instead of daily.
+- New: Added new chart with hourly app requests.
+- Improvement: For all charts you can now select an end date and the time period to be displayed.
+- Improvement: Groups are now synchronized immediately when a player is added to or removed from a group.
+- Improvement: The customizable text on the login page can now contain new lines.
+- Fix: The HTML around the password on the service plugin page has been changed so that it does not contain
+  spaces at the beginning or end when copied in some browsers.
+- Change: The link on the login page has been changed to the new SSO article.
+- Change: Removed "GitHub" configuration option, it's now always https://github.com/tkhamez/neucore.
+- New: Added link to the [Neucore Discord Server](https://discord.gg/memUh56u8z) in the footer (small icon next 
+  to the GitHub icon).
+- Other small improvements, fixes and library updates.
 
 ## 1.33.3
 
