@@ -479,18 +479,44 @@ class AccountTest extends TestCase
     /**
      * @throws \Exception
      */
+    public function testCheckCharacter_InvalidJwtData()
+    {
+        list($token) = Helper::generateToken(['Scope1'], 'Char Name', ''); // with empty character owner hash
+        $this->client->setResponse(
+            // for getAccessToken()
+            new Response(200, [], '{
+                "access_token": ' . json_encode($token) . ', 
+                "refresh_token": "r-t", 
+                "expires": '. (time() + 60) .'
+            }')
+        );
+        $char = $this->setUpCharacterWithToken(time() - 60, true);
+
+        $result = $this->service->checkCharacter($char);
+
+        $this->assertSame(Account::CHECK_TOKEN_OK, $result);
+        $this->assertSame(['Unexpected JWT data, missing character owner hash.'], $this->log->getMessages());
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function testCheckCharacter_ValidWithScopes_UpdateOtherTokens_CheckRoles()
     {
         list($token) = Helper::generateToken(['scope1', 'scope2'], 'Old Name');
         $this->client->setResponse(
-            // second token - for getAccessToken()
+            // second token "custom.1" - for getAccessToken()
             new Response(200, [], '{
                 "access_token": ' . json_encode($token) . ',
                 "expires_in": 1200,
                 "refresh_token": "fM0...gEy"
             }'),
 
-            new Response(200, [], '{"roles": ["Accountant"]}'), // read_corporation_roles
+            new Response(200, [], '{"roles": ["Accountant"]}'), // read_corporation_roles for "custom.1"
+            new Response(200, [], '{"roles": []}'), // read_corporation_roles for "custom.3"
+
+            // fifth token "custom.4" - for refreshAccessToken()
+            new Response(400, [], '{"error": "invalid_grant"}'),
 
             // default token - for getAccessToken()
             new Response(200, [], '{
@@ -501,7 +527,11 @@ class AccountTest extends TestCase
         );
 
         $expires = time() - 1000;
-        $char = $this->setUpCharacterWithToken($expires, true, 'hash', true);
+        $char = $this->setUpCharacterWithToken($expires, true);
+        $this->addTokenToChar('custom.1', $char, ['Accountant'], $expires); // test: setHasRoles = true
+        $this->addTokenToChar('custom.2', $char, [], time() + 1000)->setHasRoles(true); // test: setHasRoles = null
+        $this->addTokenToChar('custom.3', $char, ['Director'], time() + 1000); // test: setHasRoles = false
+        $this->addTokenToChar('custom.4', $char, [], time() - 1000); // test: updateEsiToken fails
 
         $result = $this->service->checkCharacter($char);
         $this->assertSame(Account::CHECK_TOKEN_OK, $result);
@@ -523,6 +553,12 @@ class AccountTest extends TestCase
         $this->assertSame($token, $secondToken->getAccessToken()); // updated
         $this->assertGreaterThan($expires, $secondToken->getExpires()); // updated
         $this->assertSame('fM0...gEy', $secondToken->getRefreshToken()); // updated
+
+        $thirdToken = $character->getEsiToken('custom.2');
+        $this->assertNull($thirdToken->getHasRoles());
+
+        $fourthToken = $character->getEsiToken('custom.3');
+        $this->assertFalse($fourthToken->getHasRoles());
 
         $characterNameChange = $this->characterNameChangeRepo->findBy([]);
         $this->assertSame(0, count($characterNameChange)); // change via ESI token is no longer recorded
@@ -1100,8 +1136,7 @@ class AccountTest extends TestCase
     private function setUpCharacterWithToken(
         int $expires,
         ?bool $valid = null,
-        string $hash = 'hash',
-        bool $addSecondToken = false
+        string $hash = 'hash'
     ): Character {
         $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setValidToken($valid)
@@ -1109,19 +1144,22 @@ class AccountTest extends TestCase
         $char = (new Character())->setId(31)->setName('n31')->setCharacterOwnerHash($hash)
             ->addEsiToken($esiToken);
         $esiToken->setCharacter($char);
-        if ($addSecondToken) {
-            $eveLogin2 = (new EveLogin())->setName('custom.1')->setEveRoles(['Accountant']);
-            $esiToken2 = (new EsiToken())->setEveLogin($eveLogin2)->setValidToken(true)
-                ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
-            $char->addEsiToken($esiToken2);
-            $esiToken2->setCharacter($char);
-            $this->om->persist($eveLogin2);
-            $this->om->persist($esiToken2);
-        }
         $this->om->persist($eveLogin);
         $this->om->persist($esiToken);
         $this->helper->addNewPlayerToCharacterAndFlush($char);
 
         return $char;
+    }
+
+    private function addTokenToChar(string $eveLoginName, Character $char, array $roles, int $expires): EsiToken
+    {
+        $eveLogin = (new EveLogin())->setName($eveLoginName)->setEveRoles($roles);
+        $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setValidToken(true)
+            ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
+        $char->addEsiToken($esiToken);
+        $esiToken->setCharacter($char);
+        $this->om->persist($eveLogin);
+        $this->om->persist($esiToken);
+        return $esiToken;
     }
 }
