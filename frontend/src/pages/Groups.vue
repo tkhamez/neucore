@@ -38,28 +38,25 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-if="player && groups && applications"
-                            v-for="group in groups"
-                            :set="statusText = getStatus(group.id)">
-
+                        <tr v-if="player && groups && applications" v-for="group in getGroupsWithStatus()">
                             <td>{{ group.name }}</td>
                             <td style="white-space: pre-wrap;">{{ group.description }}</td>
-                            <td>{{ statusText }}</td>
+                            <td>{{ group.statusText }}</td>
                             <td>
-                                <button v-if="statusText === 'Member'"
+                                <button v-if="group.statusText === 'Member'"
                                         type="button" class="btn btn-warning btn-sm"
                                         v-on:click="askLeave(group.id, group.name, group.autoAccept)">
                                     Leave group
                                 </button>
-                                <button v-if="statusText === ''"
+                                <button v-if="group.statusText === ''"
                                         type="button" class="btn btn-primary btn-sm"
                                         v-on:click="apply(group.id)">
                                     {{ group.autoAccept ? 'Join' : 'Apply' }}
                                 </button>
-                                <button v-if="statusText === 'pending' || statusText === 'denied'"
+                                <button v-if="group.statusText === 'pending' || group.statusText === 'denied'"
                                         type="button" class="btn btn-secondary btn-sm"
                                         v-on:click="cancel(group.id)">
-                                    {{ statusText === 'pending' ? 'Cancel' : 'Remove' }} application
+                                    {{ group.statusText === 'pending' ? 'Cancel' : 'Remove' }} application
                                 </button>
                             </td>
                         </tr>
@@ -90,59 +87,33 @@ export default {
 
     mounted: function() {
         window.scrollTo(0,0);
-        this.getPublicGroups();
-        this.getApplications();
+        this.emitter.emit('playerChange'); // Ensure group memberships are up-to-date.
+        getPublicGroups(this);
+        getApplications(this);
     },
 
     methods: {
-        getPublicGroups: function() {
-            const vm = this;
-            new GroupApi().userGroupPublic(function(error, data) {
-                if (error) { // 403 usually
-                    vm.groups = null;
-                    return;
-                }
-                vm.groups = data;
-            });
-        },
-
-        getApplications: function() {
-            const vm = this;
-            new PlayerApi().showApplications(function(error, data) {
-                if (error) { // 403 usually
-                    vm.applications = null;
-                    return;
-                }
-                vm.applications = data;
-            });
-        },
-
-        getStatus: function(groupId) {
-            for (const member of this.player.groups) {
-                if (member.id === groupId) {
-                    return 'Member';
-                }
+        getGroupsWithStatus () {
+            const groups = [];
+            for (const group of this.groups) {
+                group.statusText = getStatus(this, group.id);
+                groups.push(group);
             }
-            for (const application of this.applications) {
-                if (application.group.id === groupId) {
-                    return application.status;
-                }
-            }
-            return ''; // not a member, no application
+            return groups;
         },
 
         apply: function(groupId) {
             const vm = this;
             new PlayerApi().addApplication(groupId, function() {
                 vm.emitter.emit('playerChange');
-                vm.getApplications();
+                getApplications(vm);
             });
         },
 
         cancel: function(groupId) {
             const vm = this;
             new PlayerApi().removeApplication(groupId, function() {
-                vm.getApplications();
+                getApplications(vm);
             });
         },
 
@@ -163,7 +134,7 @@ export default {
             const vm = this;
             new PlayerApi().leaveGroup(this.groupToLeave.id, function() {
                 vm.emitter.emit('playerChange');
-                vm.getApplications();
+                getApplications(vm);
             });
             if (this.leaveGroupModal) {
                 this.leaveGroupModal.hide();
@@ -171,5 +142,39 @@ export default {
             this.groupToLeave = null;
         }
     }
+}
+
+function getPublicGroups(vm) {
+    new GroupApi().userGroupPublic(function(error, data) {
+        if (error) { // 403 usually
+            vm.groups = null;
+            return;
+        }
+        vm.groups = data;
+    });
+}
+
+function getApplications(vm) {
+    new PlayerApi().showApplications(function(error, data) {
+        if (error) { // 403 usually
+            vm.applications = null;
+            return;
+        }
+        vm.applications = data;
+    });
+}
+
+function getStatus (vm, groupId) {
+    for (const member of vm.player.groups) {
+        if (member.id === groupId) {
+            return 'Member';
+        }
+    }
+    for (const application of vm.applications) {
+        if (application.group.id === groupId) {
+            return application.status;
+        }
+    }
+    return ''; // not a member, no application
 }
 </script>
