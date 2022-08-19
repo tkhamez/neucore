@@ -119,7 +119,7 @@ Modal window with all characters of one player.
                                         {{ formatDate(movedChar.removedDate) }}<br>
                                     </span>
 
-                                    <span class="text-muted">Reason:</span>
+                                    <span class="text-muted">Action:</span>
                                     {{ movedChar.reason }}<br>
 
                                     <span v-if="movedChar.reason === 'incoming'" class="text-muted">Old Player:</span>

@@ -2,67 +2,68 @@
 
 <esi-tokens :eveLogins="eveLogins" :page="'UserAdmin'" ref="esiTokensModal"></esi-tokens>
 
-<div class="container-fluid">
-    <div v-cloak class="modal fade" id="deleteCharModal">
-        <div class="modal-dialog">
-            <div v-cloak v-if="charToDelete" class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Delete Character</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div v-cloak class="modal fade" id="deleteCharModal">
+    <div class="modal-dialog">
+        <div v-cloak v-if="charToDelete" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Character</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Are you sure you want to delete this character?<br>
+                    <span class="text-warning">{{ charToDelete.name }}</span>
+                </p>
+                <p>If so, please choose a reason:</p>
+                <div class="radio">
+                    <label class="mb-3">
+                        <input type="radio" name="reason" value="deleted-owner-changed" v-model="deleteReason">
+                        Character Owner Changed<br>
+                        <span class="text-muted small">
+                            Choose this if the character was sold to another player, check the
+                            <a href="https://forums.eveonline.com/c/marketplace/character-bazaar"
+                               target="_blank" rel="noopener noreferrer">Character Bazaar</a>.
+                            Creates an "removed character" entry.
+                        </span>
+                    </label>
+                    <label class="mb-3">
+                        <input type="radio" name="reason" value="deleted-lost-access" v-model="deleteReason">
+                        Player Lost Access<br>
+                        <span class="text-muted small">
+                            Select this if the player has lost access to the EVE account that contains
+                            this character. Creates an "removed character" entry.
+                        </span>
+                    </label>
+                    <label class="mb-3">
+                        <input type="radio" name="reason" value="deleted-manually" v-model="deleteReason">
+                        Other Reason<br>
+                        <span class="text-muted small">
+                             Creates a "removed character" entry with the reason "deleted-manually".
+                        </span>
+                    </label>
+                    <label>
+                        <input type="radio" name="reason" value="deleted-by-admin" v-model="deleteReason">
+                        Without a Trace<br>
+                        <span class="text-muted small">
+                            Does <em>not</em> create a "removed character" entry.
+                        </span>
+                    </label>
                 </div>
-                <div class="modal-body">
-                    <p>
-                        Are you sure you want to delete this character?<br>
-                        <span class="text-warning">{{ charToDelete.name }}</span>
-                    </p>
-                    <p>If so, please choose a reason:</p>
-                    <div class="radio">
-                        <label class="mb-3">
-                            <input type="radio" name="reason" value="deleted-owner-changed" v-model="deleteReason">
-                            Character Owner Changed<br>
-                            <span class="text-muted small">
-                                Choose this if the character was sold to another player, check the
-                                <a href="https://forums.eveonline.com/c/marketplace/character-bazaar"
-                                   target="_blank" rel="noopener noreferrer">Character Bazaar</a>.
-                                Creates an "removed character" entry.
-                            </span>
-                        </label>
-                        <label class="mb-3">
-                            <input type="radio" name="reason" value="deleted-lost-access" v-model="deleteReason">
-                            Player Lost Access<br>
-                            <span class="text-muted small">
-                                Select this if the player has lost access to the EVE account that contains
-                                this character. Creates an "removed character" entry.
-                            </span>
-                        </label>
-                        <label class="mb-3">
-                            <input type="radio" name="reason" value="deleted-manually" v-model="deleteReason">
-                            Other Reason<br>
-                            <span class="text-muted small">
-                                 Creates a "removed character" entry with the reason "deleted-manually".
-                            </span>
-                        </label>
-                        <label>
-                            <input type="radio" name="reason" value="deleted-by-admin" v-model="deleteReason">
-                            Without a Trace<br>
-                            <span class="text-muted small">
-                                Does <em>not</em> create a "removed character" entry.
-                            </span>
-                        </label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
-                            :disabled="deleteReason === ''" v-on:click="deleteChar()">
-                        DELETE character
-                    </button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        Close
-                    </button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                        :disabled="deleteReason === ''" v-on:click="deleteChar()">
+                    DELETE character
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Close
+                </button>
             </div>
         </div>
     </div>
+</div>
+
+<div class="container-fluid">
 
     <div class="row mb-3 mt-3">
         <div class="col-lg-12">
@@ -276,7 +277,7 @@
                                     <tr>
                                         <th scope="col">Character Name</th>
                                         <th scope="col">Date moved (GMT)</th>
-                                        <th scope="col">Reason</th>
+                                        <th scope="col">Action</th>
                                         <th scope="col">Old/New Player</th>
                                         <th scope="col">Deleted by</th>
                                     </tr>
