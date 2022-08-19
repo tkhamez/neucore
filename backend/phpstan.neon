@@ -14,9 +14,6 @@ parameters:
 			message: '#Cannot call method (.*) on DI\\Container\|null.#'
 			path: %currentWorkingDirectory%/src/Application.php
 		-
-			message: '#(.*)BaseController::getUser\(\)(.*)but returns Neucore\\Entity\\Character\|null.#'
-			path: %currentWorkingDirectory%/src/Controller/BaseController.php
-		-
 			message: '#Property (.*) is never written, only read.#'
 			path: %currentWorkingDirectory%/src/Entity/*
 		-

@@ -29,10 +29,9 @@ class PlayerLoginsRepository extends EntityRepository
      *     @OA\Property(property="month", type="integer"),
      * )
      */
-    public function monthlySummary(int $endDate = null, int $months = 12): array
+    public function monthlySummary(int $endDate, int $months): array
     {
-        $endDate ??= time();
-        $startDate = strtotime(date('Y-m-d H:i:s', $endDate) . " -$months months");
+        $startDate = strtotime(date('Y-m-d H:i:s', $endDate) . " -$months months") ?: time();
         $start = $this->getDateNumber($startDate);
         $end = $this->getDateNumber($endDate);
 

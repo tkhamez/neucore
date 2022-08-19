@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Controller;
 
 use Neucore\Entity\Character;
+use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
@@ -13,20 +14,11 @@ use Psr\Http\Message\ServerRequestInterface;
 
 abstract class BaseController
 {
-    /**
-     * @var ResponseInterface
-     */
-    protected $response;
+    protected ResponseInterface $response;
 
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
+    protected ObjectManager $objectManager;
 
-    /**
-     * @var RepositoryFactory
-     */
-    protected $repositoryFactory;
+    protected RepositoryFactory $repositoryFactory;
 
     public function __construct(
         ResponseInterface $response,
@@ -126,16 +118,20 @@ abstract class BaseController
     }
 
     /**
-     * Returns the logged in user.
+     * Returns the logged-in user or an empty user object with an empty player object.
      *
-     * Don't call it if there is no user logged in, it will return null in that case. This
-     * is not documented in the return type hint to avoid a lot of static code analysis error.
-     * TODO find a better way
+     * This method should only be called if there is a user logged-in. It will return an "empty" character
+     * object with an empty player object attached if there is no logged-in user. Otherwise where would need
+     * to be null-checks everywhere.
      */
     protected function getUser(UserAuth $userAuth): Character
     {
-        /* @phan-suppress-next-line PhanTypeMismatchReturnNullable */
-        return $userAuth->getUser();
+        $character = $userAuth->getUser();
+        if (!$character) {
+            $character = new Character();
+            $character->setPlayer(new Player());
+        }
+        return $character;
     }
 
     protected function getBodyWithHomeLink(string $message): string

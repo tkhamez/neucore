@@ -57,11 +57,11 @@ class StatisticsController extends BaseController
         try {
             $date = new \DateTime($dateString);
         } catch (\Exception $e) {
-            $date = date_create();
+            // do nothing
         }
+        $time = isset($date) ? $date->getTimestamp() : time();
         $periods = abs((int)$this->getQueryParam($request, 'periods', 12));
-        return $this->withJson($this->repositoryFactory->getPlayerLoginsRepository()
-            ->monthlySummary($date->getTimestamp(), $periods));
+        return $this->withJson($this->repositoryFactory->getPlayerLoginsRepository()->monthlySummary($time, $periods));
     }
 
     /**
@@ -101,11 +101,11 @@ class StatisticsController extends BaseController
         try {
             $date = new \DateTime($dateString);
         } catch (\Exception $e) {
-            $date = date_create();
+            // do nothing
         }
+        $time = isset($date) ? $date->getTimestamp() : time();
         $periods = abs((int)$this->getQueryParam($request, 'periods', 12));
-        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()
-            ->monthlySummary($date->getTimestamp(), $periods));
+        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()->monthlySummary($time, $periods));
     }
 
     /**
@@ -145,11 +145,12 @@ class StatisticsController extends BaseController
         try {
             $date = new \DateTime($dateString);
         } catch (\Exception $e) {
-            $date = date_create();
+            // do nothing
         }
+        $time = isset($date) ? $date->getTimestamp() : time();
         $periods = abs((int)$this->getQueryParam($request, 'periods', 12));
         return $this->withJson($this->repositoryFactory->getAppRequestsRepository()
-            ->monthlySummaryByApp($date->getTimestamp(), $periods));
+            ->monthlySummaryByApp($time, $periods));
     }
 
     /**
@@ -189,11 +190,11 @@ class StatisticsController extends BaseController
         try {
             $date = new \DateTime($dateString);
         } catch (\Exception $e) {
-            $date = date_create();
+            // do nothing
         }
+        $time = isset($date) ? $date->getTimestamp() : time();
         $periods = abs((int)$this->getQueryParam($request, 'periods', 4));
-        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()
-            ->dailySummary($date->getTimestamp(), $periods));
+        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()->dailySummary($time, $periods));
     }
 
     /**
@@ -229,15 +230,14 @@ class StatisticsController extends BaseController
      */
     public function hourlyAppRequests(ServerRequestInterface $request): ResponseInterface
     {
-        $dateString = $this->getQueryParam($request, 'until', date('Y-m-d H'));
-        $dateString .= ':00';
+        $dateString = $this->getQueryParam($request, 'until', date('Y-m-d H')) . ':00';
         try {
             $date = new \DateTime($dateString);
         } catch (\Exception $e) {
-            $date = date_create();
+            // do nothing
         }
+        $time = isset($date) ? $date->getTimestamp() : time();
         $periods = abs((int)$this->getQueryParam($request, 'periods', 7));
-        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()
-            ->hourlySummary($date->getTimestamp(), $periods));
+        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()->hourlySummary($time, $periods));
     }
 }

@@ -7,7 +7,7 @@ trait DateHelper
     /**
      * @param int $mode 1 = "year + month", 2 "year + month + day", 3 "year + month + day + hour"
      */
-    private function getDateNumber($time, int $mode = 1): int
+    private function getDateNumber(int $time, int $mode = 1): int
     {
         $year = (int)date('Y', $time);
         $month = (int)date('m', $time);

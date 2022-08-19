@@ -28,10 +28,9 @@ class AppRequestsRepository extends EntityRepository
      *     @OA\Property(property="month", type="integer"),
      * )
      */
-    public function monthlySummary(int $endDate = null, int $months = 12): array
+    public function monthlySummary(int $endDate, int $months): array
     {
-        $endDate ??= time();
-        $startDate = strtotime(date('Y-m-d H:i:s', $endDate) . " -$months months");
+        $startDate = strtotime(date('Y-m-d H:i:s', $endDate) . " -$months months") ?: time();
         $start = $this->getDateNumber($startDate);
         $end = $this->getDateNumber($endDate);
 
@@ -66,10 +65,9 @@ class AppRequestsRepository extends EntityRepository
      *     @OA\Property(property="month", type="integer"),
      * )
      */
-    public function monthlySummaryByApp(int $endDate = null, int $months = 12): array
+    public function monthlySummaryByApp(int $endDate, int $months): array
     {
-        $endDate ??= time();
-        $startDate = strtotime(date('Y-m-d H:i:s', $endDate) . " -$months months");
+        $startDate = strtotime(date('Y-m-d H:i:s', $endDate) . " -$months months") ?: time();
         $start = $this->getDateNumber($startDate);
         $end = $this->getDateNumber($endDate);
 
@@ -108,10 +106,9 @@ class AppRequestsRepository extends EntityRepository
      *     @OA\Property(property="day_of_month", type="integer"),
      * )
      */
-    public function dailySummary(int $endDate = null, int $weeks = 4): array
+    public function dailySummary(int $endDate, int $weeks): array
     {
-        $endDate ??= time();
-        $startDate = strtotime(date('Y-m-d H:i:s', $endDate) . " -$weeks weeks");
+        $startDate = strtotime(date('Y-m-d H:i:s', $endDate) . " -$weeks weeks") ?: time();
         $start = $this->getDateNumber($startDate, 2);
         $end = $this->getDateNumber($endDate, 2);
 
@@ -148,10 +145,9 @@ class AppRequestsRepository extends EntityRepository
      *     @OA\Property(property="hour", type="integer"),
      * )
      */
-    public function hourlySummary(?int $endDateTime = null, int $days = 7): array
+    public function hourlySummary(int $endDateTime, int $days): array
     {
-        $endDateTime ??= time();
-        $startTime = strtotime(date('Y-m-d H:i:s', $endDateTime) . " -$days days");
+        $startTime = strtotime(date('Y-m-d H:i:s', $endDateTime) . " -$days days") ?: time();
         $start = $this->getDateNumber($startTime, 3);
         $end = $this->getDateNumber($endDateTime, 3);
 

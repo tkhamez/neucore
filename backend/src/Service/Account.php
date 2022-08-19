@@ -436,7 +436,7 @@ class Account
      *
      * Also removed player as a manager of groups or apps if the corresponding role was removed.
      *
-     * @var Player $player Player object that is attached to the entity manager
+     * @param Player $player Player object that is attached to the entity manager
      */
     public function checkRoles(Player $player): bool
     {
@@ -478,7 +478,7 @@ class Account
     }
 
     /**
-     * @var Player $player Player object that is attached to the entity manager
+     * @param Player $player Player object that is attached to the entity manager
      */
     public function mayHaveRole(Player $player, string $roleName): bool
     {

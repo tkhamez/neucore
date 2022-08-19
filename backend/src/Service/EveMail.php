@@ -22,40 +22,19 @@ use Swagger\Client\Eve\Model\PostCharactersCharacterIdMailRecipient;
 
 class EveMail
 {
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
+    private RepositoryFactory $repositoryFactory;
 
-    /**
-     * @var SystemVariableRepository
-     */
-    private $sysVarRepo;
+    private SystemVariableRepository $sysVarRepo;
 
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
+    private ObjectManager $objectManager;
 
-    /**
-     * @var AuthenticationProvider
-     */
-    private $authenticationProvider;
+    private AuthenticationProvider $authenticationProvider;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
+    private LoggerInterface $log;
 
-    /**
-     * @var EsiApiFactory
-     */
-    private $esiApiFactory;
+    private EsiApiFactory $esiApiFactory;
 
-    /**
-     * @var string
-     */
-    private $datasource;
+    private string $datasource;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -252,7 +231,7 @@ class EveMail
         }
 
         $yesterday = date_create('now - 1 days');
-        if (! $yesterday) {
+        if (!($yesterday instanceof \DateTime)) {
             return [];
         }
 
