@@ -180,7 +180,8 @@ vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20
 vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20210123141218 --down
 ```
 
-Create/sync the database schema - Don't do this unless you know what you're doing and backup your database first!
+Create/sync the database schema - **This can delete data - backup your database first!** (For example, there are
+changes to the database schema where this command deletes a column and creates a new one instead of renaming it.):
 ```
 bin/doctrine orm:schema-tool:update
 ```

@@ -94,7 +94,8 @@ To access the database from the host, add the following argument when running th
   --publish=127.0.0.1:33060:3306 \
 ```
 
-If you are not using a database via Docker, you can remove the `--network` argument.
+If you are not using a database via Docker, you can remove the `--network` argument (and obviously change 
+NEUCORE_DATABASE_URL).
 
 To store the logs on the host, create a directory, change its permission, and add the following argument
 when running the Neucore container, for example:
@@ -149,12 +150,10 @@ docker build --no-cache -t neucore .
 A Linux server (others may work, but were not tested).
 
 To run the application:
-* PHP >=7.4.0 (64bit version), see `backend/composer.json` for necessary and suggested extensions (APCu highly
+* PHP >=7.4.0 (64bit version), see [backend/composer.json](../backend/composer.json) for necessary and suggested extensions (APCu highly
   recommended).
-* MariaDB or MySQL Server (tested with MySQL 8.0 and MariaDB 10.2, 10.6 and 10.8). Other databases supported by
-  [Doctrine DBAL](https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/platforms.html)
-  may work if you generate the database schema yourself (see [backend README](../backend/README.md)), but there are
-  only migration files for MySQL/MariaDB. Unit tests can also be run using a SQLite in-memory database.
+* MariaDB or MySQL Server (tested with MySQL 8.0 and MariaDB 10.2, 10.6 and 10.8). (Unit tests can also be run using 
+  a SQLite in-memory database.)
 * An HTTP Server with support for PHP and URL rewriting.
   * Set the document root to the `web` directory.
   * Configure URL rewriting to `app.php`:
@@ -181,9 +180,9 @@ Make sure that the web server can write to the log and cache directories, by def
 
 Please note that both the web server and console user write the same files to the cache directory,
 so make sure they can override each other's files, e.g. by putting them into each other's group
-(the app uses umask 0002 when writing files and directories).
+(the app uses umask 0002 when writing files and directories), or simply use the same user.
 
-If available, the app uses an APCu cache in production mode. This must be cleared during an update:
+If available, the app uses an APCu cache in production mode. It must be cleared during an update:
 depending on the setup, restart the web server or php-fpm.
 
 ##### Pre-built Distribution file
@@ -210,9 +209,12 @@ bin/console doctrine-fixtures-load
 
 If you have cloned the repository, you must install the dependencies and build the backend and frontend:
 ```
-./install.sh
-# or
+# for production:
 ./install.sh prod
+
+# for develeopment:
+./install.sh
+cd frontend && npm run build
 ```
 
 ### Docker Development Environment
@@ -227,7 +229,8 @@ the database host is `neucore_db` and the database name also `neucore`.
 - Start services:  
   `export UID && docker-compose up`
 - Install the app:  
-  `export UID && ./install-docker.sh`
+  `export UID && ./install-docker.sh`  
+  `docker-compose run neucore_node npm run build`
 - Run tests and other commands in the php and node containers:  
   `export UID && docker-compose exec neucore_php /bin/sh`  
   `export UID && docker-compose run --service-ports neucore_node /bin/sh`
