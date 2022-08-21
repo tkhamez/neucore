@@ -4,6 +4,7 @@
 
 dd mm yyyy
 
+- Added new themes: Morph, Quartz, Vapor, Zephyr.
 - Docker image (prod): Added missing php.ini file (copy of php.ini-production).
 - Small UI improvements.
 

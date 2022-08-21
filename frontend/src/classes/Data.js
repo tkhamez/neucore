@@ -13,8 +13,10 @@ export default class Data {
         'Lumen',
         'Lux',
         'Materia',
+        'Morph',
         'Minty',
         'Pulse',
+        'Quartz',
         'Sandstone',
         'Simplex',
         'Sketchy',
@@ -23,7 +25,9 @@ export default class Data {
         'Spacelab',
         'Superhero',
         'United',
+        'Vapor',
         'Yeti',
+        'Zephyr',
     ];
 
     static messages = {

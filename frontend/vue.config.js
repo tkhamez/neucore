@@ -16,7 +16,9 @@ const themes = {
     'theme-lux': './src/themes/lux.scss',
     'theme-materia': './src/themes/materia.scss',
     'theme-minty': './src/themes/minty.scss',
+    'theme-morph': './src/themes/morph.scss',
     'theme-pulse': './src/themes/pulse.scss',
+    'theme-quartz': './src/themes/quartz.scss',
     'theme-sandstone': './src/themes/sandstone.scss',
     'theme-simplex': './src/themes/simplex.scss',
     'theme-sketchy': './src/themes/sketchy.scss',
@@ -25,7 +27,9 @@ const themes = {
     'theme-spacelab': './src/themes/spacelab.scss',
     'theme-superhero': './src/themes/superhero.scss',
     'theme-united': './src/themes/united.scss',
+    'theme-vapor': './src/themes/vapor.scss',
     'theme-yeti': './src/themes/yeti.scss',
+    'theme-zephyr': './src/themes/zephyr.scss',
 };
 
 module.exports = defineConfig(() => {

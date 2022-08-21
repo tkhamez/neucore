@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@fontsource/cabin-sketch": "^4.5.7",
+    "@fontsource/inter": "^4.5.12",
     "@fontsource/lato": "^4.5.8",
     "@fontsource/montserrat": "^4.5.10",
     "@fontsource/neucha": "^4.5.5",
