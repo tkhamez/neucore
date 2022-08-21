@@ -17,6 +17,7 @@ RUN pecl channel-update pecl.php.net &&  \
     printf "\n" | pecl install apcu &&  \
     docker-php-ext-enable apcu
 
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 RUN a2enmod rewrite
 
 COPY dist/neucore/web/ /var/www/html/

@@ -4,6 +4,7 @@
 
 dd mm yyyy
 
+- Docker image (prod): Added missing php.ini file (copy of php.ini-production).
 - Small UI improvements.
 
 ## 1.34.0
