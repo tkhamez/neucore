@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Small UI improvements.
+
 ## 1.34.0
 
 19 Aug 2022
