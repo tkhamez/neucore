@@ -4,6 +4,7 @@
 
 dd mm yyyy
 
+- Replaced fonts in dark themes where I (uppercase i) and l (lowercase L) were not distinguishable.
 - Added new themes: Morph, Quartz, Vapor, Zephyr.
 - Docker image (prod): Added missing php.ini file (copy of php.ini-production).
 - Small UI improvements.
