@@ -43,7 +43,7 @@ Main features:
 For more information, see the `doc` directory, including [**Documentation**](doc/Documentation.md), 
 an [**API**](doc/API.md) overview, and some [screenshots](doc/screenshots).
 
-A preview/demo installation is available at https://neucore.herokuapp.com.
+A preview/demo installation is available at https://neucore.tian-space.net.
 
 ## Getting started
 

@@ -11,7 +11,7 @@ from esipy import App, EsiClient, EsiSecurity
 
 
 # Configuration values
-core_domain = 'neucore.herokuapp.com'
+core_domain = 'neucore.tian-space.net'
 core_app_token = base64.b64encode(b'1:secret')
 core_char_id = '96061222'  # Character with token in Neucore
 

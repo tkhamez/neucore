@@ -83,7 +83,7 @@ docker exec -u www-data neucore_prod_http bin/console doctrine-fixtures-load
 Now login at http://localhost:8080/ and then make yourself an admin:
 
 ```shell
-docker exec neucore_prod_http bin/console make-admin 1
+docker exec -u www-data neucore_prod_http bin/console make-admin 1
 ```
 
 #### Further Configuration

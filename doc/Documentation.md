@@ -51,10 +51,10 @@
 * Mobile-friendly.
 
 All API functions are documented with OpenAPI and can be found at 
-[https://your.domain/api.html](https://neucore.herokuapp.com/api). Most of these endpoints are for the frontend, 
+[https://your.domain/api.html](https://neucore.tian-space.net/api). Most of these endpoints are for the frontend, 
 only the routes listed in the group `Application` are for Neucore applications. For these there is also a 
 separate OpenAPI definition file at 
-[https://your.domain/application-api-3.yml](https://neucore.herokuapp.com/application-api-3.yml).
+[https://your.domain/application-api-3.yml](https://neucore.tian-space.net/application-api-3.yml).
 
 ## Application API
 
