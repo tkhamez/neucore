@@ -65,7 +65,9 @@ Select and table to add and remove objects from other objects.
             <p v-cloak v-if="type === 'App' && contentType === 'roles'">
                 See
                 <a :href="`${settings.repository}/blob/master/doc/API.md`"
-                   target="_blank" rel="noopener noreferrer">doc/API.md</a>
+                   target="_blank" rel="noopener noreferrer">doc/API.md
+                    <span role="img" style="color: grey;"
+                          class="small fa-solid fa-arrow-up-right-from-square"></span></a>
                 for permissions for each role.
             </p>
             <p v-cloak v-if="type === 'App' && contentType === 'eveLogins'">

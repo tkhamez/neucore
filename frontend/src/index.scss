@@ -183,10 +183,3 @@ body.neucore {
     text-decoration: underline;
     text-decoration-style: dotted;
 }
-
-/**
- * Bootstrap 5 changed all links to be underlined, revert
- */
-a {
-    text-decoration: none;
-}

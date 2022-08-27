@@ -60,10 +60,10 @@
         <span class="form-text">
             Optional text area on the home page. Supports
             <a href="https://markdown-it.github.io/" target="_blank" rel="noopener noreferrer">Markdown</a>,
-            with "typographer" and these plugins:
+            with "typographer" enabled and these plugins:
             <a href="https://github.com/arve0/markdown-it-attrs"
                target="_blank" rel="noopener noreferrer">attrs</a>
-            (use with Bootstrap classes "text-primary", "bg-warning"
+            (use, for example,  with Bootstrap classes "text-primary", "bg-warning"
             <a href="https://bootswatch.com/darkly/" target="_blank" rel="noopener noreferrer">etc.</a>),
             <a href="https://github.com/markdown-it/markdown-it-emoji/blob/master/lib/data/light.json"
                target="_blank" rel="noopener noreferrer">emoji</a> light,

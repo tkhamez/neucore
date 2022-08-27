@@ -38,7 +38,9 @@
                             See also
                             <a v-cloak target="_blank" rel="noopener noreferrer"
                                :href="`${settings.repository}/blob/master/doc/Documentation.md#authentication`">
-                                Authentication for applications</a>.
+                                Authentication for applications
+                                <span role="img" style="color: grey;"
+                                      class="small fa-solid fa-arrow-up-right-from-square"></span></a>.
                         </p>
                         <p>
                             <button type="button" class="btn btn-warning" v-on:click="generateSecret()">

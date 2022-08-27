@@ -22,7 +22,9 @@
                         <span class="text-muted small">
                             Choose this if the character was sold to another player, check the
                             <a href="https://forums.eveonline.com/c/marketplace/character-bazaar"
-                               target="_blank" rel="noopener noreferrer">Character Bazaar</a>.
+                               target="_blank" rel="noopener noreferrer">Character Bazaar
+                                <span role="img" style="color: grey;"
+                                      class="small fa-solid fa-arrow-up-right-from-square"></span></a>.
                             Creates an "removed character" entry.
                         </span>
                     </label>
@@ -98,7 +100,9 @@
                     <p v-cloak>
                         See
                         <a :href="`${settings.repository}/blob/master/doc/API.md`"
-                           target="_blank" rel="noopener noreferrer">doc/API.md</a>
+                           target="_blank" rel="noopener noreferrer">doc/API.md
+                            <span role="img" style="color: grey;"
+                                  class="small fa-solid fa-arrow-up-right-from-square"></span></a>
                         for permissions for each role.
                     </p>
                     <select class="form-select" id="roleList"

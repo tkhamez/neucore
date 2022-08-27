@@ -30,7 +30,8 @@
                     see also
                     <a href="https://esi.evetech.net/ui" target="_blank" rel="noopener noreferrer">
                         https://esi.evetech.net/ui
-                    </a>,
+                        <span role="img" style="color: grey;"
+                              class="small fa-solid fa-arrow-up-right-from-square"></span></a>,
                     only GET and POST request are implemented.
                 </small>
                 <multiselect v-model="selectedPath" :options="paths" :loading="false"
