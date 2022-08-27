@@ -16,7 +16,7 @@
                     </p>
                     <p class="align-center">
                         <a :href="`${loginHost}/login/${loginNames.default}`">
-                            <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online">
+                            <img src="../../public/img/eve_sso.png" alt="LOG IN with EVE Online">
                         </a>
                     </p>
                 </div>

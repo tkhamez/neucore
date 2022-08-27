@@ -32,7 +32,7 @@
                                 <td>
                                     <a :href="loginHost + '/login/' + eveLogin.name"
                                        class="ms-1 char-login-button" title="EVE SSO Login">
-                                        <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
+                                        <img src="../../public/img/eve_sso-short.png" alt="LOG IN with EVE Online">
                                     </a>
                                 </td>
                                 <td>{{ eveLogin.description }}</td>
@@ -98,7 +98,7 @@
             <p>Add your other characters by logging in with EVE SSO.</p>
             <p>
                 <a :href="`${loginHost}/login/${loginNames.default}`">
-                    <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online"
+                    <img src="../../public/img/eve_sso.png" alt="LOG IN with EVE Online"
                          title="Login to add another character.">
                 </a>
             </p>
@@ -171,7 +171,7 @@
                                 </a>
                                 <a v-if="char.validToken === false" :href="`${loginHost}/login/${loginNames.default}`"
                                    class="char-login-button" :title="`Login in with: ${char.name}`">
-                                    <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
+                                    <img src="../../public/img/eve_sso-short.png" alt="LOG IN with EVE Online">
                                 </a>
                             </div>
                         </div>
