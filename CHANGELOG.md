@@ -8,7 +8,10 @@ dd mm yyyy
 - Added new themes: Morph, Quartz, Vapor, Zephyr.
 - Docker image (prod): Added missing php.ini file (copy of php.ini-production).
 - Added login images to dist/img/ so they can be used in Markdown.
+- Fixed alliance and corporation search. [#38][i38]
 - Small UI improvements.
+
+[i38]: https://github.com/tkhamez/neucore/issues/38
 
 ## 1.34.0
 

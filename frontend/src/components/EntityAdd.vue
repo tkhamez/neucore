@@ -22,17 +22,9 @@ Modal window to add alliances or corporations to the database.
                                  :show-no-results="false"
                                  @search-change="searchAlliCorp">
                     </multiselect>
-                    <div class="form-check mt-2">
-                        <label class="form-check-label">
-                            <input class="form-check-input" type="checkbox" value="" v-model="searchStrict">
-                            Strict search
-                        </label>
-                    </div>
+                    <small class="text-muted">Use exact name if there is no result.</small>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary"
-                            :disabled="searchError"
-                            v-on:click="addAlliCorp()">Add</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -42,7 +34,6 @@ Modal window to add alliances or corporations to the database.
 
 <script>
 import _ from 'lodash';
-import $ from 'jquery';
 import {Modal} from "bootstrap";
 import Multiselect from '@suadelabs/vue3-multiselect';
 import {AllianceApi, CorporationApi} from 'neucore-js-client';
@@ -62,9 +53,13 @@ export default {
             searchIsLoading: false,
             searchResults: [],
             searchSelected: null,
-            searchStrict: false,
-            searchError: false,
             addAlliCorpModal: null,
+        }
+    },
+
+    watch: {
+        searchSelected () {
+            addAlliCorp(this);
         }
     },
 
@@ -83,81 +78,71 @@ export default {
             }
             searchAlliCorpDelayed(this, query);
         },
-
-        addAlliCorp () {
-            if (! this.searchSelected) {
-                return;
-            }
-
-            const vm = this;
-            let api;
-            let method = 'add';
-            if (this.addType === 'Corporation') {
-                api = new CorporationApi();
-                method = 'userCorporationAdd';
-            } else if (this.addType === 'Alliance') {
-                api = new AllianceApi();
-            } else {
-                return;
-            }
-
-            api[method].apply(api, [this.searchSelected.id, function(error, data, response) {
-                if (response.statusCode === 409) {
-                    vm.message(`${vm.addType} already exist.`, 'warning');
-                } else if (response.statusCode === 404) {
-                    vm.message(`${vm.addType} not found.`, 'error');
-                } else if (error) {
-                    vm.message(`Error adding ${vm.addType}.`, 'error');
-                } else {
-                    vm.addAlliCorpModal.hide();
-                    vm.message(`${vm.addType} "[${data.ticker}] ${data.name}" added.`, 'success');
-                    vm.$emit('success');
-                }
-            }]);
-        }
     }
 }
 
 const searchAlliCorpDelayed = _.debounce((vm, query) => {
     let category;
     if (vm.addType === 'Corporation') {
-        category = 'corporation';
+        category = 'corporations';
     } else if (vm.addType === 'Alliance') {
-        category = 'alliance';
+        category = 'alliances';
     } else {
         return;
     }
 
-    const url = `${vm.settings.esiHost}/latest/search/?categories=${category}` +
-        `&datasource=${vm.settings.esiDataSource}` +
-        `&search=${encodeURIComponent(query)}&strict=${vm.searchStrict}`;
-
     vm.searchIsLoading = true;
     vm.searchResults = [];
-    vm.searchError = false;
-    $.get(url).done(response1 => {
-        if (typeof response1[category] !== typeof []) {
-            vm.searchIsLoading = false;
+    fetch(`${vm.settings.esiHost}/latest/universe/ids?datasource=${vm.settings.esiDataSource}`, {
+        method: 'POST',
+        body: JSON.stringify([query])
+    }).then(async response => {
+        vm.searchIsLoading = false;
+        if (!response.ok) {
+            throw new Error();
+        }
+        const data = await response.json();
+        if (typeof data[category] !== typeof []) {
             return;
         }
-        $.post(
-            `${vm.settings.esiHost}/latest/universe/names/?datasource=${vm.settings.esiDataSource}`,
-            JSON.stringify(response1[category])
-        ).always(response2 => {
-            vm.searchIsLoading = false;
-            if (typeof response2 !== typeof []) {
-                return;
-            }
-            vm.searchResults = []; // reset again because of parallel request
-            for (const result of response2) {
-                vm.searchResults.push(result);
-            }
-        });
-    }).fail(() => {
+        vm.searchResults = []; // reset again because of parallel request
+        for (const result of data[category]) {
+            vm.searchResults.push(result);
+        }
+    }).catch(() => {
         vm.searchIsLoading = false;
-        vm.searchError = true;
         vm.searchResults.push({ name: 'Error, please try again later.'});
     });
 }, 250);
 
+function addAlliCorp(vm) {
+    if (!vm.searchSelected) {
+        return;
+    }
+
+    let api;
+    let method = 'add';
+    if (vm.addType === 'Corporation') {
+        api = new CorporationApi();
+        method = 'userCorporationAdd';
+    } else if (vm.addType === 'Alliance') {
+        api = new AllianceApi();
+    } else {
+        return;
+    }
+
+    api[method].apply(api, [vm.searchSelected.id, function(error, data, response) {
+        if (response.statusCode === 409) {
+            vm.message(`${vm.addType} already exist.`, 'warning');
+        } else if (response.statusCode === 404) {
+            vm.message(`${vm.addType} not found.`, 'error');
+        } else if (error) {
+            vm.message(`Error adding ${vm.addType}.`, 'error');
+        } else {
+            vm.addAlliCorpModal.hide();
+            vm.message(`${vm.addType} "[${data.ticker}] ${data.name}" added.`, 'success');
+            vm.$emit('success');
+        }
+    }]);
+}
 </script>
