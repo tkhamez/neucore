@@ -7,23 +7,23 @@
     </div>
     <div class="row">
         <div class="col-lg-12">
-            until <input v-model="untilPlayerLogins" type="text" class="until">,
+            Until <input v-model="untilPlayerLogins" type="text" class="until">,
             Periods <input v-model="periodsPlayerLogins" type="text" class="periods"> months
             <div id="statisticsPlayerLogins"></div>
 
-            until <input v-model="untilTotalMonthlyApp" type="text" class="until">,
+            Until <input v-model="untilTotalMonthlyApp" type="text" class="until">,
             Periods <input v-model="periodsTotalMonthlyApp" type="text" class="periods"> months
             <div id="statisticsTotalMonthlyApp"></div>
 
-            until <input v-model="untilMonthlyAppRequests" type="text" class="until">,
+            Until <input v-model="untilMonthlyAppRequests" type="text" class="until">,
             Periods <input v-model="periodsMonthlyAppRequests" type="text" class="periods"> months
             <div id="statisticsMonthlyAppRequests"></div>
 
-            until <input v-model="untilTotalDailyApp" type="text" class="until">,
+            Until <input v-model="untilTotalDailyApp" type="text" class="until">,
             Periods <input v-model="periodsTotalDailyApp" type="text" class="periods"> weeks
             <div id="statisticsTotalDailyApp"></div>
 
-            until <input v-model="untilHourlyAppRequests" type="text" class="until">,
+            Until <input v-model="untilHourlyAppRequests" type="text" class="until">,
             Periods <input v-model="periodsHourlyAppRequests" type="text" class="periods"> days
             <div id="statisticsHourlyAppRequests"></div>
         </div>
@@ -60,9 +60,6 @@ export default {
         const vm = this;
         window.addEventListener('resize', () => {
             for (const prop in vm.charts) { // for...of does not work here
-                if (!vm.charts.hasOwnProperty(prop)) {
-                    console.log(prop);
-                }
                 vm.charts[prop].resize();
             }
         });
@@ -74,6 +71,12 @@ export default {
         this.untilTotalDailyApp = `${now.getUTCFullYear()}-${now.getUTCMonth() + 1}-${now.getUTCDate()}`;
         this.untilHourlyAppRequests =
             `${now.getUTCFullYear()}-${now.getUTCMonth() + 1}-${now.getUTCDate()} ${now.getUTCHours()}`;
+    },
+
+    unmounted () {
+        for (const id in this.charts) {
+            this.charts[id].dispose();
+        }
     },
 
     watch: {
