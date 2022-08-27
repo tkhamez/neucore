@@ -35,7 +35,8 @@ Modal window with all characters of one player.
                                             <span
                                                   class="badge ms-1"
                                                   :class="{
-                                                      'text-with-tooltip': character.validTokenTime,
+                                                      'text-with-tooltip': character.validTokenTime ||
+                                                                            character.tokenLastChecked,
                                                       'bg-success': character.validToken,
                                                       'bg-danger': character.validToken === false,
                                                       'bg-info': character.validToken === null,
