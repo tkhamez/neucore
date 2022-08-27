@@ -103,13 +103,13 @@ export default {
                     return;
                 }
 
-                // only propagate the change of variables that needs it
+                // Only propagate the change of variables that need it.
+                // Also do not trigger for text fields because that can interfere negatively with editing, i.e.
+                // the cursor will sometimes jump to the end of the input field or textarea.
                 if ([
                         'allow_character_deletion',
                         'customization_home_logo',
                         'customization_nav_logo',
-                        'customization_home_markdown',
-                        'customization_document_title',
                     ].indexOf(name) !== -1 ||
                     name.indexOf('director_char_') !== -1
                 ) {
