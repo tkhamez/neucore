@@ -15,7 +15,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 /* @var EntityManagerInterface $em */
 $em = (new Application())->buildContainer()->get(EntityManagerInterface::class);
-$em->getConnection()->setAutoCommit(false);
+//$em->getConnection()->setAutoCommit(false);
 
 return DependencyFactory::fromEntityManager(
     new YamlFile('config/migrations.yml'),
