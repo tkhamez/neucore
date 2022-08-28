@@ -24,6 +24,7 @@ services:
     image: openjdk:11-jre
     volumes: [".:/app"]
     user: ${UID}
+    networks: [neucore]
 
   neucore_node:
     container_name: neucore_dev_node
