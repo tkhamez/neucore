@@ -54,10 +54,10 @@
                     <h3 class="card-header">Groups</h3>
                     <div v-if="playerData" class="card-body">
                         <h4>
-                            <span v-if="hasRole('user-admin')">
+                            <span v-if="h.hasRole('user-admin')">
                                 <a :href="`#UserAdmin/${playerData.id}`">{{ playerData.name }} #{{ playerData.id }}</a>
                             </span>
-                            <span v-if="! hasRole('user-admin')">{{ playerData.name }} #{{ playerData.id }}</span>
+                            <span v-if="!h.hasRole('user-admin')">{{ playerData.name }} #{{ playerData.id }}</span>
                         </h4>
                         <p>
                             Status: {{ playerData.status }}
@@ -104,6 +104,7 @@ import { PlayerApi }   from 'neucore-js-client';
 import Data            from "../classes/Data";
 import Admin           from '../components/EntityRelationEdit.vue';
 import CharacterSearch from '../components/CharacterSearch.vue';
+import Helper from "../classes/Helper";
 
 export default {
     components: {
@@ -119,6 +120,7 @@ export default {
 
     data: function() {
         return {
+            h: new Helper(this),
             loginNames: Data.loginNames,
             players: [],
             playerId: null, // current player

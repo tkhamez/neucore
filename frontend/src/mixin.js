@@ -37,23 +37,6 @@ export default {
             this.emitter.emit('showCharacters', playerId);
         },
 
-        hasRole: function(name, player) {
-            player = player || this.$root.player;
-            if (! player) {
-                return false;
-            }
-            return player.roles.indexOf(name) !== -1;
-        },
-
-        hasAnyRole: function(names) {
-            for (const name of names) {
-                if (this.hasRole(name)) {
-                    return true;
-                }
-            }
-            return false;
-        },
-
         characterPortrait(id, size) {
             if (this.$root.settings.esiDataSource === 'singularity') {
                 // there are no character images on Sisi at the moment.

@@ -12,7 +12,7 @@
                 aria-expanded="true" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div v-if="hasRole('user')" v-cloak class="navbar-collapse collapse" id="navbar01">
+        <div v-if="h.hasRole('user')" v-cloak class="navbar-collapse collapse" id="navbar01">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
                     <a class="nav-link" :class="{ active: page === 'Home' }" href="#Home">Home</a>
@@ -31,24 +31,24 @@
                            :href="`#Service/${service.id}`">{{ service.name }}</a>
                     </div>
                 </li>
-                <li v-if="hasAnyRole(['group-manager', 'app-manager', 'user-manager'])" class="nav-item dropdown">
+                <li v-if="h.hasAnyRole(['group-manager', 'app-manager', 'user-manager'])" class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" :class="{ active: managePages.indexOf(page) !== -1 }"
                        href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Management
                     </a>
                     <div class="dropdown-menu">
-                        <a v-if="hasRole('group-manager')"
+                        <a v-if="h.hasRole('group-manager')"
                            class="dropdown-item" :class="{ active: page === 'GroupManagement' }"
                            href="#GroupManagement">Groups</a>
-                        <a v-if="hasRole('app-manager')"
+                        <a v-if="h.hasRole('app-manager')"
                            class="dropdown-item" :class="{ active: page === 'AppManagement' }"
                            href="#AppManagement">Apps</a>
-                        <a v-if="hasRole('user-manager')"
+                        <a v-if="h.hasRole('user-manager')"
                            class="dropdown-item" :class="{ active: page === 'PlayerGroupManagement' }"
                            href="#PlayerGroupManagement">Player Groups</a>
                     </div>
                 </li>
-                <li v-if="hasAnyRole([
+                <li v-if="h.hasAnyRole([
                         'group-admin', 'app-admin', 'user-admin', 'tracking-admin', 'settings', 'statistics'
                     ])" class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" :class="{ active: adminPages.indexOf(page) !== -1 }"
@@ -56,55 +56,55 @@
                         Administration
                     </a>
                     <div class="dropdown-menu">
-                        <a v-if="hasRole('group-admin')"
+                        <a v-if="h.hasRole('group-admin')"
                             class="dropdown-item" :class="{ active: page === 'GroupAdmin' }"
                             href="#GroupAdmin">Groups</a>
-                        <a v-if="hasRole('app-admin')"
+                        <a v-if="h.hasRole('app-admin')"
                             class="dropdown-item" :class="{ active: page === 'AppAdmin' }"
                             href="#AppAdmin">Apps</a>
-                        <a v-if="hasRole('service-admin')"
+                        <a v-if="h.hasRole('service-admin')"
                             class="dropdown-item" :class="{ active: page === 'ServiceAdmin' }"
                             href="#ServiceAdmin">Services</a>
-                        <a v-if="hasRole('user-admin')"
+                        <a v-if="h.hasRole('user-admin')"
                            class="dropdown-item" :class="{ active: page === 'UserAdmin' }"
                            href="#UserAdmin">Users</a>
-                        <a v-if="hasRole('user-admin')"
+                        <a v-if="h.hasRole('user-admin')"
                            class="dropdown-item" :class="{ active: page === 'RoleAdmin' }"
                            href="#RoleAdmin">Roles</a>
-                        <a v-if="hasRole('tracking-admin')"
+                        <a v-if="h.hasRole('tracking-admin')"
                            class="dropdown-item" :class="{ active: page === 'TrackingAdmin' }"
                            href="#TrackingAdmin">Tracking</a>
-                        <a v-if="hasRole('watchlist-admin')"
+                        <a v-if="h.hasRole('watchlist-admin')"
                            class="dropdown-item" :class="{ active: page === 'WatchlistAdmin' }"
                            href="#WatchlistAdmin">Watchlist</a>
-                        <a v-if="hasRole('settings')"
+                        <a v-if="h.hasRole('settings')"
                            class="dropdown-item" :class="{ active: page === 'SystemSettings' }"
                            href="#SystemSettings">Settings</a>
-                        <a v-if="hasRole('settings')"
+                        <a v-if="h.hasRole('settings')"
                            class="dropdown-item" :class="{ active: page === 'EVELogins' }"
                            href="#EVELogins">EVE Logins</a>
-                        <a v-if="hasRole('statistics')"
+                        <a v-if="h.hasRole('statistics')"
                            class="dropdown-item" :class="{ active: page === 'Statistics' }"
                            href="#Statistics">Statistics</a>
                     </div>
                 </li>
-                <li v-if="hasAnyRole(['tracking', 'watchlist', 'watchlist-manager', 'esi', 'user-chars'])"
+                <li v-if="h.hasAnyRole(['tracking', 'watchlist', 'watchlist-manager', 'esi', 'user-chars'])"
                     class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" :class="{ active: memberDataPages.indexOf(page) !== -1 }"
                        href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Member Data
                     </a>
                     <div class="dropdown-menu">
-                        <a v-if="hasRole('tracking')"
+                        <a v-if="h.hasRole('tracking')"
                            class="dropdown-item" :class="{ active: page === 'Tracking' }"
                            href="#Tracking">Member Tracking</a>
-                        <a v-if="hasAnyRole(['watchlist', 'watchlist-manager'])"
+                        <a v-if="h.hasAnyRole(['watchlist', 'watchlist-manager'])"
                            class="dropdown-item" :class="{ active: page === 'Watchlist' }"
                            href="#Watchlist">Watchlist</a>
-                        <a v-if="hasRole('user-chars')"
+                        <a v-if="h.hasRole('user-chars')"
                            class="dropdown-item" :class="{ active: page === 'Characters' }"
                            href="#Characters">Characters</a>
-                        <a v-if="hasRole('esi')"
+                        <a v-if="h.hasRole('esi')"
                            class="dropdown-item" :class="{ active: page === 'Esi' }"
                            href="#Esi">ESI</a>
                     </div>
@@ -136,8 +136,9 @@
 
 <script>
 import $ from 'jquery';
-import Data from '../classes/Data';
 import {Collapse, Dropdown} from 'bootstrap';
+import Data from '../classes/Data';
+import Helper from "../classes/Helper";
 
 export default {
     props: {
@@ -148,6 +149,7 @@ export default {
 
     data: function() {
         return {
+            h: new Helper(this),
             managePages: ['GroupManagement', 'AppManagement', 'PlayerGroupManagement'],
             adminPages: [
                 'GroupAdmin', 'ServiceAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings',

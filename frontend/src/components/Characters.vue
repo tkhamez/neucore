@@ -144,7 +144,7 @@ Modal window with all characters of one player.
                 </div> <!-- container -->
             </div> <!-- modal-body -->
             <div v-cloak v-if="selectedPlayer" class="modal-footer">
-                <span v-if="hasAnyRole(['user-admin', 'user-manager', 'group-admin', 'app-admin', 'user-chars'])">
+                <span v-if="h.hasAnyRole(['user-admin', 'user-manager', 'group-admin', 'app-admin', 'user-chars'])">
                     <button v-cloak type="button" class="btn btn-info" v-on:click="updatePlayer">
                         <span role="img" class="fas fa-sync" title="Update characters"></span>
                         Update characters and groups
@@ -168,6 +168,7 @@ import {PlayerApi} from 'neucore-js-client';
 import CharacterNameChanges from '../components/CharacterNameChanges.vue';
 import Player from "../classes/Player";
 import Character from "../classes/Character";
+import Helper from "../classes/Helper";
 import Util from "../classes/Util";
 
 export default {
@@ -177,10 +178,11 @@ export default {
 
     data () {
         return {
+            Util: Util,
+            h: new Helper(this),
             selectedPlayer: null,
             characterMovements: [],
             unauthorized: null,
-            Util: Util,
         }
     },
 

@@ -40,6 +40,7 @@
 import { ApiClient, AuthApi, CharacterApi, PlayerApi, SettingsApi } from 'neucore-js-client';
 import superAgentPlugin from './superagent-plugin.js';
 import Util from "./classes/Util";
+import Helper from "./classes/Helper";
 import NavBar from './components/NavBar.vue';
 import CharactersModal from './components/Characters.vue';
 import Home from './pages/Home.vue';
@@ -99,6 +100,8 @@ export default {
 
     data() {
         return {
+            h: new Helper(this),
+
             /**
              * Current route (hash splitted by /), first element is the current page.
              */
@@ -331,7 +334,7 @@ export default {
                 vm.$root.player = data;
 
                 // redirect to settings after director login if user has the settings role
-                if (window.location.hash === '#login-director' && vm.hasRole('settings')) {
+                if (window.location.hash === '#login-director' && vm.h.hasRole('settings')) {
                     window.location.hash = 'SystemSettings/Directors';
                 }
             });

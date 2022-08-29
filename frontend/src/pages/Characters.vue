@@ -7,9 +7,9 @@
     </div>
     <div class="row">
         <div class="col-lg-6">
-            <character-search v-if="hasRole('user-chars')" v-on:result="searchResult = $event"
+            <character-search v-if="h.hasRole('user-chars')" v-on:result="searchResult = $event"
                               :admin="true"></character-search>
-            <character-result v-if="hasRole('user-chars')" :searchResult="searchResult"
+            <character-result v-if="h.hasRole('user-chars')" :searchResult="searchResult"
                               :admin="true"></character-result>
         </div>
         <div class="col-lg-6 col2">
@@ -62,6 +62,7 @@
 import {PlayerApi} from "neucore-js-client";
 import CharacterSearch   from '../components/CharacterSearch.vue';
 import CharacterResult   from '../components/CharacterResult.vue';
+import Helper from "../classes/Helper";
 
 export default {
     components: {
@@ -70,6 +71,7 @@ export default {
     },
     data: function() {
         return {
+            h: new Helper(this),
             input: '',
             result: [],
             searchResult: [],

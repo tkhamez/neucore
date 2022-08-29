@@ -12,15 +12,15 @@
     </div>
 
     <ul v-cloak v-if="currentWatchlist" class="nav nav-pills nav-fill">
-        <li v-if="hasRole('watchlist')" class="nav-item">
+        <li v-if="h.hasRole('watchlist')" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'warnings' }"
                :href="`#Watchlist/${currentWatchlist.id}/warnings`">Warnings</a>
         </li>
-        <li v-if="hasRole('watchlist')" class="nav-item">
+        <li v-if="h.hasRole('watchlist')" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'kick' }"
                :href="`#Watchlist/${currentWatchlist.id}/kick`">Kicklist</a>
         </li>
-        <li v-if="hasRole('watchlist')" class="nav-item">
+        <li v-if="h.hasRole('watchlist')" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'allow' }"
                :href="`#Watchlist/${currentWatchlist.id}/allow`">Allowlist</a>
         </li>
@@ -42,6 +42,7 @@
 import { WatchlistApi }  from 'neucore-js-client';
 import WatchlistLists    from './Watchlist--Lists.vue';
 import WatchlistSettings from './Watchlist--Settings.vue';
+import Helper from "../classes/Helper";
 
 export default {
     components: {
@@ -57,6 +58,7 @@ export default {
 
     data () {
         return {
+            h: new Helper(this),
             watchlists: [], // watchlists with view permission
             manageIds: [], // watchlist IDs with edit permission
             currentWatchlist: null,

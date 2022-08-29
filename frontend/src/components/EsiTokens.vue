@@ -34,7 +34,7 @@
                     <tbody>
                         <tr v-for="esiToken in character.esiTokens">
                             <td>
-                                <a v-if="page === 'UserAdmin' && hasRole('settings')" href="#"
+                                <a v-if="page === 'UserAdmin' && h.hasRole('settings')" href="#"
                                    v-on:click.prevent="showEveLogin(esiToken.eveLoginId)">
                                     {{ loginName(esiToken.eveLoginId) }}
                                 </a>
@@ -77,6 +77,7 @@
 import {Modal} from "bootstrap";
 import Data from "../classes/Data";
 import Util from "../classes/Util";
+import Helper from "../classes/Helper";
 
 export default {
     props: {
@@ -86,8 +87,9 @@ export default {
 
     data () {
         return {
-            loginNames: Data.loginNames,
             Util: Util,
+            h: new Helper(this),
+            loginNames: Data.loginNames,
             character: null,
             showInvalid: false,
             loginHost: '',

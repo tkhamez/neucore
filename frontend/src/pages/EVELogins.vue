@@ -125,7 +125,7 @@
                         <tr v-for="token in tokens">
                             <td>{{ token.character ? token.character.name : '' }}</td>
                             <td>
-                                <span v-if="hasRole('user-chars')">
+                                <span v-if="h.hasRole('user-chars')">
                                     <a href="#" v-on:click.prevent="showCharacters(token.playerId)">
                                         {{ token.playerName }}
                                     </a>
@@ -191,6 +191,7 @@ import {SettingsApi} from "neucore-js-client";
 import Multiselect from '@suadelabs/vue3-multiselect';
 import Data from '../classes/Data';
 import Edit from '../components/EntityEdit.vue';
+import Helper from "../classes/Helper";
 
 export default {
     components: {
@@ -205,6 +206,7 @@ export default {
     data: function() {
         return {
             Data: Data,
+            h: new Helper(this),
             logins: [],
             protectedLoginsPrefix: 'core.',
             tokens: [],

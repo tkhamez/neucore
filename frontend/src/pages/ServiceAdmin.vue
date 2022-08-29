@@ -184,6 +184,7 @@
 import $ from "jquery";
 import {ServiceApi, ServiceAdminApi} from "neucore-js-client";
 import Edit from '../components/EntityEdit.vue';
+import Helper from "../classes/Helper";
 
 export default {
     components: {
@@ -197,6 +198,7 @@ export default {
 
     data () {
         return {
+            h: new Helper(this),
             services: [],
             activeService: null,
             requiredGroups: '',
@@ -330,7 +332,7 @@ function getService(vm) {
     vm.properties = '';
     vm.actions = '';
     vm.URLs = [];
-    if (!vm.route[1] || !vm.hasRole('service-admin')) { // configuration object is incomplete without this role
+    if (!vm.route[1] || !vm.h.hasRole('service-admin')) { // configuration object is incomplete without this role
         return;
     }
     new ServiceApi().serviceGet(vm.route[1], {allowAdmin: 'true'}, (error, data) => {

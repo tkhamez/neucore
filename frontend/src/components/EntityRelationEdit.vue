@@ -164,7 +164,7 @@ Select and table to add and remove objects from other objects.
                                 <span role="img" style="color: grey;"
                                       class="small fa-solid fa-arrow-up-right-from-square"></span>
                             </a>
-                            <a v-else-if="contentType === 'managers' && hasRole('user-admin')"
+                            <a v-else-if="contentType === 'managers' && h.hasRole('user-admin')"
                                :href="`#UserAdmin/${row.id}`" title="User Administration">{{ row.name }}</a>
                             <span v-else>{{ row.name }}</span>
                         </td>
@@ -228,6 +228,7 @@ import {
     WatchlistApi
 } from 'neucore-js-client';
 import Data from '../classes/Data';
+import Helper from "../classes/Helper";
 import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterResult from '../components/CharacterResult.vue';
 
@@ -273,6 +274,7 @@ export default {
 
     data: function() {
         return {
+            h: new Helper(this),
             newObject: "", // empty string to select the first entry in the drop-down
             placeholder: "", // placeholder for the multi-select
             selectContent: [], // all options from backend

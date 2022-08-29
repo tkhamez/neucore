@@ -90,7 +90,7 @@
                                 <th scope="col">Player ID</th>
                                 <th scope="col">Name</th>
                                 <th scope="col">Corporation</th>
-                                <th scope="col" v-if="hasRole('user-chars')">Characters</th>
+                                <th scope="col" v-if="h.hasRole('user-chars')">Characters</th>
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
@@ -99,7 +99,7 @@
                                 <td>{{ member.id }}</td>
                                 <td>{{ member.name }}</td>
                                 <td>{{ member.corporationName }}</td>
-                                <td v-if="hasRole('user-chars')">
+                                <td v-if="h.hasRole('user-chars')">
                                     <button class="btn btn-info btn-sm" v-on:click="showCharacters(member.id)">
                                         Show characters
                                     </button>
@@ -166,6 +166,7 @@ import Data from '../classes/Data';
 import Util from '../classes/Util';
 import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterResult from '../components/CharacterResult.vue';
+import Helper from "../classes/Helper";
 
 export default {
     components: {
@@ -181,6 +182,7 @@ export default {
     data: function() {
         return {
             Util: Util,
+            h: new Helper(this),
             groupId: null,
             groupName: '',
             groupDescription: '',

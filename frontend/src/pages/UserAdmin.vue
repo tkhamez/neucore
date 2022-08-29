@@ -199,7 +199,7 @@
                     <h4>Account Status</h4>
                     <p>
                         {{ playerEdit.status }}
-                        <span v-if="hasRole('user-manager')" class="text-muted">
+                        <span v-if="h.hasRole('user-manager')" class="text-muted">
                             (change here:
                             <a :href="`#PlayerGroupManagement/${playerEdit.id}`">Player Groups Management</a>)
                         </span>
@@ -338,7 +338,7 @@
                                 <tr v-for="group in playerEdit.groups">
                                     <td>{{ group.id }}</td>
                                     <td :class="{ 'groups-disabled': playerEditDeactivated }">
-                                        <a v-if="hasRole('group-admin')"
+                                        <a v-if="h.hasRole('group-admin')"
                                            :href="`#GroupAdmin/${group.id}/members`"
                                            title="Group Administration">{{ group.name }}</a>
                                         <span v-else>{{ group.name }}</span>
@@ -363,7 +363,7 @@
                                 <tr v-for="managerGroup in playerEdit.managerGroups">
                                     <td>{{ managerGroup.id }}</td>
                                     <td>
-                                        <a v-if="hasRole('group-admin')"
+                                        <a v-if="h.hasRole('group-admin')"
                                            :href="`#GroupAdmin/${managerGroup.id}/managers`"
                                            title="Group Administration">{{ managerGroup.name }}</a>
                                         <span v-else>{{ managerGroup.name }}</span>
@@ -386,7 +386,7 @@
                             <tr v-for="managerApp in playerEdit.managerApps">
                                 <td>{{ managerApp.id }}</td>
                                 <td>
-                                    <a v-if="hasRole('app-admin')"
+                                    <a v-if="h.hasRole('app-admin')"
                                        :href="`#AppAdmin/${managerApp.id}/managers`"
                                        title="App Administration">{{ managerApp.name }}</a>
                                     <span v-else>{{ managerApp.name }}</span>
@@ -438,6 +438,7 @@ import Character from "../classes/Character";
 import Data from "../classes/Data";
 import Player from "../classes/Player";
 import Util from "../classes/Util";
+import Helper from "../classes/Helper";
 
 export default {
     components: {
@@ -456,6 +457,7 @@ export default {
     data () {
         return {
             Util: Util,
+            h: new Helper(this),
             playersRole: [],
             playersChars: [],
             activeRole: '',
@@ -487,7 +489,7 @@ export default {
     computed: {
         assignableRoles () {
             return this.availableRoles.filter(role =>
-                !this.hasRole(role, this.playerEdit) &&
+                !this.h.hasRole(role, this.playerEdit) &&
                 this.autoRoles.indexOf(role) === -1
             );
         },
