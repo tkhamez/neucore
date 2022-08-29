@@ -689,7 +689,7 @@ function getPlayer(vm) {
             return;
         }
         vm.playerEdit = data;
-        vm.characterMovements = vm.buildCharacterMovements(data);
+        vm.characterMovements = Character.buildCharacterMovements(data);
     });
 
     api.groupsDisabledById(vm.playerId, (error, data) => {

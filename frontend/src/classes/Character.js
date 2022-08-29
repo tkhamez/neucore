@@ -3,6 +3,30 @@ import {CharacterApi, PlayerApi} from "neucore-js-client";
 
 export default class Character {
 
+    static buildCharacterMovements(data) {
+        if (!data) {
+            return [];
+        }
+        const movements = [];
+        for (const removed of data.removedCharacters) {
+            if (removed.reason === 'moved') {
+                removed.reason = 'removed';
+                removed.playerName = removed.newPlayerName;
+                removed.playerId = removed.newPlayerId;
+            }
+            movements.push(removed);
+        }
+        for (const incoming of data.incomingCharacters) {
+            if (incoming.reason === 'moved') {
+                incoming.reason = 'incoming';
+                incoming.playerName = incoming.player.name;
+                incoming.playerId = incoming.player.id;
+            }
+            movements.push(incoming);
+        }
+        return movements.sort((a, b) => a.removedDate - b.removedDate);
+    }
+
     constructor(vm) {
         this.vm = vm;
     }

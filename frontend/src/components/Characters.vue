@@ -165,6 +165,7 @@ import {Tooltip, Modal} from 'bootstrap';
 import {PlayerApi} from 'neucore-js-client';
 import CharacterNameChanges from '../components/CharacterNameChanges.vue';
 import Player from "../classes/Player";
+import Character from "../classes/Character";
 
 export default {
     components: {
@@ -213,7 +214,7 @@ export default {
                     return;
                 }
                 vm.selectedPlayer = data;
-                vm.characterMovements = vm.buildCharacterMovements(data);
+                vm.characterMovements = Character.buildCharacterMovements(data);
             });
         },
 
