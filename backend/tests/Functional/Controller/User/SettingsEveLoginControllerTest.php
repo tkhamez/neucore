@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
+use Neucore\Entity\Alliance;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
@@ -13,20 +16,15 @@ use Tests\Helper;
 
 class SettingsEveLoginControllerTest extends WebTestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var EveLoginRepository
-     */
-    private $eveLoginRepo;
+    private EveLoginRepository $eveLoginRepo;
 
-    /**
-     * @var int
-     */
-    private $defaultLoginId;
+    private int $defaultLoginId;
+
+    private int $custom1LoginId;
+
+    private int $playerId;
 
     protected function setUp(): void
     {
@@ -73,8 +71,14 @@ class SettingsEveLoginControllerTest extends WebTestCase
 
     public function testCreate403()
     {
-        $response = $this->runApp('POST', '/api/user/settings/eve-login/custom2');
-        $this->assertEquals(403, $response->getStatusCode());
+        $this->setupDb();
+
+        $response1 = $this->runApp('POST', '/api/user/settings/eve-login/custom2');
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->loginUser(2);
+        $response2 = $this->runApp('POST', '/api/user/settings/eve-login/custom2');
+        $this->assertEquals(403, $response2->getStatusCode());
     }
 
     public function testCreate409()
@@ -109,8 +113,14 @@ class SettingsEveLoginControllerTest extends WebTestCase
 
     public function testDelete403()
     {
-        $response = $this->runApp('DELETE', '/api/user/settings/eve-login/custom1');
-        $this->assertEquals(403, $response->getStatusCode());
+        $this->setupDb();
+
+        $response1 = $this->runApp('DELETE', '/api/user/settings/eve-login/custom1');
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->loginUser(2);
+        $response2 = $this->runApp('DELETE', '/api/user/settings/eve-login/custom1');
+        $this->assertEquals(403, $response2->getStatusCode());
     }
 
     public function testDelete404()
@@ -122,16 +132,76 @@ class SettingsEveLoginControllerTest extends WebTestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
+    public function testTokens200()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('GET', "/api/user/settings/eve-login/$this->custom1LoginId/tokens");
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([[
+            'eveLoginId' => $this->custom1LoginId,
+            'characterId' => 1,
+            'playerId' => $this->playerId,
+            'validToken' => null,
+            'validTokenTime' => null,
+            'hasRoles' => null,
+            'lastChecked' => null,
+            'playerName' => 'Admin',
+            'character' => [
+                'id' => 1,
+                'name' => 'Admin',
+                'corporation' => [
+                    'id' => 100000,
+                    'name' => 'Corp',
+                    'ticker' => 'C',
+                    'alliance' => [
+                        'id' => 100,
+                        'name' => 'Alliance',
+                        'ticker' => 'A',
+                    ],
+                ],
+            ],
+        ]], $this->parseJsonBody($response));
+    }
+
+    public function testTokens403()
+    {
+        $this->setupDb();
+
+        $response1 = $this->runApp('GET', "/api/user/settings/eve-login/$this->custom1LoginId/tokens");
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->loginUser(2);
+        $response2 = $this->runApp('GET', "/api/user/settings/eve-login/$this->custom1LoginId/tokens");
+        $this->assertEquals(403, $response2->getStatusCode());
+
+        $this->loginUser(1);
+        $response2 = $this->runApp('GET', "/api/user/settings/eve-login/$this->defaultLoginId/tokens");
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testTokens404()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('GET', '/api/user/settings/eve-login/'.($this->custom1LoginId + 10).'/tokens');
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
     public function testList403()
     {
-        $response = $this->runApp('GET', '/api/user/settings/eve-login/list');
-        $this->assertEquals(403, $response->getStatusCode());
+        $this->setupDb();
+
+        $response1 = $this->runApp('GET', '/api/user/settings/eve-login/list');
+        $this->assertEquals(403, $response1->getStatusCode());
     }
 
     public function testList200()
     {
         $this->setupDb();
-        $this->loginUser(1);
+        $this->loginUser(2);
 
         $response = $this->runApp('GET', '/api/user/settings/eve-login/list');
         $this->assertEquals(200, $response->getStatusCode());
@@ -219,8 +289,14 @@ class SettingsEveLoginControllerTest extends WebTestCase
 
     public function testUpdate403()
     {
-        $response = $this->runApp('PUT', '/api/user/settings/eve-login');
-        $this->assertEquals(403, $response->getStatusCode());
+        $this->setupDb();
+
+        $response1 = $this->runApp('PUT', '/api/user/settings/eve-login');
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->loginUser(2);
+        $response2 = $this->runApp('PUT', '/api/user/settings/eve-login');
+        $this->assertEquals(403, $response2->getStatusCode());
     }
 
     public function testUpdate404()
@@ -239,8 +315,14 @@ class SettingsEveLoginControllerTest extends WebTestCase
 
     public function testRoles403()
     {
-        $response = $this->runApp('GET', '/api/user/settings/eve-login/roles');
-        $this->assertEquals(403, $response->getStatusCode());
+        $this->setupDb();
+
+        $response1 = $this->runApp('GET', '/api/user/settings/eve-login/roles');
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->loginUser(2);
+        $response2 = $this->runApp('GET', '/api/user/settings/eve-login/roles');
+        $this->assertEquals(403, $response2->getStatusCode());
     }
 
     public function testRoles200()
@@ -257,14 +339,31 @@ class SettingsEveLoginControllerTest extends WebTestCase
 
     private function setupDb(): void
     {
-        $login = (new EveLogin())
+        $customLogin = (new EveLogin())
             ->setName('custom1')
             ->setDescription('A text.')
             ->setEsiScopes('scope1 scope2')
             ->setEveRoles(['Role1', 'Role2']);
-        $this->helper->getEm()->persist($login);
+        $this->helper->getEm()->persist($customLogin);
 
-        $char = $this->helper->addCharacterMain('Admin', 1, [Role::USER, Role::SETTINGS]);
-        $this->defaultLoginId = $char->getEsiToken(EveLogin::NAME_DEFAULT)->getEveLogin()->getId();
+        $alliance = (new Alliance())->setId(100)->setName('Alliance')->setTicker('A');
+        $corporation = (new Corporation())->setId(100000)->setName('Corp')->setTicker('C')->setAlliance($alliance);
+        $this->helper->getEm()->persist($alliance);
+        $this->helper->getEm()->persist($corporation);
+
+        $admin = $this->helper->addCharacterMain('Admin', 1, [Role::USER, Role::SETTINGS]);
+        $admin->setCorporation($corporation);
+
+        $customEsiToken = (new EsiToken())->setEveLogin($customLogin)->setCharacter($admin)
+            ->setRefreshToken('rt')->setAccessToken('at')->setExpires(time() + 1000);
+        $this->helper->getEm()->persist($customEsiToken);
+
+        $this->helper->addCharacterMain('User', 2, [Role::USER]);
+
+        $this->helper->getEm()->clear();
+
+        $this->defaultLoginId = $admin->getEsiToken(EveLogin::NAME_DEFAULT)->getEveLogin()->getId();
+        $this->custom1LoginId = $customLogin->getId();
+        $this->playerId = $admin->getPlayer()->getId();
     }
 }

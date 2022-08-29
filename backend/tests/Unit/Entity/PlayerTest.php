@@ -112,6 +112,8 @@ class PlayerTest extends TestCase
         $expected3 = $expected1;
         $expected3['characters'][0]['esiTokens'] = [[
             'eveLoginId' => 1,
+            'characterId' => 0,
+            'playerId' => 0,
             'validToken' => null,
             'validTokenTime' => null,
             'hasRoles' => null,

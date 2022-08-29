@@ -308,6 +308,7 @@ Settings API
 - Update login. `PUT /user/settings/eve-login`
 - Create a new login. `POST /user/settings/eve-login/{name}`
 - Delete login. `DELETE /user/settings/eve-login/{id}`
+- List ESI tokens from login. `GET /user/settings/eve-login/{id}/tokens`
 - List in-game roles (without HQ, base and other 'Hangar Access' and 'Container Access' roles). `GET /user/settings/eve-login/roles`
 
 #### tracking

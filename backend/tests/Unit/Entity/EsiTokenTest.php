@@ -19,6 +19,8 @@ class EsiTokenTest extends TestCase
 
         $this->assertSame([
             'eveLoginId' => 0,
+            'characterId' => 0,
+            'playerId' => 0,
             'validToken' => true,
             'validTokenTime' => $token->getValidTokenTime()->format(Api::DATE_FORMAT),
             'hasRoles' => null,
@@ -29,6 +31,8 @@ class EsiTokenTest extends TestCase
         $token->setLastChecked(new \DateTime());
         $this->assertSame([
             'eveLoginId' => 1,
+            'characterId' => 0,
+            'playerId' => 0,
             'validToken' => true,
             'validTokenTime' => $token->getValidTokenTime()->format(Api::DATE_FORMAT),
             'hasRoles' => null,

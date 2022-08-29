@@ -65,7 +65,13 @@ class CharacterTest extends TestCase
         $this->assertSame([
             'id' => 123,
             'name' => 'test char',
-        ], $char->jsonSerialize(true));
+        ], $char->jsonSerialize(true, false));
+
+        $this->assertSame([
+            'id' => 123,
+            'name' => 'test char',
+            'corporation' => $corp->jsonSerialize(),
+        ], json_decode((string) json_encode($char->jsonSerialize(true)), true));
 
         $this->assertSame([
             'id' => 123,

@@ -106,7 +106,6 @@ class EveLogin implements \JsonSerializable
 
     /**
      * @ORM\OneToMany(targetEntity="EsiToken", mappedBy="eveLogin")
-     * @ORM\OrderBy({"character" = "ASC"})
      * @var Collection
      */
     private $esiTokens;
@@ -224,6 +223,19 @@ class EveLogin implements \JsonSerializable
      */
     public function getEsiTokens(): array
     {
-        return array_values($this->esiTokens->toArray());
+        $esiTokens = $this->esiTokens->toArray();
+
+        uasort($esiTokens, function (EsiToken $a, EsiToken $b) {
+            $nameA = $a->getCharacter() ? $a->getCharacter()->getName() : '';
+            $nameB = $b->getCharacter() ? $b->getCharacter()->getName() : '';
+            if ($nameA < $nameB) {
+                return -1;
+            } elseif ($nameA > $nameB) {
+                return 1;
+            }
+            return 0;
+        });
+
+        return array_values($esiTokens);
     }
 }

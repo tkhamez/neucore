@@ -158,6 +158,8 @@ class PlayerControllerTest extends WebTestCase
                 ],
                 'esiTokens' => [[
                     'eveLoginId' => $char->getEsiTokens()[0]->getEveLogin()->getId(),
+                    'characterId' => 123456,
+                    'playerId' => $char->getPlayer()->getId(),
                     'validToken' => null,
                     'validTokenTime' => null,
                     'hasRoles' => null,
@@ -875,6 +877,8 @@ class PlayerControllerTest extends WebTestCase
                 ],
                 'esiTokens' => [[
                     'eveLoginId' => $this->eveLoginId,
+                    'characterId' => 12,
+                    'playerId' => $this->player3Id,
                     'validToken' => false,
                     'validTokenTime' => '2019-08-03T23:12:45Z', // same as above (character.validTokenTime)
                     'hasRoles' => null,
@@ -893,6 +897,8 @@ class PlayerControllerTest extends WebTestCase
                 'corporation' => null,
                 'esiTokens' => [[
                     'eveLoginId' => $this->eveLoginId,
+                    'characterId' => 13,
+                    'playerId' => $this->player3Id,
                     'validToken' => true,
                     'validTokenTime' => '2019-08-03T23:12:45Z',
                     'hasRoles' => null,

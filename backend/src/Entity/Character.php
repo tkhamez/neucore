@@ -137,10 +137,14 @@ class Character implements \JsonSerializable
         bool $withEsiTokens = false
     ): array {
         if ($minimum) {
-            return [
+            $result = [
                 'id' => $this->getId(),
                 'name' => $this->name,
             ];
+            if ($withCorporation) {
+                $result['corporation'] = $this->corporation;
+            }
+            return $result;
         }
 
         $result = [

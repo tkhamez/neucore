@@ -13,8 +13,11 @@ use OpenApi\Annotations as OA;
 
 /**
  * @OA\Schema(
- *     required={"eveLoginId", "validToken", "validTokenTime", "hasRoles"},
+ *     required={"eveLoginId", "characterId", "playerId", "validToken", "validTokenTime", "hasRoles"},
  *     @OA\Property(property="eveLoginId", type="integer", description="ID of EveLogin"),
+ *     @OA\Property(property="characterId", type="integer", description="ID of Character"),
+ *     @OA\Property(property="playerId", type="integer", description="ID of Player"),
+ *     @OA\Property(property="playerName", type="string", description="Name of Player"),
  * )
  * @ORM\Entity
  * @ORM\Table(
@@ -34,6 +37,7 @@ class EsiToken implements \JsonSerializable
     private ?int $id = null;
 
     /**
+     * @OA\Property(ref="#/components/schemas/Character", nullable=true)
      * @ORM\ManyToOne(targetEntity="Character", inversedBy="esiTokens")
      * @ORM\JoinColumn(nullable=false, name="character_id", onDelete="CASCADE")
      */
@@ -103,16 +107,25 @@ class EsiToken implements \JsonSerializable
      */
     private ?\DateTime $lastChecked = null;
 
-    public function jsonSerialize(): array
+    public function jsonSerialize(bool $withCharacterDetails = false): array
     {
-        return [
+        $data = [
             'eveLoginId' => $this->eveLogin ? $this->eveLogin->getId() : 0,
+            'characterId' => $this->character ? $this->character->getId() : 0,
+            'playerId' => $this->character ? $this->character->getPlayer()->getId() : 0,
             'validToken' => $this->validToken,
             'validTokenTime' => $this->validTokenTime !== null ?
                 $this->validTokenTime->format(Api::DATE_FORMAT) : null,
             'hasRoles' => $this->hasRoles,
             'lastChecked' => $this->lastChecked !== null ? $this->lastChecked->format(Api::DATE_FORMAT) : null,
         ];
+
+        if ($withCharacterDetails) {
+            $data['playerName'] = $this->character ? $this->character->getPlayer()->getName() : null;
+            $data['character'] = $this->character ? $this->character->jsonSerialize(true) : null;
+        }
+
+        return $data;
     }
 
     public function setId(int $id): self

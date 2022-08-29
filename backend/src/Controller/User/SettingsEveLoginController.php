@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
+use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -116,6 +117,55 @@ class SettingsEveLoginController extends BaseController
         return $this->flushAndReturn(204);
     }
 
+
+    /**
+     * @OA\Get(
+     *     path="/user/settings/eve-login/{id}/tokens",
+     *     operationId="userSettingsEveLoginTokens",
+     *     summary="List ESI tokens from an EVE login.",
+     *     description="Needs role: settings",
+     *     tags={"Settings"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="The login ID. The default login is not allowed.",
+     *         @OA\Schema(type="string", maxLength=20, pattern="^[-._a-zA-Z0-9]+$")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of tokens.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/EsiToken"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Login not found."
+     *     )
+     * )
+     */
+    public function tokens(string $id): ResponseInterface
+    {
+        $login = $this->repositoryFactory->getEveLoginRepository()->find((int)$id);
+        if (!$login) {
+            return $this->response->withStatus(404);
+        }
+
+        if ($login->getName() === EveLogin::NAME_DEFAULT) {
+            return $this->response->withStatus(403);
+        }
+
+        $tokens = array_map(function (EsiToken $esiToken) {
+            return $esiToken->jsonSerialize(true);
+        }, $login->getEsiTokens());
+
+        return $this->withJson($tokens);
+    }
+
     /**
      * @OA\Get(
      *     path="/user/settings/eve-login/list",
@@ -128,6 +178,10 @@ class SettingsEveLoginController extends BaseController
      *         response="200",
      *         description="List of logins.",
      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/EveLogin"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
      *     )
      * )
      */

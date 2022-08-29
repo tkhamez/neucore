@@ -7,7 +7,7 @@
 
     <div class="row mb-3 mt-3">
         <div class="col-lg-12">
-            <h1>System Settings</h1>
+            <h1>EVE Login Administration</h1>
         </div>
     </div>
 
@@ -25,7 +25,7 @@
                           :class="{ active: activeLogin && activeLogin.id === login.id }">
                         <a class="list-group-item list-group-item-action"
                            :class="{ active: activeLogin && activeLogin.id === login.id }"
-                           :href="`#EVELogins/${login.id}`">
+                           :href="`#EVELogins/${login.id}/${contentType}`">
                             {{ login.name }}
                         </a>
                         <span v-if="login.name.indexOf(protectedLoginsPrefix) === -1" v-cloak class="entity-actions">
@@ -39,9 +39,28 @@
             </div>
         </div>
 
-        <div class="col-lg-8">
-            <div class="card border-secondary mb-3">
-                <h4 v-if="activeLogin" v-cloak class="card-header">{{ activeLogin.name }}</h4>
+        <div v-if="activeLogin" v-cloak class="col-lg-8">
+            <div class="card border-secondary mb-3" >
+                <h4 class="card-header">{{ activeLogin.name }}</h4>
+            </div>
+
+            <ul class="nav nav-pills nav-fill">
+                <li class="nav-item">
+                    <a class="nav-link"
+                       :class="{ 'active': contentType === 'login' }"
+                       :href="`#EVELogins/${activeLogin.id}/login`">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       :class="{
+                           'active': contentType === 'tokens',
+                           'disabled': activeLogin.name === loginNames.default
+                       }"
+                       :href="`#EVELogins/${activeLogin.id}/tokens`">Tokens</a>
+                </li>
+            </ul>
+
+            <div v-if="contentType === 'login'" v-cloak class="card border-secondary mb-3">
                 <div class="card-body">
                     <p v-if="activeLogin" v-cloak>
                         Login URL <a :href="loginUrl">{{ loginUrl }}</a>.
@@ -88,6 +107,77 @@
                     </div>
                 </div> <!-- card-body -->
             </div> <!-- card -->
+
+            <div v-if="contentType === 'tokens'" v-cloak class="card border-secondary mb-3 table-responsive">
+                <table class="table table-hover mb-0 nc-table-sm" aria-describedby="ESI Tokens">
+                    <thead>
+                        <tr>
+                            <th scope="col">Character</th>
+                            <th scope="col">Account</th>
+                            <th scope="col" colspan="2">Corporation</th>
+                            <th scope="col" colspan="2">Alliance</th>
+                            <th scope="col">Valid</th>
+                            <th scope="col">Has Roles</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="token in tokens">
+                            <td>{{ token.character ? token.character.name : '' }}</td>
+                            <td>
+                                <span v-if="hasRole('user-chars')">
+                                    <a href="#" v-on:click.prevent="showCharacters(token.playerId)">
+                                        {{ token.playerName }}
+                                    </a>
+                                </span>
+                                <span v-else>{{ token.playerName }}</span>
+                            </td>
+                            <td>
+                                {{
+                                    token.character && token.character.corporation ?
+                                        token.character.corporation.ticker :
+                                        ''
+                                }}
+                            </td>
+                            <td>
+                                {{
+                                    token.character && token.character.corporation ?
+                                        token.character.corporation.name :
+                                        ''
+                                }}
+                            </td>
+                            <td>
+                                {{
+                                    token.character &&
+                                    token.character.corporation &&
+                                    token.character.corporation.alliance ?
+                                        token.character.corporation.alliance.ticker :
+                                        ''
+                                }}
+                            </td>
+                            <td>
+                                {{
+                                    token.character &&
+                                    token.character.corporation &&
+                                    token.character.corporation.alliance ?
+                                        token.character.corporation.alliance.name :
+                                        ''
+                                }}
+                            </td>
+                            <td>
+                                <span v-if="token.validToken">Yes</span>
+                                <span v-if="token.validToken === false">No</span>
+                                <span v-if="token.validToken === null">n/a</span>
+                            </td>
+                            <td>
+                                <span v-if="token.hasRoles">Yes</span>
+                                <span v-if="token.hasRoles === false">No</span>
+                                <span v-if="token.hasRoles === null">n/a</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div> <!-- card -->
+
         </div> <!-- col -->
 
     </div>
@@ -114,9 +204,12 @@ export default {
     data: function() {
         return {
             messages: Data.messages,
+            loginNames: Data.loginNames,
             logins: [],
             protectedLoginsPrefix: 'core.',
+            tokens: [],
             activeLogin: null,
+            contentType: 'login',
             loginUrl: null,
             disabled: false,
             allEveRoles: [],
@@ -132,6 +225,7 @@ export default {
     watch: {
         route () {
             getLogin(this);
+            getTokens(this);
         },
     },
 
@@ -211,6 +305,7 @@ function getLogins(vm) {
         if (!error) {
             vm.logins = data;
             getLogin(vm);
+            getTokens(vm);
         }
     });
 }
@@ -220,6 +315,9 @@ function getLogin(vm) {
     if (!vm.route[1]) {
         return;
     }
+
+    vm.contentType = vm.route[2] ? vm.route[2] : 'login';
+
     for (const login of vm.logins) {
         if (login.id === parseInt(vm.route[1], 10)) {
             vm.activeLogin = { ...login };
@@ -228,11 +326,28 @@ function getLogin(vm) {
         }
     }
 }
+
+function getTokens(vm) {
+    if (vm.contentType !== 'tokens') {
+        return;
+    }
+    vm.tokens = [];
+    new SettingsApi().userSettingsEveLoginTokens(vm.activeLogin.id, (error, data) => {
+        if (!error) {
+            vm.tokens = data;
+        }
+    });
+}
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     .add-login {
         float: right;
         cursor: pointer;
+    }
+
+    // darkly theme does not have a distinct color, so use default
+    .nav-link.disabled {
+        color: var(--bs-nav-link-disabled-color);
     }
 </style>
