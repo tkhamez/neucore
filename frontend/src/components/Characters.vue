@@ -80,7 +80,9 @@ Modal window with all characters of one player.
                                         </div>
                                         <div class="small col-4 text-end">
                                             <span class="text-muted">Added: </span>
-                                            <span v-if="character.created">{{ formatDate(character.created) }}</span>
+                                            <span v-if="character.created">
+                                                {{ Util.formatDate(character.created) }}
+                                            </span>
                                         </div>
                                     </div>
                                 </li>
@@ -117,7 +119,7 @@ Modal window with all characters of one player.
                                     </a><br>
 
                                     <span v-if="movedChar.removedDate">
-                                        {{ formatDate(movedChar.removedDate) }}<br>
+                                        {{ Util.formatDate(movedChar.removedDate) }}<br>
                                     </span>
 
                                     <span class="text-muted">Action:</span>
@@ -166,6 +168,7 @@ import {PlayerApi} from 'neucore-js-client';
 import CharacterNameChanges from '../components/CharacterNameChanges.vue';
 import Player from "../classes/Player";
 import Character from "../classes/Character";
+import Util from "../classes/Util";
 
 export default {
     components: {
@@ -177,6 +180,7 @@ export default {
             selectedPlayer: null,
             characterMovements: [],
             unauthorized: null,
+            Util: Util,
         }
     },
 
@@ -240,8 +244,8 @@ export default {
             if (!character.validTokenTime && !character.tokenLastChecked) {
                 return '';
             }
-            return `Status changed: ${this.formatDate(character.validTokenTime)}<br>
-                Last checked: ${this.formatDate(character.tokenLastChecked)}`;
+            return `Status changed: ${Util.formatDate(character.validTokenTime)}<br>
+                Last checked: ${Util.formatDate(character.tokenLastChecked)}`;
         }
     }
 }

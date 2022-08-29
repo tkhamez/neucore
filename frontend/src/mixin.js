@@ -54,25 +54,6 @@ export default {
             return false;
         },
 
-        /**
-         * @param {Date|null} date
-         * @param {boolean} [dateOnly]
-         * @returns {string}
-         */
-        formatDate: function(date, dateOnly) {
-            if (!date) {
-                return '';
-            }
-            let str = date.toISOString();
-            str = str.replace('T', ' ').replace('.000Z', '');
-            str = str.substring(0, str.length - 3); // remove seconds
-            //str = str.substring(0, str.length - 3); // remove seconds
-            if (dateOnly) {
-                str = str.substring(0, 10); // remove time
-            }
-            return str;
-        },
-
         characterPortrait(id, size) {
             if (this.$root.settings.esiDataSource === 'singularity') {
                 // there are no character images on Sisi at the moment.

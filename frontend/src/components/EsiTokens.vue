@@ -47,12 +47,12 @@
                             </td>
                             <td v-if="page === 'UserAdmin'">
                                 <span v-if="esiToken.validTokenTime">
-                                    {{ formatDate(esiToken.validTokenTime) }}
+                                    {{ Util.formatDate(esiToken.validTokenTime) }}
                                 </span>
                             </td>
                             <td>
                                 <span v-if="esiToken.lastChecked">
-                                    {{ formatDate(esiToken.lastChecked) }}
+                                    {{ Util.formatDate(esiToken.lastChecked) }}
                                 </span>
                             </td>
                             <td>
@@ -76,6 +76,7 @@
 <script>
 import {Modal} from "bootstrap";
 import Data from "../classes/Data";
+import Util from "../classes/Util";
 
 export default {
     props: {
@@ -86,6 +87,7 @@ export default {
     data () {
         return {
             loginNames: Data.loginNames,
+            Util: Util,
             character: null,
             showInvalid: false,
             loginHost: '',

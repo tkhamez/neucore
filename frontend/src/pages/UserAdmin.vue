@@ -248,7 +248,7 @@
                                     <td>{{ character.main }}</td>
                                     <td>
                                         <span v-if="character.created">
-                                            {{ formatDate(character.created) }}
+                                            {{ Util.formatDate(character.created) }}
                                         </span>
                                     </td>
                                     <td>
@@ -257,7 +257,7 @@
                                     </td>
                                     <td>
                                         <span v-if="character.lastUpdate">
-                                            {{ formatDate(character.lastUpdate) }}
+                                            {{ Util.formatDate(character.lastUpdate) }}
                                         </span>
                                     </td>
                                     <td>
@@ -298,7 +298,7 @@
                                         </td>
                                         <td>
                                             <span v-if="movedCharacter.removedDate">
-                                                {{ formatDate(movedCharacter.removedDate) }}
+                                                {{ Util.formatDate(movedCharacter.removedDate) }}
                                             </span>
                                         </td>
                                         <td>{{ movedCharacter.reason }}</td>
@@ -437,6 +437,7 @@ import EsiTokens from '../components/EsiTokens.vue';
 import Character from "../classes/Character";
 import Data from "../classes/Data";
 import Player from "../classes/Player";
+import Util from "../classes/Util";
 
 export default {
     components: {
@@ -454,6 +455,7 @@ export default {
 
     data () {
         return {
+            Util: Util,
             playersRole: [],
             playersChars: [],
             activeRole: '',

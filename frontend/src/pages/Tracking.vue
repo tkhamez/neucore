@@ -78,7 +78,9 @@
             <div class="col-lg-6">
                 <p class="small text-muted">
                     Last update:
-                    <span v-if="corporation.trackingLastUpdate">{{ formatDate(corporation.trackingLastUpdate) }}</span>
+                    <span v-if="corporation.trackingLastUpdate">
+                        {{ Util.formatDate(corporation.trackingLastUpdate) }}
+                    </span>
                 </p>
             </div>
             <div class="col-lg-6 text-end">
@@ -130,6 +132,7 @@ import _ from 'lodash';
 import $ from 'jquery';
 import {Tooltip} from 'bootstrap';
 import {CorporationApi} from 'neucore-js-client';
+import Util from "../classes/Util";
 
 export default {
     props: {
@@ -138,6 +141,7 @@ export default {
 
     data () {
         return {
+            Util: Util,
             corporation: "", // empty string to select the first entry in the drop-down
             corporations: [],
             formOptions: {
@@ -348,7 +352,7 @@ function configureDataTable(vm) {
                         return `
                             <div class="text-with-tooltip" data-bs-toggle="tooltip" data-bs-html="true" title="
                                 Number mails sent: ${row.missingCharacterMailSentNumber}<br>
-                                Last mail: ${vm.$root.formatDate(row.missingCharacterMailSentDate)}<br>
+                                Last mail: ${Util.formatDate(row.missingCharacterMailSentDate)}<br>
                                 Result: ${row.missingCharacterMailSentResult ? row.missingCharacterMailSentResult : ''}
                             ">n/a</div>`;
                     } else {
@@ -376,8 +380,8 @@ function configureDataTable(vm) {
                 if (row.character.validTokenTime) {
                     return `
                         <div class="text-with-tooltip" data-bs-toggle="tooltip" data-bs-html="true"
-                              title="Token status change date: ${vm.$root.formatDate(row.character.validTokenTime)}<br>
-                                    Token's last check date: ${vm.$root.formatDate(row.character.tokenLastChecked)}">
+                              title="Token status change date: ${Util.formatDate(row.character.validTokenTime)}<br>
+                                    Token's last check date: ${Util.formatDate(row.character.tokenLastChecked)}">
                             ${text}
                         </div>`;
                 } else {
@@ -386,11 +390,11 @@ function configureDataTable(vm) {
             }
         }, {
             data (row) {
-                return row.logonDate ? vm.$root.formatDate(row.logonDate) : '';
+                return row.logonDate ? Util.formatDate(row.logonDate) : '';
             }
         }, {
             data (row) {
-                return row.logoffDate ? vm.$root.formatDate(row.logoffDate) : '';
+                return row.logoffDate ? Util.formatDate(row.logoffDate) : '';
             }
         }, {
             data (row) {
@@ -408,7 +412,7 @@ function configureDataTable(vm) {
             }
         }, {
             data (row) {
-                return row.startDate ? vm.$root.formatDate(row.startDate) : '';
+                return row.startDate ? Util.formatDate(row.startDate) : '';
             }
         }]
     });

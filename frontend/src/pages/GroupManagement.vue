@@ -134,7 +134,7 @@
                         <tbody>
                             <tr v-for="application in groupApplicationsByStatus(status)">
                                 <td>{{ `${application.player.name} #${application.player.id}` }}</td>
-                                <td>{{ formatDate(application.created) }}</td>
+                                <td>{{ Util.formatDate(application.created) }}</td>
                                 <td>
                                     <button v-if="application.status === 'pending' || application.status === 'denied'"
                                             class="btn btn-success btn-sm"
@@ -163,6 +163,7 @@
 <script>
 import { GroupApi } from 'neucore-js-client';
 import Data from '../classes/Data';
+import Util from '../classes/Util';
 import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterResult from '../components/CharacterResult.vue';
 
@@ -179,6 +180,7 @@ export default {
 
     data: function() {
         return {
+            Util: Util,
             groupId: null,
             groupName: '',
             groupDescription: '',

@@ -11,6 +11,8 @@ Tooltip with list of name changes.
 </template>
 
 <script>
+import Util from "../classes/Util";
+
 export default {
     props: {
         character: Object,
@@ -23,11 +25,10 @@ export default {
          * @returns {string}
          */
         getNameChangesHtml(characterNameChanges) {
-            const vm = this;
             let html = 'Character name changes:<br>';
             for (const change of characterNameChanges) {
                 html += `
-                    ${vm.$root.formatDate(change.changeDate, true)}
+                    ${Util.formatDate(change.changeDate, true)}
                     <strong>${change.oldName}</strong>
                     <br>
                 `;
