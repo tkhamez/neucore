@@ -28,7 +28,8 @@
                            :href="`#EVELogins/${login.id}/${contentType}`">
                             {{ login.name }}
                         </a>
-                        <span v-if="login.name.indexOf(protectedLoginsPrefix) === -1" v-cloak class="entity-actions">
+                        <span v-if="login.name.indexOf(protectedLoginsPrefix) === -1"
+                              v-cloak class="entity-actions">
                             <span role="img" aria-label="delete" title="delete"
                                   class="far fa-trash-alt me-1"
                                   @mouseover="mouseover" @mouseleave="mouseleave"
@@ -54,7 +55,7 @@
                     <a class="nav-link"
                        :class="{
                            'active': contentType === 'tokens',
-                           'disabled': activeLogin.name === loginNames.default
+                           'disabled': activeLogin.name === Data.loginNames.default
                        }"
                        :href="`#EVELogins/${activeLogin.id}/tokens`">Tokens</a>
                 </li>
@@ -72,7 +73,7 @@
                                    v-model="activeLogin.name" maxlength="20">
                         </label>
                         <p class="text-muted small lh-sm">
-                            {{ messages.itemNameAllowedCharsHelp }}<br>
+                            {{ Data.messages.itemNameAllowedCharsHelp }}<br>
                             Maximum length 20.
                         </p>
                         <label class="col-form-label w-100">
@@ -203,8 +204,7 @@ export default {
 
     data: function() {
         return {
-            messages: Data.messages,
-            loginNames: Data.loginNames,
+            Data: Data,
             logins: [],
             protectedLoginsPrefix: 'core.',
             tokens: [],
