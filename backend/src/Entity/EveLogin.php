@@ -31,6 +31,11 @@ class EveLogin implements \JsonSerializable
     public const NAME_DEFAULT = self::INTERNAL_LOGIN_PREFIX . 'default';
 
     /**
+     * Member tracking login.
+     */
+    public const NAME_TRACKING = self::INTERNAL_LOGIN_PREFIX . 'tracking';
+
+    /**
      * Login for "managed" accounts.
      */
     public const NAME_MANAGED = self::INTERNAL_LOGIN_PREFIX . 'managed';
@@ -50,6 +55,7 @@ class EveLogin implements \JsonSerializable
      */
     public const INTERNAL_LOGIN_NAMES = [
         self::NAME_DEFAULT,
+        self::NAME_TRACKING,
         self::NAME_MANAGED,
         self::NAME_MAIL,
         self::NAME_DIRECTOR,

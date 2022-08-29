@@ -15,11 +15,11 @@ Modal windows to create, delete and edit entities
                     <label class="form-label" for="entityEditCreateName">{{ type }} name</label>
                     <input class="form-control" v-model="newName" type="text" id="entityEditCreateName">
                     <span v-if="['Group', 'EveLogin'].indexOf(type) !== -1" class="form-text">
-                        {{ messages.itemNameAllowedCharsHelp }}<br>
+                        {{ Data.messages.itemNameAllowedCharsHelp }}<br>
                         Maximum length: {{ type === 'EveLogin' ? '20' : '64' }}
                         <span v-if="type === 'EveLogin'">
                             <br>
-                            Names starting with 'core.' are reserved for internal use.
+                            Names starting with '{{ Data.loginPrefixProtected }}' are reserved for internal use.
                         </span>
                     </span>
                 </div>
@@ -66,7 +66,7 @@ Modal windows to create, delete and edit entities
                 <div class="modal-body">
                     <label class="form-label" for="entityEditEditName">{{ type }} name</label>
                     <input v-model="item.name" class="form-control" type="text" id="entityEditEditName">
-                    <span v-if="type === 'Group'" class="form-text">{{ messages.itemNameAllowedCharsHelp }}</span>
+                    <span v-if="type === 'Group'" class="form-text">{{ Data.messages.itemNameAllowedCharsHelp }}</span>
                     <p v-cloak v-if="type === 'Group'" class="text-warning">
                         Please note, that renaming a group may break third party apps that rely on
                         the name instead of the ID.
@@ -125,7 +125,7 @@ export default {
 
     data: function() {
         return {
-            messages: Data.messages,
+            Data: Data,
             newName: '',
             groupVisibility: '',
             groupAutoAccept: '',

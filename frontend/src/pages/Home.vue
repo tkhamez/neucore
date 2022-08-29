@@ -342,7 +342,10 @@ export default {
         },
 
         filteredEveLogins () {
-            return this.eveLogins.filter(eveLogin => eveLogin.name.indexOf('core.') !== 0);
+            return this.eveLogins.filter(eveLogin => {
+                return eveLogin.name.indexOf(Data.loginPrefixProtected) !== 0 ||
+                       eveLogin.name === Data.loginNames.tracking
+            });
         },
     }
 }

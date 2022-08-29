@@ -38,8 +38,11 @@ export default class Data {
         itemNameAllowedCharsHelp: 'Allowed characters (no spaces): A-Z a-z 0-9 - . _',
     };
 
+    static loginPrefixProtected = 'core.';
+
     static loginNames = {
         default:    'core.default',
+        tracking:   'core.tracking',
         managed:    'core.managed',
         mail:       'core.mail',
         director:   'core.director',

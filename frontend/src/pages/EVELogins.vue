@@ -28,7 +28,7 @@
                            :href="`#EVELogins/${login.id}/${contentType}`">
                             {{ login.name }}
                         </a>
-                        <span v-if="login.name.indexOf(protectedLoginsPrefix) === -1"
+                        <span v-if="login.name.indexOf(Data.loginPrefixProtected) === -1"
                               v-cloak class="entity-actions">
                             <span role="img" aria-label="delete" title="delete"
                                   class="far fa-trash-alt me-1"
@@ -208,7 +208,6 @@ export default {
             Data: Data,
             h: new Helper(this),
             logins: [],
-            protectedLoginsPrefix: 'core.',
             tokens: [],
             activeLogin: null,
             contentType: 'login',
@@ -324,7 +323,7 @@ function getLogin(vm) {
         if (login.id === parseInt(vm.route[1], 10)) {
             vm.activeLogin = { ...login };
             vm.loginUrl = `${vm.$root.envVars.backendHost}/login/${vm.activeLogin.name}`
-            vm.disabled = login.name.indexOf(vm.protectedLoginsPrefix) === 0;
+            vm.disabled = login.name.indexOf(Data.loginPrefixProtected) === 0;
         }
     }
 }
