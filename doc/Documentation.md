@@ -3,6 +3,7 @@
 <!-- toc -->
 
 - [Features](#features)
+- [Installation](#installation)
 - [Application API](#application-api)
   * [Authentication](#authentication)
   * [Rate Limit](#rate-limit)
@@ -55,6 +56,10 @@ All API functions are documented with OpenAPI and can be found at
 only the routes listed in the group `Application` are for Neucore applications. For these there is also a 
 separate OpenAPI definition file at 
 [https://your.domain/application-api-3.yml](https://neucore.tian-space.net/application-api-3.yml).
+
+## Installation
+
+See [Install.md](Install.md).
 
 ## Application API
 
