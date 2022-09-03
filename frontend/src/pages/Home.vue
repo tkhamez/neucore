@@ -30,13 +30,17 @@
                             <tr v-for="eveLogin in filteredEveLogins()">
                                 <td>{{ eveLogin.name }}</td>
                                 <td>
-                                    <a :href="loginHost + '/login/' + eveLogin.name"
+                                    <a :href="`${loginHost}/login/${eveLogin.name}`"
                                        class="ms-1 char-login-button" title="EVE SSO Login">
                                         <img src="../../public/img/eve_sso-short.png" alt="LOG IN with EVE Online">
                                     </a>
                                 </td>
                                 <td>{{ eveLogin.description }}</td>
-                                <td>{{ eveLogin.esiScopes.split(' ').join(', ') }}</td>
+                                <td>
+                                    <span v-for="scope in eveLogin.esiScopes.split(' ')">
+                                        {{ scope }}<br>
+                                    </span>
+                                </td>
                                 <td>{{ eveLogin.eveRoles.join(', ') }}</td>
                             </tr>
                         </tbody>
