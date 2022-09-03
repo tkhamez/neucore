@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Functional\Command;
 
 use Neucore\Entity\Service;
-use Neucore\Entity\ServiceConfiguration;
+use Neucore\Data\ServiceConfiguration;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;

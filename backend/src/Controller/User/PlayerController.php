@@ -11,7 +11,7 @@ use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
-use Neucore\Entity\ServiceAccount;
+use Neucore\Data\ServiceAccount;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;

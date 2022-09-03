@@ -6,6 +6,7 @@ namespace Neucore\Entity;
 
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
+use Neucore\Data\ServiceConfiguration;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 

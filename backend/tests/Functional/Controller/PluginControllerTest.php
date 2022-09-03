@@ -6,7 +6,7 @@ namespace Tests\Functional\Controller;
 
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Service;
-use Neucore\Entity\ServiceConfiguration;
+use Neucore\Data\ServiceConfiguration;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;

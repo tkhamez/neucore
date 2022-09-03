@@ -6,7 +6,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Entity;
 
 use Neucore\Entity\Service;
-use Neucore\Entity\ServiceConfiguration;
+use Neucore\Data\ServiceConfiguration;
 use PHPUnit\Framework\TestCase;
 
 class ServiceTest extends TestCase

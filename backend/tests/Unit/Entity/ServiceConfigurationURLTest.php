@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Entity;
 
-use Neucore\Entity\ServiceConfigurationURL;
+use Neucore\Data\ServiceConfigurationURL;
 use PHPUnit\Framework\TestCase;
 
 class ServiceConfigurationURLTest extends TestCase

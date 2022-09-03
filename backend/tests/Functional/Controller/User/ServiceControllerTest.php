@@ -13,7 +13,7 @@ use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
-use Neucore\Entity\ServiceConfiguration;
+use Neucore\Data\ServiceConfiguration;
 use Neucore\Entity\SystemVariable;
 use Neucore\Plugin\CoreGroup;
 use Neucore\Plugin\ServiceAccountData;

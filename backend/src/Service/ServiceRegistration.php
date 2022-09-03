@@ -8,7 +8,7 @@ use Neucore\Application;
 use Neucore\Entity\Character;
 use Neucore\Entity\Player;
 use Neucore\Entity\Service;
-use Neucore\Entity\ServiceConfiguration;
+use Neucore\Data\ServiceConfiguration;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;

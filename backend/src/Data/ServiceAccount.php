@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Neucore\Entity;
+namespace Neucore\Data;
 
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;

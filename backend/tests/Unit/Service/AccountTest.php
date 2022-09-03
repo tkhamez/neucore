@@ -22,7 +22,7 @@ use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
-use Neucore\Entity\ServiceConfiguration;
+use Neucore\Data\ServiceConfiguration;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterNameChangeRepository;

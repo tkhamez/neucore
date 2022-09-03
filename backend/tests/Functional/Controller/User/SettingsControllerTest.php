@@ -13,7 +13,7 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
-use Neucore\Entity\ServiceConfiguration;
+use Neucore\Data\ServiceConfiguration;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\SystemVariableRepository;

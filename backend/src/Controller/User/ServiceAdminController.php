@@ -6,7 +6,7 @@ namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Service;
-use Neucore\Entity\ServiceConfiguration;
+use Neucore\Data\ServiceConfiguration;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;

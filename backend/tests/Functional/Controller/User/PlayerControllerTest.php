@@ -17,7 +17,7 @@ use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
-use Neucore\Entity\ServiceConfiguration;
+use Neucore\Data\ServiceConfiguration;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
 use Neucore\Plugin\ServiceAccountData;
