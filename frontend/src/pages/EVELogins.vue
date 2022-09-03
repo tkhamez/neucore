@@ -7,7 +7,7 @@
 
     <div class="row mb-3 mt-3">
         <div class="col-lg-12">
-            <h1>EVE Login Administration</h1>
+            <h1>EVE Logins Administration</h1>
         </div>
     </div>
 

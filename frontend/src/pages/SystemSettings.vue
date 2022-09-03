@@ -20,10 +20,6 @@
             <a class="nav-link" :class="{ 'active': tab === 'Mails' }"
                :href="'#SystemSettings/Mails'">EVE Mails</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" :class="{ 'active': tab === 'Directors' }"
-               :href="'#SystemSettings/Directors'">Directors</a>
-        </li>
     </ul>
 
     <!-- "allAlliances" and "allCorporations" are only for "Features" and "Mails" tabs -->
@@ -42,14 +38,12 @@
 import _ from 'lodash';
 import {AllianceApi, CorporationApi, SettingsApi} from 'neucore-js-client';
 import Customization from './SystemSettings--Customization.vue';
-import Directors from './SystemSettings--Directors.vue';
 import Features from './SystemSettings--Features.vue';
 import Mails from './SystemSettings--Mails.vue';
 
 export default {
     components: {
         Customization,
-        Directors,
         Features,
         Mails,
     },
@@ -110,8 +104,7 @@ export default {
                         'allow_character_deletion',
                         'customization_home_logo',
                         'customization_nav_logo',
-                    ].indexOf(name) !== -1 ||
-                    name.indexOf('director_char_') !== -1
+                    ].indexOf(name) !== -1
                 ) {
                     vm.emitter.emit('settingsChange');
                 }
@@ -181,7 +174,7 @@ export default {
 }
 
 function setTab(vm) {
-    const tabs = ['Customization', 'Directors', 'Features', 'Mails'];
+    const tabs = ['Customization', 'Features', 'Mails'];
     if (tabs.indexOf(vm.route[1]) !== -1) {
         vm.tab = vm.route[1];
     }

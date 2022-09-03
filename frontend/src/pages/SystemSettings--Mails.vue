@@ -89,7 +89,7 @@
             </multiselect>
             <span class="form-text">
                 Only corporations with member tracking enabled, see
-                <a href="#SystemSettings/Directors">SystemSettings -> Directors</a>
+                <a href="#EVELogins">EVE Logins</a>, {{ loginNames.tracking }} login.
             </span>
         </div>
         <div class="mt-3">

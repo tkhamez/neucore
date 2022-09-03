@@ -7,8 +7,6 @@ namespace Tests\Unit\Service;
 use Eve\Sso\EveAuthentication;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
-use League\OAuth2\Client\Token\AccessTokenInterface;
-use Neucore\Data\DirectorToken;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
@@ -68,7 +66,6 @@ class MemberTrackingTest extends TestCase
                 $config
             ),
             new OAuthToken($authProvider, $objectManager, $logger),
-            $authProvider,
             $config
         );
     }
@@ -167,134 +164,6 @@ class MemberTrackingTest extends TestCase
             'characterId' => null,
             'systemVariableName' => null,
         ], \json_decode($sysVarRepo->find(SystemVariable::DIRECTOR_TOKEN . 1)->getValue(), true));
-    }
-
-    public function testRemoveDirector()
-    {
-        $char = new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1);
-        $token = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1);
-        $this->om->persist($char);
-        $this->om->persist($token);
-        $this->om->flush();
-
-        $this->memberTracking->removeDirector($char);
-
-        $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
-        $this->assertNull($sysVarRepo->find(SystemVariable::DIRECTOR_CHAR . 1));
-        $this->assertNull($sysVarRepo->find(SystemVariable::DIRECTOR_TOKEN . 1));
-    }
-
-    public function testUpdateDirector()
-    {
-        $char = (new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1))->setValue('{
-            "character_id": 10, 
-            "character_name": "char name", 
-            "corporation_id": 101,
-            "corporation_name": "corp name",
-            "corporation_ticker": "-CT-"
-        }');
-        $this->om->persist($char);
-        $this->om->flush();
-
-        $this->client->setResponse(
-            new Response(200, [], '{"name": "name char", "corporation_id": 102}'), // getCharactersCharacterId()
-            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}') // getCorporationsCorporationId()
-        );
-
-        $this->assertTrue($this->memberTracking->updateDirector(SystemVariable::DIRECTOR_CHAR . 1));
-
-        $charDb = $this->repositoryFactory->getSystemVariableRepository()->find(SystemVariable::DIRECTOR_CHAR . 1);
-        $data = \json_decode($charDb->getValue(), true);
-        $this->assertSame([
-            'character_id' => 10,
-            'character_name' => 'name char',
-            'corporation_id' => 102,
-            'corporation_name' => 'name corp',
-            'corporation_ticker' => '-TC-',
-        ], $data);
-    }
-
-    public function testGetDirectorTokenVariableData()
-    {
-        $this->assertNull($this->memberTracking->getDirectorTokenVariableData(SystemVariable::DIRECTOR_CHAR . 1));
-
-        $char = (new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1))->setValue('{"character_id": 100}');
-        $token = (new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1))
-            ->setValue('{"access": "at", "refresh": "rt", "expires": 1568471332, "scopes": ["s1", "s2"]}');
-        $this->om->persist($char);
-        $this->om->persist($token);
-        $this->om->flush();
-
-        $tokenData = $this->memberTracking->getDirectorTokenVariableData(SystemVariable::DIRECTOR_CHAR . 1);
-
-        if ($tokenData === null) {
-            $this->fail();
-        } else {
-            $this->assertSame('at', $tokenData->access);
-            $this->assertSame('rt', $tokenData->refresh);
-            $this->assertSame(1568471332, $tokenData->expires);
-            $this->assertSame(100, $tokenData->characterId);
-            $this->assertSame(['s1', 's2'], $tokenData->scopes);
-        }
-    }
-
-    public function testRefreshDirectorToken_IdentityProviderException()
-    {
-        $token = new DirectorToken();
-        $token->access = 'at';
-        $token->refresh = 'rt';
-        $token->expires = 1568471332;
-        $token->characterId = 100;
-        $token->systemVariableName = SystemVariable::DIRECTOR_TOKEN . 1;
-
-        $var = (new SystemVariable($token->systemVariableName))->setValue((string)json_encode($token));
-        $this->om->persist($var);
-        $this->om->flush();
-
-        $this->client->setResponse(new Response(400, [], '{ "error": "invalid_grant" }'));
-
-        $this->assertNull($this->memberTracking->refreshDirectorToken($token));
-
-        $this->om->clear();
-        $varLoaded = $this->repositoryFactory->getSystemVariableRepository()->find($token->systemVariableName);
-        $varData = json_decode($varLoaded->getValue());
-
-        $this->assertSame(null, $varData->access);
-        $this->assertSame(null, $varData->refresh);
-        $this->assertSame(null, $varData->expires);
-    }
-
-    public function testRefreshDirectorToken_Success()
-    {
-        $token = new DirectorToken();
-        $token->access = 'at';
-        $token->refresh = 'rt';
-        $token->expires = time() - 300;
-        $token->characterId = 100;
-        $token->systemVariableName = SystemVariable::DIRECTOR_TOKEN . 1;
-
-        $var = (new SystemVariable($token->systemVariableName))->setValue((string)json_encode($token));
-        $this->om->persist($var);
-        $this->om->flush();
-
-        $newTokenTime = time() + 300;
-        $this->client->setResponse(new Response(200, [], '{
-            "access_token": "new_token", 
-            "refresh_token": "rt2", 
-            "expires": '.$newTokenTime.'
-        }'));
-
-        $result = $this->memberTracking->refreshDirectorToken($token);
-
-        $this->assertInstanceOf(AccessTokenInterface::class, $result);
-
-        $this->om->clear();
-        $varLoaded = $this->repositoryFactory->getSystemVariableRepository()->find($token->systemVariableName);
-        $varData = json_decode($varLoaded->getValue());
-
-        $this->assertSame('new_token', $varData->access);
-        $this->assertSame('rt2', $varData->refresh);
-        $this->assertSame($newTokenTime, $varData->expires);
     }
 
     public function testFetchDataCorpNotFound()

@@ -231,24 +231,6 @@ class SettingsControllerTest extends WebTestCase
         $this->assertSame('', $changed2->getValue());
     }
 
-    public function testSystemChange204RemoveDirector()
-    {
-        $this->setupDb();
-        $this->loginUser(6); // role: SETTINGS
-
-        $response = $this->runApp(
-            'PUT',
-            '/api/user/settings/system/change/'.SystemVariable::DIRECTOR_CHAR . 1,
-            ['value' => 'does-not-matter']
-        );
-        $this->assertEquals(204, $response->getStatusCode());
-
-        $this->em->clear();
-
-        $actual = $this->systemVariableRepository->find(SystemVariable::DIRECTOR_CHAR . 1);
-        $this->assertNull($actual);
-    }
-
     public function testSendInvalidTokenMail403()
     {
         $response = $this->runApp('POST', '/api/user/settings/system/send-invalid-token-mail');
@@ -340,38 +322,6 @@ class SettingsControllerTest extends WebTestCase
         ]);
         $this->assertEquals(200, $response3->getStatusCode());
         $this->assertSame('', $this->parseJsonBody($response3)); // success
-    }
-
-    public function testValidateDirector403()
-    {
-        $this->setupDb();
-
-        $response1 = $this->runApp('PUT', '/api/user/settings/system/validate-director/director_char_1');
-        $this->assertEquals(403, $response1->getStatusCode());
-
-        $this->loginUser(5);
-
-        $response2 = $this->runApp('PUT', '/api/user/settings/system/validate-director/director_char_1');
-        $this->assertEquals(403, $response2->getStatusCode());
-    }
-
-    public function testValidateDirector200()
-    {
-        $this->setupDb();
-        $this->loginUser(6);
-
-        $client = new Client();
-        $client->setResponse(
-            new Response(200, [], '{"name": "changed", "corporation_id": 102}'), // getCharactersCharacterId()
-            new Response(200, [], '{"name": "n", "ticker": "t"}'), // getCorporationsCorporationId()
-            new Response(200, [], '{"roles": ["Director"]}') // /characters/10/roles
-        );
-
-        $response = $this->runApp('PUT', '/api/user/settings/system/validate-director/director_char_1', null, null, [
-            ClientInterface::class => $client
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertTrue($this->parseJsonBody($response));
     }
 
     private function setupDb(bool $publicGroup = true): void

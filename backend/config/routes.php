@@ -170,7 +170,6 @@ return [
     '/api/user/settings/system/change/{name}'               => ['PUT',  [SettingsController::class, 'systemChange']],
     '/api/user/settings/system/send-invalid-token-mail'     => ['POST', [SettingsController::class, 'sendInvalidTokenMail']],
     '/api/user/settings/system/send-missing-character-mail' => ['POST', [SettingsController::class, 'sendMissingCharacterMail']],
-    '/api/user/settings/system/validate-director/{name}'    => ['PUT',  [SettingsController::class, 'validateDirector']],
     '/api/user/settings/eve-login/list'         => ['GET'    => [SettingsEveLoginController::class, 'list']],
     '/api/user/settings/eve-login'              => ['PUT'    => [SettingsEveLoginController::class, 'update']],
     '/api/user/settings/eve-login/{name}'       => ['POST'   => [SettingsEveLoginController::class, 'create']],

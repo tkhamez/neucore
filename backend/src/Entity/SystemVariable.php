@@ -296,7 +296,6 @@ class SystemVariable implements \JsonSerializable
     public const TOKEN_ACCESS = 'access';
     public const TOKEN_REFRESH = 'refresh';
     public const TOKEN_EXPIRES = 'expires';
-    public const TOKEN_SCOPES = 'scopes';
 
     public const VALUE_CHARACTER_ID = 'character_id';
     public const VALUE_CORPORATION_NAME = 'corporation_name';

@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
-use Eve\Sso\AuthenticationProvider;
 use Eve\Sso\EveAuthentication;
-use Eve\Sso\InvalidGrantException;
-use League\OAuth2\Client\Token\AccessToken;
-use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
 use Neucore\Data\DirectorToken;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
@@ -39,8 +35,6 @@ class MemberTracking
 
     private OAuthToken $oauthToken;
 
-    private AuthenticationProvider $authenticationProvider;
-
     private string $datasource;
 
     public function __construct(
@@ -50,7 +44,6 @@ class MemberTracking
         EntityManager $entityManager,
         EsiData $esiData,
         OAuthToken $oauthToken,
-        AuthenticationProvider $authenticationProvider,
         Config $config
     ) {
         $this->log = $log;
@@ -59,7 +52,6 @@ class MemberTracking
         $this->entityManager = $entityManager;
         $this->esiData = $esiData;
         $this->oauthToken = $oauthToken;
-        $this->authenticationProvider = $authenticationProvider;
 
         $this->datasource = (string) $config['eve']['datasource'];
     }
@@ -89,140 +81,6 @@ class MemberTracking
 
         // store director
         return $this->storeDirector($eveAuth, $corporation);
-    }
-
-    public function removeDirector(SystemVariable $character): bool
-    {
-        $number = (int) explode('_', $character->getName())[2];
-        $token = $this->repositoryFactory->getSystemVariableRepository()
-            ->find(SystemVariable::DIRECTOR_TOKEN . $number);
-
-        $this->entityManager->remove($character);
-        if ($token) {
-            $this->entityManager->remove($token);
-        }
-
-        return $this->entityManager->flush();
-    }
-
-    /**
-     * Updates name and corporation of director char.
-     */
-    public function updateDirector(string $variableName): bool
-    {
-        $variable = $this->repositoryFactory->getSystemVariableRepository()->find($variableName);
-        if (! $variable) {
-            return false;
-        }
-        $data = \json_decode($variable->getValue(), true);
-        if (! isset($data[SystemVariable::VALUE_CHARACTER_ID])) {
-            return false;
-        }
-
-        try {
-            $char = $this->esiApiFactory->getCharacterApi()
-                ->getCharactersCharacterId($data[SystemVariable::VALUE_CHARACTER_ID], $this->datasource);
-        } catch (\Exception $e) {
-            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
-            return false;
-        }
-        if (!$char instanceof GetCharactersCharacterIdOk) {
-            return false;
-        }
-
-        $corporation = $this->esiData->fetchCorporation($char->getCorporationId());
-        if ($corporation === null) {
-            return false;
-        }
-
-        $data[SystemVariable::VALUE_CHARACTER_NAME] = $char->getName();
-        $data[SystemVariable::VALUE_CORPORATION_ID] = $corporation->getId();
-        $data[SystemVariable::VALUE_CORPORATION_NAME] = $corporation->getName();
-        $data[SystemVariable::VALUE_CORPORATION_TICKER] = $corporation->getTicker();
-
-        $variable->setValue((string) \json_encode($data));
-
-        return $this->entityManager->flush();
-    }
-
-    /**
-     * @param string $name
-     * @return DirectorToken|null The value from the system variable plus "character_id"
-     */
-    public function getDirectorTokenVariableData(string $name): ?DirectorToken
-    {
-        $number = (int) explode('_', $name)[2];
-
-        $systemVariableRepository = $this->repositoryFactory->getSystemVariableRepository();
-        $characterVar = $systemVariableRepository->find(SystemVariable::DIRECTOR_CHAR . $number);
-        $tokenVar = $systemVariableRepository->find(SystemVariable::DIRECTOR_TOKEN . $number);
-
-        $characterData = \json_decode($characterVar ? $characterVar->getValue() : '', true);
-        $tokenData = \json_decode($tokenVar ? $tokenVar->getValue() : '', true);
-        if (
-            !isset($characterData[SystemVariable::VALUE_CHARACTER_ID]) ||
-            !isset($tokenData[SystemVariable::TOKEN_ACCESS])
-        ) {
-            return null;
-        }
-
-        $directorToken = new DirectorToken();
-        $directorToken->access = $tokenData[SystemVariable::TOKEN_ACCESS];
-        $directorToken->refresh = $tokenData[SystemVariable::TOKEN_REFRESH];
-        $directorToken->expires = $tokenData[SystemVariable::TOKEN_EXPIRES];
-        $directorToken->scopes = $tokenData[SystemVariable::TOKEN_SCOPES] ?? [];
-        $directorToken->systemVariableName = SystemVariable::DIRECTOR_TOKEN . $number;
-        $directorToken->characterId = $characterData[SystemVariable::VALUE_CHARACTER_ID];
-
-        return $directorToken;
-    }
-
-    /**
-     * @return ResourceOwnerAccessTokenInterface|null Token including the resource_owner_id property.
-     */
-    public function refreshDirectorToken(DirectorToken $tokenData): ?ResourceOwnerAccessTokenInterface
-    {
-        $existingToken = new AccessToken([
-            OAuthToken::OPTION_ACCESS_TOKEN => $tokenData->access,
-            OAuthToken::OPTION_REFRESH_TOKEN => $tokenData->refresh,
-            OAuthToken::OPTION_EXPIRES => (int) $tokenData->expires,
-        ]);
-        try {
-            $token = $this->authenticationProvider->refreshAccessToken($existingToken);
-        } catch (InvalidGrantException $e) {
-            // Delete invalid refresh token so that it cannot be used again.
-            $systemVar = $this->repositoryFactory->getSystemVariableRepository()->find($tokenData->systemVariableName);
-            if ($systemVar) {
-                $systemVar->setValue((string) \json_encode(new DirectorToken()));
-                $this->entityManager->flush();
-            }
-            return null;
-        } catch (\RuntimeException $e) {
-            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
-            $token = $existingToken;
-        }
-
-        if ($tokenData->expires !== $token->getExpires()) {
-            // Store updated tokens
-            $systemVar = $this->repositoryFactory->getSystemVariableRepository()->find($tokenData->systemVariableName);
-            if ($systemVar) {
-                $sysData = (array)\json_decode($systemVar->getValue(), true);
-                $updated = new DirectorToken();
-                $updated->access = $token->getToken();
-                $updated->refresh = $token->getRefreshToken();
-                $updated->expires = $token->getExpires();
-                $updated->scopes = $sysData[SystemVariable::TOKEN_SCOPES];
-                $systemVar->setValue((string) \json_encode($updated));
-                $this->entityManager->flush();
-            }
-        }
-
-        return new AccessToken([
-            OAuthToken::OPTION_ACCESS_TOKEN => $token->getToken(),
-            OAuthToken::OPTION_REFRESH_TOKEN => $token->getRefreshToken(),
-            OAuthToken::OPTION_EXPIRES => $token->getExpires(),
-            OAuthToken::OPTION_RESOURCE_OWNER_ID => $tokenData->characterId,
-        ]);
     }
 
     /**
