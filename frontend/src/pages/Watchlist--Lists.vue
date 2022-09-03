@@ -41,7 +41,7 @@
                     <tr v-for="player in listContent.Player">
                         <td>{{ player.id }}</td>
                         <td>
-                            <a href="#" v-on:click.prevent="showCharacters(player.id)">
+                            <a href="#" v-on:click.prevent="h.showCharacters(player.id)">
                                 {{ player.name }}
                             </a>
                         </td>
@@ -124,6 +124,7 @@
 
 <script>
 import { WatchlistApi }  from 'neucore-js-client';
+import Helper from "../classes/Helper";
 import WatchlistSettings from './Watchlist--Settings.vue';
 
 export default {
@@ -139,6 +140,7 @@ export default {
 
     data () {
         return {
+            h: new Helper(this),
             listContent: {
                 Player: [],
                 Alliance: [],

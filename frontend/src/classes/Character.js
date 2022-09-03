@@ -1,5 +1,6 @@
 
 import {CharacterApi, PlayerApi} from "neucore-js-client";
+import Helper from "./Helper";
 
 export default class Character {
 
@@ -29,6 +30,7 @@ export default class Character {
 
     constructor(vm) {
         this.vm = vm;
+        this.helper = new Helper(vm);
     }
 
     /**
@@ -41,18 +43,18 @@ export default class Character {
         new CharacterApi().update(characterId, function(error, data, response) {
             if (error) { // usually 403 (from Core) or 503 (ESI down)
                 if (error.message) {
-                    self.vm.message(error.message, 'error');
+                    self.helper.message(error.message, 'error');
                 }
                 return;
             }
             if (response.statusCode === 204) {
-                self.vm.message(
+                self.helper.message(
                     'The character was removed because it was deleted or ' +
                     'no longer belongs to the same EVE account.',
                     'info'
                 );
             } else {
-                self.vm.message(successMessage || 'Character updated.', 'success');
+                self.helper.message(successMessage || 'Character updated.', 'success');
             }
             if (typeof callback === typeof Function) {
                 callback();
@@ -72,10 +74,10 @@ export default class Character {
             { adminReason: adminReason || '' },
             function(error) {
                 if (error) { // 403 usually
-                    self.vm.message('Deletion denied.', 'error');
+                    self.helper.message('Deletion denied.', 'error');
                     return;
                 }
-                self.vm.message('Deleted character.', 'success');
+                self.helper.message('Deleted character.', 'success');
                 if (typeof callback === typeof Function) {
                     callback();
                 }

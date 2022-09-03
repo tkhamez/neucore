@@ -131,7 +131,7 @@
                     <div v-for="char in player.characters" class="col border-secondary">
                         <div class="card h-100">
                             <div class="card-header">
-                                <img :src="characterPortrait(char.id, 32)" alt="portrait">
+                                <img :src="h.characterPortrait(char.id, 32)" alt="portrait">
                                 {{ char.name }}
                             </div>
                             <div class="card-body">
@@ -223,6 +223,7 @@ import mdMark from 'markdown-it-mark';
 import mdAttrs from 'markdown-it-attrs';
 import Data from "../classes/Data";
 import Character from "../classes/Character";
+import Helper from "../classes/Helper";
 import TitleLogo from './Home--title-logo.vue';
 import EsiTokens from "../components/EsiTokens.vue";
 
@@ -241,6 +242,7 @@ export default {
 
     data: function() {
         return {
+            h: new Helper(this),
             loginNames: Data.loginNames,
             deactivated: false,
             charToDelete: null,

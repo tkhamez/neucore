@@ -132,6 +132,7 @@ import _ from 'lodash';
 import $ from 'jquery';
 import {Tooltip} from 'bootstrap';
 import {CorporationApi} from 'neucore-js-client';
+import Helper from "../classes/Helper";
 import Util from "../classes/Util";
 
 export default {
@@ -142,6 +143,7 @@ export default {
     data () {
         return {
             Util: Util,
+            h: new Helper(this),
             corporation: "", // empty string to select the first entry in the drop-down
             corporations: [],
             formOptions: {
@@ -237,7 +239,7 @@ function getMembers(vm) {
     new CorporationApi().members(vm.corporation.id, opts, (error, data, response) => {
         if (error) {
             if (response.statusCode === 403) {
-                vm.message(error, 'warning', 2000);
+                vm.h.message(error, 'warning', 2000);
             }
             return;
         }
@@ -322,7 +324,7 @@ function configureDataTable(vm) {
             $link.off('click');
             $link.on('click', (evt) => {
                 $.Event(evt).preventDefault();
-                vm.showCharacters(evt.target.dataset.playerId);
+                vm.h.showCharacters(evt.target.dataset.playerId);
             });
         },
         columns: [{

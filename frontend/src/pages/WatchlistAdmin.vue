@@ -103,6 +103,7 @@ import {WatchlistApi} from 'neucore-js-client';
 import Admin from '../components/EntityRelationEdit.vue';
 import Edit from '../components/EntityEdit.vue';
 import $ from "jquery";
+import Helper from "../classes/Helper";
 
 export default {
     components: {
@@ -118,6 +119,7 @@ export default {
 
     data () {
         return {
+            h: new Helper(this),
             watchlists: [],
             currentWatchlist: null,
             contentType: '',
@@ -160,12 +162,12 @@ export default {
             const vm = this;
             new WatchlistApi().watchlistCreate(newName, (error, data, response) => {
                 if (response.status === 400) {
-                    vm.message('Missing name.', 'error');
+                    vm.h.message('Missing name.', 'error');
                 } else if (error) {
-                    vm.message('Error creating watchlist.', 'error');
+                    vm.h.message('Error creating watchlist.', 'error');
                 } else {
                     vm.$refs.editModal.hideModal();
-                    vm.message('Watchlist created.', 'success');
+                    vm.h.message('Watchlist created.', 'success');
                     window.location.hash = `#WatchlistAdmin/${data.id}`;
                     getWatchlists(vm);
                 }
@@ -176,10 +178,10 @@ export default {
             const vm = this;
             new WatchlistApi().watchlistDelete(id, (error) => {
                 if (error) {
-                    vm.message('Error deleting watchlist.', 'error');
+                    vm.h.message('Error deleting watchlist.', 'error');
                 } else {
                     vm.$refs.editModal.hideModal();
-                    vm.message('Watchlist deleted.', 'success');
+                    vm.h.message('Watchlist deleted.', 'success');
                     window.location.hash = '#WatchlistAdmin';
                     vm.currentWatchlist = null;
                     vm.contentType = '';
@@ -193,11 +195,11 @@ export default {
             const vm = this;
             new WatchlistApi().watchlistRename(id, name, (error, data, response) => {
                 if (response.status === 400) {
-                    vm.message('Missing name.', 'error');
+                    vm.h.message('Missing name.', 'error');
                 } else if (error) {
-                    vm.message('Error renaming watchlist.', 'error');
+                    vm.h.message('Error renaming watchlist.', 'error');
                 } else {
-                    vm.message('Watchlist renamed.', 'success');
+                    vm.h.message('Watchlist renamed.', 'success');
                     vm.$refs.editModal.hideModal();
                     getWatchlists(vm);
                 }
@@ -209,7 +211,7 @@ export default {
             const lock = checked ? '1' : '0';
             new WatchlistApi().watchlistLockWatchlistSettings(vm.currentWatchlist.id, lock, (error, data) => {
                 if (error) {
-                    vm.message('Error.', 'error');
+                    vm.h.message('Error.', 'error');
                     return;
                 }
                 vm.currentWatchlist = data;

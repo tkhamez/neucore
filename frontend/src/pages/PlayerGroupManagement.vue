@@ -62,7 +62,7 @@
                         <p>
                             Status: {{ playerData.status }}
                             <a class="btn btn-info nc-btn-xs ms-1" href=""
-                               v-on:click.prevent="showCharacters(playerData.id)">
+                               v-on:click.prevent="h.showCharacters(playerData.id)">
                                 Show characters
                             </a>
                         </p>
@@ -102,9 +102,9 @@
 <script>
 import { PlayerApi }   from 'neucore-js-client';
 import Data            from "../classes/Data";
+import Helper from "../classes/Helper";
 import Admin           from '../components/EntityRelationEdit.vue';
 import CharacterSearch from '../components/CharacterSearch.vue';
-import Helper from "../classes/Helper";
 
 export default {
     components: {

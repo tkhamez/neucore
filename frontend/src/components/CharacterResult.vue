@@ -17,11 +17,11 @@ Result table for the character search
                 <tr v-for="char in searchResult">
                     <td v-if="! admin">{{ char.player_id }}</td>
                     <td>
-                        <img :src="characterPortrait(char.character_id, 32)" alt="portrait">
+                        <img :src="h.characterPortrait(char.character_id, 32)" alt="portrait">
                         {{ char.character_name }}
                     </td>
                     <td v-if="admin">
-                        <a href="#" v-on:click.prevent="showCharacters(char.player_id)">{{ char.player_name }}</a>
+                        <a href="#" v-on:click.prevent="h.showCharacters(char.player_id)">{{ char.player_name }}</a>
                         #{{ char.player_id }}
                     </td>
                     <td v-if="selectedPlayers">
@@ -37,12 +37,21 @@ Result table for the character search
 </template>
 
 <script>
+import Helper from "../classes/Helper";
+
 export default {
     props: {
         selectedPlayers: Array,
         searchResult: Array,
         admin: Boolean // false = search only for "mains", otherwise all characters and add "alts" modal button
     },
+
+    data: function() {
+        return {
+            h: new Helper(this),
+        }
+    },
+
     methods: {
         isSelected (playerId) {
             if (! this.selectedPlayers) {

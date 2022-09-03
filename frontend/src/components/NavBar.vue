@@ -111,7 +111,7 @@
                 </li>
             </ul>
 
-            <img v-if="authChar" :src="characterPortrait(authChar.id, 32)"
+            <img v-if="authChar" :src="h.characterPortrait(authChar.id, 32)"
                  class="d-inline-block align-top me-2" alt="portrait">
             <div v-if="authChar" class="dropdown">
                 <button class="btn btn-primary dropdown-toggle me-3" data-bs-toggle="dropdown"

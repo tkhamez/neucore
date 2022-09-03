@@ -23,7 +23,7 @@ Modal window with all characters of one player.
                                     class="list-group-item p-1 pb-2 pt-2">
                                     <div class="row">
                                         <div class="col-1">
-                                            <img :src="characterPortrait(character.id, 32)" alt="">
+                                            <img :src="h.characterPortrait(character.id, 32)" alt="">
                                         </div>
                                         <div class="col-6">
                                             <span v-if="character.main" role="img"

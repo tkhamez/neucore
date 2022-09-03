@@ -37,6 +37,7 @@ import _ from 'lodash';
 import {Modal} from "bootstrap";
 import Multiselect from '@suadelabs/vue3-multiselect';
 import {AllianceApi, CorporationApi} from 'neucore-js-client';
+import Helper from "../classes/Helper";
 
 export default {
     components: {
@@ -49,6 +50,7 @@ export default {
 
     data: function() {
         return {
+            h: new Helper(this),
             addType: '', // alliance or corp
             searchIsLoading: false,
             searchResults: [],
@@ -133,14 +135,14 @@ function addAlliCorp(vm) {
 
     api[method].apply(api, [vm.searchSelected.id, function(error, data, response) {
         if (response.statusCode === 409) {
-            vm.message(`${vm.addType} already exist.`, 'warning');
+            vm.h.message(`${vm.addType} already exist.`, 'warning');
         } else if (response.statusCode === 404) {
-            vm.message(`${vm.addType} not found.`, 'error');
+            vm.h.message(`${vm.addType} not found.`, 'error');
         } else if (error) {
-            vm.message(`Error adding ${vm.addType}.`, 'error');
+            vm.h.message(`Error adding ${vm.addType}.`, 'error');
         } else {
             vm.addAlliCorpModal.hide();
-            vm.message(`${vm.addType} "[${data.ticker}] ${data.name}" added.`, 'success');
+            vm.h.message(`${vm.addType} "[${data.ticker}] ${data.name}" added.`, 'success');
             vm.$emit('success');
         }
     }]);

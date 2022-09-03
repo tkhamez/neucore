@@ -37,6 +37,7 @@
 <script>
 import _ from 'lodash';
 import {AllianceApi, CorporationApi, SettingsApi} from 'neucore-js-client';
+import Helper from "../classes/Helper";
 import Customization from './SystemSettings--Customization.vue';
 import Features from './SystemSettings--Features.vue';
 import Mails from './SystemSettings--Mails.vue';
@@ -55,6 +56,7 @@ export default {
 
     data () {
         return {
+            h: new Helper(this),
             tab: 'Customization',
             alliances: [],
             corporations: [],
@@ -92,7 +94,7 @@ export default {
             new SettingsApi().systemChange(name, value, (error, data, response) => {
                 if (error) { // 403 usually
                     if (response.statusCode === 403) {
-                        vm.message('Unauthorized.', 'error');
+                        vm.h.message('Unauthorized.', 'error');
                     }
                     return;
                 }

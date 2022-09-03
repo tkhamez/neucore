@@ -1,4 +1,8 @@
+import portrait from "../assets/portrait_32.jpg";
 
+/**
+ * Helper functions that need the vue instance.
+ */
 export default class Helper {
 
     constructor(vm) {
@@ -20,5 +24,38 @@ export default class Helper {
             }
         }
         return false;
+    }
+
+    /**
+     * @param {string} text
+     * @param {string} [type] One of: error, warning, info or success
+     * @param {number} [timeout]
+     */
+    message(text, type, timeout) {
+        type = type || 'info';
+        switch (type) {
+            case 'error':
+            case 'info':
+            case 'warning':
+                type = type === 'error' ? 'danger' : type;
+                timeout = timeout || null;
+                break;
+            default: // success
+                timeout = timeout || 1500;
+                break;
+        }
+        this.vm.emitter.emit('message', { text: text, type: type, timeout: timeout });
+    }
+
+    showCharacters(playerId) {
+        this.vm.emitter.emit('showCharacters', playerId);
+    }
+
+    characterPortrait(id, size) {
+        if (this.vm.$root.settings.esiDataSource === 'singularity') {
+            // there are no character images on Sisi at the moment.
+            return portrait;
+        }
+        return `${this.vm.$root.envVars.eveImageServer}/characters/${id}/portrait?size=${size}&tenant=tranquility`;
     }
 }

@@ -129,7 +129,7 @@
                             <td>{{ member.name }}</td>
                             <td>{{ member.corporationName }}</td>
                             <td>
-                                <button class="btn btn-info btn-sm" v-on:click="showCharacters(member.id)">
+                                <button class="btn btn-info btn-sm" v-on:click="h.showCharacters(member.id)">
                                     Show characters
                                 </button>
                             </td>
@@ -147,6 +147,7 @@
 import $ from 'jquery';
 import _ from "lodash";
 import {GroupApi} from 'neucore-js-client';
+import Helper from "../classes/Helper";
 import AddEntity  from '../components/EntityAdd.vue';
 import Edit       from '../components/EntityEdit.vue';
 import Admin      from '../components/EntityRelationEdit.vue';
@@ -166,6 +167,7 @@ export default {
 
     data: function() {
         return {
+            h: new Helper(this),
             groups: [],
             groupId: null, // current group
             groupName: '',
@@ -224,14 +226,14 @@ export default {
             const vm = this;
             new GroupApi().userGroupCreate(name, (error, data, response) => {
                 if (response.status === 409) {
-                    vm.message('A group with this name already exists.', 'error');
+                    vm.h.message('A group with this name already exists.', 'error');
                 } else if (response.status === 400) {
-                    vm.message('Invalid name.', 'error');
+                    vm.h.message('Invalid name.', 'error');
                 } else if (error) {
-                    vm.message('Error creating group.', 'error');
+                    vm.h.message('Error creating group.', 'error');
                 } else {
                     vm.$refs.editModal.hideModal();
-                    vm.message('Group created.', 'success');
+                    vm.h.message('Group created.', 'success');
                     window.location.hash = `#GroupAdmin/${data.id}`;
                     getGroups(vm);
                 }
@@ -242,10 +244,10 @@ export default {
             const vm = this;
             new GroupApi().userGroupDelete(id, (error) => {
                 if (error) {
-                    vm.message('Error deleting group', 'error');
+                    vm.h.message('Error deleting group', 'error');
                 } else {
                     vm.$refs.editModal.hideModal();
-                    vm.message('Group deleted.', 'success');
+                    vm.h.message('Group deleted.', 'success');
                     window.location.hash = '#GroupAdmin';
                     vm.groupId = null;
                     vm.contentType = '';
@@ -260,13 +262,13 @@ export default {
             const vm = this;
             new GroupApi().userGroupRename(id, name, (error, data, response) => {
                 if (response.status === 409) {
-                    vm.message('A group with this name already exists.', 'error');
+                    vm.h.message('A group with this name already exists.', 'error');
                 } else if (response.status === 400) {
-                    vm.message('Invalid group name.', 'error');
+                    vm.h.message('Invalid group name.', 'error');
                 } else if (error) {
-                    vm.message('Error renaming group.', 'error');
+                    vm.h.message('Error renaming group.', 'error');
                 } else {
-                    vm.message('Group renamed.', 'success');
+                    vm.h.message('Group renamed.', 'success');
                     vm.$refs.editModal.hideModal();
                     vm.emitter.emit('playerChange');
                     getGroups(vm);
@@ -287,7 +289,7 @@ export default {
 const changeDescriptionDebounced = _.debounce((vm, value) => {
     new GroupApi().userGroupUpdateDescription(vm.groupId, value, (error, data, response) => {
         if (error && response.statusCode === 403) {
-            vm.message('Unauthorized.', 'error');
+            vm.h.message('Unauthorized.', 'error');
         }
     });
 }, 250);

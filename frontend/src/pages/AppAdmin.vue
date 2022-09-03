@@ -82,7 +82,7 @@
 <script>
 import $ from 'jquery';
 import {AppApi} from 'neucore-js-client';
-
+import Helper from "../classes/Helper";
 import Edit  from '../components/EntityEdit.vue';
 import Admin from '../components/EntityRelationEdit.vue';
 
@@ -100,6 +100,7 @@ export default {
 
     data: function() {
         return {
+            h: new Helper(this),
             apps: [],
             appId: null, // current app
             appName: '',
@@ -144,14 +145,14 @@ export default {
             const vm = this;
             new AppApi().create(name, (error, data, response) => {
                 if (response.status === 409) {
-                    vm.message('An app with this name already exists.', 'error');
+                    vm.h.message('An app with this name already exists.', 'error');
                 } else if (response.status === 400) {
-                    vm.message('Invalid name.', 'error');
+                    vm.h.message('Invalid name.', 'error');
                 } else if (error) {
-                    vm.message('Error creating app.', 'error');
+                    vm.h.message('Error creating app.', 'error');
                 } else {
                     vm.$refs.editModal.hideModal();
-                    vm.message('App created.', 'success');
+                    vm.h.message('App created.', 'success');
                     window.location.hash = `#AppAdmin/${data.id}`;
                     getApps(vm);
                 }
@@ -162,10 +163,10 @@ export default {
             const vm = this;
             new AppApi().callDelete(id, (error) => {
                 if (error) {
-                    vm.message('Error deleting app', 'error');
+                    vm.h.message('Error deleting app', 'error');
                 } else {
                     vm.$refs.editModal.hideModal();
-                    vm.message('App deleted.', 'success');
+                    vm.h.message('App deleted.', 'success');
                     window.location.hash = '#AppAdmin';
                     vm.emitter.emit('playerChange'); // current player could have been a manager
                     vm.appId = null;
@@ -179,13 +180,13 @@ export default {
             const vm = this;
             new AppApi().rename(id, name, (error, data, response) => {
                 if (response.status === 409) {
-                    vm.message('An app with this name already exists.', 'error');
+                    vm.h.message('An app with this name already exists.', 'error');
                 } else if (response.status === 400) {
-                    vm.message('Invalid app name.', 'error');
+                    vm.h.message('Invalid app name.', 'error');
                 } else if (error) {
-                    vm.message('Error renaming app.', 'error');
+                    vm.h.message('Error renaming app.', 'error');
                 } else {
-                    vm.message('App renamed.', 'success');
+                    vm.h.message('App renamed.', 'success');
                     vm.$refs.editModal.hideModal();
                     vm.emitter.emit('playerChange');
                     getApps(vm);

@@ -134,6 +134,7 @@
 
 <script>
 import {ServiceApi} from "neucore-js-client";
+import Helper from "../classes/Helper";
 import Util from "../classes/Util";
 
 export default {
@@ -144,6 +145,7 @@ export default {
 
     data () {
         return {
+            h: new Helper(this),
             service: null,
             accounts: [],
             failedToLoadAccounts: false,
@@ -166,7 +168,7 @@ export default {
         const message = Util.getHashParameter('message');
         Util.removeHashParameter('message');
         if (message) {
-            this.message(message);
+            this.h.message(message);
         }
     },
 
@@ -253,33 +255,33 @@ export default {
             const api = new ServiceApi();
             api.serviceRegister(getServiceId(vm), {email: vm.formEmail}, (error, data, response) => {
                 if (response.statusCode === 200) {
-                    vm.message('Account successfully registered or initialized.', 'success', 2500);
+                    vm.h.message('Account successfully registered or initialized.', 'success', 2500);
                     vm.registerSuccess = true;
                     vm.newPassword[data.characterId] = data.password;
                     getAccountData(vm, api);
                 } else if ([403, 404].indexOf(response.statusCode) !== -1) {
-                    vm.message('Service not found or not authorized.', 'warning');
+                    vm.h.message('Service not found or not authorized.', 'warning');
                     vm.registerButtonDisabled = false;
                 } else if (response.statusCode === 409) {
                     const body = JSON.parse(response.text);
                     if (body === 'no_main') {
-                        vm.message('This account does not have a main character.', 'warning');
+                        vm.h.message('This account does not have a main character.', 'warning');
                     } else if (body === 'already_registered') {
-                        vm.message('There is already an account for this character.', 'warning');
+                        vm.h.message('There is already an account for this character.', 'warning');
                     } else if (body === 'missing_email') {
-                        vm.message('Please provide an e-mail address.', 'warning');
+                        vm.h.message('Please provide an e-mail address.', 'warning');
                     } else if (body === 'email_mismatch') {
-                        vm.message('This e-mail address belongs to another account.', 'warning');
+                        vm.h.message('This e-mail address belongs to another account.', 'warning');
                     } else if (body === 'invite_wait') {
-                        vm.message("You've already requested an invite recently, please wait.", 'warning');
+                        vm.h.message("You've already requested an invite recently, please wait.", 'warning');
                     } else if (body === 'second_account') {
-                        vm.message('You cannot register a second account.', 'warning');
+                        vm.h.message('You cannot register a second account.', 'warning');
                     } else {
-                        vm.message(body, 'warning');
+                        vm.h.message(body, 'warning');
                     }
                     vm.registerButtonDisabled = false;
                 } else { // 500
-                    vm.message('Error. Please try again.', 'error');
+                    vm.h.message('Error. Please try again.', 'error');
                     vm.registerButtonDisabled = false;
                 }
             });
@@ -292,14 +294,14 @@ export default {
             api.serviceUpdateAccount(getServiceId(vm), characterId, (error, data, response) => {
                 if (error) {
                     if (response.statusCode === 409) {
-                        vm.message(JSON.parse(response.text), 'warning');
+                        vm.h.message(JSON.parse(response.text), 'warning');
                     } else if (response.statusCode === 404) {
-                        vm.message('Account not found.', 'error');
+                        vm.h.message('Account not found.', 'error');
                     } else {
-                        vm.message('Error. Please try again.', 'error');
+                        vm.h.message('Error. Please try again.', 'error');
                     }
                 } else {
-                    vm.message('Account successfully updated.', 'success', 2500);
+                    vm.h.message('Account successfully updated.', 'success', 2500);
                     getAccountData(vm, api);
                 }
                 vm.updateAccountButtonDisabled = false;
@@ -313,15 +315,15 @@ export default {
             api.serviceResetPassword(getServiceId(vm), characterId, (error, data, response) => {
                 if (response.statusCode === 200) {
                     if (vm.service.configuration.showPassword) {
-                        vm.message('Password successfully changed.', 'success', 2500);
+                        vm.h.message('Password successfully changed.', 'success', 2500);
                     }
                     vm.newPassword[characterId] = data;
                     getAccountData(vm, api);
                 } else if (response.statusCode === 404) {
-                    vm.message('Service or account not found.', 'warning');
+                    vm.h.message('Service or account not found.', 'warning');
                     vm.resetPasswordButtonDisabled = false;
                 } else if (response.statusCode === 500) {
-                    vm.message('Error. Please try again.', 'error');
+                    vm.h.message('Error. Please try again.', 'error');
                     vm.resetPasswordButtonDisabled = false;
                 }
             });

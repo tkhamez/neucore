@@ -126,7 +126,7 @@
                             <td>{{ token.character ? token.character.name : '' }}</td>
                             <td>
                                 <span v-if="h.hasRole('user-chars')">
-                                    <a href="#" v-on:click.prevent="showCharacters(token.playerId)">
+                                    <a href="#" v-on:click.prevent="h.showCharacters(token.playerId)">
                                         {{ token.playerName }}
                                     </a>
                                 </span>
@@ -190,8 +190,8 @@ import $ from "jquery";
 import {SettingsApi} from "neucore-js-client";
 import Multiselect from '@suadelabs/vue3-multiselect';
 import Data from '../classes/Data';
-import Edit from '../components/EntityEdit.vue';
 import Helper from "../classes/Helper";
+import Edit from '../components/EntityEdit.vue';
 
 export default {
     components: {
@@ -251,12 +251,12 @@ export default {
             const vm = this;
             new SettingsApi().userSettingsEveLoginCreate(id, (error, data, response) => {
                 if (response.status === 400) {
-                    vm.message('Missing or invalid name.', 'error');
+                    vm.h.message('Missing or invalid name.', 'error');
                 } else if (error) {
-                    vm.message('Error creating login.', 'error');
+                    vm.h.message('Error creating login.', 'error');
                 } else {
                     vm.$refs.editModal.hideModal();
-                    vm.message('Login created.', 'success');
+                    vm.h.message('Login created.', 'success');
                     window.location.hash = `#EVELogins/${data.id}`;
                     getLogins(vm);
                 }
@@ -267,10 +267,10 @@ export default {
             const vm = this;
             new SettingsApi().userSettingsEveLoginDelete(id, (error) => {
                 if (error) {
-                    vm.message('Error deleting login', 'error');
+                    vm.h.message('Error deleting login', 'error');
                 } else {
                     vm.$refs.editModal.hideModal();
-                    vm.message('Login deleted.', 'success');
+                    vm.h.message('Login deleted.', 'success');
                     window.location.hash = '#EVELogins';
                     getLogins(vm);
                 }
@@ -281,11 +281,11 @@ export default {
             const vm = this;
             new SettingsApi().userSettingsEveLoginUpdate(vm.activeLogin, (error, data, response) => {
                 if (response.status === 400) {
-                    vm.message('Missing or invalid name.', 'error');
+                    vm.h.message('Missing or invalid name.', 'error');
                 } else if (error) {
-                    vm.message('Error saving login.', 'error');
+                    vm.h.message('Error saving login.', 'error');
                 } else {
-                    vm.message('Login saved.', 'success');
+                    vm.h.message('Login saved.', 'success');
                     getLogins(vm);
                 }
             });

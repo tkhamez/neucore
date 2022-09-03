@@ -228,13 +228,13 @@ export default {
             const vm = this;
             new ServiceAdminApi().serviceAdminCreate(name, (error, data, response) => {
                 if (response.status === 400) {
-                    vm.message('Missing name.', 'error');
+                    vm.h.message('Missing name.', 'error');
                 } else if (error) {
-                    vm.message('Error creating service.', 'error');
+                    vm.h.message('Error creating service.', 'error');
                 } else {
                     this.emitter.emit('settingsChange');
                     vm.$refs.editModal.hideModal();
-                    vm.message('Service created.', 'success');
+                    vm.h.message('Service created.', 'success');
                     window.location.hash = `#ServiceAdmin/${data.id}`;
                     getList(vm);
                 }
@@ -244,11 +244,11 @@ export default {
             const vm = this;
             new ServiceAdminApi().serviceAdminDelete(id, (error) => {
                 if (error) {
-                    vm.message('Error deleting service', 'error');
+                    vm.h.message('Error deleting service', 'error');
                 } else {
                     this.emitter.emit('settingsChange');
                     vm.$refs.editModal.hideModal();
-                    vm.message('Service deleted.', 'success');
+                    vm.h.message('Service deleted.', 'success');
                     window.location.hash = '#ServiceAdmin';
                     getList(vm);
                 }
@@ -258,13 +258,13 @@ export default {
             const vm = this;
             new ServiceAdminApi().serviceAdminRename(id, name, (error, data, response) => {
                 if (response.status === 400) {
-                    vm.message('Missing name.', 'error');
+                    vm.h.message('Missing name.', 'error');
                 } else if (error) {
-                    vm.message('Error renaming service.', 'error');
+                    vm.h.message('Error renaming service.', 'error');
                 } else {
                     this.emitter.emit('settingsChange');
                     vm.$refs.editModal.hideModal();
-                    vm.message('Service renamed.', 'success');
+                    vm.h.message('Service renamed.', 'success');
                     getList(vm);
                     getService(vm);
                 }
@@ -282,13 +282,13 @@ export default {
                 {configuration: JSON.stringify(configuration)},
                 (error, data, response) => {
                     if (response.status === 400) {
-                        vm.message('Missing name.', 'error');
+                        vm.h.message('Missing name.', 'error');
                     } else if (error) {
-                        vm.message('Error updating configuration.', 'error');
+                        vm.h.message('Error updating configuration.', 'error');
                     } else {
                         this.emitter.emit('settingsChange');
                         vm.$refs.editModal.hideModal();
-                        vm.message('Configuration updated.', 'success');
+                        vm.h.message('Configuration updated.', 'success');
                         getList(vm);
                         getService(vm);
                     }

@@ -100,7 +100,7 @@
                                 <td>{{ member.name }}</td>
                                 <td>{{ member.corporationName }}</td>
                                 <td v-if="h.hasRole('user-chars')">
-                                    <button class="btn btn-info btn-sm" v-on:click="showCharacters(member.id)">
+                                    <button class="btn btn-info btn-sm" v-on:click="h.showCharacters(member.id)">
                                         Show characters
                                     </button>
                                 </td>
@@ -163,10 +163,10 @@
 <script>
 import { GroupApi } from 'neucore-js-client';
 import Data from '../classes/Data';
+import Helper from "../classes/Helper";
 import Util from '../classes/Util';
 import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterResult from '../components/CharacterResult.vue';
-import Helper from "../classes/Helper";
 
 export default {
     components: {
@@ -255,7 +255,7 @@ export default {
             const vm = this;
             new GroupApi().addMember(this.groupId, playerId, function(error, data, response) {
                 if (response.statusCode === 400) {
-                    vm.message(Data.messages.errorRequiredForbiddenGroup, 'warning');
+                    vm.h.message(Data.messages.errorRequiredForbiddenGroup, 'warning');
                 }
                 addRemoveResult(vm, playerId, error);
             });

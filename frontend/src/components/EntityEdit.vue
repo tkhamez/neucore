@@ -114,6 +114,7 @@ Modal windows to create, delete and edit entities
 import {Modal} from 'bootstrap';
 import {GroupApi} from 'neucore-js-client';
 import Data from '../classes/Data';
+import Helper from "../classes/Helper";
 
 export default {
     props: {
@@ -126,6 +127,7 @@ export default {
     data: function() {
         return {
             Data: Data,
+            h: new Helper(this),
             newName: '',
             groupVisibility: '',
             groupAutoAccept: '',
@@ -186,9 +188,9 @@ export default {
             const vm = this;
             new GroupApi().setVisibility(this.item.id, this.groupVisibility, function(error) {
                 if (error) {
-                    vm.message('Error saving visibility.', 'error');
+                    vm.h.message('Error saving visibility.', 'error');
                 } else {
-                    vm.message('Visibility saved.', 'success');
+                    vm.h.message('Visibility saved.', 'success');
                     vm.emitter.emit('settingsChange');
                     vm.emitter.emit('playerChange');
                     vm.$emit('groupChange');
@@ -200,9 +202,9 @@ export default {
             const vm = this;
             const callback = (error) => {
                 if (error) {
-                    vm.message(`Error saving ${name}.`, 'error');
+                    vm.h.message(`Error saving ${name}.`, 'error');
                 } else {
-                    vm.message(`${name} saved.`, 'success');
+                    vm.h.message(`${name} saved.`, 'success');
                     vm.$emit('groupChange');
                 }
             };

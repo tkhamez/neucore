@@ -1,11 +1,13 @@
 
 import {ServiceApi} from "neucore-js-client";
 import Character from "./Character";
+import Helper from "./Helper";
 
 export default class Player {
 
     constructor(vm) {
         this.vm = vm;
+        this.helper = new Helper(vm);
     }
 
     /**
@@ -53,10 +55,10 @@ export default class Player {
         const self = this;
         new ServiceApi().serviceUpdateAllAccounts(player.id, (error, data) => {
             if (error) {
-                self.vm.message('Failed to update the service accounts.', 'error');
+                self.helper.message('Failed to update the service accounts.', 'error');
                 return;
             }
-            self.vm.message(`Updated ${data.length} service account(s).`, 'success', 3000);
+            self.helper.message(`Updated ${data.length} service account(s).`, 'success', 3000);
             if (player.id === self.vm.$root.player.id) {
                 self.vm.emitter.emit('playerChange');
             }

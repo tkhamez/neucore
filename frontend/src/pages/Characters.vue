@@ -37,7 +37,7 @@
                     <tr v-for="group in result">
                         <td class="text-nowrap">
                             <span v-if="group.player_id">
-                                <a href="#" v-on:click.prevent="showCharacters(group.player_id)">
+                                <a href="#" v-on:click.prevent="h.showCharacters(group.player_id)">
                                     {{ group.characters[0].name }}
                                 </a>
                             </span>

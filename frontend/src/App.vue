@@ -281,10 +281,10 @@ export default {
                     }
                     if (data.success) {
                         if (successMessageType) {
-                            vm.message(data.message, successMessageType, 5000);
+                            vm.h.message(data.message, successMessageType, 5000);
                         }
                     } else {
-                        vm.message(data.message, 'error');
+                        vm.h.message(data.message, 'error');
                     }
                 });
             }
@@ -336,7 +336,7 @@ export default {
             new AuthApi().logout(function(error, data, response) {
                 if (error) { // 403 usually
                     if (response.statusCode === 403) {
-                        vm.message('Unauthorized.', 'error');
+                        vm.h.message('Unauthorized.', 'error');
                     }
                     return;
                 }

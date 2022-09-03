@@ -112,6 +112,7 @@
 import Multiselect from '@suadelabs/vue3-multiselect';
 import {CorporationApi, SettingsApi} from 'neucore-js-client';
 import Data from "../classes/Data";
+import Helper from "../classes/Helper";
 
 export default {
     components: {
@@ -126,6 +127,7 @@ export default {
 
     data () {
         return {
+            h: new Helper(this),
             loginNames: Data.loginNames,
             loginHost: '',
             allAlliancesLoaded: false,
@@ -198,9 +200,9 @@ export default {
                     return;
                 }
                 if (data !== '') {
-                    vm.$root.message(data, 'error');
+                    vm.h.message(data, 'error');
                 } else {
-                    vm.$root.message('"Invalid ESI Token" Mail sent.', 'success');
+                    vm.h.message('"Invalid ESI Token" Mail sent.', 'success');
                 }
             });
         },
@@ -212,9 +214,9 @@ export default {
                     return;
                 }
                 if (data !== '') {
-                    vm.$root.message(data, 'error');
+                    vm.h.message(data, 'error');
                 } else {
-                    vm.$root.message('"Missing Character" Mail sent.', 'success');
+                    vm.h.message('"Missing Character" Mail sent.', 'success');
                 }
             });
         },

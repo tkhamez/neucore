@@ -169,7 +169,7 @@ Select and table to add and remove objects from other objects.
                             <span v-else>{{ row.name }}</span>
                         </td>
                         <td v-if="contentType === 'managers'">
-                            <button class="btn btn-info btn-sm" v-on:click="showCharacters(row.id)">
+                            <button class="btn btn-info btn-sm" v-on:click="h.showCharacters(row.id)">
                                 Show characters
                             </button>
                         </td>
@@ -774,7 +774,7 @@ export default {
 function callApi(vm, api, method, param1, param2, callback) {
     api[method].apply(api, [param1, param2, function(error, data, response) {
         if (vm.type === 'Player' && method === 'addMember' && response.statusCode === 400) {
-            vm.message(Data.messages.errorRequiredForbiddenGroup, 'warning');
+            vm.h.message(Data.messages.errorRequiredForbiddenGroup, 'warning');
         } else if (
             (
                 (vm.type === 'Group' && method === 'userGroupAddManager') ||
@@ -782,7 +782,7 @@ function callApi(vm, api, method, param1, param2, callback) {
             ) &&
             response.statusCode === 400
         ) {
-            vm.message(Data.messages.errorRoleRequiredGroup, 'warning');
+            vm.h.message(Data.messages.errorRoleRequiredGroup, 'warning');
         }
         if (error) { // 403 usually
             return;
