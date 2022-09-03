@@ -46,11 +46,6 @@ class EveLogin implements \JsonSerializable
     public const NAME_MAIL = self::INTERNAL_LOGIN_PREFIX . 'mail';
 
     /**
-     * Login of the character with director roles for the member tracking functionality.
-     */
-    public const NAME_DIRECTOR = self::INTERNAL_LOGIN_PREFIX . 'director';
-
-    /**
      * All internal login IDs.
      */
     public const INTERNAL_LOGIN_NAMES = [
@@ -58,7 +53,6 @@ class EveLogin implements \JsonSerializable
         self::NAME_TRACKING,
         self::NAME_MANAGED,
         self::NAME_MAIL,
-        self::NAME_DIRECTOR,
     ];
 
     public const SCOPE_MAIL = 'esi-mail.send_mail.v1';

@@ -252,14 +252,10 @@ export default {
                 this.logout();
                 window.location.hash = '';
             } else if (
-                ['login-unknown', 'login', 'login-alt', 'login-director', 'login-custom']
+                ['login-unknown', 'login', 'login-alt', 'login-custom']
                     .indexOf(this.route[0]) !== -1
             ) {
-                authResult(
-                    ['login-alt', 'login-director', 'login-custom'].indexOf(this.route[0]) !== -1 ?
-                        'success' :
-                        ''
-                );
+                authResult(['login-alt', 'login-custom'].indexOf(this.route[0]) !== -1 ? 'success' : '');
                 // Set hash value to redirect value from login or remove it, so that it does not appear in bookmarks,
                 // for example.
                 window.location.hash = this.loginRedirect;
@@ -332,11 +328,6 @@ export default {
                     return;
                 }
                 vm.$root.player = data;
-
-                // redirect to settings after director login if user has the settings role
-                if (window.location.hash === '#login-director' && vm.h.hasRole('settings')) {
-                    window.location.hash = 'SystemSettings/Directors';
-                }
             });
         },
 

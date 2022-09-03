@@ -126,17 +126,6 @@ class AuthControllerTest extends WebTestCase
         $this->assertStringStartsWith($this->getStatePrefix(EveLogin::NAME_MAIL), $sess->get('auth_state'));
     }
 
-    public function testLogin_Director()
-    {
-        $response = $this->runApp('GET', '/login/'.EveLogin::NAME_DIRECTOR);
-
-        $this->assertSame(302, $response->getStatusCode());
-        $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
-
-        $sess = new SessionData();
-        $this->assertStringStartsWith($this->getStatePrefix(EveLogin::NAME_DIRECTOR), $sess->get('auth_state'));
-    }
-
     public function testCallback_InvalidStateException()
     {
         $state = self::$state;
@@ -623,80 +612,6 @@ class AuthControllerTest extends WebTestCase
 
         $this->assertSame(
             ['success' => true, 'message' => 'Mail character authenticated.'],
-            $_SESSION['auth_result']
-        );
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function testCallback_DirectorLoginWrongScopes()
-    {
-        list($token, $keySet) = Helper::generateToken([EveLogin::SCOPE_ROLES]);
-        $state = $this->getStatePrefix(EveLogin::NAME_DIRECTOR) . self::$state;
-        $_SESSION['auth_state'] = $state;
-        $this->client->setResponse(
-            new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'), // for getAccessToken()
-
-            // for JWT key set
-            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}')
-        );
-
-        $response = $this->runApp(
-            'GET',
-            '/login-callback?state='.$state,
-            null,
-            null,
-            [ClientInterface::class => $this->client],
-            [['NEUCORE_EVE_DATASOURCE', 'tranquility']]
-        );
-        $this->assertSame(302, $response->getStatusCode());
-        $this->assertSame(
-            ['success' => false, 'message' => 'Required scopes do not match.'],
-            $_SESSION['auth_result']
-        );
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function testCallback_DirectorLoginSuccess()
-    {
-        list($token, $keySet) = Helper::generateToken(
-            [EveLogin::SCOPE_ROLES, EveLogin::SCOPE_TRACKING, EveLogin::SCOPE_STRUCTURES],
-            'hs'
-        );
-
-        $state = $this->getStatePrefix(EveLogin::NAME_DIRECTOR) . self::$state;
-        $_SESSION['auth_state'] = $state;
-        $this->client->setResponse(
-            // for getAccessToken()
-            new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'),
-
-            // for JWT key set
-            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'),
-
-            // for getCharactersCharacterIdRoles
-            new Response(200, [], '{"roles": ["'.EveLogin::ROLE_DIRECTOR.'"]}'),
-
-            // for getCharactersCharacterId
-            new Response(200, [], '{"corporation_id": 123}'),
-
-            // for getCorporation
-            new Response(200, [], '{"name": "c123", "ticker": "-c-"}')
-        );
-
-        $response = $this->runApp(
-            'GET',
-            '/login-callback?state='.$state,
-            null,
-            null,
-            [ClientInterface::class => $this->client],
-            [['NEUCORE_EVE_DATASOURCE', 'tranquility']]
-        );
-        $this->assertSame(302, $response->getStatusCode());
-        $this->assertSame(
-            ['success' => true, 'message' => 'ESI token for character with director role added.'],
             $_SESSION['auth_result']
         );
     }

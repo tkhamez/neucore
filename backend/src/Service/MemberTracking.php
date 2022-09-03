@@ -4,20 +4,15 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
-use Eve\Sso\EveAuthentication;
-use Neucore\Data\DirectorToken;
-use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EsiType;
 use Neucore\Entity\EveLogin;
-use Neucore\Entity\SystemVariable;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Psr\Log\LoggerInterface;
-use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
 use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 
@@ -54,33 +49,6 @@ class MemberTracking
         $this->oauthToken = $oauthToken;
 
         $this->datasource = (string) $config['eve']['datasource'];
-    }
-
-    /**
-     * @return bool True if character has director roles and could be stored
-     */
-    public function fetchCharacterAndStoreDirector(EveAuthentication $eveAuth): bool
-    {
-        // get corporation ID from character
-        try {
-            $char = $this->esiApiFactory->getCharacterApi()
-                ->getCharactersCharacterId($eveAuth->getCharacterId(), $this->datasource);
-        } catch (\Exception $e) {
-            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
-            return false;
-        }
-        if (!$char instanceof GetCharactersCharacterIdOk) {
-            return false;
-        }
-
-        // get corporation - adds it to DB if missing
-        $corporation = $this->esiData->fetchCorporation($char->getCorporationId());
-        if ($corporation === null) {
-            return false;
-        }
-
-        // store director
-        return $this->storeDirector($eveAuth, $corporation);
     }
 
     /**
@@ -297,59 +265,5 @@ class MemberTracking
         }
 
         $this->entityManager->flush();
-    }
-
-    private function storeDirector(EveAuthentication $eveAuth, Corporation $corporation): bool
-    {
-        $systemVariableRepository = $this->repositoryFactory->getSystemVariableRepository();
-
-        // check if character already exists and determine next available number suffix
-        $maxNumber = 0;
-        $existingDirectors = [];
-        foreach ($systemVariableRepository->getDirectors() as $existingDirector) {
-            $number = (int) explode('_', $existingDirector->getName())[2];
-            $maxNumber = max($maxNumber, $number);
-            $value = \json_decode($existingDirector->getValue(), true);
-            if ($value && isset($value[SystemVariable::VALUE_CHARACTER_ID])) {
-                $existingDirectors[$value[SystemVariable::VALUE_CHARACTER_ID]] = [
-                    'system_variable' => $existingDirector,
-                    'number' => $number
-                ];
-            }
-        }
-        $directorNumber = $maxNumber + 1;
-
-        // store new director
-        $authCharacterId = $eveAuth->getCharacterId();
-        $directorToken = null;
-        if (isset($existingDirectors[$authCharacterId])) {
-            $directorNumber = $existingDirectors[$authCharacterId]['number'];
-            $directorChar = $existingDirectors[$authCharacterId]['system_variable'];
-            $directorToken = $systemVariableRepository->find(SystemVariable::DIRECTOR_TOKEN . $directorNumber);
-        } else {
-            $directorChar = new SystemVariable(SystemVariable::DIRECTOR_CHAR . $directorNumber);
-            $directorChar->setScope(SystemVariable::SCOPE_SETTINGS);
-            $this->entityManager->persist($directorChar);
-        }
-        if ($directorToken === null) {
-            $directorToken = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . $directorNumber);
-            $this->entityManager->persist($directorToken);
-        }
-        $directorChar->setValue((string) json_encode([
-            SystemVariable::VALUE_CHARACTER_ID => $authCharacterId,
-            SystemVariable::VALUE_CHARACTER_NAME => $eveAuth->getCharacterName(),
-            SystemVariable::VALUE_CORPORATION_ID => $corporation->getId(),
-            SystemVariable::VALUE_CORPORATION_NAME => $corporation->getName(),
-            SystemVariable::VALUE_CORPORATION_TICKER => $corporation->getTicker()
-        ]));
-        $directorToken->setScope(SystemVariable::SCOPE_BACKEND);
-        $token = new DirectorToken();
-        $token->access = $eveAuth->getToken()->getToken();
-        $token->refresh = $eveAuth->getToken()->getRefreshToken();
-        $token->expires = $eveAuth->getToken()->getExpires();
-        $token->scopes = $eveAuth->getScopes();
-        $directorToken->setValue((string) json_encode($token));
-
-        return $this->entityManager->flush();
     }
 }

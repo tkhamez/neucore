@@ -137,7 +137,6 @@ class AuthController extends BaseController
         ServerRequestInterface $request,
         UserAuth $userAuth,
         EveMail $mailService,
-        MemberTracking $memberTrackingService,
         EsiData $esiData
     ): ResponseInterface {
         $state = (string) $this->session->get(self::SESS_AUTH_STATE);
@@ -193,17 +192,6 @@ class AuthController extends BaseController
                 }
                 $successMessage = 'Mail character authenticated.';
                 $errorMessage = 'Failed to store character.';
-                break;
-            case EveLogin::NAME_DIRECTOR:
-                $successMessage = 'ESI token for character with director role added.';
-                $errorMessage = 'Error adding ESI token for character with director role.';
-                if ($esiData->verifyRoles(
-                    [EveLogin::ROLE_DIRECTOR],
-                    $eveAuth->getCharacterId(),
-                    $eveAuth->getToken()->getToken()
-                )) {
-                    $success = $memberTrackingService->fetchCharacterAndStoreDirector($eveAuth);
-                }
                 break;
             default:
                 $successMessage = 'ESI token added.';
@@ -331,8 +319,6 @@ class AuthController extends BaseController
             return $alt ? '/#login-alt' : '/#login';
         } elseif ($loginId === EveLogin::NAME_MAIL) {
             return '/#login-mail';
-        } elseif ($loginId === EveLogin::NAME_DIRECTOR) {
-            return '/#login-director';
         }
         return '/#login-custom';
     }
@@ -361,8 +347,6 @@ class AuthController extends BaseController
             return [];
         } elseif ($loginName === EveLogin::NAME_MAIL) {
             return [EveLogin::SCOPE_MAIL];
-        } elseif ($loginName === EveLogin::NAME_DIRECTOR) {
-            return [EveLogin::SCOPE_ROLES, EveLogin::SCOPE_TRACKING, EveLogin::SCOPE_STRUCTURES];
         }
 
         $scopes = '';

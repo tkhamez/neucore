@@ -45,7 +45,6 @@ export default class Data {
         tracking:   'core.tracking',
         managed:    'core.managed',
         mail:       'core.mail',
-        director:   'core.director',
     };
 
     static userRoles = [

@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
-use Eve\Sso\EveAuthentication;
 use GuzzleHttp\Psr7\Response;
-use League\OAuth2\Client\Token\AccessToken;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EsiType;
-use Neucore\Entity\SystemVariable;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Config;
@@ -68,102 +65,6 @@ class MemberTrackingTest extends TestCase
             new OAuthToken($authProvider, $objectManager, $logger),
             $config
         );
-    }
-
-    public function testFetchCharacterAndStoreDirector_CharError()
-    {
-        $this->client->setResponse(new Response(404));// getCharactersCharacterId
-
-        $eveAuth = new EveAuthentication(100, 'cname', 'coh', new AccessToken(['access_token' => 'at']));
-        $this->assertFalse($this->memberTracking->fetchCharacterAndStoreDirector($eveAuth));
-    }
-
-    public function testFetchCharacterAndStoreDirector_CorpError()
-    {
-        $this->client->setResponse(
-            new Response(200, [], '{"corporation_id": 10}'), // getCharactersCharacterId
-            new Response(404) // getCorporation
-        );
-
-        $eveAuth = new EveAuthentication(100, 'cname', 'coh', new AccessToken(['access_token' => 'at']));
-        $this->assertFalse($this->memberTracking->fetchCharacterAndStoreDirector($eveAuth));
-    }
-
-    public function testFetchCharacterAndStoreDirector_Success()
-    {
-        $char = new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1);
-        $token = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1);
-        $this->om->persist($char);
-        $this->om->persist($token);
-        $this->om->flush();
-        $this->client->setResponse(
-            new Response(200, [], '{"corporation_id": 10}'), // getCharactersCharacterId
-            new Response(200, [], '{"name": "ten", "ticker": "-10-"}') // getCorporation
-        );
-
-        $eveAuth = new EveAuthentication(100, 'cname', 'coh', new AccessToken(['access_token' => 'at']), ['s1']);
-        $result = $this->memberTracking->fetchCharacterAndStoreDirector($eveAuth);
-
-        $this->assertTrue($result);
-        $this->assertSame('ten', $this->repositoryFactory->getCorporationRepository()->find(10)->getName());
-        $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
-        $this->assertSame([
-            'character_id' => 100,
-            'character_name' => 'cname',
-            'corporation_id' => 10,
-            'corporation_name' => 'ten',
-            'corporation_ticker' => '-10-',
-        ], \json_decode($sysVarRepo->find(SystemVariable::DIRECTOR_CHAR . 2)->getValue(), true));
-        $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
-        $this->assertSame([
-            'access' => 'at',
-            'refresh' => null,
-            'expires' => null,
-            'scopes' => ['s1'],
-            'characterId' => null,
-            'systemVariableName' => null,
-        ], \json_decode($sysVarRepo->find(SystemVariable::DIRECTOR_TOKEN . 2)->getValue(), true));
-    }
-
-    public function testFetchCharacterAndStoreDirector_UpdateExistingDirector()
-    {
-        $char = (new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1))->setValue((string) \json_encode([
-            'character_id' => 100,
-            'character_name' => 'cname',
-            'corporation_id' => 10,
-            'corporation_name' => 'ten',
-            'corporation_ticker' => '-10-',
-        ]));
-        $token = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1);
-        $this->om->persist($char);
-        $this->om->persist($token);
-        $this->om->flush();
-        $this->client->setResponse(
-            new Response(200, [], '{"corporation_id": 11}'), // getCharactersCharacterId
-            new Response(200, [], '{"name": "not ten", "ticker": "-11-"}') // getCorporation
-        );
-
-        $eveAuth = new EveAuthentication(100, 'cname', 'coh', new AccessToken(['access_token' => 'at']), ['s1', 's2']);
-        $result = $this->memberTracking->fetchCharacterAndStoreDirector($eveAuth);
-
-        $this->assertTrue($result);
-        $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
-        $this->assertSame([
-            'character_id' => 100,
-            'character_name' => 'cname',
-            'corporation_id' => 11,
-            'corporation_name' => 'not ten',
-            'corporation_ticker' => '-11-',
-        ], \json_decode($sysVarRepo->find(SystemVariable::DIRECTOR_CHAR . 1)->getValue(), true));
-        $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
-        $this->assertSame([
-            'access' => 'at',
-            'refresh' => null,
-            'expires' => null,
-            'scopes' => ['s1', 's2'],
-            'characterId' => null,
-            'systemVariableName' => null,
-        ], \json_decode($sysVarRepo->find(SystemVariable::DIRECTOR_TOKEN . 1)->getValue(), true));
     }
 
     public function testFetchDataCorpNotFound()
