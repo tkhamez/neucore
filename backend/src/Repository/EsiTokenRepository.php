@@ -14,4 +14,21 @@ use Neucore\Entity\EsiToken;
  */
 class EsiTokenRepository extends EntityRepository
 {
+    /**
+     * @return EsiToken[]
+     */
+    public function findByLoginAndCorporation(string $loginName, int $corporationId): array
+    {
+        return $this->createQueryBuilder('e')
+            ->join('e.eveLogin', 'l')
+            ->join('e.character', 'char')
+            ->join('char.corporation', 'corp')
+            ->andWhere('l.name = :name')
+            ->andWhere('corp.id = :id')
+            ->setParameter('name', $loginName)
+            ->setParameter('id', $corporationId)
+            ->orderBy('char.name')
+            ->getQuery()
+            ->getResult();
+    }
 }

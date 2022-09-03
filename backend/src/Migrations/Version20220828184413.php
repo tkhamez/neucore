@@ -21,7 +21,7 @@ final class Version20220828184413 extends AbstractMigration
     {
         $this->addSql(
             'DELETE FROM system_variables WHERE name LIKE ? OR name LIKE ?',
-            [SystemVariable::DIRECTOR_CHAR . '%', SystemVariable::DIRECTOR_TOKEN . '%']
+            ['director_char_%', 'director_token_%']
         );
     }
 

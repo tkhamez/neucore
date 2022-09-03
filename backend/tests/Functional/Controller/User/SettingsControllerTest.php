@@ -110,7 +110,6 @@ class SettingsControllerTest extends WebTestCase
         $this->assertSame([
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
             ['name' => SystemVariable::ALLOW_LOGIN_MANAGED, 'value' => '0'],
-            ['name' => SystemVariable::DIRECTOR_CHAR . 1, 'value' => '{"character_id": 10, "corporation_id": 101}'],
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
             ['name' => SystemVariable::MAIL_CHARACTER, 'value' => 'The char'],
             ['name' => 'esiDataSource', 'value' => $_ENV['NEUCORE_EVE_DATASOURCE'] ?? 'tranquility'],
@@ -351,8 +350,6 @@ class SettingsControllerTest extends WebTestCase
         $var2 = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
         $var4 = new SystemVariable(SystemVariable::MAIL_CHARACTER);
         $var5 = new SystemVariable(SystemVariable::MAIL_TOKEN);
-        $var6 = new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1);
-        $var7 = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1);
         $var8 = new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED);
 
         $var1->setValue("0");
@@ -364,23 +361,17 @@ class SettingsControllerTest extends WebTestCase
             'refresh' => 'refresh-token',
             'expires' => time() + 10000,
         ]));
-        $var6->setValue('{"character_id": 10, "corporation_id": 101}');
-        $var7->setValue('{"access": "at", "refresh": "rt", "expires": '.(time() + 60*20).'}');
         $var8->setValue("0");
 
         $var2->setScope(SystemVariable::SCOPE_SETTINGS);
         $var4->setScope(SystemVariable::SCOPE_SETTINGS);
         $var5->setScope(SystemVariable::SCOPE_BACKEND);
-        $var6->setScope(SystemVariable::SCOPE_SETTINGS);
-        $var7->setScope(SystemVariable::SCOPE_BACKEND);
         $var8->setScope(SystemVariable::SCOPE_SETTINGS);
 
         $this->em->persist($var1);
         $this->em->persist($var2);
         $this->em->persist($var4);
         $this->em->persist($var5);
-        $this->em->persist($var6);
-        $this->em->persist($var7);
         $this->em->persist($var8);
         $this->em->persist($this->service1);
         $this->em->persist($this->service2);

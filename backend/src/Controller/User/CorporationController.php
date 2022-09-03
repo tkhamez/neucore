@@ -6,6 +6,7 @@ namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
@@ -314,17 +315,14 @@ class CorporationController extends BaseController
      */
     public function trackingDirector(string $id): ResponseInterface
     {
-        $repository = $this->repositoryFactory->getSystemVariableRepository();
+        $repository = $this->repositoryFactory->getEsiTokenRepository();
 
         $directors = [];
-        foreach ($repository->getDirectors() as $director) {
-            $value = \json_decode($director->getValue());
-            if ($value->corporation_id === (int) $id) {
-                $directors[] = [
-                    'id' => $value->character_id,
-                    'name' => $value->character_name,
-                ];
-            }
+        foreach ($repository->findByLoginAndCorporation(EveLogin::NAME_TRACKING, (int)$id) as $esiToken) {
+            $directors[] = [
+                'id' => $esiToken->getCharacter()->getId(),
+                'name' => $esiToken->getCharacter()->getName(),
+            ];
         }
 
         return $this->withJson($directors);

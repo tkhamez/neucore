@@ -191,23 +191,6 @@ class SystemVariable implements \JsonSerializable
     public const MAIL_MISSING_CHARACTER_RESEND = 'mail_missing_character_resend';
 
     /**
-     * Character with director role for member tracking.
-     *
-     * This is the base name of this variable, the actual variable must have a number suffix
-     * because there can be several director characters.
-     *
-     * Scope = settings
-     */
-    public const DIRECTOR_CHAR = 'director_char_';
-
-    /**
-     * Tokens for DIRECTOR_CHAR
-     *
-     * Scope = backend
-     */
-    public const DIRECTOR_TOKEN = 'director_token_';
-
-    /**
      * Value for HTML head title tag.
      *
      * Scope = public
@@ -296,12 +279,6 @@ class SystemVariable implements \JsonSerializable
     public const TOKEN_ACCESS = 'access';
     public const TOKEN_REFRESH = 'refresh';
     public const TOKEN_EXPIRES = 'expires';
-
-    public const VALUE_CHARACTER_ID = 'character_id';
-    public const VALUE_CORPORATION_NAME = 'corporation_name';
-    public const VALUE_CORPORATION_ID = 'corporation_id';
-    public const VALUE_CHARACTER_NAME = 'character_name';
-    public const VALUE_CORPORATION_TICKER = 'corporation_ticker';
 
     /**
      * Variable name.

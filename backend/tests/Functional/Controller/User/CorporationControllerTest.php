@@ -8,11 +8,12 @@ namespace Tests\Functional\Controller\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\ObjectManager;
+use Neucore\Entity\Character;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
-use Neucore\Entity\SystemVariable;
 use Neucore\Repository\AllianceRepository;
 use Neucore\Entity\Corporation;
 use Neucore\Repository\CorporationRepository;
@@ -30,49 +31,25 @@ use Tests\WriteErrorListener;
 
 class CorporationControllerTest extends WebTestCase
 {
-    /**
-     * @var WriteErrorListener
-     */
-    private static $writeErrorListener;
+    private static WriteErrorListener $writeErrorListener;
 
-    /**
-     * @var Helper
-     */
-    private $h;
+    private Helper $h;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
+    private EntityManagerInterface $em;
 
-    /**
-     * @var Group
-     */
-    private $group1;
+    private Group $group1;
 
-    private $gid2;
+    private int $gid2;
 
-    /**
-     * @var Player
-     */
-    private $player7;
+    private Player $player7;
 
-    /**
-     * @var CorporationRepository
-     */
-    private $corpRepo;
+    private CorporationRepository $corpRepo;
 
-    /**
-     * @var AllianceRepository
-     */
-    private $alliRepo;
+    private AllianceRepository $alliRepo;
 
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
-    private $log;
+    private Logger $log;
 
     public static function setupBeforeClass(): void
     {
@@ -462,20 +439,24 @@ class CorporationControllerTest extends WebTestCase
     public function testTrackingDirector200()
     {
         $this->h->emptyDb();
+        $login1 = (new EveLogin())->setName(EveLogin::NAME_TRACKING);
+        $login2 = (new EveLogin())->setName('Other');
+        $corp = (new Corporation())->setId(123)->setName('Corp 123');
+        $player = (new Player())->setName('Player');
+        $char = (new Character())->setId(1020301)->setName('Dir 1')->setPlayer($player)->setCorporation($corp);
+        $token1 = (new EsiToken())->setEveLogin($login1)->setCharacter($char)
+            ->setRefreshToken('rt')->setAccessToken('at')->setExpires(time());
+        $token2 = (new EsiToken())->setEveLogin($login2)->setCharacter($char)
+            ->setRefreshToken('rt')->setAccessToken('at')->setExpires(time());
+        $this->em->persist($login1);
+        $this->em->persist($login2);
+        $this->em->persist($corp);
+        $this->em->persist($player);
+        $this->em->persist($char);
+        $this->em->persist($token1);
+        $this->em->persist($token2);
         $this->h->addCharacterMain('Tracking Admin', 8, [Role::USER, Role::TRACKING_ADMIN]);
-        $director1 = (new SystemVariable(SystemVariable::DIRECTOR_CHAR.'1'))->setValue((string) \json_encode([
-            SystemVariable::VALUE_CHARACTER_ID => 1020301,
-            SystemVariable::VALUE_CHARACTER_NAME => 'Dir 1',
-            SystemVariable::VALUE_CORPORATION_ID => 123,
-        ]));
-        $director2 = (new SystemVariable(SystemVariable::DIRECTOR_CHAR.'2'))->setValue((string) \json_encode([
-            SystemVariable::VALUE_CHARACTER_ID => 1020302,
-            SystemVariable::VALUE_CHARACTER_NAME => 'Dir 2',
-            SystemVariable::VALUE_CORPORATION_ID => 124,
-        ]));
-        $this->em->persist($director1);
-        $this->em->persist($director2);
-        $this->em->flush();
+        $this->em->clear();
 
         $this->loginUser(8); # tracking-admin
 
