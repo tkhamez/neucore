@@ -13,6 +13,7 @@ use Neucore\Data\DirectorToken;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
+use Neucore\Entity\EsiToken;
 use Neucore\Entity\EsiType;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\SystemVariable;
@@ -334,19 +335,18 @@ class MemberTracking
      *  This method does not flush the entity manager.
      *
      * @param GetCorporationsCorporationIdMembertracking200Ok $memberData
-     * @param DirectorToken|null $tokenData Director char access token as primary token to resolve structure
-     *        IDs to names.
+     * @param EsiToken|null $esiToken Director char access token as primary token to resolve structure IDs to names.
      */
     public function updateStructure(
         GetCorporationsCorporationIdMembertracking200Ok $memberData,
-        ?DirectorToken $tokenData
+        ?EsiToken $esiToken
     ): void {
         $structureId = (int) $memberData->getLocationId();
 
         // fetch ESI data, try director token first, then character's token if available
         $location = null;
-        if ($tokenData) {
-            $directorAccessToken = $this->refreshDirectorToken($tokenData);
+        if ($esiToken) {
+            $directorAccessToken = $this->oauthToken->refreshEsiToken($esiToken);
             if ($directorAccessToken !== null) {
                 $location = $this->esiData->fetchStructure(
                     $structureId,

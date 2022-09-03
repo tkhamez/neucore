@@ -13,6 +13,7 @@ use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
+use Neucore\Entity\EsiToken;
 use Neucore\Entity\EsiType;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\EsiApiFactory;
@@ -342,7 +343,7 @@ class MemberTrackingTest extends TestCase
         $this->assertLessThanOrEqual(time(), $resultLocations[1]->getLastUpdate()->getTimestamp());
     }
 
-    public function testUpdateStructures_DirectorSuccess()
+    public function testUpdateStructure_DirectorSuccess()
     {
         $data =  new GetCorporationsCorporationIdMembertracking200Ok([
             'character_id' => 102,
@@ -357,12 +358,11 @@ class MemberTrackingTest extends TestCase
             }') // structure
         );
 
-        $tokenData = new DirectorToken();
-        $tokenData->access = 'at';
-        $tokenData->refresh = 'rf';
-        $tokenData->expires = time() + 60;
-        $tokenData->characterId = 1;
-        $this->memberTracking->updateStructure($data, $tokenData);
+        $esiToken = new EsiToken();
+        $esiToken->setAccessToken('at');
+        $esiToken->setRefreshToken('rf');
+        $esiToken->setExpires(time() + 60);
+        $this->memberTracking->updateStructure($data, $esiToken);
         $this->om->flush();
 
         $resultLocations = $this->repositoryFactory->getEsiLocationRepository()->findBy([]);
@@ -376,7 +376,7 @@ class MemberTrackingTest extends TestCase
         $this->assertSame(0, $resultLocations[0]->getErrorCount());
     }
 
-    public function testUpdateStructures_DoubleError()
+    public function testUpdateStructure_DoubleError()
     {
         $char = $this->helper->addCharacterMain('C1', 102204, [], [], false);
         $this->helper->createOrUpdateEsiToken($char, time() + 1000, 'at', true);

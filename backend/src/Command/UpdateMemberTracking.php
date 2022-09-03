@@ -7,10 +7,11 @@ namespace Neucore\Command;
 use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Command\Traits\EsiRateLimited;
 use Neucore\Command\Traits\LogOutput;
-use Neucore\Data\DirectorToken;
+use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\MemberTracking;
+use Neucore\Service\OAuthToken;
 use Neucore\Storage\StorageInterface;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
@@ -29,6 +30,8 @@ class UpdateMemberTracking extends Command
 
     private MemberTracking $memberTracking;
 
+    private OAuthToken $oauthToken;
+
     private EntityManagerInterface $entityManager;
 
     /**
@@ -39,6 +42,7 @@ class UpdateMemberTracking extends Command
     public function __construct(
         RepositoryFactory $repositoryFactory,
         MemberTracking $memberTracking,
+        OAuthToken $oauthToken,
         LoggerInterface $logger,
         EntityManagerInterface $entityManager,
         StorageInterface $storage
@@ -49,6 +53,7 @@ class UpdateMemberTracking extends Command
 
         $this->repositoryFactory = $repositoryFactory;
         $this->memberTracking = $memberTracking;
+        $this->oauthToken = $oauthToken;
         $this->entityManager = $entityManager;
     }
 
@@ -77,60 +82,57 @@ class UpdateMemberTracking extends Command
 
         $this->writeLine('Started "update-member-tracking"', false);
 
-        $systemVariableRepository = $this->repositoryFactory->getSystemVariableRepository();
         $corporationRepository = $this->repositoryFactory->getCorporationRepository();
         $processedCorporations = [];
-        foreach ($systemVariableRepository->getDirectors() as $characterVariable) {
+        foreach ($this->getValidDirectorTokens() as $esiToken) {
             $this->checkForErrors();
 
-            $character = \json_decode($characterVariable->getValue());
-            if ($character === null) {
-                $this->writeLine('  Error obtaining character data from ' . $characterVariable->getName(), false);
+            $character = $esiToken->getCharacter();
+            if ($character === null) { // Should not be possible
                 continue;
             }
 
-            if (in_array($character->corporation_id, $processedCorporations) || // don't process the same corp twice
-                $corpId > 0 && $corpId !== $character->corporation_id
+            $corporation = $character->getCorporation();
+            if ($corporation === null) {
+                $this->writeLine('  Corporation not found for ' . $character->getName(), false);
+                continue;
+            }
+            $corporationId = $character->getCorporation()->getId();
+
+            if (
+                in_array($corporation->getId(), $processedCorporations) || // don't process the same corp twice
+                ($corpId > 0 && $corpId !== $corporation->getId())
             ) {
                 continue;
             }
 
-            $corporation = $corporationRepository->find($character->corporation_id);
-            if ($corporation === null) {
-                $this->writeLine('  Corporation not found for ' . $characterVariable->getName(), false);
+            $token = $this->oauthToken->refreshEsiToken($esiToken);
+            if ($token === null) {
+                $this->writeLine('  Error refreshing token for ' . $character->getName(), false);
                 continue;
             }
 
-            $token = null;
-            $tokenData = $this->memberTracking->getDirectorTokenVariableData($characterVariable->getName());
-            if ($tokenData) {
-                $token = $this->memberTracking->refreshDirectorToken($tokenData);
-            }
-            if ($tokenData === null || $token === null) {
-                $this->writeLine('  Error refreshing token for ' . $characterVariable->getName(), false);
-                continue;
-            }
-
-            $this->writeLine('  Start updating ' . $corporation->getId(), false);
+            $this->writeLine('  Start updating ' . $corporation->getName(), false);
 
             $trackingData = $this->memberTracking->fetchData($token->getToken(), $corporation->getId());
             if (!is_array($trackingData)) {
                 $this->writeLine(
-                    '  Error getting member tracking data from ESI for ' . $characterVariable->getName(),
+                    '  Error getting member tracking data from ESI for ' . $character->getName(),
                     false
                 );
                 continue;
             }
 
-            if (!in_array(EveLogin::SCOPE_STRUCTURES, $tokenData->scopes)) {
-                $tokenData = null;
+            $directorTokenWithStructureScope = null;
+            if (in_array(EveLogin::SCOPE_STRUCTURES, $this->oauthToken->getScopesFromToken($esiToken))) {
+                $directorTokenWithStructureScope = $esiToken;
             }
-            $this->processData($corporation->getId(), $trackingData, $tokenData);
+            $this->processData($corporation->getId(), $trackingData, $directorTokenWithStructureScope);
 
             // set last update date - get corp again because "processData" may clear the ObjectManager
-            $corporation = $corporationRepository->find($character->corporation_id);
+            $corporation = $corporationRepository->find($corporationId);
             if ($corporation === null) {
-                $this->writeLine('  Corporation not found for ' . $characterVariable->getName(), false);
+                $this->writeLine('  Corporation not found for ' . $character->getName(), false);
                 continue;
             }
 
@@ -153,11 +155,28 @@ class UpdateMemberTracking extends Command
     }
 
     /**
+     * @return EsiToken[]
+     */
+    private function getValidDirectorTokens(): array
+    {
+        $eveLogin = $this->repositoryFactory->getEveLoginRepository()->findOneBy(['name' => EveLogin::NAME_TRACKING]);
+        if (!$eveLogin) {
+            return [];
+        }
+
+        return $this->repositoryFactory->getEsiTokenRepository()->findBy([
+            'eveLogin' => $eveLogin,
+            'validToken' => true,
+            'hasRoles' => true,
+        ]);
+    }
+
+    /**
      * @param int $corporationId
      * @param GetCorporationsCorporationIdMembertracking200Ok[] $trackingData
-     * @param DirectorToken|null $tokenData Used to resolve structure IDs to names if available
+     * @param EsiToken|null $esiToken Used to resolve structure IDs to names if available
      */
-    private function processData(int $corporationId, array $trackingData, ?DirectorToken $tokenData): void
+    private function processData(int $corporationId, array $trackingData, ?EsiToken $esiToken): void
     {
         if (empty($trackingData)) {
             return;
@@ -194,7 +213,7 @@ class UpdateMemberTracking extends Command
         $this->memberTracking->updateNames($typeIds, $systemIds, $stationIds, $this->sleep);
         $this->writeLine('  Updated ship/system/station names');
 
-        $this->updateStructures($structures, $tokenData);
+        $this->updateStructures($structures, $esiToken);
         $this->writeLine('  Updated structure names');
 
         $charNames = $this->memberTracking->fetchCharacterNames($charIds);
@@ -205,16 +224,16 @@ class UpdateMemberTracking extends Command
     /**
      * @param GetCorporationsCorporationIdMembertracking200Ok[] $structures
      */
-    private function updateStructures(array $structures, ?DirectorToken $tokenData): void
+    private function updateStructures(array $structures, ?EsiToken $esiToken): void
     {
         foreach ($structures as $num => $memberData) {
-            if (! $this->entityManager->isOpen()) {
+            if (!$this->entityManager->isOpen()) {
                 $this->logger->critical('UpdateCharacters: cannot continue without an open entity manager.');
                 break;
             }
             $this->checkForErrors();
 
-            $this->memberTracking->updateStructure($memberData, $tokenData);
+            $this->memberTracking->updateStructure($memberData, $esiToken);
 
             if ($num > 0 && $num % 20 === 0) {
                 $this->entityManager->flush();
