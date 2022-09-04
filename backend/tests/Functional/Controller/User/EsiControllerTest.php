@@ -137,7 +137,7 @@ class EsiControllerTest extends WebTestCase
         $helper = new Helper();
         $helper->emptyDb();
 
-        $helper->addCharacterMain('Admin', 6, [Role::USER_ADMIN]);
-        $helper->addCharacterMain('Esi', 7, [Role::ESI]);
+        $helper->addCharacterMain('Admin', 6, [Role::USER_ADMIN], [], true, null, 123456, true);
+        $helper->addCharacterMain('Esi', 7, [Role::ESI], [], true, null, 123456, true);
     }
 }

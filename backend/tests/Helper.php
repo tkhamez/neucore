@@ -319,7 +319,9 @@ class Helper
         array $roles = [],
         array $groups = [],
         bool $withEsiToken = true,
-        ?\DateTime $created = null
+        ?\DateTime $created = null,
+        int $tokenExpires = 123456,
+        ?bool $tokenValid = null
     ): Character {
         $om = $this->getObjectManager();
 
@@ -341,7 +343,7 @@ class Helper
         $player->addCharacter($char);
 
         if ($withEsiToken) {
-            $this->createOrUpdateEsiToken($char);
+            $this->createOrUpdateEsiToken($char, $tokenExpires, 'at', $tokenValid);
         }
 
         foreach ($this->addRoles($roles) as $role) {

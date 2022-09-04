@@ -402,7 +402,7 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiV1500_ClientException()
     {
-        $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
         $httpClient = new Client();
@@ -432,7 +432,7 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiV1400_EsiError()
     {
-        $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
         $httpClient = new Client();
@@ -468,7 +468,7 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiV1200()
     {
-        $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
         $httpClient = new Client();
@@ -498,7 +498,7 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiV2200()
     {
-        $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
         $httpClient = new Client();
@@ -542,7 +542,7 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiV1200Middleware()
     {
-        $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
         // create client with middleware
@@ -581,7 +581,7 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiV1200PathAsParameter()
     {
-        $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
         $httpClient = new Client();
@@ -612,7 +612,7 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiPostV1200()
     {
-        $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
         $httpClient = new Client();
@@ -651,7 +651,7 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiPostV2200()
     {
-        $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
         $httpClient = new Client();

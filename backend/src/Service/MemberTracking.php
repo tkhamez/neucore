@@ -172,7 +172,7 @@ class MemberTracking
         // fetch ESI data, try director token first, then character's token if available
         $location = null;
         if ($esiToken) {
-            $directorAccessToken = $this->oauthToken->refreshEsiToken($esiToken);
+            $directorAccessToken = $this->oauthToken->updateEsiToken($esiToken);
             if ($directorAccessToken !== null) {
                 $location = $this->esiData->fetchStructure(
                     $structureId,

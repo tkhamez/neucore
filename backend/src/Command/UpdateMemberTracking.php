@@ -106,7 +106,7 @@ class UpdateMemberTracking extends Command
                 continue;
             }
 
-            $token = $this->oauthToken->refreshEsiToken($esiToken);
+            $token = $this->oauthToken->updateEsiToken($esiToken);
             if ($token === null) {
                 $this->writeLine('  Error refreshing token for ' . $character->getName(), false);
                 continue;

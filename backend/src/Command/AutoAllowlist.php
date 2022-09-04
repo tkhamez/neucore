@@ -254,7 +254,7 @@ class AutoAllowlist extends Command
                 $this->checkForErrors();
 
                 $esiToken = $characters[self::KEY_TOKEN];
-                $token = $this->tokenService->refreshEsiToken($esiToken);
+                $token = $this->tokenService->updateEsiToken($esiToken);
                 if (!$token) {
                     continue;
                 }

@@ -26,8 +26,6 @@ class OAuthToken
 
     public const OPTION_EXPIRES = 'expires';
 
-    public const OPTION_RESOURCE_OWNER_ID = 'resource_owner_id';
-
     private AuthenticationProvider $oauth;
 
     private ObjectManager $objectManager;
@@ -39,47 +37,6 @@ class OAuthToken
         $this->oauth = $oauth;
         $this->objectManager = $objectManager;
         $this->log = $log;
-    }
-
-    /**
-     * Refreshes the access token if necessary and stores the new access and refresh token.
-     */
-    public function refreshEsiToken(EsiToken $esiToken): ?AccessTokenInterface
-    {
-        $existingToken = $this->createAccessToken($esiToken);
-        if ($existingToken === null) {
-            return null;
-        }
-
-        try {
-            $token = $this->oauth->refreshAccessToken($existingToken);
-        } catch (InvalidGrantException $e) {
-            // Delete invalid refresh token so that it cannot be used again.
-            $esiToken->setAccessToken('');
-            $esiToken->setRefreshToken('');
-            $esiToken->setLastChecked(new \DateTime());
-            $esiToken->setValidToken(false);
-            $this->objectManager->flush();
-            return null;
-        } catch (\RuntimeException $e) {
-            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
-            $token = $existingToken;
-        }
-
-        if ($token->getToken() !== $existingToken->getToken()) {
-            if (!is_numeric($token->getExpires()) || !is_string($token->getRefreshToken())) {
-                return null;
-            }
-            $esiToken->setAccessToken($token->getToken());
-            $esiToken->setRefreshToken($token->getRefreshToken());
-            $esiToken->setLastChecked(new \DateTime());
-            $esiToken->setExpires($token->getExpires());
-            if (!$this->objectManager->flush()) {
-                return null; // old token is invalid, new token could not be saved
-            }
-        }
-
-        return $token;
     }
 
     public function createAccessToken(EsiToken $esiToken): ?AccessTokenInterface
@@ -130,7 +87,7 @@ class OAuthToken
             return '';
         }
 
-        $token = $this->refreshEsiToken($esiToken);
+        $token = $this->updateEsiToken($esiToken);
 
         return $token ? $token->getToken() : '';
     }
@@ -179,5 +136,46 @@ class OAuthToken
             return null;
         }
         return $jwt->getEveAuthentication();
+    }
+
+    /**
+     * Refreshes the access token if necessary and stores the new access and refresh token.
+     */
+    private function refreshEsiToken(EsiToken $esiToken): ?AccessTokenInterface
+    {
+        $existingToken = $this->createAccessToken($esiToken);
+        if ($existingToken === null) {
+            return null;
+        }
+
+        try {
+            $token = $this->oauth->refreshAccessToken($existingToken);
+        } catch (InvalidGrantException $e) {
+            // Delete access token and set "valid" flag, but do not delete the refresh token (just in case
+            // there was some kind of error, and it is in fact still valid).
+            $esiToken->setAccessToken('');
+            $esiToken->setLastChecked(new \DateTime());
+            $esiToken->setValidToken(false);
+            $this->objectManager->flush();
+            return null;
+        } catch (\RuntimeException $e) {
+            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
+            $token = $existingToken;
+        }
+
+        if ($token->getToken() !== $existingToken->getToken()) {
+            if (!is_numeric($token->getExpires()) || !is_string($token->getRefreshToken())) {
+                return null;
+            }
+            $esiToken->setAccessToken($token->getToken());
+            $esiToken->setRefreshToken($token->getRefreshToken());
+            $esiToken->setLastChecked(new \DateTime());
+            $esiToken->setExpires($token->getExpires());
+            if (!$this->objectManager->flush()) {
+                return null; // old token is invalid, new token could not be saved
+            }
+        }
+
+        return $token;
     }
 }
