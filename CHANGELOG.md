@@ -6,7 +6,8 @@ dd mm yyyy
 
 - **WARNING:** This update will delete existing director tokens from characters that were not previously 
   added to a player account.
-- Refactored director login for member tracking.
+- Refactored director login for member tracking. The token is now added via the "Add additional ESI tokens" button
+  on the home page.
 - Added list of ESI tokens on the EVE login admin page.
 - Replaced fonts in dark themes where I (uppercase i) and l (lowercase L) were not distinguishable.
 - Added new themes: Morph, Quartz, Vapor, Zephyr.
@@ -14,6 +15,7 @@ dd mm yyyy
 - Added login images to dist/img/ so they can be used in Markdown.
 - Fixed alliance and corporation search. [#38][i38]
 - Small UI improvements.
+- Added mysqli PHP extension to Docker container.
 
 [i38]: https://github.com/tkhamez/neucore/issues/38
 

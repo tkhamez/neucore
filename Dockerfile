@@ -8,7 +8,7 @@ RUN apt-get update && \
     apt-get install apt-utils && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends libgmp-dev libzip4 libzip-dev libicu-dev && \
-    docker-php-ext-install pdo_mysql bcmath gmp zip intl opcache && \
+    docker-php-ext-install pdo_mysql bcmath gmp zip intl opcache mysqli && \
     apt-get remove --purge -y libgmp-dev libzip-dev libicu-dev && \
     apt-get autoremove --purge -y && \
     apt-get clean && \
