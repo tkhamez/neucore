@@ -18,7 +18,6 @@ use Neucore\Middleware\Psr15\CSRFToken;
 use Neucore\Service\Config;
 use Neucore\Service\EsiData;
 use Neucore\Service\EveMail;
-use Neucore\Service\MemberTracking;
 use Neucore\Service\ObjectManager;
 use Neucore\Util\Random;
 use Neucore\Service\SessionData;

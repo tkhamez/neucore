@@ -18,10 +18,10 @@ parameters:
 			path: %currentWorkingDirectory%/src/Entity/*
 		-
 			message: '#invalid type(.*)only iterables are supported#'
-			path: %currentWorkingDirectory%/src/Entity/ServiceConfiguration.php
+			path: %currentWorkingDirectory%/src/Data/ServiceConfiguration.php
 		-
 			message: '#invalid type(.*)only iterables are supported#'
-			path: %currentWorkingDirectory%/src/Entity/ServiceConfigurationURL.php
+			path: %currentWorkingDirectory%/src/Data/ServiceConfigurationURL.php
 		-
 			message: '#Method (.*)getServiceImplementation(.*) should return (.*) but returns object.#'
 			path: %currentWorkingDirectory%/src/Service/ServiceRegistration.php

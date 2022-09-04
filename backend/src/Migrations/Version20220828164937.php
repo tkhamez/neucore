@@ -44,7 +44,7 @@ final class Version20220828164937 extends AbstractMigration
                 'SELECT id FROM characters WHERE id = ?',
                 [$token['characterId']]
             )->fetchAssociative();
-            if (!isset($character['id'])) {
+            if (!$character || !isset($character['id'])) {
                 continue;
             }
             $this->addSql(
@@ -81,6 +81,6 @@ final class Version20220828164937 extends AbstractMigration
             'SELECT id FROM eve_logins WHERE name = ?',
             [EveLogin::NAME_TRACKING]
         )->fetchAssociative();
-        return $eveLogin['id'] ?? null;
+        return $eveLogin ? $eveLogin['id'] ?? null : null;
     }
 }

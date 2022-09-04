@@ -8,7 +8,6 @@ namespace Neucore\Migrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use Neucore\Entity\EveLogin;
-use Neucore\Entity\SystemVariable;
 
 final class Version20220828184413 extends AbstractMigration
 {
@@ -31,7 +30,8 @@ final class Version20220828184413 extends AbstractMigration
             'SELECT id FROM eve_logins WHERE name = ?',
             [EveLogin::NAME_TRACKING]
         )->fetchAssociative();
-        $this->abortIf(!isset($eveLogin['id']), 'Error: EVE login ' . EveLogin::NAME_TRACKING . ' not found.');
+        $eveLoginId = $eveLogin ? $eveLogin['id'] ?? null : null;
+        $this->abortIf(!$eveLoginId, 'Error: EVE login ' . EveLogin::NAME_TRACKING . ' not found.');
 
         $directorTokens = $this->connection->executeQuery(
             'SELECT e.character_id, e.refresh_token, e.access_token, e.expires, 
@@ -40,7 +40,7 @@ final class Version20220828184413 extends AbstractMigration
             LEFT JOIN characters c on e.character_id = c.id
             LEFT JOIN corporations c2 on c.corporation_id = c2.id
             WHERE eve_login_id = ?',
-            [$eveLogin['id']]
+            [$eveLoginId]
         )->fetchAllAssociative();
 
         foreach ($directorTokens as $idx => $tokenData) {

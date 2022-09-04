@@ -97,7 +97,7 @@ class UpdateMemberTracking extends Command
                 $this->writeLine('  Corporation not found for ' . $character->getName(), false);
                 continue;
             }
-            $corporationId = $character->getCorporation()->getId();
+            $corporationId = $corporation->getId();
 
             if (
                 in_array($corporation->getId(), $processedCorporations) || // don't process the same corp twice

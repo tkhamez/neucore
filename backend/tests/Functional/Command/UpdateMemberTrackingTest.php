@@ -122,7 +122,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->assertNotNull($corps[1]->getTrackingLastUpdate());
     }
 
-    private function addData($noCorporation = false, $expiredToken = false, $addSecond = true)
+    private function addData(bool $noCorporation = false, bool $expiredToken = false, bool $addSecond = true)
     {
         $eveLogin = (new EveLogin())->setName(EveLogin::NAME_TRACKING);
         $corporation1 = (new Corporation())->setId(100200)->setName('Corporation');
