@@ -38,6 +38,7 @@
 * Role based permission system.
 * Creation of groups and apps with managers.
 * Automatic group assignment for players based on corporations and alliances from all of their characters.
+* Advanced group configuration: private, public, default, required and forbidden groups.
 * Group applications for groups, optionally automatically acceptable.
 * Optional automatic temporary removal of groups if ESI tokens are invalid.
 * Optional alternative login that does not require any ESI scopes (e.g. for guest account).
