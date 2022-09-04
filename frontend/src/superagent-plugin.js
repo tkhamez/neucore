@@ -3,12 +3,13 @@ export { superAgentPlugin as default };
 
 /**
  * @param {Helper} helper
- * @param {function} setCsrfHeader
  * @returns {function}
  */
-function superAgentPlugin(helper, setCsrfHeader) {
+function superAgentPlugin(helper) {
     return function (request) {
-        setCsrfHeader(helper.vm, request);
+        if (['POST', 'PUT', 'DELETE'].indexOf(request.method) !== -1) {
+            request.set('X-CSRF-Token', helper.vm.csrfToken);
+        }
 
         request.withCredentials();
 

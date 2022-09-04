@@ -6,6 +6,10 @@ import portrait from "../assets/portrait_32.jpg";
 export default class Helper {
 
     constructor(vm) {
+
+        /**
+         * The vue instance
+         */
         this.vm = vm;
     }
 

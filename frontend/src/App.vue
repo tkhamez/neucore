@@ -175,7 +175,7 @@ export default {
 
         // configure neucore-js-client
         ApiClient.instance.basePath = `${this.$root.envVars.backendHost}/api`;
-        ApiClient.instance.plugins = [superAgentPlugin(this.h, setCsrfHeader)];
+        ApiClient.instance.plugins = [superAgentPlugin(this.h)];
 
         // Store redirect param from login
         this.loginRedirect = Util.getHashParameter('redirect', '');
@@ -357,11 +357,6 @@ function getCsrfHeader(vm) {
     });
 }
 
-function setCsrfHeader(vm, request) {
-    if (['POST', 'PUT', 'DELETE'].indexOf(request.method) !== -1) {
-        request.set('X-CSRF-Token', vm.csrfToken);
-    }
-}
 </script>
 
 <style scoped>
