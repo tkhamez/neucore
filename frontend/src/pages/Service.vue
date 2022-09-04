@@ -96,7 +96,7 @@
                                         Update Account
                                     </button>
                                     <br>
-                                    <small class="text-muted">Update groups and corporation affiliation.</small>
+                                    <small class="text-muted">Update the account permissions, for example.</small>
                                 </span>
                                 <span v-if="hasAction('update-account') &&
                                             hasAction('reset-password') &&
