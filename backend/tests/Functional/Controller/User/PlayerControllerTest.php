@@ -67,6 +67,8 @@ class PlayerControllerTest extends WebTestCase
 
     private int $autoAcceptGroupId;
 
+    private int $autoAssignGroupId;
+
     private PlayerRepository $playerRepo;
 
     private CharacterRepository $charRepo;
@@ -1260,7 +1262,7 @@ class PlayerControllerTest extends WebTestCase
         );
     }
 
-    public function testDeleteCharacter204_Admin_WithRecord()
+    public function testDeleteCharacter204_Admin_WithRecord_UpdatesGroups()
     {
         $this->setupDb();
         $this->loginUser(12); // a user-admin
@@ -1270,6 +1272,9 @@ class PlayerControllerTest extends WebTestCase
         $setting->setValue('0');
         $this->em->persist($setting);
         $this->em->flush();
+        $this->em->clear();
+
+        $this->assertSame([$this->autoAssignGroupId], $this->playerRepo->find($this->player1Id)->getGroupIds());
 
         // char 10 is on a different player account
         $response = $this->runApp(
@@ -1279,10 +1284,9 @@ class PlayerControllerTest extends WebTestCase
             null,
             [LoggerInterface::class => $this->log]
         );
-        $this->assertEquals(204, $response->getStatusCode());
-
         $this->em->clear();
 
+        $this->assertEquals(204, $response->getStatusCode());
         $this->assertNull($this->charRepo->find(10));
 
         $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 10]);
@@ -1291,6 +1295,8 @@ class PlayerControllerTest extends WebTestCase
         $this->assertNull($removedChar->getNewPlayer());
         $this->assertSame(RemovedCharacter::REASON_DELETED_OWNER_CHANGED, $removedChar->getReason());
         $this->assertSame($this->player3Id, $removedChar->getDeletedBy()->getId());
+
+        $this->assertSame([], $this->playerRepo->find($this->player1Id)->getGroupIds());
     }
 
     public function testDeleteCharacter204_Admin_LostAccess()
@@ -1468,7 +1474,7 @@ class PlayerControllerTest extends WebTestCase
             Role::WATCHLIST_ADMIN,
         ]);
 
-        $gs = $this->h->addGroups(['test-pub', 'test-private', 'required-group', 'auto-accept']);
+        $gs = $this->h->addGroups(['test-pub', 'test-private', 'required-group', 'auto-accept', 'auto-assign']);
         $gs[0]->setVisibility(Group::VISIBILITY_PUBLIC);
         $gs[3]->setVisibility(Group::VISIBILITY_PUBLIC);
         $gs[3]->setAutoAccept(true);
@@ -1477,10 +1483,17 @@ class PlayerControllerTest extends WebTestCase
         $this->gPrivateId = $gs[1]->getId();
         $this->requiredGroupId = $gs[2]->getId();
         $this->autoAcceptGroupId = $gs[3]->getId();
+        $this->autoAssignGroupId = $gs[4]->getId();
 
-        $player1 = $this->h->addCharacterMain('User', 10, [Role::USER, Role::USER_CHARS])->getPlayer();
+        $corp1 = (new Corporation())->setId(123)->setName('c1')->setTicker('c1');
+        $this->em->persist($corp1);
+        $char1 = $this->h->addCharacterMain('User', 10, [Role::USER, Role::USER_CHARS]);
+        $char1->setCorporation($corp1);
+        $corp1->addGroup($gs[4]);
+        $player1 = $char1->getPlayer();
+        $player1->addGroup($gs[4]);
         $this->player1Id = $player1->getId();
-        $this->eveLoginId = $player1->getCharacters()[0]->getEsiTokens()[0]->getEveLogin()->getId();
+        $this->eveLoginId = $char1->getEsiTokens()[0]->getEveLogin()->getId();
         $this->h->addCharacterToPlayer('Alt1', 9, $player1);
 
         $player2 = $this->h->addCharacterMain(
@@ -1493,8 +1506,8 @@ class PlayerControllerTest extends WebTestCase
         $player2->addGroup($gs[0]);
 
         $alli = (new Alliance())->setId(123)->setName('aaa')->setTicker('a-a');
-        $corp = (new Corporation())->setId(234)->setName('ccc')->setTicker('c-c')->setAlliance($alli);
-        $this->corpId = $corp->getId();
+        $corp2 = (new Corporation())->setId(234)->setName('ccc')->setTicker('c-c')->setAlliance($alli);
+        $this->corpId = $corp2->getId();
 
         $char3a = $this->h->addCharacterMain(
             'Admin',
@@ -1503,7 +1516,7 @@ class PlayerControllerTest extends WebTestCase
         );
         $char3a->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(false)
             ->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
-        $char3a->setCorporation($corp);
+        $char3a->setCorporation($corp2);
         $char3a->getPlayer()->addGroup($gs[2]);
         $this->player3Id = $char3a->getPlayer()->getId();
 
@@ -1514,7 +1527,7 @@ class PlayerControllerTest extends WebTestCase
 
         $emptyAcc = (new Player())->setName('empty account');
 
-        $this->em->persist($corp);
+        $this->em->persist($corp2);
         $this->em->persist($alli);
         $this->em->persist($emptyAcc);
 

@@ -59,8 +59,8 @@ composer style:fix
 
 ### Clear Entity Manager
 
-Some commands clear the entity manager to save memory. Never do this anywhere else, only
-in "Command" classes.
+Sometimes it's necessary to clear the Doctrine entity manager. But never do this outside of Command or
+Controller classes.
 
 ### Tests
 

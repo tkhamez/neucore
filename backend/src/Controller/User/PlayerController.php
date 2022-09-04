@@ -1054,10 +1054,11 @@ class PlayerController extends BaseController
     public function deleteCharacter(
         string $id,
         ServerRequestInterface $request,
-        Account $characterService
+        Account $accountService
     ): ResponseInterface {
         $reason = $this->getQueryParam($request, 'admin-reason', '');
-        $admin = $this->getUser($this->userAuth)->getPlayer()->hasRole(Role::USER_ADMIN) && $reason !== '';
+        $authPlayer = $this->getUser($this->userAuth)->getPlayer();
+        $admin = $authPlayer->hasRole(Role::USER_ADMIN) && $reason !== '';
 
         // check "allow deletion" settings
         if (! $admin) {
@@ -1076,7 +1077,8 @@ class PlayerController extends BaseController
 
         // get character to delete
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
-        if ($char === null) {
+        $player = $char ? $char->getPlayer() : null;
+        if ($char === null || $player === null) {
             return $this->response->withStatus(404);
         }
 
@@ -1089,16 +1091,21 @@ class PlayerController extends BaseController
             RemovedCharacter::REASON_DELETED_BY_ADMIN,
         ])) {
             return $this->response->withStatus(403);
-        } elseif (!$admin && $this->getUser($this->userAuth)->getPlayer()->hasCharacter($char->getId())) {
+        } elseif (!$admin && $authPlayer->hasCharacter($char->getId())) {
             $reason = RemovedCharacter::REASON_DELETED_MANUALLY;
         } elseif (! $admin) {
             return $this->response->withStatus(403);
         }
 
         // delete char
-        $characterService->deleteCharacter($char, $reason, $this->getUser($this->userAuth)->getPlayer());
+        $accountService->deleteCharacter($char, $reason, $authPlayer);
+        $response = $this->flushAndReturn(204);
 
-        return $this->flushAndReturn(204);
+        // Update groups
+        $this->objectManager->clear();
+        $accountService->updateGroups($player->getId());
+
+        return $response;
     }
 
     private function getPlayerByRole(string $roleName): ResponseInterface

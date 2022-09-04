@@ -331,7 +331,7 @@ export default {
         deleteChar() {
             const vm = this;
             (new Character(vm)).deleteCharacter(this.charToDelete.id, null, function() {
-                vm.update(vm.authChar.id);
+                vm.emitter.emit('playerChange');
             });
             if (this.deleteCharModal) {
                 this.deleteCharModal.hide();
