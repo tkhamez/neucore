@@ -2,19 +2,19 @@
 export { superAgentPlugin as default };
 
 /**
- * @param {object} vm
+ * @param {Helper} helper
  * @param {function} setCsrfHeader
  * @returns {function}
  */
-function superAgentPlugin(vm, setCsrfHeader) {
+function superAgentPlugin(helper, setCsrfHeader) {
     return function (request) {
-        setCsrfHeader(vm, request);
+        setCsrfHeader(helper.vm, request);
 
         request.withCredentials();
 
-        vm.ajaxLoading(true);
+        helper.ajaxLoading(true);
         request.on('end', function () {
-            vm.ajaxLoading(false);
+            helper.ajaxLoading(false);
         });
 
         return request;

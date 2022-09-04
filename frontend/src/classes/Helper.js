@@ -9,6 +9,14 @@ export default class Helper {
         this.vm = vm;
     }
 
+    ajaxLoading(status) {
+        if (status) {
+            this.vm.$root.loadingCount ++;
+        } else {
+            this.vm.$root.loadingCount --;
+        }
+    }
+
     hasRole(name, player) {
         player = player || this.vm.$root.player;
         if (! player) {

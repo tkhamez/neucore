@@ -93,6 +93,7 @@ import $ from 'jquery';
 import Multiselect from '@suadelabs/vue3-multiselect';
 import {ESIApi, CharacterApi, SettingsApi} from 'neucore-js-client';
 import Data from "../classes/Data";
+import Helper from "../classes/Helper";
 
 export default {
     components: {
@@ -101,6 +102,7 @@ export default {
 
     data: function() {
         return {
+            h: new Helper(this),
             status: null,
             headers: [],
             body: '',
@@ -204,7 +206,7 @@ function getEveLogin(vm) {
 }
 
 function getPaths(vm) {
-    vm.ajaxLoading(true);
+    vm.h.ajaxLoading(true);
     $.get(`${vm.$root.envVars.baseUrl}esi-paths-http-get.json`).then(data => {
         vm.pathsGet = data;
         result();
@@ -215,7 +217,7 @@ function getPaths(vm) {
     });
     function result() {
         if (vm.pathsGet.length > 0 && vm.pathsPost.length > 0) {
-            vm.ajaxLoading(false);
+            vm.h.ajaxLoading(false);
             for (const path of vm.pathsGet) {
                 vm.paths.push({ name: `GET ${path}`, path: path});
             }

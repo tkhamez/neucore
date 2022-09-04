@@ -23,7 +23,6 @@ import '@suadelabs/vue3-multiselect/dist/vue3-multiselect.css';
 
 import "./index.scss";
 import App from './App.vue';
-import mixin from './mixin';
 import mitt from 'mitt';
 
 const app = createApp({
@@ -58,8 +57,7 @@ const app = createApp({
         });
     },
 
-})
-.mixin(mixin);
+});
 
 app.config.globalProperties.emitter = mitt();
 
