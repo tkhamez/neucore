@@ -95,15 +95,16 @@ const searchAlliCorpDelayed = _.debounce((vm, query) => {
 
     vm.searchIsLoading = true;
     vm.searchResults = [];
-    fetch(`${vm.settings.esiHost}/latest/universe/ids?datasource=${vm.settings.esiDataSource}`, {
+    window.fetch(`${vm.settings.esiHost}/latest/universe/ids?datasource=${vm.settings.esiDataSource}`, {
         method: 'POST',
         body: JSON.stringify([query])
-    }).then(async response => {
+    }).then(response => {
         vm.searchIsLoading = false;
         if (!response.ok) {
             throw new Error();
         }
-        const data = await response.json();
+        return response.json();
+    }).then(data => {
         if (typeof data[category] !== typeof []) {
             return;
         }

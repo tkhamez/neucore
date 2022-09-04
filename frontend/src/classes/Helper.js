@@ -21,6 +21,19 @@ export default class Helper {
         }
     }
 
+    fetch(resource, options) {
+        this.ajaxLoading(true);
+        return window.fetch(resource, options)
+            .then(response => {
+                this.ajaxLoading(false);
+                return new Promise(resolve => resolve(response));
+            })
+            .catch(error => {
+                this.ajaxLoading(false);
+                return new Promise((resolve, reject) => reject(error));
+            });
+    }
+
     hasRole(name, player) {
         player = player || this.vm.$root.player;
         if (! player) {

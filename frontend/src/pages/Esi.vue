@@ -89,7 +89,6 @@
 
 <script>
 import _ from 'lodash';
-import $ from 'jquery';
 import Multiselect from '@suadelabs/vue3-multiselect';
 import {ESIApi, CharacterApi, SettingsApi} from 'neucore-js-client';
 import Data from "../classes/Data";
@@ -206,18 +205,16 @@ function getEveLogin(vm) {
 }
 
 function getPaths(vm) {
-    vm.h.ajaxLoading(true);
-    $.get(`${vm.$root.envVars.baseUrl}esi-paths-http-get.json`).then(data => {
-        vm.pathsGet = data;
+    vm.h.fetch(`${vm.$root.envVars.baseUrl}esi-paths-http-get.json`).then(async response => {
+        vm.pathsGet = await response.json();
         result();
     });
-    $.get(`${vm.$root.envVars.baseUrl}esi-paths-http-post.json`).then(data => {
-        vm.pathsPost = data;
+    vm.h.fetch(`${vm.$root.envVars.baseUrl}esi-paths-http-post.json`).then(async response => {
+        vm.pathsPost = await response.json();
         result();
     });
     function result() {
         if (vm.pathsGet.length > 0 && vm.pathsPost.length > 0) {
-            vm.h.ajaxLoading(false);
             for (const path of vm.pathsGet) {
                 vm.paths.push({ name: `GET ${path}`, path: path});
             }
