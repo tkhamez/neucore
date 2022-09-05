@@ -11,11 +11,10 @@
 - Added list of ESI tokens on the EVE login admin page.
 - Replaced fonts in dark themes where I (uppercase i) and l (lowercase L) were not distinguishable.
 - Added new themes: Morph, Quartz, Vapor, Zephyr.
-- Docker image (prod): Added missing php.ini file (copy of php.ini-production).
+- Docker image (prod): Added missing php.ini file (copy of php.ini-production) and mysqli extension.
 - Added login images to dist/img/ so they can be used in Markdown.
 - Fixed alliance and corporation search. [#38][i38]
 - Other small improvements.
-- Added mysqli PHP extension to Docker container.
 
 [i38]: https://github.com/tkhamez/neucore/issues/38
 
