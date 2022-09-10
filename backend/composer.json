@@ -63,7 +63,7 @@
         	"Neucore\\": "src/",
         	"Tests\\": "tests/"
     	},
-        "files": ["config/version.php"]
+        "files": ["config/version.php", "src/functions.php"]
     },
     "scripts": {
         "compile": [
