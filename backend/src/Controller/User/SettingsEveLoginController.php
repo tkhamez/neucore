@@ -159,6 +159,7 @@ class SettingsEveLoginController extends BaseController
             return $this->response->withStatus(403);
         }
 
+        // For ~43k tokens this will result in an out-of-memory error from Doctrine with a 256MB limit.
         $tokens = array_map(function (EsiToken $esiToken) {
             return $esiToken->jsonSerialize(true);
         }, $login->getEsiTokens());

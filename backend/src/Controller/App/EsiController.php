@@ -27,6 +27,34 @@ use Psr\Log\LoggerInterface;
  * @OA\Tag(
  *     name="Application - ESI"
  * )
+ *
+ * @OA\Schema(
+ *     schema="EsiTokenData",
+ *     required={"lastChecked", "characterId", "characterName", "corporationId", "allianceId"},
+ *     @OA\Property(
+ *         property="lastChecked",
+ *         type="string",
+ *         nullable=true
+ *     ),
+ *     @OA\Property(
+ *         property="characterId",
+ *         type="integer"
+ *     ),
+ *     @OA\Property(
+ *         property="characterName",
+ *         type="string"
+ *     ),
+ *     @OA\Property(
+ *         property="corporationId",
+ *         type="integer",
+ *         nullable=true
+ *     ),
+ *     @OA\Property(
+ *         property="allianceId",
+ *         type="integer",
+ *         nullable=true
+ *     )
+ * )
  */
 class EsiController extends BaseController
 {
@@ -47,6 +75,8 @@ class EsiController extends BaseController
     private AppAuth $appAuth;
 
     private ?App $app = null;
+
+    private ?EveLogin $eveLogin = null;
 
     private int $errorLimitRemain = 20;
 
@@ -75,7 +105,7 @@ class EsiController extends BaseController
      * @OA\Get(
      *     path="/app/v1/esi/eve-login/{name}/characters",
      *     operationId="esiEveLoginCharactersV1",
-     *     summary="Returns character IDs of characters that have a valid ESI token of the specified EVE login.",
+     *     summary="Returns character IDs of characters that have an ESI token of the specified EVE login.",
      *     description="Needs role: app-esi.",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
@@ -105,28 +135,63 @@ class EsiController extends BaseController
      */
     public function eveLoginCharacters(string $name, ServerRequestInterface $request): ResponseInterface
     {
-        if ($name === EveLogin::NAME_DEFAULT) {
-            return $this->response->withStatus(403);
+        $response = $this->validateTokenRequest($name, $request);
+        if ($response) {
+            return $response;
         }
 
-        $eveLogin = $this->repositoryFactory->getEveLoginRepository()->findOneBy(['name' => $name]);
-        if ($eveLogin === null) {
-            return $this->response->withStatus(404);
-        }
-
-        $this->app = $this->appAuth->getApp($request);
-        if (!$this->hasEveLogin($eveLogin->getName())) {
-            return $this->response->withStatus(404);
-        }
-
-        $charIds = [];
-        foreach ($eveLogin->getEsiTokens() as $token) {
-            if ($token->getCharacter() !== null) {
-                $charIds[] = $token->getCharacter()->getId();
-            }
-        }
+        $charIds = $this->repositoryFactory->getEsiTokenRepository()
+            // Note: $this->eveLogin always exists at this point
+            ->findCharacterIdsByLoginId($this->eveLogin ? $this->eveLogin->getId() : 0);
 
         return $this->withJson($charIds);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/app/v1/esi/eve-login/{name}/valid-token-data",
+     *     operationId="esiEveLoginValidTokenDataV1",
+     *     summary="Returns data of valid tokens for an EVE login.",
+     *     description="Needs role: app-esi.",
+     *     tags={"Application - ESI"},
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
+     *         name="name",
+     *         in="path",
+     *         required=true,
+     *         description="EVE login name, 'core.default' is not allowed.",
+     *         @OA\Schema(type="string", maxLength=20, pattern="^[-._a-zA-Z0-9]+$")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/EsiTokenData"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Forbidden",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="EVE login not found.",
+     *         @OA\JsonContent(type="string")
+     *     )
+     * )
+     */
+    public function eveLoginValidTokenData(string $name, ServerRequestInterface $request): ResponseInterface
+    {
+        $response = $this->validateTokenRequest($name, $request);
+        if ($response) {
+            return $response;
+        }
+
+        // Note: This works with ~38k tokens without an out-of-memory error from Doctrine with a 256MB limit.
+        $tokenData = $this->repositoryFactory->getEsiTokenRepository()
+            // Note: $this->eveLogin always exists at this point
+            ->findValidTokens($this->eveLogin ? $this->eveLogin->getId() : 0);
+
+        return $this->withJson($tokenData);
     }
 
     /**
@@ -749,6 +814,25 @@ class EsiController extends BaseController
             return 'application ' . $this->app->getId() . ' "' . $this->app->getName() . '"';
         }
         return '';
+    }
+
+    private function validateTokenRequest(string $name, ServerRequestInterface $request): ?ResponseInterface
+    {
+        if ($name === EveLogin::NAME_DEFAULT) {
+            return $this->response->withStatus(403);
+        }
+
+        $this->eveLogin = $this->repositoryFactory->getEveLoginRepository()->findOneBy(['name' => $name]);
+        if ($this->eveLogin === null) {
+            return $this->response->withStatus(404);
+        }
+
+        $this->app = $this->appAuth->getApp($request);
+        if (!$this->hasEveLogin($this->eveLogin->getName())) {
+            return $this->response->withStatus(403);
+        }
+
+        return null;
     }
 
     private function hasEveLogin(string $eveLoginName): bool

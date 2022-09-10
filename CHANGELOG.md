@@ -6,8 +6,9 @@ dd mm yyyy
 
 - Change: Apps with the `app-esi` role no longer automatically have access to the default ESI token. Instead, 
   the corresponding EVE login must now be added to the app (this is done automatically for all existing app
-  with a database update).
-- Implemented EVE login permission check for apps (ESI endpoint) ([#32][i32]).
+  with a database migration).
+- App API: Implemented EVE login permission check for apps (ESI endpoint) ([#32][i32]).
+- App API: Added `/app/v1/esi/eve-login/{name}/valid-token-data` endpoint.
 
 ## 1.35.0
 

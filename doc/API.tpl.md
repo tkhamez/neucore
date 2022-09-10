@@ -161,9 +161,7 @@ Allows an app to get corporation member tracking data.
 
 Allows an app to make an ESI request on behalf of a character from the database.
 
-Application API
-- Returns character IDs of characters that have a valid ESI token of the specified EVE login.
-  `GET /app/v1/esi/eve-login/{name}/characters`
+{app-esi}
 - Makes an ESI GET or POST request on behalf on an EVE character and returns the result. `/app/v2/esi`  
   This endpoint can also be used with OpenAPI clients generated for ESI,
-  see [app-esi-examples.php](app-esi-examples.php) for more.
+  see [api-examples](api-examples) for more.

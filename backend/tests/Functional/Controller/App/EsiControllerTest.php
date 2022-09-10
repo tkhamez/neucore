@@ -57,6 +57,19 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame(403, $response2->getStatusCode());
     }
 
+    public function testEveLoginCharacters403_MissingEveLogin()
+    {
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI]);
+        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
+
+        // app may not use the login
+        $eveLogin = (new EveLogin())->setName('test-1');
+        $this->helper->getEm()->persist($eveLogin);
+        $this->helper->getEm()->flush();
+        $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/characters', null, $headers);
+        $this->assertSame(403, $response->getStatusCode());
+    }
+
     public function testEveLoginCharacters404()
     {
         $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI]);
@@ -64,13 +77,6 @@ class EsiControllerTest extends WebTestCase
 
         // login does not exist
         $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/name1/characters', null, $headers);
-        $this->assertSame(404, $response->getStatusCode());
-
-        // app may not use the login
-        $eveLogin = (new EveLogin())->setName('test-1');
-        $this->helper->getEm()->persist($eveLogin);
-        $this->helper->getEm()->flush();
-        $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/characters', null, $headers);
         $this->assertSame(404, $response->getStatusCode());
     }
 
@@ -92,6 +98,63 @@ class EsiControllerTest extends WebTestCase
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame([123456], $this->parseJsonBody($response));
+    }
+
+    public function testEveLoginValidTokenData403()
+    {
+        $response0 = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/valid-token-data');
+        $this->assertSame(403, $response0->getStatusCode());
+
+        $app = $this->helper->addApp('A1', 's1', [Role::APP]);
+        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
+        $response1 = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/valid-token-data', null, $headers);
+        $this->assertSame(403, $response1->getStatusCode());
+    }
+
+    public function testEveLoginValidTokenData403_MissingLogin()
+    {
+        $eveLogin = (new EveLogin())->setName('test-1');
+        $this->helper->getEm()->persist($eveLogin);
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI]);
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/valid-token-data', null, $headers);
+
+        $this->assertSame(403, $response->getStatusCode());
+    }
+
+    public function testEveLoginValidTokenData404()
+    {
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI], 'test-1');
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-2/valid-token-data', null, $headers);
+
+        $this->assertSame(404, $response->getStatusCode());
+    }
+
+    public function testEveLoginValidTokenData200()
+    {
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI], 'test-1');
+        $eveLogin = $app->getEveLogins()[0];
+        $character = $this->helper->addCharacterMain('Char 1', 123456);
+        $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setCharacter($character)
+            ->setRefreshToken('rt')->setAccessToken('at')->setExpires(0)->setValidToken(true);
+        $this->helper->getEm()->persist($esiToken);
+        $this->helper->getEm()->flush();
+        $this->helper->getEm()->clear();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/valid-token-data', null, $headers);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame([[
+            'lastChecked' => null,
+            'characterId' => 123456,
+            'characterName' => 'Char 1',
+            'corporationId' => null,
+            'allianceId' => null,
+        ]], $this->parseJsonBody($response));
     }
 
     public function testEsiV2403()

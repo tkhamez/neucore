@@ -80,13 +80,13 @@ function getApiForRoute(array $route, array $apiPaths): ?array
     $method = strtolower($route[1]);
     $result = null;
     foreach ($apiPaths as $apiPath => $def) {
-        if ($route[0] !== $apiPath) {
+        if ($route[0] !== $apiPath) { // also excludes ".../esi[{path:.*}]" because of the optional path at the end
             continue;
         }
         if (!isset($def[$method])) { // should always be set
             continue;
         }
-        if ($def[$method]['deprecated'] ?? '' === 'true') {
+        if ($def[$method]['deprecated'] ?? false) {
             continue;
         }
         $result = [
