@@ -46,7 +46,8 @@ class DoctrineFixturesLoadTest extends ConsoleTestCase
         $this->assertSame(SystemVariable::ALLOW_CHARACTER_DELETION, $vars[4]->getName());
         $this->assertSame('1', $vars[4]->getValue());
 
-        $defaultEveLogin = $repoFactory->getEveLoginRepository()->findOneBy(['name' => EveLogin::NAME_DEFAULT]);
-        $this->assertSame(EveLogin::NAME_DEFAULT, $defaultEveLogin->getName());
+        $defaultEveLogin = $repoFactory->getEveLoginRepository()->findBy([]);
+        $this->assertSame(EveLogin::NAME_DEFAULT, $defaultEveLogin[0]->getName());
+        $this->assertSame(EveLogin::NAME_TRACKING, $defaultEveLogin[1]->getName());
     }
 }
