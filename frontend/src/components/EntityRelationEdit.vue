@@ -444,13 +444,6 @@ export default {
                 if (error) { // 403 usually
                     return;
                 }
-                if (vm.contentType === 'eveLogins') {
-                    for (let i = 0; i < data.length; i++) {
-                        if (data[i].name === Data.loginNames.default) {
-                            data.splice(i, 1);
-                        }
-                    }
-                }
                 vm.selectContent = data;
             }]);
         },

@@ -405,12 +405,7 @@ class Helper
 
         $esiToken = $character->getEsiToken(EveLogin::NAME_DEFAULT);
         if ($esiToken === null) {
-            $eveLogin = RepositoryFactory::getInstance($om)->getEveLoginRepository()
-                ->findOneBy(['name' => EveLogin::NAME_DEFAULT]);
-            if ($eveLogin === null) {
-                $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
-                $om->persist($eveLogin);
-            }
+            $eveLogin = $this->addEveLogin(EveLogin::NAME_DEFAULT);
             $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setRefreshToken('rt');
             $character->addEsiToken($esiToken);
             $esiToken->setCharacter($character);
@@ -432,7 +427,13 @@ class Helper
     /**
      * @param mixed $hashAlgorithm
      */
-    public function addApp(string $name, string $secret, array $roles, $hashAlgorithm = PASSWORD_BCRYPT): App
+    public function addApp(
+        string $name,
+        string $secret,
+        array $roles,
+        ?string $eveLoginName = null,
+        $hashAlgorithm = PASSWORD_BCRYPT
+    ): App
     {
         $hash = $hashAlgorithm === 'md5' ? crypt($secret, '$1$12345678$') : password_hash($secret, $hashAlgorithm);
 
@@ -443,6 +444,11 @@ class Helper
 
         foreach ($this->addRoles($roles) as $role) {
             $app->addRole($role);
+        }
+
+        if ($eveLoginName) {
+            $eveLogin = $this->addEveLogin($eveLoginName);
+            $app->addEveLogin($eveLogin);
         }
 
         $this->getObjectManager()->flush();
@@ -480,5 +486,19 @@ class Helper
         $this->getEm()->flush();
         $corporation = (new Corporation())->setId(101);
         return (new Character())->setCorporation($corporation)->addEsiToken((new EsiToken())->setValidToken(false));
+    }
+
+    private function addEveLogin(string $name): EveLogin
+    {
+        $om = $this->getObjectManager();
+
+        $eveLogin = RepositoryFactory::getInstance($om)->getEveLoginRepository()
+            ->findOneBy(['name' => $name]);
+        if ($eveLogin === null) {
+            $eveLogin = (new EveLogin())->setName($name);
+            $om->persist($eveLogin);
+        }
+
+        return $eveLogin;
     }
 }

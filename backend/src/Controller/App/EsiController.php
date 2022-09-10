@@ -115,7 +115,7 @@ class EsiController extends BaseController
         }
 
         $this->app = $this->appAuth->getApp($request);
-        if (!$this->hasEveLogin($eveLogin)) {
+        if (!$this->hasEveLogin($eveLogin->getName())) {
             return $this->response->withStatus(404);
         }
 
@@ -521,13 +521,12 @@ class EsiController extends BaseController
         }
 
         // get/validate input
-        list($esiPath, $esiParams) = $this->getEsiPathAndQueryParams($request, $path);
+        $esiPath = $this->getEsiPathWithQueryParams($request, $path);
         $dataSource = $this->getQueryParam($request, self::PARAM_DATASOURCE, '');
         if (strpos($dataSource, ':') !== false) {
             $dataSourceTmp = explode(':', $dataSource);
             $characterId = $dataSourceTmp[0];
-            $eveLoginName = isset($dataSourceTmp[1]) && !empty($dataSourceTmp[1]) ?
-                $dataSourceTmp[1] : EveLogin::NAME_DEFAULT;
+            $eveLoginName = !empty($dataSourceTmp[1]) ? $dataSourceTmp[1] : EveLogin::NAME_DEFAULT;
         } else {
             $characterId = $dataSource;
             $eveLoginName = EveLogin::NAME_DEFAULT;
@@ -544,6 +543,11 @@ class EsiController extends BaseController
                 return $this->response->withStatus(400, $reason);
             }
             return $this->withJson($reason, 400);
+        }
+
+        // Check app permission for EVE login
+        if (!$this->hasEveLogin($eveLoginName)) {
+            return $this->response->withStatus(403);
         }
 
         // get character
@@ -567,7 +571,7 @@ class EsiController extends BaseController
         }
 
         $body = $method === 'POST' ? $request->getBody()->__toString() : null;
-        $esiResponse = $this->sendRequest($esiPath, $esiParams, $token, $eveLoginName, $method, $body);
+        $esiResponse = $this->sendRequest($esiPath, $token, $eveLoginName, $method, $body);
 
         return $this->buildResponse($esiResponse);
     }
@@ -638,24 +642,26 @@ class EsiController extends BaseController
         }
     }
 
-    private function getEsiPathAndQueryParams(ServerRequestInterface $request, ?string $path): array
+    private function getEsiPathWithQueryParams(ServerRequestInterface $request, ?string $path): string
     {
-        $esiParams = [];
-
         if (empty($path)) {
-            // for URLs like: /api/app/v1/esi?esi-path-query=%2Fv3%2Fcharacters%2F96061222%2Fassets%2F%3Fpage%3D1
-            $esiPath = $this->getQueryParam($request, 'esi-path-query');
+            // for URLs like: /api/app/v2/esi?esi-path-query=%2Fv3%2Fcharacters%2F96061222%2Fassets%2F%3Fpage%3D1
+            $esiPath = $this->getQueryParam($request, 'esi-path-query', '');
         } else {
-            // for URLs like /api/app/v1/esi/v3/characters/96061222/assets/?datasource=96061222&page=1
+            // for URLs like /api/app/v2/esi/v3/characters/96061222/assets/?datasource=96061222&page=1
             $esiPath = $path;
+            $esiParams = [];
             foreach ($request->getQueryParams() as $key => $value) {
                 if ($key !== self::PARAM_DATASOURCE) {
                     $esiParams[] = $key . '=' . $value;
                 }
             }
+            if (!empty($esiParams)) {
+                $esiPath .= '?' .  implode('&', $esiParams);
+            }
         }
 
-        return [$esiPath, $esiParams];
+        return $esiPath;
     }
 
     private function isPublicPath(string $esiPath): bool
@@ -676,7 +682,6 @@ class EsiController extends BaseController
 
     private function sendRequest(
         string $esiPath,
-        array $esiParams,
         string $token,
         string $cacheKey,
         string $method,
@@ -685,8 +690,7 @@ class EsiController extends BaseController
         $eveConfig = $this->config['eve'];
         $url = $eveConfig['esi_host'] . $esiPath.
             (strpos($esiPath, '?') ? '&' : '?') .
-            self::PARAM_DATASOURCE . '=' . $eveConfig['datasource'] .
-            (! empty($esiParams) ? '&' . implode('&', $esiParams) : '');
+            self::PARAM_DATASOURCE . '=' . $eveConfig['datasource'];
 
         $request = $this->httpClientFactory->createRequest(
             $method,
@@ -747,14 +751,14 @@ class EsiController extends BaseController
         return '';
     }
 
-    private function hasEveLogin(EveLogin $eveLogin): bool
+    private function hasEveLogin(string $eveLoginName): bool
     {
         if ($this->app === null) {
             return false;
         }
 
         foreach ($this->app->getEveLogins() as $login) {
-            if ($eveLogin->getId() === $login->getId()) {
+            if ($login->getName() === $eveLoginName) {
                 return true;
             }
         }
