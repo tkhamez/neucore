@@ -50,7 +50,9 @@ class EsiControllerTest extends WebTestCase
         $response1 = $this->runApp('GET', '/api/app/v1/esi/eve-login/name/characters');
         $this->assertSame(403, $response1->getStatusCode());
 
-        // "core.default" is not allowed
+        // App does not have "core.default".
+        $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
+        $this->helper->getEm()->persist($eveLogin);
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
         $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
         $response2 = $this->runApp('GET', '/api/app/v1/esi/eve-login/core.default/characters', null, $headers);
@@ -100,40 +102,40 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame([123456], $this->parseJsonBody($response));
     }
 
-    public function testEveLoginValidTokenData403()
+    public function testEveLoginTokenData403()
     {
-        $response0 = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/valid-token-data');
+        $response0 = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/token-data');
         $this->assertSame(403, $response0->getStatusCode());
 
         $app = $this->helper->addApp('A1', 's1', [Role::APP]);
         $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
-        $response1 = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/valid-token-data', null, $headers);
+        $response1 = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/token-data', null, $headers);
         $this->assertSame(403, $response1->getStatusCode());
     }
 
-    public function testEveLoginValidTokenData403_MissingLogin()
+    public function testEveLoginTokenData403_MissingLogin()
     {
         $eveLogin = (new EveLogin())->setName('test-1');
         $this->helper->getEm()->persist($eveLogin);
         $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI]);
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
-        $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/valid-token-data', null, $headers);
+        $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/token-data', null, $headers);
 
         $this->assertSame(403, $response->getStatusCode());
     }
 
-    public function testEveLoginValidTokenData404()
+    public function testEveLoginTokenData404()
     {
         $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI], 'test-1');
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
-        $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-2/valid-token-data', null, $headers);
+        $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-2/token-data', null, $headers);
 
         $this->assertSame(404, $response->getStatusCode());
     }
 
-    public function testEveLoginValidTokenData200()
+    public function testEveLoginTokenData200()
     {
         $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI], 'test-1');
         $eveLogin = $app->getEveLogins()[0];
@@ -145,7 +147,7 @@ class EsiControllerTest extends WebTestCase
         $this->helper->getEm()->clear();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
-        $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/valid-token-data', null, $headers);
+        $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/token-data', null, $headers);
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame([[

@@ -105,7 +105,7 @@ class EsiController extends BaseController
      * @OA\Get(
      *     path="/app/v1/esi/eve-login/{name}/characters",
      *     operationId="esiEveLoginCharactersV1",
-     *     summary="Returns character IDs of characters that have an ESI token of the specified EVE login.",
+     *     summary="Returns character IDs of characters that have an ESI token (including invalid) of an EVE login.",
      *     description="Needs role: app-esi.",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
@@ -113,7 +113,7 @@ class EsiController extends BaseController
      *         name="name",
      *         in="path",
      *         required=true,
-     *         description="EVE login name, 'core.default' is not allowed.",
+     *         description="EVE login name.",
      *         @OA\Schema(type="string", maxLength=20, pattern="^[-._a-zA-Z0-9]+$")
      *     ),
      *     @OA\Response(
@@ -149,8 +149,8 @@ class EsiController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/app/v1/esi/eve-login/{name}/valid-token-data",
-     *     operationId="esiEveLoginValidTokenDataV1",
+     *     path="/app/v1/esi/eve-login/{name}/token-data",
+     *     operationId="esiEveLoginTokenDataV1",
      *     summary="Returns data of valid tokens for an EVE login.",
      *     description="Needs role: app-esi.",
      *     tags={"Application - ESI"},
@@ -179,7 +179,7 @@ class EsiController extends BaseController
      *     )
      * )
      */
-    public function eveLoginValidTokenData(string $name, ServerRequestInterface $request): ResponseInterface
+    public function eveLoginTokenData(string $name, ServerRequestInterface $request): ResponseInterface
     {
         $response = $this->validateTokenRequest($name, $request);
         if ($response) {
@@ -818,10 +818,6 @@ class EsiController extends BaseController
 
     private function validateTokenRequest(string $name, ServerRequestInterface $request): ?ResponseInterface
     {
-        if ($name === EveLogin::NAME_DEFAULT) {
-            return $this->response->withStatus(403);
-        }
-
         $this->eveLogin = $this->repositoryFactory->getEveLoginRepository()->findOneBy(['name' => $name]);
         if ($this->eveLogin === null) {
             return $this->response->withStatus(404);
