@@ -1264,7 +1264,8 @@ class GroupControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
-            [['id' => $this->pid2, 'name' => 'Group', 'corporationName' => 'corp 2']],
+            [['id' => $this->pid2, 'name' => 'Group', 'characterId' => 7,
+                'corporationName' => 'corp 2', 'allianceName' => 'alli 1']],
             $this->parseJsonBody($response)
         );
     }

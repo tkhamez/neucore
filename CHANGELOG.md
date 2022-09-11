@@ -12,6 +12,7 @@ dd mm yyyy
 - App API: Added `/api/app/v1/esi/eve-login/{name}/token-data` endpoint.
 - Added button to show the player account to the group management search results if the user has permission to see it.
 - Added failed IDs from an ESI `/universe/names/` request to the log message.
+- Added alliance name in group member lists and link to EveWho for the character.
 
 ## 1.35.0
 

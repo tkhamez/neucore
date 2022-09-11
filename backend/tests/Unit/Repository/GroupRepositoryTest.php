@@ -1,4 +1,5 @@
 <?php
+/** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
 
@@ -6,6 +7,7 @@ namespace Tests\Unit\Repository;
 
 namespace Tests\Unit\Repository;
 
+use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
@@ -17,40 +19,19 @@ use Tests\Helper;
 
 class GroupRepositoryTest extends TestCase
 {
-    /**
-     * @var GroupRepository
-     */
-    private static $repository;
+    private static GroupRepository $repository;
 
-    /**
-     * @var int
-     */
-    private static $p1Id;
+    private static int $p1Id;
 
-    /**
-     * @var int
-     */
-    private static $p2Id;
+    private static int $p2Id;
 
-    /**
-     * @var int
-     */
-    private static $p3Id;
+    private static int $p3Id;
 
-    /**
-     * @var int
-     */
-    private static $p4Id;
+    private static int $p4Id;
 
-    /**
-     * @var int
-     */
-    private static $group1Id;
+    private static int $group1Id;
 
-    /**
-     * @var int
-     */
-    private static $group2Id;
+    private static int $group2Id;
 
     public static function setUpBeforeClass(): void
     {
@@ -65,12 +46,15 @@ class GroupRepositoryTest extends TestCase
         $player2 = (new Player())->setName('p2')->addGroup($group2);
         $player3 = (new Player())->setName('p3')->addGroup($group2);
         $player4 = (new Player())->setName('p4')->addGroup($group2);
-        $corporation = (new Corporation())->setId(100)->setName('corp');
+        $alliance = (new Alliance())->setId(10)->setName('Alliance 10');
+        $corporation1 = (new Corporation())->setId(100)->setName('Corp 100')->setAlliance($alliance);
+        $corporation2 = (new Corporation())->setId(200)->setName('Corp 200');
         $character1a = (new Character())->setId(10)->setName('c1a')->setMain(false)->setPlayer($player1)
-            ->setCorporation($corporation);
+            ->setCorporation($corporation1);
         $character1b = (new Character())->setId(15)->setName('c1b')->setMain(true)->setPlayer($player1)
-            ->setCorporation($corporation);
-        $character2 = (new Character())->setId(20)->setName('c2')->setMain(true)->setPlayer($player2);
+            ->setCorporation($corporation1);
+        $character2 = (new Character())->setId(20)->setName('c2')->setMain(true)->setPlayer($player2)
+            ->setCorporation($corporation2);
         $character3 = (new Character())->setId(30)->setName('c3')->setMain(false)->setPlayer($player3);
 
         $om->persist($group1);
@@ -79,7 +63,9 @@ class GroupRepositoryTest extends TestCase
         $om->persist($player2);
         $om->persist($player3);
         $om->persist($player4);
-        $om->persist($corporation);
+        $om->persist($alliance);
+        $om->persist($corporation1);
+        $om->persist($corporation2);
         $om->persist($character1a);
         $om->persist($character1b);
         $om->persist($character2);
@@ -94,15 +80,19 @@ class GroupRepositoryTest extends TestCase
         self::$p4Id = $player4->getId();
     }
 
-    public function testGetMembersWithCorporation()
+    public function testGetMembersWithCorporationAndAlliance()
     {
-        $this->assertSame([], self::$repository->getMembersWithCorporation(self::$group1Id));
+        $this->assertSame([], self::$repository->getMembersWithCorporationAndAlliance(self::$group1Id));
 
         $this->assertSame([
-            ['player_id' => self::$p1Id, 'player_name' => 'p1', 'corporation_id' => 100, 'corporation_name' => 'corp'],
-            ['player_id' => self::$p2Id, 'player_name' => 'p2', 'corporation_id' => null, 'corporation_name' => null],
-            ['player_id' => self::$p3Id, 'player_name' => 'p3', 'corporation_id' => null, 'corporation_name' => null],
-            ['player_id' => self::$p4Id, 'player_name' => 'p4', 'corporation_id' => null, 'corporation_name' => null],
-        ], self::$repository->getMembersWithCorporation(self::$group2Id));
+            ['player_id' => self::$p1Id, 'player_name' => 'p1', 'character_id' => 15, 'corporation_id' => 100,
+                'corporation_name' => 'Corp 100', 'alliance_id' => 10, 'alliance_name' => 'Alliance 10'],
+            ['player_id' => self::$p2Id, 'player_name' => 'p2', 'character_id' => 20, 'corporation_id' => 200,
+                'corporation_name' => 'Corp 200', 'alliance_id' => null, 'alliance_name' => null],
+            ['player_id' => self::$p3Id, 'player_name' => 'p3', 'character_id' => null, 'corporation_id' => null,
+                'corporation_name' => null, 'alliance_id' => null, 'alliance_name' => null],
+            ['player_id' => self::$p4Id, 'player_name' => 'p4', 'character_id' => null, 'corporation_id' => null,
+                'corporation_name' => null, 'alliance_id' => null, 'alliance_name' => null],
+        ], self::$repository->getMembersWithCorporationAndAlliance(self::$group2Id));
     }
 }

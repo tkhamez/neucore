@@ -24,8 +24,18 @@ use OpenApi\Annotations as OA;
  *         @OA\Items(ref="#/components/schemas/ServiceAccount")
  *     ),
  *     @OA\Property(
+ *         property="characterId",
+ *         description="ID of main character (API: not included by default)",
+ *         type="string",
+ *     ),
+ *     @OA\Property(
  *         property="corporationName",
  *         description="Corporation of main character (API: not included by default)",
+ *         type="string",
+ *     ),
+ *     @OA\Property(
+ *         property="allianceName",
+ *         description="Alliance of main character (API: not included by default)",
  *         type="string",
  *     )
  * )

@@ -20,19 +20,23 @@ use Neucore\Entity\Group;
  */
 class GroupRepository extends EntityRepository
 {
-    public function getMembersWithCorporation(int $groupId): array
+    public function getMembersWithCorporationAndAlliance(int $groupId): array
     {
         $query = $this
             ->createQueryBuilder('g')
             ->select([
                 'p.id AS player_id',
                 'p.name AS player_name',
-                'c.id AS corporation_id',
-                'c.name AS corporation_name',
+                'char.id AS character_id',
+                'corp.id AS corporation_id',
+                'corp.name AS corporation_name',
+                'alliance.id AS alliance_id',
+                'alliance.name AS alliance_name',
             ])
             ->innerJoin('g.players', 'p')
             ->leftJoin('p.characters', 'char', Join::WITH, 'char.main = :main')
-            ->leftJoin('char.corporation', 'c')
+            ->leftJoin('char.corporation', 'corp')
+            ->leftJoin('corp.alliance', 'alliance')
             ->where('g.id = :groupId')
             ->orderBy('p.name', 'ASC')
             ->setParameter('groupId', $groupId)
@@ -40,7 +44,9 @@ class GroupRepository extends EntityRepository
         ;
 
         return array_map(function ($item) {
+            $item['character_id'] = $item['character_id'] !== null ? (int) $item['character_id'] : null;
             $item['corporation_id'] = $item['corporation_id'] !== null ? (int) $item['corporation_id'] : null;
+            $item['alliance_id'] = $item['alliance_id'] !== null ? (int) $item['alliance_id'] : null;
             return $item;
         }, $query->getQuery()->getResult());
     }
