@@ -36,21 +36,28 @@
         <script type="text/javascript" src="<%= BASE_URL %>theme.js"></script>
     </head>
 
-    <body class="neucore" style="background-color: #333333; color: #dddddd">
+    <body class="neucore" style="background-color: #333333; color: #dddddd; font-family: sans-serif;">
 
         <noscript>
-            <h1 class="text-center">Neucore - Alliance Core Services</h1>
-            <h5 class="text-center">You need to enable JavaScript to run this application.</h5>
+            <h1>Neucore - Alliance Core Services</h1>
+            <p>
+                A web application for EVE Online communities to organise their members into groups,
+                monitor them and provide access to external services,
+                <a style="color: cyan" href="https://github.com/tkhamez/neucore" target="_blank"
+                   rel="noopener noreferrer">GitHub tkhamez/neucore</a>.
+            </p>
+            <br>
+            <small style="font-weight: bold">You need to enable <em>JavaScript</em> to run this application.</small>
         </noscript>
 
-        <div id="unsupportedBrowser" class="text-center" style="display: none">
-            <h1 class="text-center">Neucore - Alliance Core Services</h1>
-            <br>
-            <h5>
+        <div id="unsupportedBrowser" style="display: none; padding: 10px">
+            <h3 style="font-weight: bold">Neucore - Alliance Core Services</h3>
+            <small style="font-weight: bold">
                 You are using an <span style="color: orangered"><em>outdated</em> browser</span>. Please
-                <a href="https://browsehappy.com/" target="_blank" rel="noopener noreferrer"
-                   style="color: #3291CB">upgrade your browser</a> to improve your experience and security.
-            </h5>
+                <a style="color: cyan" href="https://browsehappy.com/" target="_blank"
+                   rel="noopener noreferrer">upgrade your browser</a> to improve your experience and security.
+            </small>
+            <br>
         </div>
 
         <!--suppress JSUnusedGlobalSymbols -->
