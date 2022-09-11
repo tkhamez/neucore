@@ -21,6 +21,7 @@ use Neucore\Service\ObjectManager;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;
 use PHPUnit\Framework\TestCase;
+use Swagger\Client\Eve\ApiException;
 use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 use Tests\Helper;
 use Tests\Client;
@@ -523,6 +524,61 @@ class EsiDataTest extends TestCase
         $this->assertSame('Another Name', $names[1]->getName());
         $this->assertSame(PostUniverseNames200Ok::CATEGORY_CHARACTER, $names[0]->getCategory());
         $this->assertSame(PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE, $names[1]->getCategory());
+    }
+
+    public function testFetchUniverseNames_Exceptions()
+    {
+        $this->client->setMiddleware(function () {
+            throw new \Exception('message');
+        });
+        $this->client->setResponse(new Response());
+
+        $names = $this->esiData->fetchUniverseNames([1, 2]);
+
+        $this->assertSame(0, count($names));
+        $this->assertSame(['message'], $this->log->getMessages());
+    }
+
+    public function testFetchUniverseNames_InvalidIds()
+    {
+        $this->client->setMiddleware(function () {
+            static $requestNumber = 0;
+            $requestNumber ++;
+            if ($requestNumber < 3) {
+                $msg = '... {\"error\":\"Ensure all IDs are valid before resolving.\"}';
+                throw new ApiException($msg, 404, [], $msg);
+            }
+            return function () {};
+        });
+        $this->client->setResponse(
+            new Response(404),
+            new Response(404),
+            new Response(200, [], '[{
+                "id": 11,
+                "name": "The Name",
+                "category": "character"
+            }]')
+        );
+
+        $names = $this->esiData->fetchUniverseNames([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+
+        $this->assertSame(1, count($names));
+        $this->assertSame(11, $names[0]->getId());
+        $this->assertSame('The Name', $names[0]->getName());
+        $this->assertSame(PostUniverseNames200Ok::CATEGORY_CHARACTER, $names[0]->getCategory());
+
+        $records = $this->log->getHandler()->getRecords();
+        $this->assertSame(2, count($records));
+        $this->assertSame(
+            'fetchUniverseNames: Invalid IDs in request, trying again with fewer IDs.',
+            $records[0]['message']
+        );
+        $this->assertNull($records[0]['context']['IDs'] ?? null);
+        $this->assertSame(
+            '... {\"error\":\"Ensure all IDs are valid before resolving.\"}',
+            $records[1]['message']
+        );
+        $this->assertSame([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], $records[1]['context']['IDs']);
     }
 
     public function testFetchStructure_NoToken()

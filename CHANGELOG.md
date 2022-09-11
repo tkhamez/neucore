@@ -11,6 +11,7 @@ dd mm yyyy
 - App API: Implemented EVE login permission check for apps (ESI endpoint) ([#32][i32]).
 - App API: Added `/api/app/v1/esi/eve-login/{name}/token-data` endpoint.
 - Added button to show the player account to the group management search results if the user has permission to see it.
+- Added failed IDs from an ESI `/universe/names/` request to the log message.
 
 ## 1.35.0
 

@@ -355,7 +355,7 @@ class EsiData
     public function fetchUniverseNames(array $ids): array
     {
         $names = [];
-        while (! empty($ids)) {
+        while (!empty($ids)) {
             $checkIds = array_splice($ids, 0, 1000);
             try {
                 // it's possible that postUniverseNames() returns null
@@ -363,6 +363,25 @@ class EsiData
                 if (is_array($result)) {
                     $names = array_merge($names, $result);
                 }
+            } catch (ApiException $e) {
+                $context = [Context::EXCEPTION => $e];
+                $body = $e->getResponseBody();
+                if (
+                    $e->getCode() === 404 &&
+                    is_string($body) &&
+                    strpos($body, 'Ensure all IDs are valid before resolving') !== false
+                ) {
+                    if (count($checkIds) > 10) {
+                        // Try again with fewer IDs
+                        $this->log->warning('fetchUniverseNames: Invalid IDs in request, trying again with fewer IDs.');
+                        foreach (array_chunk($checkIds, 10) as $chunks) {
+                            $names = array_merge($names, $this->fetchUniverseNames($chunks));
+                        }
+                        return $names;
+                    }
+                    $context['IDs'] = $checkIds;
+                }
+                $this->log->error($e->getMessage(), $context);
             } catch (\Exception $e) {
                 $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             }
