@@ -1,17 +1,18 @@
 # Changelog
 
-## next
+## 1.36.0
 
-dd mm yyyy
+11 Sep 2022
 
 - Change: Apps with the `app-esi` role no longer automatically have access to the default ESI token. Instead, 
-  the corresponding EVE login must now be added to the app (this is done automatically for all existing app
-  with a database migration).
-- Change: Added `/api/app/v1/esi/eve-login/{name}/characters` now allows the "core.default" login.
-- App API: Implemented EVE login permission check for apps (ESI endpoint) ([#32][i32]).
+  the corresponding EVE login must now be added to the app (this is done automatically for all existing apps with
+  a database migration).
+- App API: Implemented EVE login permission check for apps (ESI endpoints) ([#32][i32]).
+- Change: The endpoint `/api/app/v1/esi/eve-login/{name}/characters` now allows the "core.default" login.
 - App API: Added `/api/app/v1/esi/eve-login/{name}/token-data` endpoint.
 - Added button to show the player account to the group management search results if the user has permission to see it.
-- Added failed IDs from an ESI `/universe/names/` request to the log message.
+- Should a `/universe/names/` ESI request fail because of invalid IDs it is now tried again with fewer IDs. Any
+  request that still fails after that will add the failed IDs to the log.
 - Added alliance name in group member lists and link to EveWho for the character.
 
 ## 1.35.0
