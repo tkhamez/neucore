@@ -64,8 +64,8 @@ Group for permissions
 - Go to Management -> Groups, select the new group and add yourself as a member.
 
 Member Tracking
-- Go to Administration -> Settings -> Directors and use the login link to add a character with director roles 
-  for your corporation.
+- Click the "Add additional ESI tokens" button on the home page, and then use the "core.tracking" login button
+  to log in a character with director role for your corporation.
 - Open a console and run `backend/bin/console update-member-tracking`.
 - Go to Administration -> Tracking, select your corporation and add a group you are a member of.
 - Go to Member Data -> Member Tracking and select your corporation.
