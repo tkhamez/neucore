@@ -79,7 +79,7 @@
 </div>
 
 <div class="container-fluid">
-    <div v-cloak v-if="!authChar" class="mt-3">
+    <div v-cloak v-if="authLoaded && !authChar" class="mt-3">
         <title-logo :settings="settings"></title-logo>
         <p>Click the button below to login through <em>EVE Online SSO</em>.</p>
         <a :href="`${loginHost}/login/${loginNames.default}${redirectQuery}`">
@@ -96,6 +96,7 @@
             <span v-html="markdownLoginText"></span>
         </span>
     </div>
+
     <div v-cloak v-if="authChar" class="card mt-3 mb-3">
         <div class="card-body">
             <title-logo :settings="settings"></title-logo>
@@ -235,6 +236,7 @@ export default {
 
     props: {
         route: Array,
+        authLoaded: Boolean,
         authChar: Object,
         player: Object,
         settings: Object,

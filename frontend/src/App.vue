@@ -7,7 +7,8 @@
             <button type="button" class="btn-close" v-on:click="messageTxt = ''" aria-label="Close"></button>
         </div>
 
-        <nav-bar v-if="settingsLoaded" v-cloak :auth-char="authChar" :route="route" :settings="settings"></nav-bar>
+        <nav-bar v-if="settingsLoaded" v-cloak :auth-char="authChar" :logout="logout"
+                 :route="route" :settings="settings"></nav-bar>
 
         <charactersModal ref="charactersModal"></charactersModal>
 
@@ -15,7 +16,8 @@
                    :route="route"
                    :settings="settings"
                    :player="player"
-                   :auth-char="authChar">
+                   :auth-char="authChar"
+                   :authLoaded="authLoaded">
         </component>
 
         <footer class="footer border-top text-muted small">
@@ -141,6 +143,8 @@ export default {
              */
             page: null,
 
+            authLoaded: false,
+
             /**
              * The authenticated character
              */
@@ -249,13 +253,7 @@ export default {
 
             // handle routes that do not have a page
             const vm = this;
-            if (this.route[0] === 'logout') {
-                this.logout();
-                window.location.hash = '';
-            } else if (
-                ['login-unknown', 'login', 'login-alt', 'login-custom']
-                    .indexOf(this.route[0]) !== -1
-            ) {
+            if (['login-unknown', 'login', 'login-alt', 'login-custom'].indexOf(this.route[0]) !== -1) {
                 authResult(['login-alt', 'login-custom'].indexOf(this.route[0]) !== -1 ? 'success' : '');
                 // Set hash value to redirect value from login or remove it, so that it does not appear in bookmarks,
                 // for example.
@@ -318,6 +316,7 @@ export default {
                 } else if (! ping) { // don't update because it triggers watch events
                     vm.authChar = data;
                 }
+                vm.authLoaded = true;
             });
         },
 
@@ -334,15 +333,10 @@ export default {
 
         logout: function() {
             const vm = this;
-            new AuthApi().logout(function(error, data, response) {
-                if (error) { // 403 usually
-                    if (response.statusCode === 403) {
-                        vm.h.message('Unauthorized.', 'error');
-                    }
-                    return;
-                }
+            new AuthApi().logout(() => {
                 vm.authChar = null;
                 vm.$root.player = null;
+                window.location.hash = '';
             });
         },
     },

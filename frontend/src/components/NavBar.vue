@@ -126,9 +126,9 @@
                 </div>
             </div>
 
-            <a v-if="authChar" href="#logout" class="btn btn-outline-danger" title="Sign out">
+            <button v-if="authChar" @click="logout()" class="btn btn-outline-danger" title="Sign out">
                 <span role="img" class="fas fa-sign-out-alt"></span>
-            </a>
+            </button>
         </div>
     </div>
 </nav>
@@ -145,6 +145,7 @@ export default {
         authChar: Object,
         route: Array,
         settings: Object,
+        logout: Function,
     },
 
     data: function() {
