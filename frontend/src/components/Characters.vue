@@ -206,13 +206,13 @@ export default {
 
         fetchCharacters(playerId) {
             const vm = this;
-            vm.selectedPlayer = null;
-            vm.characterMovements = [];
             vm.unauthorized = null;
             new PlayerApi().characters(playerId, (error, data, response) => {
                 if (error) {
                     if (response.statusCode === 403) {
                         vm.unauthorized = true;
+                        vm.selectedPlayer = null;
+                        vm.characterMovements = [];
                     }
                     return;
                 }

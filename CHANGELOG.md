@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Fix: Link in the modal window of the player to another player closed the modal window.
+
 ## 1.36.0
 
 11 Sep 2022
