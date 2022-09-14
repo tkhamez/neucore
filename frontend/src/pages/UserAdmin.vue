@@ -21,10 +21,8 @@
                         Character Owner Changed<br>
                         <span class="text-muted small">
                             Choose this if the character was sold to another player, check the
-                            <a href="https://forums.eveonline.com/c/marketplace/character-bazaar"
-                               target="_blank" rel="noopener noreferrer">Character Bazaar
-                                <span role="img" style="color: grey;"
-                                      class="small fa-solid fa-arrow-up-right-from-square"></span></a>.
+                            <a class="external" href="https://forums.eveonline.com/c/marketplace/character-bazaar"
+                               target="_blank" rel="noopener noreferrer">Character Bazaar</a>.
                             Creates an "removed character" entry.
                         </span>
                     </label>
@@ -99,10 +97,8 @@
                 <div class="card-body">
                     <p v-cloak>
                         See
-                        <a :href="`${settings.repository}/blob/master/doc/API.md`"
-                           target="_blank" rel="noopener noreferrer">doc/API.md
-                            <span role="img" style="color: grey;"
-                                  class="small fa-solid fa-arrow-up-right-from-square"></span></a>
+                        <a class="external" :href="`${settings.repository}/blob/master/doc/API.md`"
+                           target="_blank" rel="noopener noreferrer">doc/API.md</a>
                         for permissions for each role.
                     </p>
                     <select class="form-select" id="roleList"
@@ -225,12 +221,9 @@
                             <tbody>
                                 <tr v-for="character in playerEdit.characters">
                                     <td>
-                                        <a :href="'https://evewho.com/character/' + character.id"
+                                        <a class="external" :href="'https://evewho.com/character/' + character.id"
                                            title="Eve Who" target="_blank" rel="noopener noreferrer">
-                                            {{ character.name }}
-                                            <span role="img" style="color: grey;"
-                                                  class="small fa-solid fa-arrow-up-right-from-square"></span>
-                                        </a>&nbsp;
+                                            {{ character.name }}</a>&nbsp;
                                         <character-name-changes :character="character"></character-name-changes>
                                     </td>
                                     <td>
@@ -289,12 +282,9 @@
                                 <tbody>
                                     <tr v-for="movedCharacter in characterMovements">
                                         <td>
-                                            <a :href="`https://evewho.com/character/${movedCharacter.characterId}`"
-                                               title="Eve Who" target="_blank" rel="noopener noreferrer">
-                                                {{ movedCharacter.characterName }}
-                                                <span role="img" style="color: grey;"
-                                                      class="small fa-solid fa-arrow-up-right-from-square"></span>
-                                            </a>
+                                            <a class="external" target="_blank" rel="noopener noreferrer"
+                                               :href="`https://evewho.com/character/${movedCharacter.characterId}`"
+                                               title="Eve Who">{{ movedCharacter.characterName }}</a>
                                         </td>
                                         <td>
                                             <span v-if="movedCharacter.removedDate">

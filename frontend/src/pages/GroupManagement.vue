@@ -99,12 +99,8 @@
                             <tr v-for="member in groupMembers">
                                 <td>{{ member.id }}</td>
                                 <td>
-                                    <a :href="`https://evewho.com/character/${member.characterId}`"
-                                       title="Eve Who" target="_blank" rel="noopener noreferrer">
-                                        {{ member.name }}
-                                        <span role="img" style="color: grey;"
-                                              class="small fa-solid fa-arrow-up-right-from-square"></span>
-                                    </a>
+                                    <a class="external" :href="`https://evewho.com/character/${member.characterId}`"
+                                       title="Eve Who" target="_blank" rel="noopener noreferrer">{{ member.name }}</a>
                                 </td>
                                 <td>{{ member.corporationName }}</td>
                                 <td>{{ member.allianceName }}</td>

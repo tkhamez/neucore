@@ -78,20 +78,12 @@
                         <tr v-for="entity in getListContentFor(listName, index)">
                             <td>{{ entity.ticker }}</td>
                             <td>
-                                <a v-if="listName === 'Alliance'"
+                                <a v-if="listName === 'Alliance'" class="external"
                                    :href="`https://evewho.com/alliance/${entity.id}`"
-                                   target="_blank" rel="noopener noreferrer">
-                                    {{ entity.name }}
-                                    <span role="img" style="color: grey;"
-                                          class="small fa-solid fa-arrow-up-right-from-square"></span>
-                                </a>
-                                <a v-if="listName === 'Corporation'"
+                                   target="_blank" rel="noopener noreferrer">{{ entity.name }}</a>
+                                <a v-if="listName === 'Corporation'" class="external"
                                    :href="`https://evewho.com/corporation/${entity.id}`"
-                                   target="_blank" rel="noopener noreferrer">
-                                    {{ entity.name }}
-                                    <span role="img" style="color: grey;"
-                                          class="small fa-solid fa-arrow-up-right-from-square"></span>
-                                </a>
+                                   target="_blank" rel="noopener noreferrer">{{ entity.name }}</a>
                             </td>
                             <td v-if="listName === 'Corporation'">
                                 <span v-if="entity.alliance">

@@ -30,7 +30,8 @@
             </div>
             <div class="container-fluid small">
                 "EVE", "EVE Online", "CCP" and all related logos and images are trademarks or registered trademarks of
-                <a href="https://www.ccpgames.com/" target="_blank" rel="noopener noreferrer">CCP hf</a>.
+                <a class="external" href="https://www.ccpgames.com/" target="_blank"
+                   rel="noopener noreferrer">CCP hf</a>.
             </div>
         </footer>
     </div>
@@ -400,14 +401,5 @@ function getCsrfHeader(vm) {
     .footer .icon-link {
         float: right;
         margin-left: 4px;
-    }
-</style>
-
-<!--suppress CssUnusedSymbol -->
-<style>
-    .character-name-changes .tooltip-inner,
-    .character-token .tooltip-inner {
-        max-width: initial;
-        text-align: left;
     }
 </style>

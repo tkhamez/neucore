@@ -111,12 +111,9 @@ Modal window with all characters of one player.
                             <h6>Moved Characters</h6>
                             <ul class="list-group">
                                 <li v-for="movedChar in characterMovements" class="list-group-item small">
-                                    <a :href="`https://evewho.com/character/${movedChar.characterId}`"
+                                    <a class="external" :href="`https://evewho.com/character/${movedChar.characterId}`"
                                        title="Eve Who" target="_blank" rel="noopener noreferrer">
-                                        {{ movedChar.characterName }}
-                                        <span role="img" style="color: grey;"
-                                              class="small fa-solid fa-arrow-up-right-from-square"></span>
-                                    </a><br>
+                                        {{ movedChar.characterName }}</a><br>
 
                                     <span v-if="movedChar.removedDate">
                                         {{ Util.formatDate(movedChar.removedDate) }}<br>

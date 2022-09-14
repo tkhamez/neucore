@@ -36,11 +36,9 @@
                             Here you can generate a new application secret.
                             This will <em>invalidate</em> the existing secret.<br>
                             See also
-                            <a v-cloak target="_blank" rel="noopener noreferrer"
+                            <a v-cloak class="external" target="_blank" rel="noopener noreferrer"
                                :href="`${settings.repository}/blob/master/doc/Documentation.md#authentication`">
-                                Authentication for applications
-                                <span role="img" style="color: grey;"
-                                      class="small fa-solid fa-arrow-up-right-from-square"></span></a>.
+                                Authentication for applications</a>.
                         </p>
                         <p>
                             <button type="button" class="btn btn-warning" v-on:click="generateSecret()">

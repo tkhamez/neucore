@@ -127,14 +127,7 @@
                     <tbody>
                         <tr v-for="member in members">
                             <td>{{ member.id }}</td>
-                            <td>
-                                <a :href="`https://evewho.com/character/${member.characterId}`"
-                                   title="Eve Who" target="_blank" rel="noopener noreferrer">
-                                    {{ member.name }}
-                                    <span role="img" style="color: grey;"
-                                          class="small fa-solid fa-arrow-up-right-from-square"></span>
-                                </a>
-                            </td>
+                            <td>{{ member.name }}</td>
                             <td>{{ member.corporationName }}</td>
                             <td>{{ member.allianceName }}</td>
                             <td>

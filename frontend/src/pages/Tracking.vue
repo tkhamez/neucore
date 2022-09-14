@@ -331,12 +331,8 @@ function configureDataTable(vm) {
             render: {
                 _: function (data, type, row) {
                     return `
-                        <a href="https://evewho.com/character/${row.id}"
-                              target="_blank" rel="noopener noreferrer" title="Eve Who">
-                            ${(row.name ? row.name : row.id)}
-                            <span role="img" style="color: grey;"
-                                  class="small fa-solid fa-arrow-up-right-from-square"></span>
-                        </a>`;
+                        <a class="external" href="https://evewho.com/character/${row.id}" target="_blank"
+                           rel="noopener noreferrer" title="Eve Who">${(row.name ? row.name : row.id)}</a>`;
                 },
                 sort: function (data, type, row) {
                     return row.name;

@@ -64,10 +64,8 @@ Select and table to add and remove objects from other objects.
             </div>
             <p v-cloak v-if="type === 'App' && contentType === 'roles'">
                 See
-                <a :href="`${settings.repository}/blob/master/doc/API.md`"
-                   target="_blank" rel="noopener noreferrer">doc/API.md
-                    <span role="img" style="color: grey;"
-                          class="small fa-solid fa-arrow-up-right-from-square"></span></a>
+                <a class="external" :href="`${settings.repository}/blob/master/doc/API.md`"
+                   target="_blank" rel="noopener noreferrer">doc/API.md</a>
                 for permissions for each role.
             </p>
             <p v-cloak v-if="type === 'App' && contentType === 'eveLogins'">
@@ -75,14 +73,10 @@ Select and table to add and remove objects from other objects.
             </p>
             <p v-cloak v-if="type === 'Corporation' && contentType === 'groups'">
                 Members of these groups can view the tracking data of the selected corporation.<br>
-                Director(s):
+                Director(s) with valid ESI token:
                 <span v-for="director in directors">
-                    <a :href="`https://evewho.com/character/${director.id}`" title="Eve Who" target="_blank"
-                       rel="noopener noreferrer">
-                        {{ director.name }}
-                        <span role="img" style="color: grey;"
-                              class="small fa-solid fa-arrow-up-right-from-square"></span>
-                    </a>&nbsp;
+                    <a class="external" :href="`https://evewho.com/character/${director.id}`" title="Eve Who"
+                       target="_blank" rel="noopener noreferrer">{{ director.name }}</a>&nbsp;
                 </span>
             </p>
             <p v-cloak v-if="type === 'Watchlist' && contentType === 'groups'">
@@ -152,18 +146,10 @@ Select and table to add and remove objects from other objects.
                         </td>
                         <td v-if="contentType === 'corporations' || contentType === 'alliances'">{{ row.ticker }}</td>
                         <td>
-                            <a v-if="contentType === 'corporations'" :href="`https://evewho.com/corporation/${row.id}`"
-                               target="_blank" rel="noopener noreferrer">
-                                {{ row.name }}
-                                <span role="img" style="color: grey;"
-                                      class="small fa-solid fa-arrow-up-right-from-square"></span>
-                            </a>
-                            <a v-else-if="contentType === 'alliances'" :href="`https://evewho.com/alliance/${row.id}`"
-                               target="_blank" rel="noopener noreferrer">
-                                {{ row.name }}
-                                <span role="img" style="color: grey;"
-                                      class="small fa-solid fa-arrow-up-right-from-square"></span>
-                            </a>
+                            <a v-if="contentType === 'corporations'" class="external" rel="noopener noreferrer"
+                               target="_blank" :href="`https://evewho.com/corporation/${row.id}`">{{ row.name }}</a>
+                            <a v-else-if="contentType === 'alliances'" class="external" rel="noopener noreferrer"
+                               target="_blank" :href="`https://evewho.com/alliance/${row.id}`">{{ row.name }}</a>
                             <a v-else-if="contentType === 'managers' && h.hasRole('user-admin')"
                                :href="`#UserAdmin/${row.id}`" title="User Administration">{{ row.name }}</a>
                             <span v-else>{{ row.name }}</span>
@@ -174,13 +160,9 @@ Select and table to add and remove objects from other objects.
                             </button>
                         </td>
                         <td v-if="contentType === 'corporations'">
-                            <a v-if="row.alliance" :href="`https://evewho.com/alliance/${row.alliance.id}`"
-                               target="_blank" rel="noopener noreferrer">
-                                [{{ row.alliance.ticker }}]
-                                {{ row.alliance.name }}
-                                <span role="img" style="color: grey;"
-                                      class="small fa-solid fa-arrow-up-right-from-square"></span>
-                            </a>
+                            <a v-if="row.alliance" class="external" target="_blank" rel="noopener noreferrer"
+                               :href="`https://evewho.com/alliance/${row.alliance.id}`">
+                                [{{ row.alliance.ticker }}] {{ row.alliance.name }}</a>
                         </td>
                         <td v-if="contentType === 'corporations' && type === 'WatchlistAllowlist'">
                             {{ row.autoAllowlist }}

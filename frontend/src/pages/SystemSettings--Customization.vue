@@ -59,23 +59,24 @@
                   v-on:input="$emit('changeSettingDelayed', 'customization_home_markdown', $event.target.value)"></textarea>
         <span class="form-text">
             Optional text area on the home page. Supports
-            <a href="https://markdown-it.github.io/" target="_blank" rel="noopener noreferrer">Markdown</a>,
-            with "typographer" enabled and these plugins:
-            <a href="https://github.com/arve0/markdown-it-attrs"
-               target="_blank" rel="noopener noreferrer">attrs</a>
+            <a class="external" href="https://markdown-it.github.io/" target="_blank"
+               rel="noopener noreferrer">Markdown</a>, with "typographer" enabled and these plugins:
+            <a class="external" href="https://github.com/arve0/markdown-it-attrs" target="_blank"
+               rel="noopener noreferrer">attrs</a>
             (use, for example,  with Bootstrap classes "text-primary", "bg-warning"
-            <a href="https://bootswatch.com/darkly/" target="_blank" rel="noopener noreferrer">etc.</a>),
-            <a href="https://github.com/markdown-it/markdown-it-emoji/blob/master/lib/data/light.json"
+            <a class="external" href="https://bootswatch.com/darkly/" target="_blank"
+               rel="noopener noreferrer">etc.</a>),
+            <a class="external" href="https://github.com/markdown-it/markdown-it-emoji/blob/master/lib/data/light.json"
                target="_blank" rel="noopener noreferrer">emoji</a> light,
-            <a href="https://github.com/markdown-it/markdown-it-mark"
+            <a class="external" href="https://github.com/markdown-it/markdown-it-mark"
                target="_blank" rel="noopener noreferrer">mark</a>,
-            <a href="https://github.com/markdown-it/markdown-it-sub"
+            <a class="external" href="https://github.com/markdown-it/markdown-it-sub"
                target="_blank" rel="noopener noreferrer">sub</a>,
-            <a href="https://github.com/markdown-it/markdown-it-sup"
+            <a class="external" href="https://github.com/markdown-it/markdown-it-sup"
                target="_blank" rel="noopener noreferrer">sup</a>,
-            <a href="https://github.com/markdown-it/markdown-it-ins"
+            <a class="external" href="https://github.com/markdown-it/markdown-it-ins"
                target="_blank" rel="noopener noreferrer">ins</a>,
-            <a href="https://github.com/markdown-it/markdown-it-abbr"
+            <a class="external" href="https://github.com/markdown-it/markdown-it-abbr"
                target="_blank" rel="noopener noreferrer">abbr</a>.
         </span><br>
         <hr>

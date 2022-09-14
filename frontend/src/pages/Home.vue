@@ -88,7 +88,7 @@
         <p class="small">
             <br>
             Learn more about
-            <a href="https://support.eveonline.com/hc/en-us/articles/205381192"
+            <a class="external" href="https://support.eveonline.com/hc/en-us/articles/205381192"
                target="_blank" rel="noopener noreferrer">EVE Online Single Sign On</a>.
         </p>
         <span v-if="markdownLoginText">
