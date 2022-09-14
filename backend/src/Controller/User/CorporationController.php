@@ -25,7 +25,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * )
  * @OA\Schema(
  *     schema="TrackingDirector",
- *     required={"id", "name"},
+ *     required={"id", "name", "playerId"},
  *     @OA\Property(
  *         property="id",
  *         type="integer",
@@ -34,6 +34,10 @@ use Psr\Http\Message\ServerRequestInterface;
  *     @OA\Property(
  *         property="name",
  *         type="string"
+ *     ),
+ *     @OA\Property(
+ *         property="playerId",
+ *         type="integer"
  *     )
  * )
  */
@@ -319,10 +323,13 @@ class CorporationController extends BaseController
 
         $directors = [];
         foreach ($repository->findByLoginAndCorporation(EveLogin::NAME_TRACKING, (int)$id) as $esiToken) {
-            $directors[] = [
-                'id' => $esiToken->getCharacter() ? $esiToken->getCharacter()->getId() : null,
-                'name' => $esiToken->getCharacter() ? $esiToken->getCharacter()->getName() : null,
-            ];
+            if ($esiToken->getValidToken() && $esiToken->getCharacter()) {
+                $directors[] = [
+                    'id' => $esiToken->getCharacter()->getId(),
+                    'name' => $esiToken->getCharacter()->getName(),
+                    'playerId' => $esiToken->getCharacter()->getPlayer()->getId(),
+                ];
+            }
         }
 
         return $this->withJson($directors);

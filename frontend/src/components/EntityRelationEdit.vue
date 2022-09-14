@@ -75,8 +75,8 @@ Select and table to add and remove objects from other objects.
                 Members of these groups can view the tracking data of the selected corporation.<br>
                 Director(s) with valid ESI token:
                 <span v-for="director in directors">
-                    <a class="external" :href="`https://evewho.com/character/${director.id}`" title="Eve Who"
-                       target="_blank" rel="noopener noreferrer">{{ director.name }}</a>&nbsp;
+                    <a href="#" v-on:click.prevent="h.showCharacters(director.playerId)">
+                        {{ director.name }}</a>&nbsp;
                 </span>
             </p>
             <p v-cloak v-if="type === 'Watchlist' && contentType === 'groups'">

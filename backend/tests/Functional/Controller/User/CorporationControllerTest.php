@@ -443,17 +443,22 @@ class CorporationControllerTest extends WebTestCase
         $login2 = (new EveLogin())->setName('Other');
         $corp = (new Corporation())->setId(123)->setName('Corp 123');
         $player = (new Player())->setName('Player');
-        $char = (new Character())->setId(1020301)->setName('Dir 1')->setPlayer($player)->setCorporation($corp);
-        $token1 = (new EsiToken())->setEveLogin($login1)->setCharacter($char)
+        $char1a = (new Character())->setId(1020301)->setName('Dir 1')->setPlayer($player)->setCorporation($corp);
+        $char1b = (new Character())->setId(1020302)->setName('Dir 2')->setPlayer($player)->setCorporation($corp);
+        $token1a = (new EsiToken())->setEveLogin($login1)->setCharacter($char1a)->setValidToken(true)
             ->setRefreshToken('rt')->setAccessToken('at')->setExpires(time());
-        $token2 = (new EsiToken())->setEveLogin($login2)->setCharacter($char)
+        $token1b = (new EsiToken())->setEveLogin($login1)->setCharacter($char1b)
+            ->setRefreshToken('rt')->setAccessToken('at')->setExpires(time());
+        $token2 = (new EsiToken())->setEveLogin($login2)->setCharacter($char1a)
             ->setRefreshToken('rt')->setAccessToken('at')->setExpires(time());
         $this->em->persist($login1);
         $this->em->persist($login2);
         $this->em->persist($corp);
         $this->em->persist($player);
-        $this->em->persist($char);
-        $this->em->persist($token1);
+        $this->em->persist($char1a);
+        $this->em->persist($char1b);
+        $this->em->persist($token1a);
+        $this->em->persist($token1b);
         $this->em->persist($token2);
         $this->h->addCharacterMain('Tracking Admin', 8, [Role::USER, Role::TRACKING_ADMIN]);
         $this->em->clear();
@@ -464,7 +469,7 @@ class CorporationControllerTest extends WebTestCase
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
-            [['id' => 1020301, 'name' => 'Dir 1']],
+            [['id' => 1020301, 'name' => 'Dir 1', 'playerId' => $player->getId()]],
             $this->parseJsonBody($response)
         );
     }
