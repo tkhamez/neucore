@@ -1,11 +1,11 @@
 # Changelog
 
-## next
+## 1.36.1
 
-dd mm yyyy
+15 Sep 2022
 
-- Added CSS class for the icon for external links that can also be used in Markdown text.
 - Fix: Link in the modal window of the player to another player closed the modal window.
+- Added CSS class for the icon for external links that can also be used in Markdown text.
 - Small UI changes.
 
 ## 1.36.0
