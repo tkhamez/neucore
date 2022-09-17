@@ -18,7 +18,6 @@ with the [PHP-DI container](http://php-di.org/).
   * [ESI routes](#esi-routes)
 - [Console Commands](#console-commands)
   * [Console application](#console-application)
-    + [Making yourself an admin](#making-yourself-an-admin)
   * [Commands via Composer](#commands-via-composer)
   * [Doctrine](#doctrine)
 
@@ -103,17 +102,6 @@ To debug, start like this:
 ```sh
 php -dxdebug.start_with_request=yes bin/console
 ```
-
-#### Making yourself an admin
-
-Login with your EVE character to create an account. Then execute this command,
-replace the ID 1 with your Neucore player ID.
-
-```
-bin/console make-admin 1
-```
-
-This will add all available roles to your player account.
 
 ### Commands via Composer
 
