@@ -10,7 +10,7 @@
                     </a>
                 </p>
                 <p class="small text-muted">
-                    These login URLs do not require ESI scopes. They disable groups for the player account,
+                    This login URL does not require ESI scopes. It disables groups for the player account
                     if the "Deactivate Groups" feature is enabled, unless their account status is "managed".
                 </p>
             </div>
