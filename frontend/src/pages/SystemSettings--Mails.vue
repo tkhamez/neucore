@@ -89,7 +89,7 @@
             </multiselect>
             <span class="form-text">
                 Only corporations with member tracking enabled, see
-                <a href="#EVELogins">EVE Logins</a>, {{ loginNames.tracking }} login.
+                <a :href="'#EVELogins'">EVE Logins</a>, {{ loginNames.tracking }} login.
             </span>
         </div>
         <div class="mt-3">
@@ -141,7 +141,7 @@ export default {
     },
 
     mounted () {
-        this.loginHost = this.$root.envVars.backendHost;
+        this.loginHost = Data.envVars.backendHost;
 
         this.$parent.loadLists();
         getCorporations(this);

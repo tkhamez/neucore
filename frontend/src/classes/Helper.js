@@ -1,3 +1,4 @@
+import Data from "./Data";
 import portrait from "../assets/portrait_32.jpg";
 
 /**
@@ -81,6 +82,6 @@ export default class Helper {
             // there are no character images on Sisi at the moment.
             return portrait;
         }
-        return `${this.vm.$root.envVars.eveImageServer}/characters/${id}/portrait?size=${size}&tenant=tranquility`;
+        return `${Data.envVars.eveImageServer}/characters/${id}/portrait?size=${size}&tenant=tranquility`;
     }
 }

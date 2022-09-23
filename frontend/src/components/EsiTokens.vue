@@ -98,7 +98,7 @@ export default {
     },
 
     mounted () {
-        this.loginHost = this.$root.envVars.backendHost;
+        this.loginHost = Data.envVars.backendHost;
     },
 
     methods: {

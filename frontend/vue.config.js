@@ -36,7 +36,7 @@ module.exports = defineConfig(() => {
     const production = process.env.NODE_ENV === 'production';
     return {
         outputDir: path.resolve(__dirname, '../web/dist'),
-        publicPath: production ? 'dist/' : '',
+        publicPath: production ? '/dist/' : '/',
         css: {
             extract: true, // necessary for themes in dev mode
         },

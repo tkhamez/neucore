@@ -321,9 +321,10 @@ function getLogin(vm) {
 
     for (const login of vm.logins) {
         if (login.id === parseInt(vm.route[1], 10)) {
-            vm.activeLogin = { ...login };
-            vm.loginUrl = `${vm.$root.envVars.backendHost}/login/${vm.activeLogin.name}`
+            vm.activeLogin = login;
+            vm.loginUrl = `${Data.envVars.backendHost}/login/${vm.activeLogin.name}`
             vm.disabled = login.name.indexOf(Data.loginPrefixProtected) === 0;
+            break;
         }
     }
 }

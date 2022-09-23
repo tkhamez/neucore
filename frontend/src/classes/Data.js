@@ -1,6 +1,15 @@
 
 export default class Data {
 
+    /**
+     * Configuration from .env files
+     */
+    static envVars = {
+        baseUrl: null,
+        eveImageServer: null,
+        backendHost: null,
+    }
+
     static themes = [
         'Basic',
         'Cerulean',
@@ -28,7 +37,7 @@ export default class Data {
         'Vapor',
         'Yeti',
         'Zephyr',
-    ];
+    ]
 
     static messages = {
         errorRequiredForbiddenGroup:
@@ -36,7 +45,7 @@ export default class Data {
             ' of one of the forbidden groups.',
         errorRoleRequiredGroup: 'This player is not a member of a group required for this role.',
         itemNameAllowedCharsHelp: 'Allowed characters (no spaces): A-Z a-z 0-9 - . _',
-    };
+    }
 
     static loginPrefixProtected = 'core.';
 
@@ -45,7 +54,7 @@ export default class Data {
         tracking:   'core.tracking',
         managed:    'core.managed',
         mail:       'core.mail',
-    };
+    }
 
     static userRoles = [
         'app-admin',
@@ -64,5 +73,5 @@ export default class Data {
         'watchlist',
         'watchlist-admin',
         'watchlist-manager',
-    ];
+    ]
 }

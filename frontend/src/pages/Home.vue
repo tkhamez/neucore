@@ -267,7 +267,7 @@ export default {
         window.scrollTo(0, 0);
         this.emitter.emit('playerChange'); // Ensure group memberships are up-to-date.
 
-        this.loginHost = this.$root.envVars.backendHost;
+        this.loginHost = Data.envVars.backendHost;
 
         const md = markdownIt({ typographer: true })
             .use(mdEmoji)

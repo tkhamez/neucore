@@ -40,11 +40,6 @@ const app = createApp({
              */
             settings: {},
 
-            /**
-             * Configuration form .env files
-             */
-            envVars: {},
-
             loadingCount: 0,
         }
     },

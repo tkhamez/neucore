@@ -42,8 +42,9 @@
 <script>
 import { ApiClient, AuthApi, CharacterApi, PlayerApi, SettingsApi } from 'neucore-js-client';
 import superAgentPlugin from './superagent-plugin.js';
-import Util from "./classes/Util";
+import Data from "./classes/Data";
 import Helper from "./classes/Helper";
+import Util from "./classes/Util";
 import NavBar from './components/NavBar.vue';
 import CharactersModal from './components/Characters.vue';
 import Home from './pages/Home.vue';
@@ -164,22 +165,22 @@ export default {
 
     created: function() {
         // environment variables
-        this.$root.envVars = {
+        Data.envVars = {
             baseUrl: process.env.BASE_URL,
             eveImageServer: process.env.VUE_APP_EVE_IMAGE_SERVER,
             backendHost: process.env.VUE_APP_BACKEND_HOST,
         };
-        if (!this.$root.envVars.backendHost) {
+        if (!Data.envVars.backendHost) {
             const winLocation = window.location;
             let port = '';
             if (winLocation.port !== '' && `${winLocation.port}` !== '80' && `${winLocation.port}` !== '443') {
                 port = `:${winLocation.port}`;
             }
-            this.$root.envVars.backendHost = `${winLocation.protocol}//${winLocation.hostname}${port}`;
+            Data.envVars.backendHost = `${winLocation.protocol}//${winLocation.hostname}${port}`;
         }
 
         // configure neucore-js-client
-        ApiClient.instance.basePath = `${this.$root.envVars.backendHost}/api`;
+        ApiClient.instance.basePath = `${Data.envVars.backendHost}/api`;
         ApiClient.instance.plugins = [superAgentPlugin(this.h)];
 
         // Store redirect param from login

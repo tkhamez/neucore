@@ -5,8 +5,8 @@
                 <h1>Player Groups Management</h1>
                 <p class="mb-0">
                     Login URL:
-                    <a :href="`${httpBaseUrl}/login/${loginNames.managed}`">
-                        {{ httpBaseUrl }}/login/{{ loginNames.managed }}
+                    <a :href="`${backendHost}/login/${loginNames.managed}`">
+                        {{ backendHost }}/login/{{ loginNames.managed }}
                     </a>
                 </p>
                 <p class="small text-muted">
@@ -125,7 +125,7 @@ export default {
             players: [],
             playerId: null, // current player
             playerData: null, // current player
-            httpBaseUrl: null,
+            backendHost: null,
             searchResult: [],
         }
     },
@@ -137,7 +137,7 @@ export default {
         this.setPlayerId();
 
         // login URL for managed accounts
-        this.httpBaseUrl = this.$root.envVars.backendHost;
+        this.backendHost = Data.envVars.backendHost;
     },
 
     watch: {
