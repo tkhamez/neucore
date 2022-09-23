@@ -67,6 +67,7 @@ import Tracking from './pages/Tracking.vue';
 import Watchlist from './pages/Watchlist.vue';
 import Characters from './pages/Characters.vue';
 import Esi from './pages/Esi.vue';
+import {toRefs} from "vue";
 
 export default {
     name: 'app',
@@ -96,18 +97,21 @@ export default {
         Esi,
     },
 
+    inject: ['store'],
+
     props: {
         player: Object,
         settings: Object,
-        loadingCount: Number,
     },
 
     data() {
         return {
             h: new Helper(this),
 
+            loadingCount: toRefs(this.store.state).loadingCount,
+
             /**
-             * Current route (hash splitted by /), first element is the current page.
+             * Current route (hash split by /), first element is the current page.
              */
             route: [],
 
@@ -163,7 +167,7 @@ export default {
         }
     },
 
-    created: function() {
+    created () {
         // environment variables
         Data.envVars = {
             baseUrl: process.env.BASE_URL,

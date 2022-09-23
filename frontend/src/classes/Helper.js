@@ -16,9 +16,9 @@ export default class Helper {
 
     ajaxLoading(status) {
         if (status) {
-            this.vm.$root.loadingCount ++;
+            this.vm.globalStore.increaseLoadingCount();
         } else {
-            this.vm.$root.loadingCount --;
+            this.vm.globalStore.decreaseLoadingCount();
         }
     }
 
