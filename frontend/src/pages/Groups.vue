@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import {toRefs} from "vue";
+import {toRef} from "vue";
 import {Modal} from "bootstrap";
 import {GroupApi, PlayerApi} from 'neucore-js-client';
 
@@ -77,7 +77,7 @@ export default {
 
     data: function() {
         return {
-            player: toRefs(this.store.state).player,
+            player: toRef(this.store.state, 'player'),
             groups: null,
             applications: null,
             groupToLeave: null,

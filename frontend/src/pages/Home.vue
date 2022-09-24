@@ -212,7 +212,7 @@
 </template>
 
 <script>
-import {toRefs} from "vue";
+import {toRef} from "vue";
 import {Modal} from "bootstrap";
 import {PlayerApi, SettingsApi} from 'neucore-js-client';
 import markdownIt from 'markdown-it';
@@ -246,8 +246,8 @@ export default {
     data: function() {
         return {
             h: new Helper(this),
-            settings: toRefs(this.store.state).settings,
-            player: toRefs(this.store.state).player,
+            settings: toRef(this.store.state, 'settings'),
+            player: toRef(this.store.state, 'player'),
             loginNames: Data.loginNames,
             deactivated: false,
             charToDelete: null,

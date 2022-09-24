@@ -135,7 +135,7 @@
 </template>
 
 <script>
-import {toRefs} from "vue";
+import {toRef} from "vue";
 import $ from 'jquery';
 import {Collapse, Dropdown} from 'bootstrap';
 import Data from '../classes/Data';
@@ -153,7 +153,7 @@ export default {
     data: function() {
         return {
             h: new Helper(this),
-            settings: toRefs(this.store.state).settings,
+            settings: toRef(this.store.state, 'settings'),
             managePages: ['GroupManagement', 'AppManagement', 'PlayerGroupManagement'],
             adminPages: [
                 'GroupAdmin', 'ServiceAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings',

@@ -166,7 +166,7 @@
 </template>
 
 <script>
-import {toRefs} from "vue";
+import {toRef} from "vue";
 import { GroupApi } from 'neucore-js-client';
 import Data from '../classes/Data';
 import Helper from "../classes/Helper";
@@ -190,7 +190,7 @@ export default {
         return {
             Util: Util,
             h: new Helper(this),
-            player: toRefs(this.store.state).player,
+            player: toRef(this.store.state, 'player'),
             groupId: null,
             groupName: '',
             groupDescription: '',

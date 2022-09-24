@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import {toRefs} from "vue";
+import {toRef} from "vue";
 import {AppApi} from 'neucore-js-client';
 
 export default {
@@ -108,8 +108,8 @@ export default {
 
     data: function() {
         return {
-            settings: toRefs(this.store.state).settings,
-            player: toRefs(this.store.state).player,
+            settings: toRef(this.store.state, 'settings'),
+            player: toRef(this.store.state, 'player'),
             app: null,
             secret: null,
         }

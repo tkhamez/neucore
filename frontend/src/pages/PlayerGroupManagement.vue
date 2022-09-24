@@ -99,7 +99,7 @@
 </template>
 
 <script>
-import {toRefs} from "vue";
+import {toRef} from "vue";
 import { PlayerApi }   from 'neucore-js-client';
 import Data            from "../classes/Data";
 import Helper from "../classes/Helper";
@@ -121,7 +121,7 @@ export default {
     data: function() {
         return {
             h: new Helper(this),
-            player: toRefs(this.store.state).player,
+            player: toRef(this.store.state, 'player'),
             loginNames: Data.loginNames,
             players: [],
             playerId: null, // current player

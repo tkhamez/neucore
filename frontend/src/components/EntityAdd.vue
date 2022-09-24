@@ -33,7 +33,7 @@ Modal window to add alliances or corporations to the database.
 </template>
 
 <script>
-import {toRefs} from "vue";
+import {toRef} from "vue";
 import _ from 'lodash';
 import {Modal} from "bootstrap";
 import Multiselect from '@suadelabs/vue3-multiselect';
@@ -50,7 +50,7 @@ export default {
     data: function() {
         return {
             h: new Helper(this),
-            settings: toRefs(this.store.state).settings,
+            settings: toRef(this.store.state, 'settings'),
             addType: '', // alliance or corp
             searchIsLoading: false,
             searchResults: [],

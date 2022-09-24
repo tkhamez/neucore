@@ -419,7 +419,7 @@
 </template>
 
 <script>
-import {toRefs} from "vue";
+import {toRef} from "vue";
 import {Modal, Tooltip} from "bootstrap";
 import {PlayerApi, SettingsApi} from 'neucore-js-client';
 import CharacterSearch from '../components/CharacterSearch.vue';
@@ -450,8 +450,8 @@ export default {
             Util: Util,
             h: new Helper(this),
 
-            settings: toRefs(this.store.state).settings,
-            player: toRefs(this.store.state).player,
+            settings: toRef(this.store.state, 'settings'),
+            player: toRef(this.store.state, 'player'),
 
             playersRole: [],
             playersChars: [],

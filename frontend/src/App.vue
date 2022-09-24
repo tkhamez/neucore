@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import {toRefs} from "vue";
+import {toRef} from "vue";
 import { ApiClient, AuthApi, CharacterApi, PlayerApi, SettingsApi } from 'neucore-js-client';
 import superAgentPlugin from './superagent-plugin.js';
 import Data from "./classes/Data";
@@ -100,9 +100,9 @@ export default {
         return {
             h: new Helper(this),
 
-            loadingCount: toRefs(this.store.state).loadingCount,
-            settings: toRefs(this.store.state).settings,
-            player: toRefs(this.store.state).player,
+            loadingCount: toRef(this.store.state, 'loadingCount'),
+            settings: toRef(this.store.state, 'settings'),
+            player: toRef(this.store.state, 'player'),
 
             /**
              * Current route (hash split by /), first element is the current page.

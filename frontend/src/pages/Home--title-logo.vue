@@ -11,14 +11,14 @@
 </template>
 
 <script>
-import {toRefs} from "vue";
+import {toRef} from "vue";
 
 export default {
     inject: ['store'],
 
     data: function() {
         return {
-            settings: toRefs(this.store.state).settings,
+            settings: toRef(this.store.state, 'settings'),
         }
     },
 }
