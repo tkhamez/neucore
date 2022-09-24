@@ -26,7 +26,7 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(
  *         property="characterId",
  *         description="ID of main character (API: not included by default)",
- *         type="string",
+ *         type="integer",
  *     ),
  *     @OA\Property(
  *         property="corporationName",
