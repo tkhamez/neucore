@@ -241,13 +241,13 @@ export default {
         route: Array,
         authLoaded: Boolean,
         authChar: Object,
-        player: Object,
     },
 
     data: function() {
         return {
             h: new Helper(this),
             settings: toRefs(this.store.state).settings,
+            player: toRefs(this.store.state).player,
             loginNames: Data.loginNames,
             deactivated: false,
             charToDelete: null,
@@ -304,7 +304,7 @@ export default {
         },
 
         player: function() {
-            if (! this.player) {
+            if (!this.player) {
                 return;
             }
             checkDeactivated(this);

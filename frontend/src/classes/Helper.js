@@ -36,8 +36,8 @@ export default class Helper {
     }
 
     hasRole(name, player) {
-        player = player || this.vm.$root.player;
-        if (! player) {
+        player = player || this.vm.globalStore.state.player;
+        if (!player) {
             return false;
         }
         return player.roles.indexOf(name) !== -1;

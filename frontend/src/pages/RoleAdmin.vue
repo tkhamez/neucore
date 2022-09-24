@@ -29,7 +29,7 @@
                 </div>
             </div>
 
-            <admin v-cloak v-if="currentRoleName" ref="admin" :player="player"
+            <admin v-cloak v-if="currentRoleName" ref="admin"
                    :type="'Role'" :typeName="currentRoleName" :contentType="'requiredGroups'"></admin>
 
         </div>
@@ -48,7 +48,6 @@ export default {
 
     props: {
         route: Array,
-        player: Object,
     },
 
     data: function() {

@@ -113,7 +113,6 @@ export default {
 
     props: {
         route: Array,
-        player: Object,
     },
 
     data () {

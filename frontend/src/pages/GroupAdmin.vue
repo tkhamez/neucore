@@ -105,11 +105,11 @@
             </ul>
 
             <admin v-cloak v-if="groupId && contentType !== 'members'" ref="admin"
-                   :player="player" :contentType="(contentType !== 'groups' ? contentType : 'requiredGroups')"
+                   :contentType="(contentType !== 'groups' ? contentType : 'requiredGroups')"
                    :typeId="groupId" :type="'Group'" :searchCurrentOnly="true"></admin>
 
             <admin v-cloak v-if="groupId && contentType === 'groups'" ref="admin"
-                   :player="player" :contentType="'forbiddenGroups'" :typeId="groupId"
+                   :contentType="'forbiddenGroups'" :typeId="groupId"
                    :type="'Group'" :searchCurrentOnly="true"></admin>
 
             <div v-cloak v-if="contentType === 'members'" class="card border-secondary mb-3 table-responsive">
@@ -162,7 +162,6 @@ export default {
 
     props: {
         route: Array,
-        player: Object,
     },
 
     data: function() {

@@ -38,7 +38,7 @@ export default class Player {
             if (typeof callback === typeof Function) {
                 callback();
             }
-            if (player.id === self.vm.$root.player.id) {
+            if (player.id === self.vm.globalStore.state.player.id) {
                 self.vm.emitter.emit('playerChange');
             }
         }
@@ -59,7 +59,7 @@ export default class Player {
                 return;
             }
             self.helper.message(`Updated ${data.length} service account(s).`, 'success', 3000);
-            if (player.id === self.vm.$root.player.id) {
+            if (player.id === self.vm.globalStore.state.player.id) {
                 self.vm.emitter.emit('playerChange');
             }
         });

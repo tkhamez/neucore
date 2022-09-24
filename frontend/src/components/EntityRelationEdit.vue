@@ -251,14 +251,13 @@ export default {
         sticky: Number,
 
         searchCurrentOnly: Boolean,
-
-        player: Object,
     },
 
     data: function() {
         return {
             h: new Helper(this),
             settings: toRefs(this.store.state).settings,
+            player: toRefs(this.store.state).player,
             newObject: "", // empty string to select the first entry in the drop-down
             placeholder: "", // placeholder for the multi-select
             selectContent: [], // all options from backend

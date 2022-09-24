@@ -133,19 +133,22 @@
 </template>
 
 <script>
+import {toRefs} from "vue";
 import {ServiceApi} from "neucore-js-client";
 import Helper from "../classes/Helper";
 import Util from "../classes/Util";
 
 export default {
+    inject: ['store'],
+
     props: {
         route: Array,
-        player: Object,
     },
 
     data () {
         return {
             h: new Helper(this),
+            player: toRefs(this.store.state).player,
             service: null,
             accounts: [],
             failedToLoadAccounts: false,

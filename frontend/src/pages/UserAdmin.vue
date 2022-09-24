@@ -442,7 +442,6 @@ export default {
 
     props: {
         route: Array,
-        player: Object, // logged in player
         authChar: Object, // logged in character
     },
 
@@ -452,6 +451,7 @@ export default {
             h: new Helper(this),
 
             settings: toRefs(this.store.state).settings,
+            player: toRefs(this.store.state).player,
 
             playersRole: [],
             playersChars: [],
@@ -498,11 +498,6 @@ export default {
         window.scrollTo(0,0);
         this.setPlayerId();
 
-        // TODO watch "playerId" is not triggered when following a link to this page, why??
-        // This will load it twice, but better than not at all.
-        if (this.playerId) {
-            getPlayer(this);
-        }
         getEveLogins(this);
     },
 

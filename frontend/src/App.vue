@@ -13,7 +13,6 @@
 
         <component v-if="settingsLoaded" v-cloak v-bind:is="page"
                    :route="route"
-                   :player="player"
                    :auth-char="authChar"
                    :authLoaded="authLoaded"
         ></component>
@@ -97,17 +96,13 @@ export default {
 
     inject: ['store'],
 
-    props: {
-        player: Object,
-    },
-
     data() {
         return {
             h: new Helper(this),
 
             loadingCount: toRefs(this.store.state).loadingCount,
-
             settings: toRefs(this.store.state).settings,
+            player: toRefs(this.store.state).player,
 
             /**
              * Current route (hash split by /), first element is the current page.
@@ -315,9 +310,9 @@ export default {
             new CharacterApi().userCharacterShow(function(error, data) {
                 if (error) { // 403 usually
                     vm.authChar = null;
-                    vm.$root.player = null;
+                    vm.store.setPlayer(null);
                     vm.page = 'Home';
-                } else if (! ping) { // don't update because it triggers watch events
+                } else if (!ping) { // don't update because it triggers watch events
                     vm.authChar = data;
                 }
                 vm.authLoaded = true;
@@ -328,10 +323,10 @@ export default {
             const vm = this;
             new PlayerApi().userPlayerShow(function(error, data) {
                 if (error) { // 403 usually
-                    vm.$root.player = null;
+                    vm.store.setPlayer(null);
                     return;
                 }
-                vm.$root.player = data;
+                vm.store.setPlayer(data);
             });
         },
 
@@ -339,7 +334,7 @@ export default {
             const vm = this;
             new AuthApi().logout(() => {
                 vm.authChar = null;
-                vm.$root.player = null;
+                vm.store.setPlayer(null);
                 window.location.hash = '';
             });
         },

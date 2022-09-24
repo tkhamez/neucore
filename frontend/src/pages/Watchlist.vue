@@ -52,7 +52,6 @@ export default {
 
     props: {
         route: Array,
-        player: Object,
     },
 
     data () {
@@ -72,7 +71,7 @@ export default {
         const vm = this;
         getWatchlists(vm, () => {
             // auto select 1st if route does not have an ID
-            if (! vm.route[1] && vm.watchlists[0]) {
+            if (!vm.route[1] && vm.watchlists[0]) {
                 window.location.hash = `#Watchlist/${vm.watchlists[0].id}`;
             } else {
                 setTab(vm);
@@ -85,14 +84,9 @@ export default {
             const tab = this.route[2] ? this.route[2] : '';
             window.location.hash = `#Watchlist/${this.selectedId}/${tab}`;
         },
+
         route () {
             setTab(this);
-        },
-        player () {
-            const vm = this;
-            getWatchlists(vm, () => {
-                setTab(vm);
-            });
         },
     },
 }
@@ -135,7 +129,7 @@ function setTab(vm) {
         }
     }
 
-    if (! found) {
+    if (!found) {
         vm.currentWatchlist = null;
         vm.selectedId = '';
         return;

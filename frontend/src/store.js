@@ -3,6 +3,23 @@ import { reactive, readonly } from 'vue';
 const state = reactive({
 
     /**
+     * The player object
+     *
+     * Note: the properties defined here are not actually used, the complete object is replaced with
+     * the object from the API call /player/show.
+     */
+    player: {
+        id: 0,
+        name: '',
+        status: '',
+        roles: [],
+        characters: [],
+        groups: [],
+        managerGroups: [],
+        managerApps: [],
+    },
+
+    /**
      * Settings data.
      *
      * Note: the properties defined here are not actually used, the complete object is replaced with
@@ -60,11 +77,17 @@ const state = reactive({
     },
 
     loadingCount: 0,
-
 });
 
 export default {
     state: readonly(state),
+
+    /**
+     * @param {object|null} player
+     */
+    setPlayer(player) {
+        state.player = player;
+    },
 
     /**
      * @param {object} settings

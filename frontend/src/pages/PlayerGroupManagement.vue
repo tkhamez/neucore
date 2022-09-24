@@ -90,7 +90,7 @@
                 </div>
 
                 <admin v-cloak v-if="playerId" ref="admin"
-                       :player="player" :contentType="'groups'" :typeId="playerId" :type="'Player'"
+                       :contentType="'groups'" :typeId="playerId" :type="'Player'"
                        v-on:activePlayer="playerData = $event"></admin>
 
             </div>
@@ -99,6 +99,7 @@
 </template>
 
 <script>
+import {toRefs} from "vue";
 import { PlayerApi }   from 'neucore-js-client';
 import Data            from "../classes/Data";
 import Helper from "../classes/Helper";
@@ -111,14 +112,16 @@ export default {
         CharacterSearch,
     },
 
+    inject: ['store'],
+
     props: {
         route: Array,
-        player: Object,
     },
 
     data: function() {
         return {
             h: new Helper(this),
+            player: toRefs(this.store.state).player,
             loginNames: Data.loginNames,
             players: [],
             playerId: null, // current player

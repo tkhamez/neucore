@@ -104,12 +104,12 @@ export default {
 
     props: {
         route: Array,
-        player: Object,
     },
 
     data: function() {
         return {
             settings: toRefs(this.store.state).settings,
+            player: toRefs(this.store.state).player,
             app: null,
             secret: null,
         }
@@ -126,10 +126,6 @@ export default {
     },
 
     watch: {
-        player: function() {
-            this.setRoute();
-        },
-
         route: function() {
             this.setRoute();
         }

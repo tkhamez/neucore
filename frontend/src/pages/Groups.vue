@@ -68,16 +68,16 @@
 </template>
 
 <script>
+import {toRefs} from "vue";
 import {Modal} from "bootstrap";
 import {GroupApi, PlayerApi} from 'neucore-js-client';
 
 export default {
-    props: {
-        player: Object,
-    },
+    inject: ['store'],
 
     data: function() {
         return {
+            player: toRefs(this.store.state).player,
             groups: null,
             applications: null,
             groupToLeave: null,

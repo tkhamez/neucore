@@ -193,7 +193,6 @@ export default {
 
     props: {
         route: Array,
-        player: Object,
     },
 
     data () {
@@ -215,9 +214,6 @@ export default {
     },
 
     watch: {
-        player () {
-            getService(this);
-        },
         route () {
             getService(this);
         },
