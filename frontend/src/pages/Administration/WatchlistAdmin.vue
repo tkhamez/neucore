@@ -99,11 +99,11 @@
 </template>
 
 <script>
-import {WatchlistApi} from 'neucore-js-client';
-import Admin from '../components/EntityRelationEdit.vue';
-import Edit from '../components/EntityEdit.vue';
 import $ from "jquery";
-import Helper from "../classes/Helper";
+import {WatchlistApi} from 'neucore-js-client';
+import Admin from '../../components/EntityRelationEdit.vue';
+import Edit from '../../components/EntityEdit.vue';
+import Helper from "../../classes/Helper";
 
 export default {
     components: {

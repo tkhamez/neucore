@@ -40,9 +40,9 @@
 
 <script>
 import { WatchlistApi }  from 'neucore-js-client';
+import Helper from "../../classes/Helper";
 import WatchlistLists    from './Watchlist--Lists.vue';
 import WatchlistSettings from './Watchlist--Settings.vue';
-import Helper from "../classes/Helper";
 
 export default {
     components: {

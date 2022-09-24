@@ -162,11 +162,11 @@ Modal window with all characters of one player.
 <script>
 import {Tooltip, Modal} from 'bootstrap';
 import {PlayerApi} from 'neucore-js-client';
-import CharacterNameChanges from '../components/CharacterNameChanges.vue';
 import Player from "../classes/Player";
 import Character from "../classes/Character";
 import Helper from "../classes/Helper";
 import Util from "../classes/Util";
+import CharacterNameChanges from '../components/CharacterNameChanges.vue';
 
 export default {
     components: {

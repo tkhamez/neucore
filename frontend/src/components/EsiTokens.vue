@@ -117,7 +117,7 @@ export default {
             if (this.esiTokensModal) {
                 this.esiTokensModal.hide();
             }
-            window.location.hash = `#SystemSettings/EveLogins/${id}`;
+            window.location.hash = `#SystemSettings/EVELoginAdmin/${id}`;
         },
 
         loginName (loginId) {

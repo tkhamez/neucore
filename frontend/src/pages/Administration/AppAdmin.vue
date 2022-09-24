@@ -82,9 +82,9 @@
 <script>
 import $ from 'jquery';
 import {AppApi} from 'neucore-js-client';
-import Helper from "../classes/Helper";
-import Edit  from '../components/EntityEdit.vue';
-import Admin from '../components/EntityRelationEdit.vue';
+import Helper from "../../classes/Helper";
+import Edit  from '../../components/EntityEdit.vue';
+import Admin from '../../components/EntityRelationEdit.vue';
 
 export default {
     components: {

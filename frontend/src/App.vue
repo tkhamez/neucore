@@ -38,33 +38,33 @@
 
 <script>
 import {toRef} from "vue";
-import { ApiClient, AuthApi, CharacterApi, PlayerApi, SettingsApi } from 'neucore-js-client';
 import superAgentPlugin from './superagent-plugin.js';
-import Data from "./classes/Data";
+import { ApiClient, AuthApi, CharacterApi, PlayerApi, SettingsApi } from 'neucore-js-client';
+import Data   from "./classes/Data";
 import Helper from "./classes/Helper";
-import Util from "./classes/Util";
-import NavBar from './components/NavBar.vue';
+import Util   from "./classes/Util";
+import NavBar          from './components/NavBar.vue';
 import CharactersModal from './components/Characters.vue';
-import Home from './pages/Home.vue';
-import Groups from './pages/Groups.vue';
+import Home    from './pages/Home.vue';
+import Groups  from './pages/Groups.vue';
 import Service from './pages/Service.vue';
-import GroupManagement from './pages/GroupManagement.vue';
-import AppManagement from './pages/AppManagement.vue';
-import PlayerGroupManagement from './pages/PlayerGroupManagement.vue';
-import GroupAdmin from './pages/GroupAdmin.vue';
-import AppAdmin from './pages/AppAdmin.vue';
-import ServiceAdmin from './pages/ServiceAdmin.vue';
-import UserAdmin from './pages/UserAdmin.vue';
-import RoleAdmin from './pages/RoleAdmin.vue';
-import TrackingAdmin from './pages/TrackingAdmin.vue';
-import WatchlistAdmin from './pages/WatchlistAdmin.vue';
-import SystemSettings from './pages/SystemSettings.vue';
-import EVELogins from './pages/EVELogins.vue';
-import Statistics from './pages/Statistics.vue';
-import Tracking from './pages/Tracking.vue';
-import Watchlist from './pages/Watchlist.vue';
-import Characters from './pages/Characters.vue';
-import Esi from './pages/Esi.vue';
+import GroupManagement       from './pages/Management/GroupManagement.vue';
+import AppManagement         from './pages/Management/AppManagement.vue';
+import PlayerGroupManagement from './pages/Management/PlayerGroupManagement.vue';
+import GroupAdmin     from './pages/Administration/GroupAdmin.vue';
+import AppAdmin       from './pages/Administration/AppAdmin.vue';
+import ServiceAdmin   from './pages/Administration/ServiceAdmin.vue';
+import UserAdmin      from './pages/Administration/UserAdmin.vue';
+import RoleAdmin      from './pages/Administration/RoleAdmin.vue';
+import TrackingAdmin  from './pages/Administration/TrackingAdmin.vue';
+import WatchlistAdmin from './pages/Administration/WatchlistAdmin.vue';
+import SystemSettings from './pages/Administration/SystemSettings.vue';
+import EVELoginAdmin  from './pages/Administration/EVELoginAdmin.vue';
+import Statistics     from './pages/Administration/Statistics.vue';
+import Tracking   from './pages/MemberData/Tracking.vue';
+import Watchlist  from './pages/MemberData/Watchlist.vue';
+import Characters from './pages/MemberData/Characters.vue';
+import Esi        from './pages/MemberData/Esi.vue';
 
 export default {
     name: 'app',
@@ -86,7 +86,7 @@ export default {
         TrackingAdmin,
         WatchlistAdmin,
         SystemSettings,
-        EVELogins,
+        EVELoginAdmin,
         Statistics,
         Tracking,
         Watchlist,
@@ -129,7 +129,7 @@ export default {
                 'TrackingAdmin',
                 'WatchlistAdmin',
                 'SystemSettings',
-                'EVELogins',
+                'EVELoginAdmin',
                 'Statistics',
                 'Tracking',
                 'Watchlist',

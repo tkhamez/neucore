@@ -53,8 +53,8 @@
 </template>
 
 <script>
-import AddEntity from '../components/EntityAdd.vue';
-import Admin     from '../components/EntityRelationEdit.vue';
+import AddEntity from '../../components/EntityAdd.vue';
+import Admin     from '../../components/EntityRelationEdit.vue';
 
 export default {
     components: {

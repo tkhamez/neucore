@@ -1,3 +1,4 @@
+
 import Data from "./Data";
 import portrait from "../assets/portrait_32.jpg";
 

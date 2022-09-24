@@ -132,8 +132,8 @@ import _ from 'lodash';
 import $ from 'jquery';
 import {Tooltip} from 'bootstrap';
 import {CorporationApi} from 'neucore-js-client';
-import Helper from "../classes/Helper";
-import Util from "../classes/Util";
+import Helper from "../../classes/Helper";
+import Util from "../../classes/Util";
 
 export default {
     props: {

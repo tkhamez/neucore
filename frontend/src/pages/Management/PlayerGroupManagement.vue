@@ -101,10 +101,10 @@
 <script>
 import {toRef} from "vue";
 import { PlayerApi }   from 'neucore-js-client';
-import Data            from "../classes/Data";
-import Helper from "../classes/Helper";
-import Admin           from '../components/EntityRelationEdit.vue';
-import CharacterSearch from '../components/CharacterSearch.vue';
+import Data            from "../../classes/Data";
+import Helper          from "../../classes/Helper";
+import Admin           from '../../components/EntityRelationEdit.vue';
+import CharacterSearch from '../../components/CharacterSearch.vue';
 
 export default {
     components: {

@@ -148,10 +148,10 @@
 import $ from 'jquery';
 import _ from "lodash";
 import {GroupApi} from 'neucore-js-client';
-import Helper from "../classes/Helper";
-import AddEntity  from '../components/EntityAdd.vue';
-import Edit       from '../components/EntityEdit.vue';
-import Admin      from '../components/EntityRelationEdit.vue';
+import Helper from "../../classes/Helper";
+import AddEntity  from '../../components/EntityAdd.vue';
+import Edit       from '../../components/EntityEdit.vue';
+import Admin      from '../../components/EntityRelationEdit.vue';
 
 export default {
     components: {

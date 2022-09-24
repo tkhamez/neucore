@@ -183,8 +183,8 @@
 <script>
 import $ from "jquery";
 import {ServiceApi, ServiceAdminApi} from "neucore-js-client";
-import Edit from '../components/EntityEdit.vue';
-import Helper from "../classes/Helper";
+import Helper from "../../classes/Helper";
+import Edit from '../../components/EntityEdit.vue';
 
 export default {
     components: {

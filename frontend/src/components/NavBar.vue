@@ -81,8 +81,8 @@
                            class="dropdown-item" :class="{ active: page === 'SystemSettings' }"
                            href="#SystemSettings">Settings</a>
                         <a v-if="h.hasRole('settings')"
-                           class="dropdown-item" :class="{ active: page === 'EVELogins' }"
-                           href="#EVELogins">EVE Logins</a>
+                           class="dropdown-item" :class="{ active: page === 'EVELoginAdmin' }"
+                           href="#EVELoginAdmin">EVE Logins</a>
                         <a v-if="h.hasRole('statistics')"
                            class="dropdown-item" :class="{ active: page === 'Statistics' }"
                            href="#Statistics">Statistics</a>
@@ -157,7 +157,7 @@ export default {
             managePages: ['GroupManagement', 'AppManagement', 'PlayerGroupManagement'],
             adminPages: [
                 'GroupAdmin', 'ServiceAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings',
-                'EVELogins', 'Statistics'
+                'EVELoginAdmin', 'Statistics'
             ],
             memberDataPages: ['Tracking', 'Watchlist', 'Esi', 'Characters'],
             page: '',

@@ -4,7 +4,7 @@
     <div class="card-body">
         <span v-if="settings.mail_character === ''">
             <a :href="`${loginHost}/login/${loginNames.mail}`">
-                <img src="../../public/img/eve_sso.png" alt="LOG IN with EVE Online">
+                <img src="../../../public/img/eve_sso.png" alt="LOG IN with EVE Online">
             </a>
         </span>
         <span v-else>
@@ -89,7 +89,7 @@
             </multiselect>
             <span class="form-text">
                 Only corporations with member tracking enabled, see
-                <a :href="'#EVELogins'">EVE Logins</a>, {{ loginNames.tracking }} login.
+                <a :href="'#EVELoginAdmin'">EVE Logins</a>, {{ loginNames.tracking }} login.
             </span>
         </div>
         <div class="mt-3">
@@ -111,8 +111,8 @@
 <script>
 import Multiselect from '@suadelabs/vue3-multiselect';
 import {CorporationApi, SettingsApi} from 'neucore-js-client';
-import Data from "../classes/Data";
-import Helper from "../classes/Helper";
+import Data from "../../classes/Data";
+import Helper from "../../classes/Helper";
 
 export default {
     components: {

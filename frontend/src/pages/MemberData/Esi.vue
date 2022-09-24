@@ -89,8 +89,8 @@
 import _ from 'lodash';
 import Multiselect from '@suadelabs/vue3-multiselect';
 import {ESIApi, CharacterApi, SettingsApi} from 'neucore-js-client';
-import Data from "../classes/Data";
-import Helper from "../classes/Helper";
+import Data from "../../classes/Data";
+import Helper from "../../classes/Helper";
 
 export default {
     components: {

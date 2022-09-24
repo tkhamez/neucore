@@ -214,7 +214,6 @@
 <script>
 import {toRef} from "vue";
 import {Modal} from "bootstrap";
-import {PlayerApi, SettingsApi} from 'neucore-js-client';
 import markdownIt from 'markdown-it';
 import mdEmoji from 'markdown-it-emoji/light';
 import mdSup from 'markdown-it-sup';
@@ -223,6 +222,7 @@ import mdIns from 'markdown-it-ins';
 import mdAbbr from 'markdown-it-abbr';
 import mdMark from 'markdown-it-mark';
 import mdAttrs from 'markdown-it-attrs';
+import {PlayerApi, SettingsApi} from 'neucore-js-client';
 import Data from "../classes/Data";
 import Character from "../classes/Character";
 import Helper from "../classes/Helper";

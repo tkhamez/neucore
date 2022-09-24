@@ -36,7 +36,7 @@
 
 <script>
 import { CorporationApi } from 'neucore-js-client';
-import Admin from '../components/EntityRelationEdit.vue';
+import Admin from '../../components/EntityRelationEdit.vue';
 
 export default {
     components: {

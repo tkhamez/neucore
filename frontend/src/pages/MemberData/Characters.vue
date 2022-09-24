@@ -60,9 +60,9 @@
 
 <script>
 import {PlayerApi} from "neucore-js-client";
-import CharacterSearch   from '../components/CharacterSearch.vue';
-import CharacterResult   from '../components/CharacterResult.vue';
-import Helper from "../classes/Helper";
+import Helper from "../../classes/Helper";
+import CharacterSearch   from '../../components/CharacterSearch.vue';
+import CharacterResult   from '../../components/CharacterResult.vue';
 
 export default {
     components: {

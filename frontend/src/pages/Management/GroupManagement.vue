@@ -168,11 +168,11 @@
 <script>
 import {toRef} from "vue";
 import { GroupApi } from 'neucore-js-client';
-import Data from '../classes/Data';
-import Helper from "../classes/Helper";
-import Util from '../classes/Util';
-import CharacterSearch from '../components/CharacterSearch.vue';
-import CharacterResult from '../components/CharacterResult.vue';
+import Data from '../../classes/Data';
+import Helper from "../../classes/Helper";
+import Util from '../../classes/Util';
+import CharacterSearch from '../../components/CharacterSearch.vue';
+import CharacterResult from '../../components/CharacterResult.vue';
 
 export default {
     components: {

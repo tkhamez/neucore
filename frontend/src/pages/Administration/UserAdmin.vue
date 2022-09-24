@@ -422,14 +422,14 @@
 import {toRef} from "vue";
 import {Modal, Tooltip} from "bootstrap";
 import {PlayerApi, SettingsApi} from 'neucore-js-client';
-import CharacterSearch from '../components/CharacterSearch.vue';
-import CharacterNameChanges from '../components/CharacterNameChanges.vue';
-import EsiTokens from '../components/EsiTokens.vue';
-import Character from "../classes/Character";
-import Data from "../classes/Data";
-import Player from "../classes/Player";
-import Util from "../classes/Util";
-import Helper from "../classes/Helper";
+import Character from "../../classes/Character";
+import Data from "../../classes/Data";
+import Player from "../../classes/Player";
+import Util from "../../classes/Util";
+import Helper from "../../classes/Helper";
+import CharacterSearch from '../../components/CharacterSearch.vue';
+import CharacterNameChanges from '../../components/CharacterNameChanges.vue';
+import EsiTokens from '../../components/EsiTokens.vue';
 
 export default {
     components: {

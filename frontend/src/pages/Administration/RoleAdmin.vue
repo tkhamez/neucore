@@ -38,8 +38,8 @@
 </template>
 
 <script>
-import Admin from '../components/EntityRelationEdit.vue';
-import Data from "../classes/Data";
+import Data from "../../classes/Data";
+import Admin from '../../components/EntityRelationEdit.vue';
 
 export default {
     components: {

@@ -36,7 +36,7 @@
 <script>
 import _ from 'lodash';
 import {AllianceApi, CorporationApi, SettingsApi} from 'neucore-js-client';
-import Helper from "../classes/Helper";
+import Helper from "../../classes/Helper";
 import Customization from './SystemSettings--Customization.vue';
 import Features from './SystemSettings--Features.vue';
 import Mails from './SystemSettings--Mails.vue';

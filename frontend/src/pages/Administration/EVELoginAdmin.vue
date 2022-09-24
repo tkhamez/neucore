@@ -25,7 +25,7 @@
                           :class="{ active: activeLogin && activeLogin.id === login.id }">
                         <a class="list-group-item list-group-item-action"
                            :class="{ active: activeLogin && activeLogin.id === login.id }"
-                           :href="`#EVELogins/${login.id}/${contentType}`">
+                           :href="`#EVELoginAdmin/${login.id}/${contentType}`">
                             {{ login.name }}
                         </a>
                         <span v-if="login.name.indexOf(Data.loginPrefixProtected) === -1"
@@ -49,7 +49,7 @@
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'login' }"
-                       :href="`#EVELogins/${activeLogin.id}/login`">Login</a>
+                       :href="`#EVELoginAdmin/${activeLogin.id}/login`">Login</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
@@ -57,7 +57,7 @@
                            'active': contentType === 'tokens',
                            'disabled': activeLogin.name === Data.loginNames.default
                        }"
-                       :href="`#EVELogins/${activeLogin.id}/tokens`">Tokens</a>
+                       :href="`#EVELoginAdmin/${activeLogin.id}/tokens`">Tokens</a>
                 </li>
             </ul>
 
@@ -189,9 +189,9 @@
 import $ from "jquery";
 import {SettingsApi} from "neucore-js-client";
 import Multiselect from '@suadelabs/vue3-multiselect';
-import Data from '../classes/Data';
-import Helper from "../classes/Helper";
-import Edit from '../components/EntityEdit.vue';
+import Data from '../../classes/Data';
+import Helper from "../../classes/Helper";
+import Edit from '../../components/EntityEdit.vue';
 
 export default {
     components: {
@@ -257,7 +257,7 @@ export default {
                 } else {
                     vm.$refs.editModal.hideModal();
                     vm.h.message('Login created.', 'success');
-                    window.location.hash = `#EVELogins/${data.id}`;
+                    window.location.hash = `#EVELoginAdmin/${data.id}`;
                     getLogins(vm);
                 }
             });
@@ -271,7 +271,7 @@ export default {
                 } else {
                     vm.$refs.editModal.hideModal();
                     vm.h.message('Login deleted.', 'success');
-                    window.location.hash = '#EVELogins';
+                    window.location.hash = '#EVELoginAdmin';
                     getLogins(vm);
                 }
             });
