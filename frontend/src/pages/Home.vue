@@ -80,7 +80,7 @@
 
 <div class="container-fluid">
     <div v-cloak v-if="authLoaded && !authChar" class="mt-3">
-        <title-logo :settings="settings"></title-logo>
+        <title-logo></title-logo>
         <p>Click the button below to login through <em>EVE Online SSO</em>.</p>
         <a :href="`${loginHost}/login/${loginNames.default}${redirectQuery}`">
             <img src="../assets/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
@@ -99,7 +99,7 @@
 
     <div v-cloak v-if="authChar" class="card mt-3 mb-3">
         <div class="card-body">
-            <title-logo :settings="settings"></title-logo>
+            <title-logo></title-logo>
             <p>Add your other characters by logging in with EVE SSO.</p>
             <p>
                 <a :href="`${loginHost}/login/${loginNames.default}`">
@@ -212,6 +212,7 @@
 </template>
 
 <script>
+import {toRefs} from "vue";
 import {Modal} from "bootstrap";
 import {PlayerApi, SettingsApi} from 'neucore-js-client';
 import markdownIt from 'markdown-it';
@@ -234,20 +235,23 @@ export default {
         TitleLogo,
     },
 
+    inject: ['store'],
+
     props: {
         route: Array,
         authLoaded: Boolean,
         authChar: Object,
         player: Object,
-        settings: Object,
     },
 
     data: function() {
         return {
             h: new Helper(this),
+            settings: toRefs(this.store.state).settings,
             loginNames: Data.loginNames,
             deactivated: false,
             charToDelete: null,
+            md: null,
             markdownHtml: '',
             markdownLoginText: '',
             loginHost: '',
@@ -263,13 +267,8 @@ export default {
         }
     },
 
-    mounted: function() { // after "redirect" from another page
-        window.scrollTo(0, 0);
-        this.emitter.emit('playerChange'); // Ensure group memberships are up-to-date.
-
-        this.loginHost = Data.envVars.backendHost;
-
-        const md = markdownIt({ typographer: true })
+    created () {
+        this.md = markdownIt({ typographer: true })
             .use(mdEmoji)
             .use(mdSup)
             .use(mdSub)
@@ -278,11 +277,16 @@ export default {
             .use(mdMark)
             .use(mdAttrs) // for classes, like .text-warning, .bg-primary
         ;
-        md.renderer.rules.emoji = function(token, idx) {
+        this.md.renderer.rules.emoji = function(token, idx) {
             return `<span class="emoji">${token[idx].content}</span>`;
         };
-        this.markdownHtml = md.render(this.settings.customization_home_markdown);
-        this.markdownLoginText = md.render(this.settings.customization_login_text);
+    },
+
+    mounted () { // after "redirect" from another page
+        window.scrollTo(0, 0);
+        this.emitter.emit('playerChange'); // Ensure group memberships are up-to-date.
+
+        this.loginHost = Data.envVars.backendHost;
 
         loginAddRedirect(this);
         checkDeactivated(this);
@@ -290,6 +294,11 @@ export default {
     },
 
     watch: {
+        settings () {
+            this.markdownHtml = this.md.render(this.settings.customization_home_markdown);
+            this.markdownLoginText = this.md.render(this.settings.customization_login_text);
+        },
+
         authChar: function() { // for primary login and logout
             checkDeactivated(this);
         },
@@ -303,7 +312,6 @@ export default {
     },
 
     methods: {
-
         makeMain: function(characterId) {
             const vm = this;
             new PlayerApi().setMain(characterId, function(error) {
@@ -359,7 +367,7 @@ function loginAddRedirect(vm) {
         return;
     }
 
-    vm.redirectQuery = '?redirect=' + window.location.hash.substring(1);
+    vm.redirectQuery = `?redirect=${window.location.hash.substring(1)}`;
 
     // Add redirect query to login links in custom markdown
     const markdownHtml = document.createElement("div");

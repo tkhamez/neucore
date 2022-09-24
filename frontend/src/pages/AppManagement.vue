@@ -96,17 +96,20 @@
 </template>
 
 <script>
+import {toRefs} from "vue";
 import {AppApi} from 'neucore-js-client';
 
 export default {
+    inject: ['store'],
+
     props: {
         route: Array,
         player: Object,
-        settings: Object,
     },
 
     data: function() {
         return {
+            settings: toRefs(this.store.state).settings,
             app: null,
             secret: null,
         }

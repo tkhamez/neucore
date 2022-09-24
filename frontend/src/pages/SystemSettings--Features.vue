@@ -128,14 +128,16 @@ export default {
         Multiselect,
     },
 
+    inject: ['store'],
+
     props: {
-        settings: Object,
         allAlliances: Array,
         allCorporations: Array,
     },
 
     data () {
         return {
+            settings: { ...this.store.state.settings },
             allAlliancesLoaded: false,
             allCorporationsLoaded: false,
             accountDeactivationAlliances: null,
@@ -181,8 +183,10 @@ export default {
 }
 
 function readSettings(vm) {
-    if (! vm.allAlliancesLoaded || ! vm.allCorporationsLoaded ||
-        ! vm.settings.hasOwnProperty('account_deactivation_delay')
+    if (
+        !vm.allAlliancesLoaded ||
+        !vm.allCorporationsLoaded ||
+        !vm.settings.hasOwnProperty('account_deactivation_delay')
     ) {
         return; // wait for alliance and corporation list and settings
     }

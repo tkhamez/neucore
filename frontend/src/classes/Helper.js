@@ -78,7 +78,7 @@ export default class Helper {
     }
 
     characterPortrait(id, size) {
-        if (this.vm.$root.settings.esiDataSource === 'singularity') {
+        if (this.vm.globalStore.state.settings.esiDataSource === 'singularity') {
             // there are no character images on Sisi at the moment.
             return portrait;
         }

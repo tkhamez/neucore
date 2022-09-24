@@ -26,7 +26,7 @@
                 </div>
 
                 <admin v-cloak v-if="corporationId" ref="admin"
-                       :player="player" :contentType="'groups'" :typeId="corporationId" :settings="settings"
+                       :player="player" :contentType="'groups'" :typeId="corporationId"
                        :type="'Corporation'"></admin>
 
             </div>
@@ -44,7 +44,6 @@ export default {
     },
 
     props: {
-        settings: Object,
         route: Array,
         player: Object,
     },

@@ -191,7 +191,7 @@ export default {
                     vm.h.message('Error saving visibility.', 'error');
                 } else {
                     vm.h.message('Visibility saved.', 'success');
-                    vm.emitter.emit('settingsChange');
+                    vm.emitter.emit('settingsChange'); // because of "navigationShowGroups"
                     vm.emitter.emit('playerChange');
                     vm.$emit('groupChange');
                 }

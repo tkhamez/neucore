@@ -1,5 +1,12 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Some refactoring of the frontend, which also slightly changes the behavior when changing system settings.
+- Small text improvements/fixes.
+
 ## 1.36.1
 
 15 Sep 2022

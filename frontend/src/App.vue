@@ -7,18 +7,16 @@
             <button type="button" class="btn-close" v-on:click="messageTxt = ''" aria-label="Close"></button>
         </div>
 
-        <nav-bar v-if="settingsLoaded" v-cloak :auth-char="authChar" :logout="logout"
-                 :route="route" :settings="settings"></nav-bar>
+        <nav-bar v-if="settingsLoaded" v-cloak :auth-char="authChar" :logout="logout" :route="route"></nav-bar>
 
         <charactersModal ref="charactersModal"></charactersModal>
 
         <component v-if="settingsLoaded" v-cloak v-bind:is="page"
                    :route="route"
-                   :settings="settings"
                    :player="player"
                    :auth-char="authChar"
-                   :authLoaded="authLoaded">
-        </component>
+                   :authLoaded="authLoaded"
+        ></component>
 
         <footer class="footer border-top text-muted small">
             <div class="container-fluid">
@@ -40,6 +38,7 @@
 </template>
 
 <script>
+import {toRefs} from "vue";
 import { ApiClient, AuthApi, CharacterApi, PlayerApi, SettingsApi } from 'neucore-js-client';
 import superAgentPlugin from './superagent-plugin.js';
 import Data from "./classes/Data";
@@ -67,7 +66,6 @@ import Tracking from './pages/Tracking.vue';
 import Watchlist from './pages/Watchlist.vue';
 import Characters from './pages/Characters.vue';
 import Esi from './pages/Esi.vue';
-import {toRefs} from "vue";
 
 export default {
     name: 'app',
@@ -101,7 +99,6 @@ export default {
 
     props: {
         player: Object,
-        settings: Object,
     },
 
     data() {
@@ -109,6 +106,8 @@ export default {
             h: new Helper(this),
 
             loadingCount: toRefs(this.store.state).loadingCount,
+
+            settings: toRefs(this.store.state).settings,
 
             /**
              * Current route (hash split by /), first element is the current page.
@@ -306,7 +305,7 @@ export default {
                         JSON.parse(variable.value) :
                         variable.value;
                 }
-                vm.$root.settings = settings; // watch() will work this way
+                vm.store.setSettings(settings);
                 vm.settingsLoaded = true;
             });
         },

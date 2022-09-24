@@ -71,7 +71,7 @@
             </ul>
 
             <admin v-cloak v-if="appId" ref="admin"
-                   :player="player" :contentType="contentType" :typeId="appId" :settings="settings"
+                   :player="player" :contentType="contentType" :typeId="appId"
                    :type="'App'" :searchCurrentOnly="true"></admin>
 
         </div>
@@ -95,7 +95,6 @@ export default {
     props: {
         route: Array,
         player: Object,
-        settings: Object,
     },
 
     data: function() {

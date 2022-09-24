@@ -11,9 +11,15 @@
 </template>
 
 <script>
+import {toRefs} from "vue";
+
 export default {
-    props: {
-        settings: Object,
+    inject: ['store'],
+
+    data: function() {
+        return {
+            settings: toRefs(this.store.state).settings,
+        }
     },
 }
 </script>

@@ -91,8 +91,12 @@
 
 <script>
 export default {
-    props: {
-        settings: Object,
+    inject: ['store'],
+
+    data() {
+        return {
+            settings: { ...this.store.state.settings },
+        }
     },
 
     methods: {
@@ -104,6 +108,11 @@ export default {
             reader.addEventListener('load', () => {
                 const image = reader.result;
                 vm.$emit('changeSetting', name, image);
+                if (name === 'customization_nav_logo') {
+                    vm.settings.customization_nav_logo = image;
+                } else if (name === 'customization_home_logo') {
+                    vm.settings.customization_home_logo = image;
+                }
             }, false);
 
             if (file) {

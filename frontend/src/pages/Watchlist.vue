@@ -34,7 +34,7 @@
                     :id="currentWatchlist.id" :tab="tab" :manageIds="manageIds"></watchlistLists>
 
     <watchlistSettings v-cloak v-if="currentWatchlist && tab === 'settings'"
-                       :list="currentWatchlist" :settings="settings"></watchlistSettings>
+                       :list="currentWatchlist"></watchlistSettings>
 </div>
 </template>
 
@@ -53,7 +53,6 @@ export default {
     props: {
         route: Array,
         player: Object,
-        settings: Object,
     },
 
     data () {

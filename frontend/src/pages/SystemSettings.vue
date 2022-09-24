@@ -24,7 +24,6 @@
 
     <!-- "allAlliances" and "allCorporations" are only for "Features" and "Mails" tabs -->
     <component v-bind:is="tab"
-               :settings="settings"
                :allAlliances="alliances"
                :allCorporations="corporations"
                @changeSettingDelayed="changeSettingDelayed"
@@ -51,7 +50,6 @@ export default {
 
     props: {
         route: Array,
-        settings: Object,
     },
 
     data () {
@@ -68,6 +66,11 @@ export default {
         setTab(this);
 
         // Make sure the data is up-to-date.
+        this.emitter.emit('settingsChange');
+    },
+
+    unmounted () {
+        // Make sure the data is updated everywhere.
         this.emitter.emit('settingsChange');
     },
 
@@ -92,23 +95,8 @@ export default {
         changeSetting (name, value) {
             const vm = this;
             new SettingsApi().systemChange(name, value, (error, data, response) => {
-                if (error) { // 403 usually
-                    if (response.statusCode === 403) {
-                        vm.h.message('Unauthorized.', 'error');
-                    }
-                    return;
-                }
-
-                // Only propagate the change of variables that need it.
-                // Also do not trigger for text fields because that can interfere negatively with editing, i.e.
-                // the cursor will sometimes jump to the end of the input field or textarea.
-                if ([
-                        'allow_character_deletion',
-                        'customization_home_logo',
-                        'customization_nav_logo',
-                    ].indexOf(name) !== -1
-                ) {
-                    vm.emitter.emit('settingsChange');
+                if (error && response.statusCode === 403) {
+                    vm.h.message('Unauthorized.', 'error');
                 }
             });
         },

@@ -90,8 +90,7 @@
                 </div>
 
                 <admin v-cloak v-if="playerId" ref="admin"
-                       :player="player" :contentType="'groups'" :typeId="playerId" :settings="settings"
-                       :type="'Player'"
+                       :player="player" :contentType="'groups'" :typeId="playerId" :type="'Player'"
                        v-on:activePlayer="playerData = $event"></admin>
 
             </div>
@@ -115,7 +114,6 @@ export default {
     props: {
         route: Array,
         player: Object,
-        settings: Object,
     },
 
     data: function() {

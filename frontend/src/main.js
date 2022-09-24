@@ -38,18 +38,12 @@ const app = createApp({
              * The player object
              */
             player: null,
-
-            /**
-             * System settings from backend
-             */
-            settings: {},
         }
     },
 
     render() {
         return h(App, {
             player: this.$data.player,
-            settings: this.$data.settings,
         });
     },
 

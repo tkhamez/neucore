@@ -197,6 +197,7 @@ Select and table to add and remove objects from other objects.
 </template>
 
 <script>
+import {toRefs} from "vue";
 import {Modal} from "bootstrap";
 import Multiselect from '@suadelabs/vue3-multiselect';
 import {
@@ -220,6 +221,8 @@ export default {
         CharacterResult,
         Multiselect,
     },
+
+    inject: ['store'],
 
     props: {
         /**
@@ -250,13 +253,12 @@ export default {
         searchCurrentOnly: Boolean,
 
         player: Object,
-
-        settings: Object,
     },
 
     data: function() {
         return {
             h: new Helper(this),
+            settings: toRefs(this.store.state).settings,
             newObject: "", // empty string to select the first entry in the drop-down
             placeholder: "", // placeholder for the multi-select
             selectContent: [], // all options from backend

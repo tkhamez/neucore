@@ -1,6 +1,6 @@
 <template>
 <div>
-    <add-entity ref="addEntityModal" :settings="settings" v-on:success="addEntitySuccess()"></add-entity>
+    <add-entity ref="addEntityModal" v-on:success="addEntitySuccess()"></add-entity>
 
     <div class="card">
         <div  v-cloak v-if="! list.lockWatchlistSettings" class="card-header bg-light text-dark">
@@ -64,7 +64,6 @@ export default {
 
     props: {
         list: Object,
-        settings: Object,
     },
 
     data: function() {

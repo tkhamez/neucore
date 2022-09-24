@@ -135,22 +135,25 @@
 </template>
 
 <script>
+import {toRefs} from "vue";
 import $ from 'jquery';
 import {Collapse, Dropdown} from 'bootstrap';
 import Data from '../classes/Data';
 import Helper from "../classes/Helper";
 
 export default {
+    inject: ['store'],
+
     props: {
         authChar: Object,
         route: Array,
-        settings: Object,
         logout: Function,
     },
 
     data: function() {
         return {
             h: new Helper(this),
+            settings: toRefs(this.store.state).settings,
             managePages: ['GroupManagement', 'AppManagement', 'PlayerGroupManagement'],
             adminPages: [
                 'GroupAdmin', 'ServiceAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings',

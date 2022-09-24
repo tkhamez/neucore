@@ -63,7 +63,7 @@
     </div>
 </div>
 
-<div class="container-fluid">
+<div v-bind="$attrs" class="container-fluid">
 
     <div class="row mb-3 mt-3">
         <div class="col-lg-12">
@@ -419,6 +419,7 @@
 </template>
 
 <script>
+import {toRefs} from "vue";
 import {Modal, Tooltip} from "bootstrap";
 import {PlayerApi, SettingsApi} from 'neucore-js-client';
 import CharacterSearch from '../components/CharacterSearch.vue';
@@ -437,17 +438,21 @@ export default {
         EsiTokens,
     },
 
+    inject: ['store'],
+
     props: {
         route: Array,
         player: Object, // logged in player
         authChar: Object, // logged in character
-        settings: Object,
     },
 
     data () {
         return {
             Util: Util,
             h: new Helper(this),
+
+            settings: toRefs(this.store.state).settings,
+
             playersRole: [],
             playersChars: [],
             activeRole: '',

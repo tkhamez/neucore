@@ -7,7 +7,7 @@
           :functionRename="rename"
           v-on:groupChange="reloadGroups"></edit>
 
-    <add-entity ref="addEntityModal" :settings="settings" v-on:success="addAlliCorpSuccess()"></add-entity>
+    <add-entity ref="addEntityModal" v-on:success="addAlliCorpSuccess()"></add-entity>
 
     <div class="row mb-3 mt-3">
         <div class="col-lg-12">
@@ -106,11 +106,10 @@
 
             <admin v-cloak v-if="groupId && contentType !== 'members'" ref="admin"
                    :player="player" :contentType="(contentType !== 'groups' ? contentType : 'requiredGroups')"
-                   :typeId="groupId" :settings="settings"
-                   :type="'Group'" :searchCurrentOnly="true"></admin>
+                   :typeId="groupId" :type="'Group'" :searchCurrentOnly="true"></admin>
 
             <admin v-cloak v-if="groupId && contentType === 'groups'" ref="admin"
-                   :player="player" :contentType="'forbiddenGroups'" :typeId="groupId" :settings="settings"
+                   :player="player" :contentType="'forbiddenGroups'" :typeId="groupId"
                    :type="'Group'" :searchCurrentOnly="true"></admin>
 
             <div v-cloak v-if="contentType === 'members'" class="card border-secondary mb-3 table-responsive">
@@ -162,7 +161,6 @@ export default {
     },
 
     props: {
-        settings: Object,
         route: Array,
         player: Object,
     },
