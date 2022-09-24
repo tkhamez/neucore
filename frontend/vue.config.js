@@ -3,33 +3,36 @@ const path = require('path');
 const CompressionPlugin = require("compression-webpack-plugin");
 const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
 
-const themes = {
-    'theme-basic': './src/themes/basic.scss',
-    'theme-cerulean': './src/themes/cerulean.scss',
-    'theme-cosmo': './src/themes/cosmo.scss',
-    'theme-cyborg': './src/themes/cyborg.scss',
-    'theme-darkly': './src/themes/darkly.scss',
-    'theme-flatly': './src/themes/flatly.scss',
-    'theme-journal': './src/themes/journal.scss',
-    'theme-litera': './src/themes/litera.scss',
-    'theme-lumen': './src/themes/lumen.scss',
-    'theme-lux': './src/themes/lux.scss',
-    'theme-materia': './src/themes/materia.scss',
-    'theme-minty': './src/themes/minty.scss',
-    'theme-morph': './src/themes/morph.scss',
-    'theme-pulse': './src/themes/pulse.scss',
-    'theme-quartz': './src/themes/quartz.scss',
-    'theme-sandstone': './src/themes/sandstone.scss',
-    'theme-simplex': './src/themes/simplex.scss',
-    'theme-sketchy': './src/themes/sketchy.scss',
-    'theme-slate': './src/themes/slate.scss',
-    'theme-solar': './src/themes/solar.scss',
-    'theme-spacelab': './src/themes/spacelab.scss',
-    'theme-superhero': './src/themes/superhero.scss',
-    'theme-united': './src/themes/united.scss',
-    'theme-vapor': './src/themes/vapor.scss',
-    'theme-yeti': './src/themes/yeti.scss',
-    'theme-zephyr': './src/themes/zephyr.scss',
+const defaultTheme = { 'theme-darkly': './src/themes/darkly.scss' };
+const allThemes = {
+    ...defaultTheme,
+    ...{
+        'theme-basic'    : './src/themes/basic.scss',
+        'theme-cerulean' : './src/themes/cerulean.scss',
+        'theme-cosmo'    : './src/themes/cosmo.scss',
+        'theme-cyborg'   : './src/themes/cyborg.scss',
+        'theme-flatly'   : './src/themes/flatly.scss',
+        'theme-journal'  : './src/themes/journal.scss',
+        'theme-litera'   : './src/themes/litera.scss',
+        'theme-lumen'    : './src/themes/lumen.scss',
+        'theme-lux'      : './src/themes/lux.scss',
+        'theme-materia'  : './src/themes/materia.scss',
+        'theme-minty'    : './src/themes/minty.scss',
+        'theme-morph'    : './src/themes/morph.scss',
+        'theme-pulse'    : './src/themes/pulse.scss',
+        'theme-quartz'   : './src/themes/quartz.scss',
+        'theme-sandstone': './src/themes/sandstone.scss',
+        'theme-simplex'  : './src/themes/simplex.scss',
+        'theme-sketchy'  : './src/themes/sketchy.scss',
+        'theme-slate'    : './src/themes/slate.scss',
+        'theme-solar'    : './src/themes/solar.scss',
+        'theme-spacelab' : './src/themes/spacelab.scss',
+        'theme-superhero': './src/themes/superhero.scss',
+        'theme-united'   : './src/themes/united.scss',
+        'theme-vapor'    : './src/themes/vapor.scss',
+        'theme-yeti'     : './src/themes/yeti.scss',
+        'theme-zephyr'   : './src/themes/zephyr.scss',
+    }
 };
 
 module.exports = defineConfig(() => {
@@ -44,7 +47,8 @@ module.exports = defineConfig(() => {
             config.resolve = {
                 fallback: { 'querystring': require.resolve('querystring-es3') },
             };
-            config.entry = themes;
+            config.entry = allThemes;
+            //config.entry = defaultTheme;
             config.entry.main = './src/main.js';
             if (production) {
                 config.plugins.push(new CompressionPlugin({
@@ -75,7 +79,6 @@ module.exports = defineConfig(() => {
                 return args;
             });
             if (production) {
-                // noinspection NpmUsedModulesInstalled
                 config.plugin("progress").use(require("webpack/lib/ProgressPlugin"))
             }
         },

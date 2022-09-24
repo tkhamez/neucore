@@ -52,7 +52,8 @@
     "imports-loader": "^4.0.0",
     "license-webpack-plugin": "^4.0.2",
     "sass": "^1.51.0",
-    "sass-loader": "^13.0.0"
+    "sass-loader": "^13.0.0",
+    "webpack": "^5.74.0"
   },
   "bundledDependencies": [
     "neucore-js-client"
