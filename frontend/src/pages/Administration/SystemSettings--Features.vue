@@ -42,8 +42,12 @@
                    name="account_deactivation_active_days"
                    v-model="settings.account_deactivation_active_days"
                    v-on:input="$emit('changeSettingDelayed', 'account_deactivation_active_days', $event.target.value)">
-            Number of days for the "check-tokens" command with the "characters = active" option.
+            Number of days for the "check-tokens" command.
         </label>
+        <span class="form-text">
+            If a character has been added to an account in the last x days, its ESI token is checked by
+            the "check-tokens" command with the "characters = active" option.
+        </span>
     </div>
 
     <div class="card-header mt-3"><h6>API Rate Limit for Apps</h6></div>
