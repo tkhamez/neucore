@@ -8,7 +8,6 @@ use DI\Bridge\Slim\Bridge;
 use DI\Container;
 use DI\ContainerBuilder;
 use DI\Definition\Source\SourceCache;
-use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Monolog\ErrorHandler;
 use Neucore\Command\AssureMain;
@@ -28,13 +27,14 @@ use Neucore\Command\UpdateMemberTracking;
 use Neucore\Command\UpdatePlayerGroups;
 use Neucore\Command\UpdateServiceAccounts;
 use Neucore\Exception\RuntimeException;
+use Neucore\Factory\SessionHandlerFactory;
 use Neucore\Log\Context;
 use Neucore\Middleware\Psr15\AppRequestCount;
 use Neucore\Middleware\Psr15\Cors;
 use Neucore\Middleware\Psr15\BodyParams;
 use Neucore\Middleware\Psr15\CSRFToken;
 use Neucore\Middleware\Psr15\HSTS;
-use Neucore\Middleware\Psr15\RateLimit;
+use Neucore\Middleware\Psr15\AppRateLimit;
 use Neucore\Service\SessionData;
 use Neucore\Slim\SessionMiddleware;
 use Neucore\Service\AppAuth;
@@ -50,7 +50,6 @@ use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Dotenv\Exception\FormatException;
-use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 use Throwable;
 use Tkhamez\Slim\RoleAuth\RoleMiddleware;
 use Tkhamez\Slim\RoleAuth\SecureRouteMiddleware;
@@ -220,7 +219,6 @@ class Application
     {
         $this->buildContainer($mocks);
         $this->errorHandling();
-        $this->sessionHandler();
 
         $app = Bridge::create($this->container);
 
@@ -274,9 +272,9 @@ class Application
     {
         $config = $this->container->get(Config::class);
 
-        // Add middleware, last added are executed first.
+        // Add middleware, last added will be executed first.
 
-        $app->add($this->container->get(RateLimit::class));
+        $app->add($this->container->get(AppRateLimit::class));
         $app->add($this->container->get(AppRequestCount::class));
         $app->add(new CSRFToken(
             $this->container->get(ResponseFactoryInterface::class),
@@ -301,13 +299,16 @@ class Application
             $app->add(new HSTS((int)$hsts));
         }
 
-        $app->add(new SessionMiddleware([
-            SessionMiddleware::OPTION_NAME                   => 'neucore',
-            SessionMiddleware::OPTION_SECURE                 => $config['session']['secure'],
-            SessionMiddleware::OPTION_SAME_SITE              => $config['session']['same_site'],
-            SessionMiddleware::OPTION_ROUTE_INCLUDE_PATTERN  => ['/api/user', '/login', '/plugin'],
-            SessionMiddleware::OPTION_ROUTE_BLOCKING_PATTERN => ['/api/user/auth', '/login', '/plugin'],
-        ]));
+        $app->add(new SessionMiddleware(
+            $this->container->get(SessionHandlerFactory::class),
+            [
+                SessionMiddleware::OPTION_NAME                   => 'neucore',
+                SessionMiddleware::OPTION_SECURE                 => $config['session']['secure'],
+                SessionMiddleware::OPTION_SAME_SITE              => $config['session']['same_site'],
+                SessionMiddleware::OPTION_ROUTE_INCLUDE_PATTERN  => ['/api/user', '/login', '/plugin'],
+                SessionMiddleware::OPTION_ROUTE_BLOCKING_PATTERN => ['/api/user/auth', '/login', '/plugin'],
+            ]
+        ));
 
         // Add routing middleware after SecureRouteMiddleware, RoleMiddleware and NonBlockingSession,
         // so the `route` attribute is available from the ServerRequestInterface object
@@ -357,35 +358,6 @@ class Application
         }
 
         return $container;
-    }
-
-    /**
-     * Register pdo session handler.
-     *
-     * (not for CLI)
-     *
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     * @phan-suppress PhanTypeInvalidThrowsIsInterface
-     * @see https://symfony.com/doc/current/components/http_foundation/session_configuration.html
-     */
-    private function sessionHandler(): void
-    {
-        if (headers_sent()) { // should only be true for integration tests
-            return;
-        }
-
-        ini_set('session.gc_maxlifetime', '1440'); // 24 minutes
-        ini_set('session.gc_probability', '1');
-        ini_set('session.gc_divisor', '100');
-
-        /* @noinspection PhpFullyQualifiedNameUsageInspection */
-        /* @var \Doctrine\DBAL\Driver\PDO\Connection $conn */
-        $pdo = $this->container->get(EntityManagerInterface::class)->getConnection()->getNativeConnection();
-        /* @phan-suppress-next-line PhanTypeMismatchArgument */
-        $sessionHandler = new PdoSessionHandler($pdo, ['lock_mode' => PdoSessionHandler::LOCK_ADVISORY]);
-
-        session_set_save_handler($sessionHandler, true);
     }
 
     /**

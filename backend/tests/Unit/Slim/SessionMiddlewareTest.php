@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Slim;
 
+use Neucore\Factory\SessionHandlerFactory;
 use Neucore\Slim\SessionMiddleware;
 use Neucore\Service\SessionData;
-use Psr\Http\Message\ResponseInterface;
+use Tests\Helper;
 use Tests\RequestHandler;
 use Tests\Unit\TestCase;
 
@@ -81,12 +82,13 @@ class SessionMiddlewareTest extends TestCase
         $this->assertFalse(SessionData::isReadOnly());
     }
 
-    private function invokeMiddleware(array $conf, string $path = null): ResponseInterface
+    private function invokeMiddleware(array $conf, string $path = null): void
     {
         $request = $this->createRequestWithRoute('GET', $path);
 
-        $nbs = new SessionMiddleware($conf);
+        $em = (new Helper())->getEm();
+        $nbs = new SessionMiddleware(new SessionHandlerFactory($em), $conf);
 
-        return $nbs->process($request, new RequestHandler());
+        $nbs->process($request, new RequestHandler());
     }
 }

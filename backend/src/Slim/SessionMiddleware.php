@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Slim;
 
+use Neucore\Factory\SessionHandlerFactory;
 use Neucore\Service\SessionData;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -34,10 +35,9 @@ class SessionMiddleware implements MiddlewareInterface
 
     public const OPTION_NAME  = 'name';
 
-    /**
-     * @var array
-     */
-    private $options;
+    private SessionHandlerFactory $sessionHandlerFactory;
+
+    private array $options;
 
     /**
      *
@@ -59,8 +59,9 @@ class SessionMiddleware implements MiddlewareInterface
      *      'route_blocking_pattern' => ['/path/one/set', '/path/one/delete'],
      * ]
      */
-    public function __construct(array $options = [])
+    public function __construct(SessionHandlerFactory $sessionHandlerFactory, array $options = [])
     {
+        $this->sessionHandlerFactory = $sessionHandlerFactory;
         $this->options = $options;
     }
 
@@ -68,11 +69,13 @@ class SessionMiddleware implements MiddlewareInterface
     {
         $route = RouteContext::fromRequest($request)->getRoute();
 
-        if (! $this->shouldStartSession($route)) {
+        if (!$this->shouldStartSession($route)) {
             return $handler->handle($request);
         }
 
+        $this->setup();
         $this->start();
+
         $readOnly = $this->isReadOnly($route);
         SessionData::setReadOnly($readOnly);
         if ($readOnly) {
@@ -107,6 +110,22 @@ class SessionMiddleware implements MiddlewareInterface
     }
 
     /**
+     * Register session handler.
+     */
+    private function setup(): void
+    {
+        if (headers_sent()) { // should only be true for integration tests
+            return;
+        }
+
+        ini_set('session.gc_maxlifetime', '1440'); // 24 minutes
+        ini_set('session.gc_probability', '1');
+        ini_set('session.gc_divisor', '100');
+
+        session_set_save_handler(($this->sessionHandlerFactory)(), true);
+    }
+
+    /**
      * @return void
      */
     private function start()
@@ -120,18 +139,12 @@ class SessionMiddleware implements MiddlewareInterface
                 'cookie_lifetime' => 0,
                 'cookie_path' => '/',
                 'cookie_domain' => '',
-                'cookie_secure' =>
-                    isset($this->options[self::OPTION_SECURE]) ?
-                    (bool) $this->options[self::OPTION_SECURE] :
-                    true,
+                'cookie_secure' => !isset($this->options[self::OPTION_SECURE]) || $this->options[self::OPTION_SECURE],
                 'cookie_httponly' => true,
-                'cookie_samesite' =>
-                    isset($this->options[self::OPTION_SAME_SITE]) ?
-                    $this->options[self::OPTION_SAME_SITE] :
-                    'Lax',
+                'cookie_samesite' => $this->options[self::OPTION_SAME_SITE] ?? 'Lax',
             ]);
 
-            // write something to the session so that the Set-Cookie header is send
+            // write something to the session so that the Set-Cookie header is sent
             $_SESSION['_started'] = $_SESSION['_started'] ?? time();
         } else {
             // allow unit tests to inject values in the session

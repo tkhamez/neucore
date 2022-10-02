@@ -17,51 +17,27 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 
-class RateLimit implements MiddlewareInterface
+class AppRateLimit implements MiddlewareInterface
 {
     public const HEADER_REMAIN = 'X-Neucore-Rate-Limit-Remain';
 
     public const HEADER_RESET = 'X-Neucore-Rate-Limit-Reset';
 
-    /**
-     * @var AppAuth
-     */
-    private $appAuth;
+    private AppAuth $appAuth;
 
-    /**
-     * @var StorageInterface
-     */
-    private $storage;
+    private StorageInterface $storage;
 
-    /**
-     * @var ResponseFactoryInterface
-     */
-    private $responseFactory;
+    private ResponseFactoryInterface $responseFactory;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
+    private RepositoryFactory $repositoryFactory;
 
-    /**
-     * @var int
-     */
-    private $maxRequests;
+    private ?int $maxRequests = null;
 
-    /**
-     * @var int
-     */
-    private $resetTime;
+    private ?int $resetTime = null;
 
-    /**
-     * @var bool
-     */
-    private $active;
+    private bool $active = false;
 
     public function __construct(
         AppAuth $appAuth,
@@ -126,7 +102,7 @@ class RateLimit implements MiddlewareInterface
 
         $this->maxRequests = $maxRequestsVar ? abs((int) $maxRequestsVar->getValue()) : 0;
         $this->resetTime = $resetTimeVar ? abs((int) $resetTimeVar->getValue()) : 0;
-        $this->active = $activeVar ? (bool) $activeVar->getValue() : false;
+        $this->active = $activeVar && $activeVar->getValue();
     }
 
     private function checkLimit(App $app): array

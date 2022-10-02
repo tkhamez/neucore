@@ -8,7 +8,7 @@ namespace Tests\Unit\Middleware\Psr15;
 use Neucore\Entity\App;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Middleware\Psr15\RateLimit;
+use Neucore\Middleware\Psr15\AppRateLimit;
 use Neucore\Service\AppAuth;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\SystemVariableStorage;
@@ -20,37 +20,19 @@ use Tests\Logger;
 use Tests\RequestFactory;
 use Tests\RequestHandler;
 
-class RateLimitTest extends TestCase
+class AppRateLimitTest extends TestCase
 {
-    /**
-     * @var \Doctrine\Persistence\ObjectManager
-     */
-    private $om;
+    private \Doctrine\Persistence\ObjectManager $om;
 
-    /**
-     * @var RateLimit
-     */
-    private $middleware;
+    private AppRateLimit $middleware;
 
-    /**
-     * @var Logger
-     */
-    private $logger;
+    private Logger $logger;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repoFactory;
+    private RepositoryFactory $repoFactory;
 
-    /**
-     * @var SystemVariableStorage
-     */
-    private $storage;
+    private SystemVariableStorage $storage;
 
-    /**
-     * @var int
-     */
-    private $appId;
+    private int $appId;
 
     protected function setUp(): void
     {
@@ -77,7 +59,7 @@ class RateLimitTest extends TestCase
             (string) \json_encode((object) ['remaining' => '0', 'created' => time() - 5])
         );
 
-        $this->middleware = new RateLimit(
+        $this->middleware = new AppRateLimit(
             new AppAuth($this->repoFactory, $this->om),
             $this->storage,
             new ResponseFactory(),
@@ -95,13 +77,13 @@ class RateLimitTest extends TestCase
 
         $this->assertSame(429, $response->getStatusCode());
 
-        $this->assertSame('-1', $response->getHeader(RateLimit::HEADER_REMAIN)[0]);
-        $this->assertEqualsWithDelta(4.5, $response->getHeader(RateLimit::HEADER_RESET)[0], 1.0);
+        $this->assertSame('-1', $response->getHeader(AppRateLimit::HEADER_REMAIN)[0]);
+        $this->assertEqualsWithDelta(4.5, $response->getHeader(AppRateLimit::HEADER_RESET)[0], 1.0);
 
         $logs = $this->logger->getHandler()->getRecords();
         $this->assertSame(1, count($logs));
         $this->assertStringStartsWith(
-            "API Rate Limit: App {$this->appId} 'Test app', limit exceeded with 51 request in ", // ... ~5.5 seconds.
+            "API Rate Limit: App $this->appId 'Test app', limit exceeded with 51 request in ", // ... ~5.5 seconds.
             $logs[0]['message']
         );
     }
@@ -121,8 +103,8 @@ class RateLimitTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
 
         $this->assertSame([
-            RateLimit::HEADER_REMAIN => ['49'],
-            RateLimit::HEADER_RESET => ['10.0'],
+            AppRateLimit::HEADER_REMAIN => ['49'],
+            AppRateLimit::HEADER_RESET => ['10.0'],
         ], $response->getHeaders());
     }
 
@@ -139,13 +121,13 @@ class RateLimitTest extends TestCase
 
         $this->assertSame(200, $response->getStatusCode());
 
-        $this->assertSame('-1', $response->getHeader(RateLimit::HEADER_REMAIN)[0]);
-        $this->assertEqualsWithDelta(4.5, $response->getHeader(RateLimit::HEADER_RESET)[0], 1.0);
+        $this->assertSame('-1', $response->getHeader(AppRateLimit::HEADER_REMAIN)[0]);
+        $this->assertEqualsWithDelta(4.5, $response->getHeader(AppRateLimit::HEADER_RESET)[0], 1.0);
 
         $logs = $this->logger->getHandler()->getRecords();
         $this->assertSame(1, count($logs));
         $this->assertStringStartsWith(
-            "API Rate Limit: App {$this->appId} 'Test app', limit exceeded with 51 request in ", // ... ~5.5 seconds.
+            "API Rate Limit: App $this->appId 'Test app', limit exceeded with 51 request in ", // ... ~5.5 seconds.
             $logs[0]['message']
         );
     }
