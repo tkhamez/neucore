@@ -189,6 +189,12 @@ export default {
         });
     },
 
+    unmounted() {
+        this.unauthorized = null;
+        this.selectedPlayer = null;
+        this.characterMovements = [];
+    },
+
     methods: {
         characterName(characterId) {
             for (const character of this.selectedPlayer.characters) {
