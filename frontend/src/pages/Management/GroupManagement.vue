@@ -207,6 +207,7 @@ export default {
 
     mounted() {
         window.scrollTo(0,0);
+        this.emitter.emit('playerChange'); // Make sure the group data is up-to-date.
     },
 
     watch: {
