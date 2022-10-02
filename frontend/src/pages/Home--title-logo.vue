@@ -16,7 +16,7 @@ import {toRef} from "vue";
 export default {
     inject: ['store'],
 
-    data: function() {
+    data() {
         return {
             settings: toRef(this.store.state, 'settings'),
         }

@@ -50,7 +50,7 @@ export default {
         route: Array,
     },
 
-    data: function() {
+    data() {
         return {
             currentRoleName: '',
             availableRoles: Data.userRoles.filter(val =>
@@ -60,19 +60,15 @@ export default {
         }
     },
 
-    mounted: function() {
+    mounted() {
         window.scrollTo(0,0);
         setRoleName(this);
     },
 
     watch: {
-        route: function() {
+        route() {
             setRoleName(this);
         },
-    },
-
-    methods: {
-
     },
 }
 

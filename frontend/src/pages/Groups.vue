@@ -75,7 +75,7 @@ import {GroupApi, PlayerApi} from 'neucore-js-client';
 export default {
     inject: ['store'],
 
-    data: function() {
+    data() {
         return {
             player: toRef(this.store.state, 'player'),
             groups: null,
@@ -85,7 +85,7 @@ export default {
         }
     },
 
-    mounted: function() {
+    mounted() {
         window.scrollTo(0,0);
         this.emitter.emit('playerChange'); // Ensure group memberships are up-to-date.
         getPublicGroups(this);
@@ -93,7 +93,7 @@ export default {
     },
 
     methods: {
-        getGroupsWithStatus () {
+        getGroupsWithStatus() {
             const groups = [];
             for (const group of this.groups) {
                 group.statusText = getStatus(this, group.id);
@@ -102,22 +102,20 @@ export default {
             return groups;
         },
 
-        apply: function(groupId) {
-            const vm = this;
-            new PlayerApi().addApplication(groupId, function() {
-                vm.emitter.emit('playerChange');
-                getApplications(vm);
+        apply(groupId) {
+            new PlayerApi().addApplication(groupId, () => {
+                this.emitter.emit('playerChange');
+                getApplications(this);
             });
         },
 
-        cancel: function(groupId) {
-            const vm = this;
-            new PlayerApi().removeApplication(groupId, function() {
-                getApplications(vm);
+        cancel(groupId) {
+            new PlayerApi().removeApplication(groupId, () => {
+                getApplications(this);
             });
         },
 
-        askLeave: function(groupId, groupName, autoAccept) {
+        askLeave(groupId, groupName, autoAccept) {
             this.groupToLeave = {
                 id: groupId,
                 name: groupName,
@@ -130,11 +128,10 @@ export default {
             }
         },
 
-        leave: function() {
-            const vm = this;
-            new PlayerApi().leaveGroup(this.groupToLeave.id, function() {
-                vm.emitter.emit('playerChange');
-                getApplications(vm);
+        leave() {
+            new PlayerApi().leaveGroup(this.groupToLeave.id, () => {
+                this.emitter.emit('playerChange');
+                getApplications(this);
             });
             if (this.leaveGroupModal) {
                 this.leaveGroupModal.hide();
@@ -145,7 +142,7 @@ export default {
 }
 
 function getPublicGroups(vm) {
-    new GroupApi().userGroupPublic(function(error, data) {
+    new GroupApi().userGroupPublic((error, data) => {
         if (error) { // 403 usually
             vm.groups = null;
             return;
@@ -155,7 +152,7 @@ function getPublicGroups(vm) {
 }
 
 function getApplications(vm) {
-    new PlayerApi().showApplications(function(error, data) {
+    new PlayerApi().showApplications((error, data) => {
         if (error) { // 403 usually
             vm.applications = null;
             return;

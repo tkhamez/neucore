@@ -139,7 +139,7 @@ export default {
         allCorporations: Array,
     },
 
-    data () {
+    data() {
         return {
             settings: { ...this.store.state.settings },
             allAlliancesLoaded: false,
@@ -149,7 +149,7 @@ export default {
         }
     },
 
-    mounted () {
+    mounted() {
         this.$parent.loadLists();
     },
 
@@ -168,7 +168,7 @@ export default {
             readSettings(this);
         },
 
-        accountDeactivationAlliances (newValues, oldValues) {
+        accountDeactivationAlliances(newValues, oldValues) {
             const newValue = this.$parent.buildIdString(newValues, oldValues, this.accountDeactivationAlliances);
             if (newValue === null) {
                 return;
@@ -176,7 +176,7 @@ export default {
             this.$emit('changeSetting', 'account_deactivation_alliances', newValue);
         },
 
-        accountDeactivationCorporations (newValues, oldValues) {
+        accountDeactivationCorporations(newValues, oldValues) {
             const newValue = this.$parent.buildIdString(newValues, oldValues, this.accountDeactivationCorporations);
             if (newValue === null) {
                 return;

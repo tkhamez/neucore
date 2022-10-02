@@ -145,7 +145,7 @@ export default {
         route: Array,
     },
 
-    data () {
+    data() {
         return {
             h: new Helper(this),
             player: toRef(this.store.state, 'player'),
@@ -162,7 +162,7 @@ export default {
         }
     },
 
-    mounted () {
+    mounted() {
         window.scrollTo(0, 0);
         this.registerSuccess = false;
         getData(this);
@@ -176,7 +176,7 @@ export default {
     },
 
     watch: {
-        route () {
+        route() {
             this.newPassword = {};
             this.formEmail = null;
             this.registerSuccess = false;
@@ -252,82 +252,79 @@ export default {
         },
 
         register() {
-            const vm = this;
-            vm.registerButtonDisabled = true;
-            vm.newPassword = {};
+            this.registerButtonDisabled = true;
+            this.newPassword = {};
             const api = new ServiceApi();
-            api.serviceRegister(getServiceId(vm), {email: vm.formEmail}, (error, data, response) => {
+            api.serviceRegister(getServiceId(this), {email: this.formEmail}, (error, data, response) => {
                 if (response.statusCode === 200) {
-                    vm.h.message('Account successfully registered or initialized.', 'success', 2500);
-                    vm.registerSuccess = true;
-                    vm.newPassword[data.characterId] = data.password;
-                    getAccountData(vm, api);
+                    this.h.message('Account successfully registered or initialized.', 'success', 2500);
+                    this.registerSuccess = true;
+                    this.newPassword[data.characterId] = data.password;
+                    getAccountData(this, api);
                 } else if ([403, 404].indexOf(response.statusCode) !== -1) {
-                    vm.h.message('Service not found or not authorized.', 'warning');
-                    vm.registerButtonDisabled = false;
+                    this.h.message('Service not found or not authorized.', 'warning');
+                    this.registerButtonDisabled = false;
                 } else if (response.statusCode === 409) {
                     const body = JSON.parse(response.text);
                     if (body === 'no_main') {
-                        vm.h.message('This account does not have a main character.', 'warning');
+                        this.h.message('This account does not have a main character.', 'warning');
                     } else if (body === 'already_registered') {
-                        vm.h.message('There is already an account for this character.', 'warning');
+                        this.h.message('There is already an account for this character.', 'warning');
                     } else if (body === 'missing_email') {
-                        vm.h.message('Please provide an e-mail address.', 'warning');
+                        this.h.message('Please provide an e-mail address.', 'warning');
                     } else if (body === 'email_mismatch') {
-                        vm.h.message('This e-mail address belongs to another account.', 'warning');
+                        this.h.message('This e-mail address belongs to another account.', 'warning');
                     } else if (body === 'invite_wait') {
-                        vm.h.message("You've already requested an invite recently, please wait.", 'warning');
+                        this.h.message("You've already requested an invite recently, please wait.", 'warning');
                     } else if (body === 'second_account') {
-                        vm.h.message('You cannot register a second account.', 'warning');
+                        this.h.message('You cannot register a second account.', 'warning');
                     } else {
-                        vm.h.message(body, 'warning');
+                        this.h.message(body, 'warning');
                     }
-                    vm.registerButtonDisabled = false;
+                    this.registerButtonDisabled = false;
                 } else { // 500
-                    vm.h.message('Error. Please try again.', 'error');
-                    vm.registerButtonDisabled = false;
+                    this.h.message('Error. Please try again.', 'error');
+                    this.registerButtonDisabled = false;
                 }
             });
         },
         updateAccount(characterId) {
-            const vm = this;
-            vm.updateAccountButtonDisabled = true;
-            vm.newPassword = {}
+            this.updateAccountButtonDisabled = true;
+            this.newPassword = {}
             const api = new ServiceApi();
-            api.serviceUpdateAccount(getServiceId(vm), characterId, (error, data, response) => {
+            api.serviceUpdateAccount(getServiceId(this), characterId, (error, data, response) => {
                 if (error) {
                     if (response.statusCode === 409) {
-                        vm.h.message(JSON.parse(response.text), 'warning');
+                        this.h.message(JSON.parse(response.text), 'warning');
                     } else if (response.statusCode === 404) {
-                        vm.h.message('Account not found.', 'error');
+                        this.h.message('Account not found.', 'error');
                     } else {
-                        vm.h.message('Error. Please try again.', 'error');
+                        this.h.message('Error. Please try again.', 'error');
                     }
                 } else {
-                    vm.h.message('Account successfully updated.', 'success', 2500);
-                    getAccountData(vm, api);
+                    this.h.message('Account successfully updated.', 'success', 2500);
+                    getAccountData(this, api);
                 }
-                vm.updateAccountButtonDisabled = false;
+                this.updateAccountButtonDisabled = false;
             });
         },
         resetPassword(characterId) {
-            const vm = this;
-            vm.resetPasswordButtonDisabled = true;
-            vm.newPassword = {}
+            this.resetPasswordButtonDisabled = true;
+            this.newPassword = {}
             const api = new ServiceApi();
-            api.serviceResetPassword(getServiceId(vm), characterId, (error, data, response) => {
+            api.serviceResetPassword(getServiceId(this), characterId, (error, data, response) => {
                 if (response.statusCode === 200) {
-                    if (vm.service.configuration.showPassword) {
-                        vm.h.message('Password successfully changed.', 'success', 2500);
+                    if (this.service.configuration.showPassword) {
+                        this.h.message('Password successfully changed.', 'success', 2500);
                     }
-                    vm.newPassword[characterId] = data;
-                    getAccountData(vm, api);
+                    this.newPassword[characterId] = data;
+                    getAccountData(this, api);
                 } else if (response.statusCode === 404) {
-                    vm.h.message('Service or account not found.', 'warning');
-                    vm.resetPasswordButtonDisabled = false;
+                    this.h.message('Service or account not found.', 'warning');
+                    this.resetPasswordButtonDisabled = false;
                 } else if (response.statusCode === 500) {
-                    vm.h.message('Error. Please try again.', 'error');
-                    vm.resetPasswordButtonDisabled = false;
+                    this.h.message('Error. Please try again.', 'error');
+                    this.resetPasswordButtonDisabled = false;
                 }
             });
         }

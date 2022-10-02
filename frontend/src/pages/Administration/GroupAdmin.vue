@@ -164,7 +164,7 @@ export default {
         route: Array,
     },
 
-    data: function() {
+    data() {
         return {
             h: new Helper(this),
             groups: [],
@@ -177,109 +177,106 @@ export default {
         }
     },
 
-    mounted: function() {
+    mounted() {
         window.scrollTo(0,0);
         getGroups(this);
         setGroupIdAndContentType(this);
     },
 
     watch: {
-        route: function() {
+        route() {
             setGroupIdAndContentType(this);
             getGroups(this); // TODO need API endpoint to load one group only
         },
     },
 
     methods: {
-        mouseover (ele) {
+        mouseover(ele) {
             $(ele.target).addClass('text-warning');
         },
 
-        mouseleave (ele) {
+        mouseleave(ele) {
             $(ele.target).removeClass('text-warning');
         },
 
-        showCreateGroupModal: function() {
+        showCreateGroupModal() {
             this.$refs.editModal.showCreateModal();
         },
 
-        showDeleteGroupModal: function(group) {
+        showDeleteGroupModal(group) {
             this.$refs.editModal.showDeleteModal(group);
         },
 
-        showEditGroupModal: function(group) {
+        showEditGroupModal(group) {
             this.$refs.editModal.showEditModal(group);
         },
 
-        showAddAlliCorpModal: function(addType) {
+        showAddAlliCorpModal(addType) {
             this.$refs.addEntityModal.showModal(addType);
         },
 
-        addAlliCorpSuccess: function() {
+        addAlliCorpSuccess() {
             if (this.$refs.admin) {
                 this.$refs.admin.getSelectContent();
             }
         },
 
-        create (name) {
-            const vm = this;
+        create(name) {
             new GroupApi().userGroupCreate(name, (error, data, response) => {
                 if (response.status === 409) {
-                    vm.h.message('A group with this name already exists.', 'error');
+                    this.h.message('A group with this name already exists.', 'error');
                 } else if (response.status === 400) {
-                    vm.h.message('Invalid name.', 'error');
+                    this.h.message('Invalid name.', 'error');
                 } else if (error) {
-                    vm.h.message('Error creating group.', 'error');
+                    this.h.message('Error creating group.', 'error');
                 } else {
-                    vm.$refs.editModal.hideModal();
-                    vm.h.message('Group created.', 'success');
+                    this.$refs.editModal.hideModal();
+                    this.h.message('Group created.', 'success');
                     window.location.hash = `#GroupAdmin/${data.id}`;
-                    getGroups(vm);
+                    getGroups(this);
                 }
             });
         },
 
-        deleteIt (id) {
-            const vm = this;
-            new GroupApi().userGroupDelete(id, (error) => {
+        deleteIt(id) {
+            new GroupApi().userGroupDelete(id, error => {
                 if (error) {
-                    vm.h.message('Error deleting group', 'error');
+                    this.h.message('Error deleting group', 'error');
                 } else {
-                    vm.$refs.editModal.hideModal();
-                    vm.h.message('Group deleted.', 'success');
+                    this.$refs.editModal.hideModal();
+                    this.h.message('Group deleted.', 'success');
                     window.location.hash = '#GroupAdmin';
-                    vm.groupId = null;
-                    vm.contentType = '';
-                    vm.groupDescription = '';
-                    getGroups(vm);
-                    vm.emitter.emit('playerChange'); // current player could have been a manager or member
+                    this.groupId = null;
+                    this.contentType = '';
+                    this.groupDescription = '';
+                    getGroups(this);
+                    this.emitter.emit('playerChange'); // current player could have been a manager or member
                 }
             });
         },
 
-        rename (id, name) {
-            const vm = this;
+        rename(id, name) {
             new GroupApi().userGroupRename(id, name, (error, data, response) => {
                 if (response.status === 409) {
-                    vm.h.message('A group with this name already exists.', 'error');
+                    this.message('A group with this name already exists.', 'error');
                 } else if (response.status === 400) {
-                    vm.h.message('Invalid group name.', 'error');
+                    this.h.message('Invalid group name.', 'error');
                 } else if (error) {
-                    vm.h.message('Error renaming group.', 'error');
+                    this.h.message('Error renaming group.', 'error');
                 } else {
-                    vm.h.message('Group renamed.', 'success');
-                    vm.$refs.editModal.hideModal();
-                    vm.emitter.emit('playerChange');
-                    getGroups(vm);
+                    this.h.message('Group renamed.', 'success');
+                    this.$refs.editModal.hideModal();
+                    this.emitter.emit('playerChange');
+                    getGroups(this);
                 }
             });
         },
 
-        reloadGroups () {
+        reloadGroups() {
             getGroups(this);
         },
 
-        changeDescriptionDelayed (value) {
+        changeDescriptionDelayed(value) {
             changeDescriptionDebounced(this, value);
         },
     },
@@ -305,7 +302,7 @@ function setGroupIdAndContentType(vm) {
 }
 
 function getGroups(vm) {
-    new GroupApi().userGroupAll(function(error, data) {
+    new GroupApi().userGroupAll((error, data) => {
         if (error) { // 403 usually
             return;
         }
@@ -325,7 +322,7 @@ function setActiveGroupData(vm) {
 function fetchMembers(vm) {
     vm.members = [];
     vm.membersLoaded = false;
-    new GroupApi().userGroupMembers(vm.groupId, function(error, data) {
+    new GroupApi().userGroupMembers(vm.groupId, (error, data) => {
         if (error) {
             return;
         }

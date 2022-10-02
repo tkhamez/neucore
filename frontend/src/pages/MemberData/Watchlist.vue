@@ -54,7 +54,7 @@ export default {
         route: Array,
     },
 
-    data () {
+    data() {
         return {
             h: new Helper(this),
             watchlists: [], // watchlists with view permission
@@ -65,27 +65,26 @@ export default {
         }
     },
 
-    mounted () {
+    mounted() {
         window.scrollTo(0,0);
 
-        const vm = this;
-        getWatchlists(vm, () => {
+        getWatchlists(this, () => {
             // auto select 1st if route does not have an ID
-            if (!vm.route[1] && vm.watchlists[0]) {
-                window.location.hash = `#Watchlist/${vm.watchlists[0].id}`;
+            if (!this.route[1] && this.watchlists[0]) {
+                window.location.hash = `#Watchlist/${this.watchlists[0].id}`;
             } else {
-                setTab(vm);
+                setTab(this);
             }
         });
     },
 
     watch: {
-        selectedId () {
+        selectedId() {
             const tab = this.route[2] ? this.route[2] : '';
             window.location.hash = `#Watchlist/${this.selectedId}/${tab}`;
         },
 
-        route () {
+        route() {
             setTab(this);
         },
     },

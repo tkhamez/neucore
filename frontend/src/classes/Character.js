@@ -40,7 +40,7 @@ export default class Character {
      */
     updateCharacter(characterId, callback, successMessage) {
         const self = this;
-        new CharacterApi().update(characterId, function(error, data, response) {
+        new CharacterApi().update(characterId, (error, data, response) => {
             if (error) { // usually 403 (from Core) or 503 (ESI down)
                 if (error.message) {
                     self.helper.message(error.message, 'error');
@@ -72,7 +72,7 @@ export default class Character {
         new PlayerApi().deleteCharacter(
             characterId,
             { adminReason: adminReason || '' },
-            function(error) {
+            error => {
                 if (error) { // 403 usually
                     self.helper.message('Deletion denied.', 'error');
                     return;

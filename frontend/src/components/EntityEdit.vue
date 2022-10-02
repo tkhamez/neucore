@@ -124,7 +124,7 @@ export default {
         functionRename: null,
     },
 
-    data: function() {
+    data() {
         return {
             Data: Data,
             h: new Helper(this),
@@ -140,7 +140,7 @@ export default {
     },
 
     methods: {
-        showCreateModal: function() {
+        showCreateModal() {
             this.newName = '';
             this.createModal = new Modal('#createModal');
             this.createModal.show();
@@ -149,7 +149,7 @@ export default {
         /**
          * @param item the object to delete (must have id and name property)
          */
-        showDeleteModal: function(item) {
+        showDeleteModal(item) {
             this.item = {
                 id: item.id,
                 name: item.name,
@@ -158,7 +158,7 @@ export default {
             this.deleteModal.show();
         },
 
-        showEditModal: function(item) {
+        showEditModal(item) {
             this.item = {
                 id: item.id,
                 name: item.name,
@@ -172,7 +172,7 @@ export default {
             this.editModal.show();
         },
 
-        hideModal: function() {
+        hideModal() {
             if (this.createModal) {
                 this.createModal.hide();
             }
@@ -185,27 +185,25 @@ export default {
         },
 
         setVisibility() {
-            const vm = this;
-            new GroupApi().setVisibility(this.item.id, this.groupVisibility, function(error) {
+            new GroupApi().setVisibility(this.item.id, this.groupVisibility, error => {
                 if (error) {
-                    vm.h.message('Error saving visibility.', 'error');
+                    this.h.message('Error saving visibility.', 'error');
                 } else {
-                    vm.h.message('Visibility saved.', 'success');
-                    vm.emitter.emit('settingsChange'); // because of "navigationShowGroups"
-                    vm.emitter.emit('playerChange');
-                    vm.$emit('groupChange');
+                    this.h.message('Visibility saved.', 'success');
+                    this.emitter.emit('settingsChange'); // because of "navigationShowGroups"
+                    this.emitter.emit('playerChange');
+                    this.$emit('groupChange');
                 }
             });
         },
 
         toggleGroupCheckbox(name) {
-            const vm = this;
-            const callback = (error) => {
+            const callback = error => {
                 if (error) {
-                    vm.h.message(`Error saving ${name}.`, 'error');
+                    this.h.message(`Error saving ${name}.`, 'error');
                 } else {
-                    vm.h.message(`${name} saved.`, 'success');
-                    vm.$emit('groupChange');
+                    this.h.message(`${name} saved.`, 'success');
+                    this.$emit('groupChange');
                 }
             };
             const api = new GroupApi();

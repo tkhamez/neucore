@@ -140,7 +140,7 @@ export default {
         route: Array,
     },
 
-    data () {
+    data() {
         return {
             Util: Util,
             h: new Helper(this),
@@ -168,25 +168,25 @@ export default {
         }
     },
 
-    mounted () {
+    mounted() {
         window.scrollTo(0,0);
 
         configureDataTable(this);
         getCorporations(this);
     },
 
-    unmounted () {
+    unmounted() {
         this.table.clear();
         this.table.destroy();
     },
 
     watch: {
-        route () {
+        route() {
             setOptionsFromPath(this);
             getMembersDelayed(this);
         },
 
-        corporation () {
+        corporation() {
             setPathFromOptions(this);
         },
 
@@ -199,7 +199,7 @@ export default {
     },
 
     methods: {
-        toggleSearchableColumn (index) {
+        toggleSearchableColumn(index) {
             this.columns[index].searchable = ! this.columns[index].searchable;
             this.table.draw();
         },
@@ -217,7 +217,7 @@ function getCorporations(vm) {
     });
 }
 
-const getMembersDelayed = _.debounce((vm) => {
+const getMembersDelayed = _.debounce(vm => {
     getMembers(vm);
 }, 400);
 
@@ -316,31 +316,31 @@ function configureDataTable(vm) {
         pageLength: 10,
         deferRender: true,
         order: [[3, "desc"]],
-        'drawCallback': function() {
+        'drawCallback': () => {
             document.querySelectorAll('.page-tracking [data-bs-toggle="tooltip"]').forEach(tooltip => {
-                this.tooltip = new Tooltip(tooltip)
+                return new Tooltip(tooltip);
             });
             const $link = $('a[data-player-id]');
             $link.off('click');
-            $link.on('click', (evt) => {
+            $link.on('click', evt => {
                 $.Event(evt).preventDefault();
                 vm.h.showCharacters(evt.target.dataset.playerId);
             });
         },
         columns: [{
             render: {
-                _: function (data, type, row) {
+                _(data, type, row) {
                     return `
                         <a class="external" href="https://evewho.com/character/${row.id}" target="_blank"
                            rel="noopener noreferrer" title="Eve Who">${(row.name ? row.name : row.id)}</a>`;
                 },
-                sort: function (data, type, row) {
+                sort(data, type, row) {
                     return row.name;
                 },
             }
         }, {
             render: {
-                _: function (data, type, row) {
+                _(data, type, row) {
                     if (row.player) {
                         return `
                             <a href="#" data-player-id="${row.player.id}">
@@ -357,13 +357,13 @@ function configureDataTable(vm) {
                         return '';
                     }
                 },
-                sort: function (data, type, row) {
+                sort(data, type, row) {
                     return row.player ? row.player.name :
                         (row.missingCharacterMailSentNumber > 0 ? 'n/a' : '');
                 },
             }
         }, {
-            data (row) {
+            data(row) {
                 if (!row.character) {
                     return '';
                 }
@@ -387,29 +387,29 @@ function configureDataTable(vm) {
                 }
             }
         }, {
-            data (row) {
+            data(row) {
                 return row.logonDate ? Util.formatDate(row.logonDate) : '';
             }
         }, {
-            data (row) {
+            data(row) {
                 return row.logoffDate ? Util.formatDate(row.logoffDate) : '';
             }
         }, {
-            data (row) {
+            data(row) {
                 if (row.location) {
                     return row.location.name ? row.location.name : row.location.id;
                 }
                 return '';
             }
         }, {
-            data (row) {
+            data(row) {
                 if (row.shipType) {
                     return row.shipType.name ? row.shipType.name : row.shipType.id;
                 }
                 return '';
             }
         }, {
-            data (row) {
+            data(row) {
                 return row.startDate ? Util.formatDate(row.startDate) : '';
             }
         }]

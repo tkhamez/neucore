@@ -106,7 +106,7 @@ export default {
         route: Array,
     },
 
-    data: function() {
+    data() {
         return {
             settings: toRef(this.store.state, 'settings'),
             player: toRef(this.store.state, 'player'),
@@ -121,18 +121,18 @@ export default {
         }
     },
 
-    mounted: function() {
+    mounted() {
         window.scrollTo(0,0);
     },
 
     watch: {
-        route: function() {
+        route() {
             this.setRoute();
         }
     },
 
     methods: {
-        setRoute: function() {
+        setRoute() {
             this.secret = null;
             this.app = null;
 
@@ -159,24 +159,21 @@ export default {
             return isManager;
         },
 
-        getApp: function(id) {
-            const vm = this;
-
-            new AppApi().show(id, function(error, data) {
+        getApp(id) {
+            new AppApi().show(id, (error, data) => {
                 if (error) { // 403 usually
                     return;
                 }
-                vm.app = data;
+                this.app = data;
             });
         },
 
-        generateSecret: function() {
-            const vm = this;
-            new AppApi().changeSecret(this.app.id, function(error, data) {
+        generateSecret() {
+            new AppApi().changeSecret(this.app.id, (error, data) => {
                 if (error) { // 403 usually
                     return;
                 }
-                vm.secret = data;
+                this.secret = data;
             });
         },
     },

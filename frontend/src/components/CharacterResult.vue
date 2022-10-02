@@ -44,14 +44,14 @@ export default {
         admin: Boolean // false = search only for "mains", otherwise all characters and add "alts" modal button
     },
 
-    data: function() {
+    data() {
         return {
             h: new Helper(this),
         }
     },
 
     methods: {
-        isSelected (playerId) {
+        isSelected(playerId) {
             if (!this.selectedPlayers) {
                 return false;
             }

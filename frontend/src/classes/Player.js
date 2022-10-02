@@ -26,7 +26,7 @@ export default class Player {
             if (characters.length > 0) {
                 const id = characters[0].id;
                 characters.splice(0, 1);
-                character.updateCharacter(id, function() {
+                character.updateCharacter(id, () => {
                     updateCharacters();
                 }, `Character ${totalCharacters - characters.length}/${totalCharacters} updated.`);
             } else {

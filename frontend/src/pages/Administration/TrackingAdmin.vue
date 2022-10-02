@@ -47,37 +47,36 @@ export default {
         route: Array,
     },
 
-    data: function() {
+    data() {
         return {
             corporations: [],
             corporationId: null, // current corporation
         }
     },
 
-    mounted: function() {
+    mounted() {
         window.scrollTo(0,0);
         this.getCorporations();
         this.setCorporationId();
     },
 
     watch: {
-        route: function() {
+        route() {
             this.setCorporationId();
         },
     },
 
     methods: {
-        getCorporations: function() {
-            const vm = this;
-            new CorporationApi().corporationAllTrackedCorporations(function(error, data) {
+        getCorporations() {
+            new CorporationApi().corporationAllTrackedCorporations((error, data) => {
                 if (error) { // 403 usually
                     return;
                 }
-                vm.corporations = data;
+                this.corporations = data;
             });
         },
 
-        setCorporationId: function() {
+        setCorporationId() {
             this.corporationId = this.route[1] ? parseInt(this.route[1], 10) : null;
         },
     },

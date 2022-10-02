@@ -118,7 +118,7 @@ export default {
         route: Array,
     },
 
-    data: function() {
+    data() {
         return {
             h: new Helper(this),
             player: toRef(this.store.state, 'player'),
@@ -131,7 +131,7 @@ export default {
         }
     },
 
-    mounted: function() {
+    mounted() {
         window.scrollTo(0,0);
 
         this.getPLayers();
@@ -142,42 +142,40 @@ export default {
     },
 
     watch: {
-        route: function() {
+        route() {
             this.setPlayerId();
         },
     },
 
     methods: {
-        getPLayers: function() {
-            const vm = this;
-            new PlayerApi().withStatus('managed', function(error, data) {
+        getPLayers() {
+            new PlayerApi().withStatus('managed', (error, data) => {
                 if (error) { // 403 usually
                     return;
                 }
-                vm.players = data;
+                this.players = data;
             });
         },
 
-        setPlayerId: function() {
+        setPlayerId() {
             this.playerId = this.route[1] ? parseInt(this.route[1], 10) : null;
         },
 
-        onSearchResult: function(result) {
+        onSearchResult(result) {
             this.searchResult = result;
         },
 
-        setAccountStatus: function() {
-            const vm = this;
-            const playerId = vm.playerId;
-            new PlayerApi().setStatus(playerId, vm.playerData.status, function(error) {
+        setAccountStatus() {
+            const playerId = this.playerId;
+            new PlayerApi().setStatus(playerId, this.playerData.status, error => {
                 if (error) {
                     return;
                 }
-                vm.getPLayers();
-                vm.$refs.admin.getSelectContent();
-                vm.$refs.admin.getTableContent();
-                if (playerId === vm.player.id) {
-                    vm.emitter.emit('playerChange');
+                this.getPLayers();
+                this.$refs.admin.getSelectContent();
+                this.$refs.admin.getTableContent();
+                if (playerId === this.player.id) {
+                    this.emitter.emit('playerChange');
                 }
             });
         },

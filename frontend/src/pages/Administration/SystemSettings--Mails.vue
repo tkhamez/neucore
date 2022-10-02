@@ -126,7 +126,7 @@ export default {
         allCorporations: Array,
     },
 
-    data () {
+    data() {
         return {
             h: new Helper(this),
             settings: { ...this.store.state.settings },
@@ -142,7 +142,7 @@ export default {
         }
     },
 
-    mounted () {
+    mounted() {
         this.loginHost = Data.envVars.backendHost;
 
         this.$parent.loadLists();
@@ -160,7 +160,7 @@ export default {
             readSettings(this);
         },
 
-        mailInvalidTokenAlliances (newValues, oldValues) {
+        mailInvalidTokenAlliances(newValues, oldValues) {
             const newValue = this.$parent.buildIdString(newValues, oldValues, this.mailInvalidTokenAlliances);
             if (newValue === null) {
                 return;
@@ -168,7 +168,7 @@ export default {
             this.$emit('changeSetting', 'mail_invalid_token_alliances', newValue);
         },
 
-        mailInvalidTokenCorporations (newValues, oldValues) {
+        mailInvalidTokenCorporations(newValues, oldValues) {
             const newValue = this.$parent.buildIdString(newValues, oldValues, this.mailInvalidTokenCorporations);
             if (newValue === null) {
                 return;
@@ -176,7 +176,7 @@ export default {
             this.$emit('changeSetting', 'mail_invalid_token_corporations', newValue);
         },
 
-        mailMissingCharacterCorporations (newValues, oldValues) {
+        mailMissingCharacterCorporations(newValues, oldValues) {
             const newValue = this.$parent.buildIdString(newValues, oldValues, this.mailMissingCharacterCorporations);
             if (newValue === null) {
                 return;
@@ -186,35 +186,33 @@ export default {
     },
 
     methods: {
-        removeMailChar () {
+        removeMailChar() {
             this.settings.mail_character = '';
             this.$emit('changeSetting', 'mail_character', '');
         },
 
-        sendInvalidTokenTestMail () {
-            const vm = this;
+        sendInvalidTokenTestMail() {
             new SettingsApi().sendInvalidTokenMail((error, data) => {
                 if (error) { // 403 usually
                     return;
                 }
                 if (data !== '') {
-                    vm.h.message(data, 'error');
+                    this.h.message(data, 'error');
                 } else {
-                    vm.h.message('"Invalid ESI Token" Mail sent.', 'success');
+                    this.h.message('"Invalid ESI Token" Mail sent.', 'success');
                 }
             });
         },
 
-        sendMissingCharacterTestMail () {
-            const vm = this;
+        sendMissingCharacterTestMail() {
             new SettingsApi().sendMissingCharacterMail((error, data) => {
                 if (error) { // 403 usually
                     return;
                 }
                 if (data !== '') {
-                    vm.h.message(data, 'error');
+                    this.h.message(data, 'error');
                 } else {
-                    vm.h.message('"Missing Character" Mail sent.', 'success');
+                    this.h.message('"Missing Character" Mail sent.', 'success');
                 }
             });
         },

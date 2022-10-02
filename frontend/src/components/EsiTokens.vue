@@ -85,7 +85,7 @@ export default {
         eveLogins: Array,
     },
 
-    data () {
+    data() {
         return {
             Util: Util,
             h: new Helper(this),
@@ -97,7 +97,7 @@ export default {
         }
     },
 
-    mounted () {
+    mounted() {
         this.loginHost = Data.envVars.backendHost;
     },
 
@@ -106,21 +106,21 @@ export default {
          * @param character
          * @param {bool} [showInvalid]
          */
-        showModal (character, showInvalid) {
+        showModal(character, showInvalid) {
             this.showInvalid = !!showInvalid;
             this.character = character;
             this.esiTokensModal = new Modal('#esiTokensModal');
             this.esiTokensModal.show();
         },
 
-        showEveLogin (id) {
+        showEveLogin(id) {
             if (this.esiTokensModal) {
                 this.esiTokensModal.hide();
             }
             window.location.hash = `#SystemSettings/EVELoginAdmin/${id}`;
         },
 
-        loginName (loginId) {
+        loginName(loginId) {
             for (const login of this.eveLogins) {
                 if (login.id === loginId) {
                     return login.name;

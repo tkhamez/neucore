@@ -253,7 +253,7 @@ export default {
         searchCurrentOnly: Boolean,
     },
 
-    data: function() {
+    data() {
         return {
             h: new Helper(this),
             settings: toRef(this.store.state, 'settings'),
@@ -280,7 +280,7 @@ export default {
         }
     },
 
-    mounted: function() {
+    mounted() {
         setUseSearch(this);
         this.customPlaceholder();
         this.getSelectContent();
@@ -292,7 +292,7 @@ export default {
     },
 
     watch: {
-        typeId: function() {
+        typeId() {
             this.newObject = "";
             if (this.typeId) {
                 this.getTableContent();
@@ -300,7 +300,7 @@ export default {
             }
         },
 
-        typeName: function() {
+        typeName() {
             this.newObject = "";
             if (this.typeName) {
                 this.getTableContent();
@@ -308,7 +308,7 @@ export default {
             }
         },
 
-        contentType: function() {
+        contentType() {
             setUseSearch(this);
             this.newObject = "";
             this.customPlaceholder();
@@ -319,7 +319,7 @@ export default {
             }
         },
 
-        newObject: function() {
+        newObject() {
             if (this.newObject === "") {
                 return;
             }
@@ -327,17 +327,17 @@ export default {
             this.newObject = "";
         },
 
-        selectContent: function() {
+        selectContent() {
             this.removeSelectedOptions();
         },
 
-        tableContent: function() {
+        tableContent() {
             this.removeSelectedOptions();
         },
     },
 
     methods: {
-        customPlaceholder: function() {
+        customPlaceholder() {
             if (this.contentType === 'managers') {
                 this.placeholder = 'Add manager';
             } else if (this.contentType === 'alliances') {
@@ -356,7 +356,7 @@ export default {
             }
         },
 
-        customLabel: function(option) {
+        customLabel(option) {
             let label = option.name;
             if (this.contentType === 'managers') {
                 label += ` #${option.id}`
@@ -369,53 +369,52 @@ export default {
             return label
         },
 
-        getSelectContent: function() {
-            const vm = this;
-            vm.selectContent = [];
+        getSelectContent() {
+            this.selectContent = [];
 
             let api;
             let method;
-            if (vm.contentType === 'managers') {
+            if (this.contentType === 'managers') {
                 api = new PlayerApi();
-                if (vm.type === 'Group') {
+                if (this.type === 'Group') {
                     method = 'groupManagers';
-                } else if (vm.type === 'App') {
+                } else if (this.type === 'App') {
                     method = 'appManagers';
                 }
-            } else if (vm.contentType === 'corporations') {
+            } else if (this.contentType === 'corporations') {
                 api = new CorporationApi();
                 method = 'userCorporationAll';
-            } else if (vm.contentType === 'alliances') {
+            } else if (this.contentType === 'alliances') {
                 api = new AllianceApi();
                 method = 'all';
             } else if (
                 (
-                    vm.type === 'App' ||
-                    vm.type === 'Corporation' ||
-                    vm.type === 'Group' ||
-                    vm.type === 'Player' ||
-                    vm.type === 'Role' ||
-                    vm.type === 'Watchlist'
+                    this.type === 'App' ||
+                    this.type === 'Corporation' ||
+                    this.type === 'Group' ||
+                    this.type === 'Player' ||
+                    this.type === 'Role' ||
+                    this.type === 'Watchlist'
                 )
                 &&
                 (
-                    vm.contentType === 'groups' ||
-                    vm.contentType === 'groupsManage' ||
-                    vm.contentType === 'requiredGroups' ||
-                    vm.contentType === 'forbiddenGroups'
+                    this.contentType === 'groups' ||
+                    this.contentType === 'groupsManage' ||
+                    this.contentType === 'requiredGroups' ||
+                    this.contentType === 'forbiddenGroups'
                 )
             ) {
                 api = new GroupApi();
                 method = 'userGroupAll';
-            } else if (vm.contentType === 'roles') {
-                vm.selectContent = [
+            } else if (this.contentType === 'roles') {
+                this.selectContent = [
                     { id: 'app-groups', name: 'app-groups' },
                     { id: 'app-chars', name: 'app-chars' },
                     { id: 'app-tracking', name: 'app-tracking' },
                     { id: 'app-esi', name: 'app-esi' }
                 ];
                 return;
-            } else if (vm.contentType === 'eveLogins') {
+            } else if (this.contentType === 'eveLogins') {
                 api = new SettingsApi();
                 method = 'userSettingsEveLoginList';
             }
@@ -423,17 +422,16 @@ export default {
                 return;
             }
 
-            api[method].apply(api, [function(error, data) {
+            api[method].apply(api, [(error, data) => {
                 if (error) { // 403 usually
                     return;
                 }
-                vm.selectContent = data;
+                this.selectContent = data;
             }]);
         },
 
-        getTableContent: function() {
-            const vm = this;
-            vm.tableContent = [];
+        getTableContent() {
+            this.tableContent = [];
 
             let api;
             let method;
@@ -502,20 +500,20 @@ export default {
                 return;
             }
 
-            let typeParam = vm.typeId;
+            let typeParam = this.typeId;
             if (this.type === 'Role') {
-                typeParam = vm.typeName;
+                typeParam = this.typeName;
             }
-            api[method].apply(api, [typeParam, function(error, data) {
+            api[method].apply(api, [typeParam, (error, data) => {
                 if (error) { // 403 usually
-                    if (vm.type === 'Player') {
-                        vm.$emit('activePlayer', null); // pass data to parent
+                    if (this.type === 'Player') {
+                        this.$emit('activePlayer', null); // pass data to parent
                     }
                     return;
                 }
-                if (vm.type === 'App' && vm.contentType === 'groups') {
-                    vm.tableContent = data.groups;
-                } else if (vm.type === 'App' && vm.contentType === 'roles') {
+                if (this.type === 'App' && this.contentType === 'groups') {
+                    this.tableContent = data.groups;
+                } else if (this.type === 'App' && this.contentType === 'roles') {
                     // transform string to object and remove "app" role
                     const roles = [];
                     for (const role of data.roles) {
@@ -523,25 +521,24 @@ export default {
                             roles.push({ id: role, name: role });
                         }
                     }
-                    vm.tableContent = roles;
-                } else if (vm.type === 'App' && vm.contentType === 'eveLogins') {
-                    vm.tableContent = data.eveLogins;
-                }  else if (vm.type === 'Player') {
-                    vm.tableContent = data.groups;
-                    vm.$emit('activePlayer', data); // pass data to parent
+                    this.tableContent = roles;
+                } else if (this.type === 'App' && this.contentType === 'eveLogins') {
+                    this.tableContent = data.eveLogins;
+                }  else if (this.type === 'Player') {
+                    this.tableContent = data.groups;
+                    this.$emit('activePlayer', data); // pass data to parent
                 }  else {
-                    vm.tableContent = data;
+                    this.tableContent = data;
                 }
             }]);
         },
 
-        getWithGroups: function() {
+        getWithGroups() {
             if (this.type !== 'Group') {
                 return;
             }
 
-            const vm = this;
-            vm.withGroups = [];
+            this.withGroups = [];
 
             let api;
             let method = 'withGroups';
@@ -554,15 +551,15 @@ export default {
                 return;
             }
 
-            api[method].apply(api, [function(error, data) {
+            api[method].apply(api, [(error, data) => {
                 if (error) { // 403 usually
                     return;
                 }
-                vm.withGroups = data;
+                this.withGroups = data;
             }]);
         },
 
-        removeSelectedOptions: function() {
+        removeSelectedOptions() {
             this.currentSelectContent = [...this.selectContent]; // copy by value
             let removed = 0;
             for (const [index, option] of this.selectContent.entries()) {
@@ -576,7 +573,7 @@ export default {
             }
         },
 
-        showGroups: function(corpOrAllianceId) {
+        showGroups(corpOrAllianceId) {
             this.showGroupsEntity = null;
             for (const entity of this.withGroups) {
                 if (entity.id === corpOrAllianceId) {
@@ -584,7 +581,7 @@ export default {
                     break;
                 }
             }
-            window.setTimeout(function() {
+            window.setTimeout(() => {
                 new Modal('#showGroupsModal').show();
             }, 10);
         },
@@ -593,8 +590,7 @@ export default {
          * @param {number} id ID of the entity to be added or removed
          * @param {string} action "add" or "remove"
          */
-        addOrRemoveEntityToEntity: function(id, action) {
-            const vm = this;
+        addOrRemoveEntityToEntity(id, action) {
             let api;
             let method;
             let param1;
@@ -702,53 +698,58 @@ export default {
                 return;
             }
 
-            callApi(this, api, method, param1, param2, function() {
+            callApi(this, api, method, param1, param2, () => {
                 if (
-                    (vm.type === 'Player' && vm.typeId === vm.player.id) ||
-                    (vm.type === 'Watchlist' && (vm.contentType === 'groups' || vm.contentType === 'groupsManage')) ||
+                    (this.type === 'Player' && this.typeId === this.player.id) ||
                     (
-                        (vm.type === 'Group' || vm.type === 'App') &&
-                        vm.contentType === 'managers' &&
-                        id === vm.player.id
+                        this.type === 'Watchlist' &&
+                        (this.contentType === 'groups' || this.contentType === 'groupsManage')
                     ) ||
-                    (vm.type === 'Corporation' && vm.contentType === 'groups') // Tracking Admin
+                    (
+                        (this.type === 'Group' || this.type === 'App') &&
+                        this.contentType === 'managers' &&
+                        id === this.player.id
+                    ) ||
+                    (this.type === 'Corporation' && this.contentType === 'groups') // Tracking Admin
                 ) {
-                    vm.emitter.emit('playerChange');
+                    this.emitter.emit('playerChange');
                 }
-                if (vm.type === 'Group' && (vm.contentType === 'corporations' || vm.contentType === 'alliances')) {
-                    vm.getWithGroups();
+                if (
+                    this.type === 'Group' &&
+                    (this.contentType === 'corporations' || this.contentType === 'alliances')
+                ) {
+                    this.getWithGroups();
                 }
 
-                vm.getTableContent();
+                this.getTableContent();
             });
         },
 
-        addAllGroupsToApp: function() {
+        addAllGroupsToApp() {
             if (!this.typeId || this.type !== 'App') {
                 return;
             }
-            const vm = this;
-            const groups = [...vm.currentSelectContent];
+            const groups = [...this.currentSelectContent];
             const api = new AppApi();
 
-            function addGroup() {
+            function addGroup(vm) {
                 if (groups.length > 0) {
                     const id = groups[0].id;
                     groups.splice(0, 1);
-                    callApi(vm, api, 'userAppAddGroup', vm.typeId, id, function() {
-                        addGroup();
+                    callApi(vm, api, 'userAppAddGroup', vm.typeId, id, () => {
+                        addGroup(vm);
                     });
                 } else {
                     vm.getTableContent();
                 }
             }
-            addGroup();
+            addGroup(this);
         },
     },
 }
 
 function callApi(vm, api, method, param1, param2, callback) {
-    api[method].apply(api, [param1, param2, function(error, data, response) {
+    api[method].apply(api, [param1, param2, (error, data, response) => {
         if (vm.type === 'Player' && method === 'addMember' && response.statusCode === 400) {
             vm.h.message(Data.messages.errorRequiredForbiddenGroup, 'warning');
         } else if (
@@ -779,7 +780,7 @@ function fetchDirector(vm) {
         return;
     }
     vm.directors = [];
-    new CorporationApi().corporationTrackingDirector(vm.typeId, function(error, data) {
+    new CorporationApi().corporationTrackingDirector(vm.typeId, (error, data) => {
         if (error) { // 403 usually
             return;
         }

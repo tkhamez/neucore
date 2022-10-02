@@ -100,18 +100,17 @@ export default {
     },
 
     methods: {
-        handleFileUpload (name) {
-            const vm = this;
+        handleFileUpload(name) {
             const file = this.$refs[name].files[0];
             const reader  = new FileReader();
 
             reader.addEventListener('load', () => {
                 const image = reader.result;
-                vm.$emit('changeSetting', name, image);
+                this.$emit('changeSetting', name, image);
                 if (name === 'customization_nav_logo') {
-                    vm.settings.customization_nav_logo = image;
+                    this.settings.customization_nav_logo = image;
                 } else if (name === 'customization_home_logo') {
-                    vm.settings.customization_home_logo = image;
+                    this.settings.customization_home_logo = image;
                 }
             }, false);
 

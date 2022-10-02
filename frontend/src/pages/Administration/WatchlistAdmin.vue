@@ -115,7 +115,7 @@ export default {
         route: Array,
     },
 
-    data () {
+    data() {
         return {
             h: new Helper(this),
             watchlists: [],
@@ -124,98 +124,94 @@ export default {
         }
     },
 
-    mounted () {
+    mounted() {
         window.scrollTo(0,0);
         getWatchlists(this);
     },
 
     watch: {
-        route () {
+        route() {
             setWatchlistAndContentType(this);
         },
     },
 
     methods: {
-        mouseover (ele) {
+        mouseover(ele) {
           $(ele.target).addClass('text-warning');
         },
 
-        mouseleave (ele) {
+        mouseleave(ele) {
           $(ele.target).removeClass('text-warning');
         },
 
-        showCreateWatchlistModal () {
+        showCreateWatchlistModal() {
             this.$refs.editModal.showCreateModal();
         },
 
-        showDeleteWatchlistModal (watchlist) {
+        showDeleteWatchlistModal(watchlist) {
             this.$refs.editModal.showDeleteModal(watchlist);
         },
 
-        showEditWatchlistModal (watchlist) {
+        showEditWatchlistModal(watchlist) {
             this.$refs.editModal.showEditModal(watchlist);
         },
 
-        create (newName) {
-            const vm = this;
+        create(newName) {
             new WatchlistApi().watchlistCreate(newName, (error, data, response) => {
                 if (response.status === 400) {
-                    vm.h.message('Missing name.', 'error');
+                    this.h.message('Missing name.', 'error');
                 } else if (error) {
-                    vm.h.message('Error creating watchlist.', 'error');
+                    this.h.message('Error creating watchlist.', 'error');
                 } else {
-                    vm.$refs.editModal.hideModal();
-                    vm.h.message('Watchlist created.', 'success');
+                    this.$refs.editModal.hideModal();
+                    this.h.message('Watchlist created.', 'success');
                     window.location.hash = `#WatchlistAdmin/${data.id}`;
                     getWatchlists(vm);
                 }
             });
         },
 
-        deleteIt (id) {
-            const vm = this;
-            new WatchlistApi().watchlistDelete(id, (error) => {
+        deleteIt(id) {
+            new WatchlistApi().watchlistDelete(id, error => {
                 if (error) {
-                    vm.h.message('Error deleting watchlist.', 'error');
+                    this.h.message('Error deleting watchlist.', 'error');
                 } else {
-                    vm.$refs.editModal.hideModal();
-                    vm.h.message('Watchlist deleted.', 'success');
+                    this.$refs.editModal.hideModal();
+                    this.h.message('Watchlist deleted.', 'success');
                     window.location.hash = '#WatchlistAdmin';
-                    vm.currentWatchlist = null;
-                    vm.contentType = '';
-                    getWatchlists(vm);
-                    vm.emitter.emit('playerChange'); // current player could have been a manager or "viewer"
+                    this.currentWatchlist = null;
+                    this.contentType = '';
+                    getWatchlists(this);
+                    this.emitter.emit('playerChange'); // current player could have been a manager or "viewer"
                 }
             });
         },
 
-        rename (id, name) {
-            const vm = this;
+        rename(id, name) {
             new WatchlistApi().watchlistRename(id, name, (error, data, response) => {
                 if (response.status === 400) {
-                    vm.h.message('Missing name.', 'error');
+                    this.h.message('Missing name.', 'error');
                 } else if (error) {
-                    vm.h.message('Error renaming watchlist.', 'error');
+                    this.h.message('Error renaming watchlist.', 'error');
                 } else {
-                    vm.h.message('Watchlist renamed.', 'success');
-                    vm.$refs.editModal.hideModal();
-                    getWatchlists(vm);
+                    this.h.message('Watchlist renamed.', 'success');
+                    this.$refs.editModal.hideModal();
+                    getWatchlists(this);
                 }
             });
         },
 
-        saveLockWatchlistSettings (checked) {
-            const vm = this;
+        saveLockWatchlistSettings(checked) {
             const lock = checked ? '1' : '0';
-            new WatchlistApi().watchlistLockWatchlistSettings(vm.currentWatchlist.id, lock, (error, data) => {
+            new WatchlistApi().watchlistLockWatchlistSettings(this.currentWatchlist.id, lock, (error, data) => {
                 if (error) {
-                    vm.h.message('Error.', 'error');
+                    this.h.message('Error.', 'error');
                     return;
                 }
-                vm.currentWatchlist = data;
-                for (let i = 0; i < vm.watchlists.length; i++) {
-                    if (vm.watchlists[i].id === data.id) {
-                        vm.watchlists[i] = data;
+                this.currentWatchlist = data;
+                for (let i = 0; i < this.watchlists.length; i++) {
+                    if (this.watchlists[i].id === data.id) {
+                        this.watchlists[i] = data;
                         break;
                     }
                 }

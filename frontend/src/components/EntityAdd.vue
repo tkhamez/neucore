@@ -47,7 +47,7 @@ export default {
 
     inject: ['store'],
 
-    data: function() {
+    data() {
         return {
             h: new Helper(this),
             settings: toRef(this.store.state, 'settings'),
@@ -60,13 +60,13 @@ export default {
     },
 
     watch: {
-        searchSelected () {
+        searchSelected() {
             addAlliCorp(this);
         }
     },
 
     methods: {
-        showModal: function(addType) {
+        showModal(addType) {
             this.addType = addType;
             this.searchResults = [];
             this.searchSelected = null;
@@ -74,7 +74,7 @@ export default {
             this.addAlliCorpModal.show();
         },
 
-        searchAlliCorp (query) {
+        searchAlliCorp(query) {
             if (query.length < 3) {
                 return;
             }
@@ -134,7 +134,7 @@ function addAlliCorp(vm) {
         return;
     }
 
-    api[method].apply(api, [vm.searchSelected.id, function(error, data, response) {
+    api[method].apply(api, [vm.searchSelected.id, (error, data, response) => {
         if (response.statusCode === 409) {
             vm.h.message(`${vm.addType} already exist.`, 'warning');
         } else if (response.statusCode === 404) {

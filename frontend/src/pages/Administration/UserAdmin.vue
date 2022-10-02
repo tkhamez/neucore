@@ -445,7 +445,7 @@ export default {
         authChar: Object, // logged in character
     },
 
-    data () {
+    data() {
         return {
             Util: Util,
             h: new Helper(this),
@@ -482,43 +482,43 @@ export default {
     },
 
     computed: {
-        assignableRoles () {
+        assignableRoles() {
             return this.availableRoles.filter(role =>
                 !this.h.hasRole(role, this.playerEdit) &&
                 this.autoRoles.indexOf(role) === -1
             );
         },
 
-        playerEditRoles () {
+        playerEditRoles() {
             return this.playerEdit.roles.filter(role => role !== 'user');
         },
     },
 
-    mounted () {
+    mounted() {
         window.scrollTo(0,0);
         this.setPlayerId();
 
         getEveLogins(this);
     },
 
-    updated () {
+    updated() {
         document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(tooltip => {
-            this.tooltip = new Tooltip(tooltip)
+            return new Tooltip(tooltip)
         });
     },
 
     watch: {
-        route () {
+        route() {
             this.setPlayerId();
         },
 
-        playerId () {
+        playerId() {
             if (this.playerId) {
                 getPlayer(this);
             }
         },
 
-        newRole () {
+        newRole() {
             if (this.playerEdit && this.newRole) {
                 this.addRole(this.newRole);
                 this.newRole = '';
@@ -527,18 +527,18 @@ export default {
     },
 
     methods: {
-        setPlayerId () {
+        setPlayerId() {
             this.playerId = this.route[1] ? parseInt(this.route[1], 10) : null;
         },
 
-        belongsToActivePlayer (charId) {
+        belongsToActivePlayer(charId) {
             if (! this.playerEdit) {
                 return false;
             }
             return this.playerEdit.id === charId.player_id;
         },
 
-        characterName (characterId) {
+        characterName(characterId) {
             for (const character of this.playerEdit.characters) {
                 if (characterId === character.id) {
                     return character.name;
@@ -547,11 +547,11 @@ export default {
             return '';
         },
 
-        loadPlayer (playerId) {
+        loadPlayer(playerId) {
             window.location.hash = `#UserAdmin/${playerId}`;
         },
 
-        onSearchResult (result) {
+        onSearchResult(result) {
             this.searchResult = result;
             if (result.length > 0) {
                 this.playersRole = [];
@@ -561,91 +561,87 @@ export default {
             }
         },
 
-        getPlayerByRole (roleName) {
-            const vm = this;
+        getPlayerByRole(roleName) {
             if (roleName === '') {
-                vm.playersRole = [];
+                this.playersRole = [];
                 return;
             }
-            vm.activeList = '';
-            vm.playersChars = [];
-            vm.searchResult = [];
+            this.activeList = '';
+            this.playersChars = [];
+            this.searchResult = [];
             new PlayerApi().withRole(roleName, (error, data) => {
                 if (error) {
                     return;
                 }
-                vm.playersRole = data;
+                this.playersRole = data;
             });
         },
 
-        getPlayers (listName) {
-            const vm = this;
+        getPlayers(listName) {
             if (listName === '') {
-                vm.playersChars = [];
+                this.playersChars = [];
                 return;
             }
-            vm.activeRole = '';
-            vm.playersRole = [];
-            vm.searchResult = [];
+            this.activeRole = '';
+            this.playersRole = [];
+            this.searchResult = [];
             const api = new PlayerApi();
             api[listName].apply(api, [(error, data) => {
                 if (error) {
                     return;
                 }
-                vm.playersChars = data;
+                this.playersChars = data;
             }]);
         },
 
-        addRole (roleName) {
+        addRole(roleName) {
             this.changePlayerAttribute('userPlayerAddRole', roleName);
         },
 
-        removeRole (roleName) {
+        removeRole(roleName) {
             this.changePlayerAttribute('userPlayerRemoveRole', roleName);
         },
 
-        changePlayerAttribute (method, param) {
+        changePlayerAttribute(method, param) {
             if (! this.playerEdit) {
                 return;
             }
             const playerId = this.playerEdit.id;
             const api = new PlayerApi();
-            const vm = this;
             api[method].apply(api, [playerId, param, (error, data, response) => {
                 if (method === 'userPlayerAddRole' && response.statusCode === 400) {
-                    vm.h.message(Data.messages.errorRoleRequiredGroup, 'warning');
+                    this.h.message(Data.messages.errorRoleRequiredGroup, 'warning');
                 } else if (error) {
                     return;
                 }
-                getPlayer(vm);
-                if (playerId === vm.player.id) {
-                    vm.emitter.emit('playerChange');
+                getPlayer(this);
+                if (playerId === this.player.id) {
+                    this.emitter.emit('playerChange');
                 }
             }]);
         },
 
-        updatePlayer () {
-            const vm = this;
-            if (!vm.playerEdit) {
+        updatePlayer() {
+            if (!this.playerEdit) {
                 return;
             }
-            new Player(vm).updatePlayer(vm.playerEdit, () => {
-                getPlayer(vm)
+            new Player(this).updatePlayer(this.playerEdit, () => {
+                getPlayer(this)
             });
         },
 
-        updateServices () {
+        updateServices() {
             if (!this.playerEdit) {
                 return;
             }
             new Player(this).updateServices(this.playerEdit);
         },
 
-        showEsiTokens (character) {
+        showEsiTokens(character) {
             this.$refs.esiTokensModal.showModal(character);
         },
 
-        askDeleteChar (characterId, characterName) {
+        askDeleteChar(characterId, characterName) {
             this.charToDelete = {
                 id: characterId,
                 name: characterName,
@@ -655,14 +651,13 @@ export default {
             this.deleteCharModal.show();
         },
 
-        deleteChar () {
-            const vm = this;
-            const character = (new Character(vm));
+        deleteChar() {
+            const character = (new Character(this));
             character.deleteCharacter(this.charToDelete.id, this.deleteReason, () => {
-                getPlayer(vm);
-                if (vm.playerEdit.id === vm.player.id) {
-                    character.updateCharacter(vm.authChar.id, () => {
-                        vm.emitter.emit('playerChange');
+                getPlayer(this);
+                if (this.playerEdit.id === this.player.id) {
+                    character.updateCharacter(this.authChar.id, () => {
+                        this.emitter.emit('playerChange');
                     });
                 }
             });

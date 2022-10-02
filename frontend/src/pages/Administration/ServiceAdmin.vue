@@ -195,7 +195,7 @@ export default {
         route: Array,
     },
 
-    data () {
+    data() {
         return {
             h: new Helper(this),
             services: [],
@@ -207,86 +207,82 @@ export default {
         }
     },
 
-    mounted () {
+    mounted() {
         window.scrollTo(0, 0);
         getList(this);
         getService(this);
     },
 
     watch: {
-        route () {
+        route() {
             getService(this);
         },
     },
 
     methods: {
-        create (name) {
-            const vm = this;
+        create(name) {
             new ServiceAdminApi().serviceAdminCreate(name, (error, data, response) => {
                 if (response.status === 400) {
-                    vm.h.message('Missing name.', 'error');
+                    this.h.message('Missing name.', 'error');
                 } else if (error) {
-                    vm.h.message('Error creating service.', 'error');
+                    this.h.message('Error creating service.', 'error');
                 } else {
                     this.emitter.emit('settingsChange');
-                    vm.$refs.editModal.hideModal();
-                    vm.h.message('Service created.', 'success');
+                    this.$refs.editModal.hideModal();
+                    this.h.message('Service created.', 'success');
                     window.location.hash = `#ServiceAdmin/${data.id}`;
-                    getList(vm);
+                    getList(this);
                 }
             });
         },
-        deleteIt (id) {
-            const vm = this;
-            new ServiceAdminApi().serviceAdminDelete(id, (error) => {
+        deleteIt(id) {
+            new ServiceAdminApi().serviceAdminDelete(id, error => {
                 if (error) {
-                    vm.h.message('Error deleting service', 'error');
+                    this.h.message('Error deleting service', 'error');
                 } else {
                     this.emitter.emit('settingsChange');
-                    vm.$refs.editModal.hideModal();
-                    vm.h.message('Service deleted.', 'success');
+                    this.$refs.editModal.hideModal();
+                    this.h.message('Service deleted.', 'success');
                     window.location.hash = '#ServiceAdmin';
-                    getList(vm);
+                    getList(this);
                 }
             });
         },
-        rename (id, name) {
-            const vm = this;
+        rename(id, name) {
             new ServiceAdminApi().serviceAdminRename(id, name, (error, data, response) => {
                 if (response.status === 400) {
-                    vm.h.message('Missing name.', 'error');
+                    this.h.message('Missing name.', 'error');
                 } else if (error) {
-                    vm.h.message('Error renaming service.', 'error');
+                    this.h.message('Error renaming service.', 'error');
                 } else {
                     this.emitter.emit('settingsChange');
-                    vm.$refs.editModal.hideModal();
-                    vm.h.message('Service renamed.', 'success');
-                    getList(vm);
-                    getService(vm);
+                    this.$refs.editModal.hideModal();
+                    this.h.message('Service renamed.', 'success');
+                    getList(this);
+                    getService(this);
                 }
             });
         },
-        saveConfiguration () {
-            const vm = this;
-            const configuration = vm.activeService.configuration;
-            configuration.URLs = vm.URLs.filter(url => url.url || url.title || url.target);
-            configuration.requiredGroups = vm.requiredGroups ? vm.requiredGroups.split(',') : [];
-            configuration.properties = vm.properties ? vm.properties.split(',') : [];
-            configuration.actions = vm.actions ? vm.actions.split(',') : [];
+        saveConfiguration() {
+            const configuration = this.activeService.configuration;
+            configuration.URLs = this.URLs.filter(url => url.url || url.title || url.target);
+            configuration.requiredGroups = this.requiredGroups ? this.requiredGroups.split(',') : [];
+            configuration.properties = this.properties ? this.properties.split(',') : [];
+            configuration.actions = this.actions ? this.actions.split(',') : [];
             new ServiceAdminApi().serviceAdminSaveConfiguration(
                 this.activeService.id,
                 {configuration: JSON.stringify(configuration)},
                 (error, data, response) => {
                     if (response.status === 400) {
-                        vm.h.message('Missing name.', 'error');
+                        this.h.message('Missing name.', 'error');
                     } else if (error) {
-                        vm.h.message('Error updating configuration.', 'error');
+                        this.h.message('Error updating configuration.', 'error');
                     } else {
                         this.emitter.emit('settingsChange');
-                        vm.$refs.editModal.hideModal();
-                        vm.h.message('Configuration updated.', 'success');
-                        getList(vm);
-                        getService(vm);
+                        this.$refs.editModal.hideModal();
+                        this.h.message('Configuration updated.', 'success');
+                        getList(this);
+                        getService(this);
                     }
                 }
             );
@@ -296,19 +292,19 @@ export default {
             this.URLs.push({ url: '', title: '', target: '' });
         },
 
-        mouseover (ele) {
+        mouseover(ele) {
             $(ele.target).addClass('text-warning');
         },
-        mouseleave (ele) {
+        mouseleave(ele) {
             $(ele.target).removeClass('text-warning');
         },
-        showCreateModal: function() {
+        showCreateModal() {
             this.$refs.editModal.showCreateModal();
         },
-        showEditModal: function() {
+        showEditModal() {
             this.$refs.editModal.showEditModal(this.activeService);
         },
-        showDeleteModal: function() {
+        showDeleteModal() {
             this.$refs.editModal.showDeleteModal(this.activeService);
         },
     }

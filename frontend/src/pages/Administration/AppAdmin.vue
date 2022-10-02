@@ -96,7 +96,7 @@ export default {
         route: Array,
     },
 
-    data: function() {
+    data() {
         return {
             h: new Helper(this),
             apps: [],
@@ -106,88 +106,85 @@ export default {
         }
     },
 
-    mounted: function() {
+    mounted() {
         window.scrollTo(0,0);
         getApps(this);
         setAppIdAndContentType(this);
     },
 
     watch: {
-        route: function() {
+        route() {
             setAppIdAndContentType(this);
         },
     },
 
     methods: {
-        mouseover (ele) {
+        mouseover(ele) {
             $(ele.target).addClass('text-warning');
         },
 
-        mouseleave (ele) {
+        mouseleave(ele) {
             $(ele.target).removeClass('text-warning');
         },
 
-        showCreateAppModal: function() {
+        showCreateAppModal() {
             this.$refs.editModal.showCreateModal();
         },
 
-        showDeleteAppModal: function(app) {
+        showDeleteAppModal(app) {
             this.$refs.editModal.showDeleteModal(app);
         },
 
-        showRenameAppModal: function(app) {
+        showRenameAppModal(app) {
             this.$refs.editModal.showEditModal(app);
         },
 
-        create (name) {
-            const vm = this;
+        create(name) {
             new AppApi().create(name, (error, data, response) => {
                 if (response.status === 409) {
-                    vm.h.message('An app with this name already exists.', 'error');
+                    this.h.message('An app with this name already exists.', 'error');
                 } else if (response.status === 400) {
-                    vm.h.message('Invalid name.', 'error');
+                    this.h.message('Invalid name.', 'error');
                 } else if (error) {
-                    vm.h.message('Error creating app.', 'error');
+                    this.h.message('Error creating app.', 'error');
                 } else {
-                    vm.$refs.editModal.hideModal();
-                    vm.h.message('App created.', 'success');
+                    this.$refs.editModal.hideModal();
+                    this.h.message('App created.', 'success');
                     window.location.hash = `#AppAdmin/${data.id}`;
-                    getApps(vm);
+                    getApps(this);
                 }
             });
         },
 
-        deleteIt (id) {
-            const vm = this;
-            new AppApi().callDelete(id, (error) => {
+        deleteIt(id) {
+            new AppApi().callDelete(id, error => {
                 if (error) {
-                    vm.h.message('Error deleting app', 'error');
+                    this.h.message('Error deleting app', 'error');
                 } else {
-                    vm.$refs.editModal.hideModal();
-                    vm.h.message('App deleted.', 'success');
+                    this.$refs.editModal.hideModal();
+                    this.h.message('App deleted.', 'success');
                     window.location.hash = '#AppAdmin';
-                    vm.emitter.emit('playerChange'); // current player could have been a manager
-                    vm.appId = null;
-                    vm.contentType = '';
-                    getApps(vm);
+                    this.emitter.emit('playerChange'); // current player could have been a manager
+                    this.appId = null;
+                    this.contentType = '';
+                    getApps(this);
                 }
             });
         },
 
-        rename (id, name) {
-            const vm = this;
+        rename(id, name) {
             new AppApi().rename(id, name, (error, data, response) => {
                 if (response.status === 409) {
-                    vm.h.message('An app with this name already exists.', 'error');
+                    this.h.message('An app with this name already exists.', 'error');
                 } else if (response.status === 400) {
-                    vm.h.message('Invalid app name.', 'error');
+                    this.h.message('Invalid app name.', 'error');
                 } else if (error) {
-                    vm.h.message('Error renaming app.', 'error');
+                    this.h.message('Error renaming app.', 'error');
                 } else {
-                    vm.h.message('App renamed.', 'success');
-                    vm.$refs.editModal.hideModal();
-                    vm.emitter.emit('playerChange');
-                    getApps(vm);
+                    this.h.message('App renamed.', 'success');
+                    this.$refs.editModal.hideModal();
+                    this.emitter.emit('playerChange');
+                    getApps(this);
                 }
             });
         },
@@ -203,7 +200,7 @@ function setAppIdAndContentType(vm) {
 }
 
 function getApps(vm) {
-    new AppApi().userAppAll(function(error, data) {
+    new AppApi().userAppAll((error, data) => {
         if (error) { // 403 usually
             return;
         }

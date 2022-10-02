@@ -150,7 +150,7 @@ export default {
         logout: Function,
     },
 
-    data: function() {
+    data() {
         return {
             h: new Helper(this),
             settings: toRef(this.store.state, 'settings'),
@@ -166,8 +166,8 @@ export default {
         }
     },
 
-    mounted: function() {
-        this.$nextTick(function () {
+    mounted() {
+        this.$nextTick(() => {
             window.setTimeout(addNavBehaviour, 500);
         });
         this.page = this.route[0];
@@ -177,10 +177,10 @@ export default {
     },
 
     watch: {
-        route () {
+        route() {
             this.page = this.route[0];
         },
-        selectedTheme () {
+        selectedTheme() {
             const $body = $('body');
             for (const theme of this.themes) {
                 $body.removeClass(theme.toLowerCase());
@@ -190,7 +190,7 @@ export default {
     },
 
     methods: {
-        selectTheme: function(name) {
+        selectTheme(name) {
             if (this.themes.indexOf(name) === -1) {
                 return;
             }
@@ -214,22 +214,22 @@ function addNavBehaviour() {
     const collapse = new Collapse('#navbar01', {toggle: false });
 
     // Close the un-collapsed navigation on click on a navigation item
-    $navMain.on('click', 'a:not([data-bs-toggle])', null, function() {
+    $navMain.on('click', 'a:not([data-bs-toggle])', null, () => {
         if ($('.navbar .navbar-toggler').is(':visible')) {
             collapse.hide();
         }
     })
 
     // Open/close dropdown on mouse over/out.
-    $navMain.on('mouseover mouseout', '.dropdown', null, function(evt) {
+    $navMain.on('mouseover mouseout', '.dropdown', null, evt => {
         if ($('.navbar .navbar-toggler').is(':visible')) {
             return;
         }
         // Can't use toggle(), that gets it wrong sometimes.
         if (evt.type === 'mouseover') {
-            new Dropdown($(this).find('.dropdown-toggle')).show();
+            new Dropdown($(evt.currentTarget).find('.dropdown-toggle')).show();
         } else {
-            new Dropdown($(this).find('.dropdown-toggle')).hide();
+            new Dropdown($(evt.currentTarget).find('.dropdown-toggle')).hide();
             document.activeElement.blur(); // sometimes needed for some reason to remove the "active" font color
         }
     });

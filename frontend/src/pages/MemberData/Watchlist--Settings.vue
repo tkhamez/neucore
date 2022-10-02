@@ -66,18 +66,18 @@ export default {
         list: Object,
     },
 
-    data: function() {
+    data() {
         return {
             sticky: 87,
         }
     },
 
     methods: {
-        showAddEntityModal (addType) {
+        showAddEntityModal(addType) {
             this.$refs.addEntityModal.showModal(addType);
         },
 
-        addEntitySuccess () {
+        addEntitySuccess() {
             this.$refs.adminAllianceKick.getSelectContent();
             this.$refs.adminCorpKick.getSelectContent();
         },

@@ -186,7 +186,7 @@ export default {
         route: Array,
     },
 
-    data: function() {
+    data() {
         return {
             Util: Util,
             h: new Helper(this),
@@ -205,18 +205,18 @@ export default {
         }
     },
 
-    mounted: function() {
+    mounted() {
         window.scrollTo(0,0);
     },
 
     watch: {
-        route: function() {
+        route() {
             this.getData();
         }
     },
 
     methods: {
-        getData: function() {
+        getData() {
             // reset variables
             this.groupName = '';
             this.groupDescription = '';
@@ -252,26 +252,24 @@ export default {
             }
         },
 
-        addPlayer: function(playerId) {
+        addPlayer(playerId) {
             if (this.groupId === null) {
                 return;
             }
-            const vm = this;
-            new GroupApi().addMember(this.groupId, playerId, function(error, data, response) {
+            new GroupApi().addMember(this.groupId, playerId, (error, data, response) => {
                 if (response.statusCode === 400) {
-                    vm.h.message(Data.messages.errorRequiredForbiddenGroup, 'warning');
+                    this.h.message(Data.messages.errorRequiredForbiddenGroup, 'warning');
                 }
-                addRemoveResult(vm, playerId, error);
+                addRemoveResult(this, playerId, error);
             });
         },
 
-        removePlayer: function(playerId) {
+        removePlayer(playerId) {
             if (this.groupId === null) {
                 return;
             }
-            const vm = this;
-            new GroupApi().removeMember(this.groupId, playerId, function(error) {
-                addRemoveResult(vm, playerId, error);
+            new GroupApi().removeMember(this.groupId, playerId, error => {
+                addRemoveResult(this, playerId, error);
             });
         },
 
@@ -279,27 +277,25 @@ export default {
             return this.groupApplications.filter(app => app.status === status);
         },
 
-        accept: function(applicationId, playerId) {
-            const vm = this;
-            new GroupApi().acceptApplication(applicationId, function() {
-                getApplications(vm);
-                if (playerId === vm.player.id) {
-                    vm.emitter.emit('playerChange');
+        accept(applicationId, playerId) {
+            new GroupApi().acceptApplication(applicationId, () => {
+                getApplications(this);
+                if (playerId === this.player.id) {
+                    this.emitter.emit('playerChange');
                 }
             });
         },
 
-        deny: function(applicationId) {
-            const vm = this;
-            new GroupApi().denyApplication(applicationId, function() {
-                getApplications(vm);
+        deny(applicationId) {
+            new GroupApi().denyApplication(applicationId, () => {
+                getApplications(this);
             });
         },
     },
 }
 
 function getMembers(vm) {
-    new GroupApi().userGroupMembers(vm.groupId, function(error, data) {
+    new GroupApi().userGroupMembers(vm.groupId, (error, data) => {
         if (error) { // 403 usually
             return;
         }
@@ -309,7 +305,7 @@ function getMembers(vm) {
 }
 
 function getRequiredGroups(vm) {
-    new GroupApi().requiredGroups(vm.groupId, function(error, data) {
+    new GroupApi().requiredGroups(vm.groupId, (error, data) => {
         if (error) {
             return;
         }
@@ -318,7 +314,7 @@ function getRequiredGroups(vm) {
 }
 
 function getForbiddenGroups(vm) {
-    new GroupApi().userGroupForbiddenGroups(vm.groupId, function(error, data) {
+    new GroupApi().userGroupForbiddenGroups(vm.groupId, (error, data) => {
         if (error) {
             return;
         }
@@ -327,7 +323,7 @@ function getForbiddenGroups(vm) {
 }
 
 function getGroupManager(vm) {
-    new GroupApi().userGroupManagers(vm.groupId, function(error, data) {
+    new GroupApi().userGroupManagers(vm.groupId, (error, data) => {
         if (error) {
             return;
         }
@@ -336,7 +332,7 @@ function getGroupManager(vm) {
 }
 
 function getApplications(vm) {
-    new GroupApi().applications(vm.groupId, function(error, data) {
+    new GroupApi().applications(vm.groupId, (error, data) => {
         if (error) { // 403 usually
             return;
         }

@@ -24,7 +24,7 @@ export default {
         currentOnly: Boolean, // false = include renamed and moved characters or not (only for admin=true)
     },
 
-    data: function() {
+    data() {
         return {
             searchTerm: '',
         }
@@ -46,7 +46,7 @@ export default {
     },
 }
 
-const findCharacter = _.debounce((vm) => {
+const findCharacter = _.debounce(vm => {
     if (vm.searchTerm.length < 3) {
         return;
     }

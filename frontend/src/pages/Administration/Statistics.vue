@@ -36,7 +36,7 @@ import {StatisticsApi} from "neucore-js-client";
 import * as echarts from 'echarts';
 
 export default {
-    data () {
+    data() {
         return {
             charts: {},
             api: new StatisticsApi(),
@@ -53,14 +53,13 @@ export default {
         }
     },
 
-    mounted () {
+    mounted() {
         window.scrollTo(0, 0);
         getData(this);
 
-        const vm = this;
         window.addEventListener('resize', () => {
-            for (const prop in vm.charts) { // for...of does not work here
-                vm.charts[prop].resize();
+            for (const prop in this.charts) { // for...of does not work here
+                this.charts[prop].resize();
             }
         });
 
@@ -73,41 +72,41 @@ export default {
             `${now.getUTCFullYear()}-${now.getUTCMonth() + 1}-${now.getUTCDate()} ${now.getUTCHours()}`;
     },
 
-    unmounted () {
+    unmounted() {
         for (const id in this.charts) {
             this.charts[id].dispose();
         }
     },
 
     watch: {
-        periodsPlayerLogins () {
+        periodsPlayerLogins() {
             getPlayerLoginsData(this);
         },
-        periodsTotalMonthlyApp () {
+        periodsTotalMonthlyApp() {
             getTotalMonthlyAppData(this);
         },
-        periodsMonthlyAppRequests () {
+        periodsMonthlyAppRequests() {
             getMonthlyAppRequestsData(this);
         },
-        periodsTotalDailyApp () {
+        periodsTotalDailyApp() {
             getTotalDailyAppData(this);
         },
-        periodsHourlyAppRequests () {
+        periodsHourlyAppRequests() {
             getHourlyAppRequestsData(this)
         },
-        untilPlayerLogins () {
+        untilPlayerLogins() {
             getPlayerLoginsData(this);
         },
-        untilTotalMonthlyApp () {
+        untilTotalMonthlyApp() {
             getTotalMonthlyAppData(this)
         },
-        untilMonthlyAppRequests () {
+        untilMonthlyAppRequests() {
             getMonthlyAppRequestsData(this)
         },
-        untilTotalDailyApp () {
+        untilTotalDailyApp() {
             getTotalDailyAppData(this)
         },
-        untilHourlyAppRequests () {
+        untilHourlyAppRequests() {
             getHourlyAppRequestsData(this)
         },
     },

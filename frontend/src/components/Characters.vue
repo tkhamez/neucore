@@ -173,7 +173,7 @@ export default {
         CharacterNameChanges,
     },
 
-    data () {
+    data() {
         return {
             Util: Util,
             h: new Helper(this),
@@ -183,9 +183,9 @@ export default {
         }
     },
 
-    updated () {
+    updated() {
         document.querySelectorAll('#playerModal [data-bs-toggle="tooltip"]').forEach(tooltip => {
-            this.tooltip = new Tooltip(tooltip)
+            return new Tooltip(tooltip)
         });
     },
 
@@ -205,38 +205,35 @@ export default {
         },
 
         fetchCharacters(playerId) {
-            const vm = this;
-            vm.unauthorized = null;
+            this.unauthorized = null;
             new PlayerApi().characters(playerId, (error, data, response) => {
                 if (error) {
                     if (response.statusCode === 403) {
-                        vm.unauthorized = true;
-                        vm.selectedPlayer = null;
-                        vm.characterMovements = [];
+                        this.unauthorized = true;
+                        this.selectedPlayer = null;
+                        this.characterMovements = [];
                     }
                     return;
                 }
-                vm.selectedPlayer = data;
-                vm.characterMovements = Character.buildCharacterMovements(data);
+                this.selectedPlayer = data;
+                this.characterMovements = Character.buildCharacterMovements(data);
             });
         },
 
         updatePlayer() {
-            const vm = this;
-            if (!vm.selectedPlayer) {
+            if (!this.selectedPlayer) {
                 return;
             }
-            new Player(vm).updatePlayer(vm.selectedPlayer, () => {
-                vm.fetchCharacters(vm.selectedPlayer.id);
+            new Player(this).updatePlayer(this.selectedPlayer, () => {
+                this.fetchCharacters(this.selectedPlayer.id);
             });
         },
 
         updateServices() {
-            const vm = this;
-            if (!vm.selectedPlayer) {
+            if (!this.selectedPlayer) {
                 return;
             }
-            new Player(vm).updateServices(vm.selectedPlayer);
+            new Player(this).updateServices(this.selectedPlayer);
         },
 
         getTokenTitle(character) {

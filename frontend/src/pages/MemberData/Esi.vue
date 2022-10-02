@@ -97,7 +97,7 @@ export default {
         Multiselect,
     },
 
-    data: function() {
+    data() {
         return {
             h: new Helper(this),
             status: null,
@@ -119,7 +119,7 @@ export default {
         }
     },
 
-    mounted: function() {
+    mounted() {
         window.scrollTo(0,0);
 
         getEveLogin(this);
@@ -127,7 +127,7 @@ export default {
     },
 
     watch: {
-        selectedPath: function() {
+        selectedPath() {
             this.esiRoute = this.selectedPath.path;
             if (this.selectedPath.name.indexOf('GET') === 0) {
                 this.httpMethod = 'GET';
@@ -138,7 +138,7 @@ export default {
     },
 
     methods: {
-        charSearch (query) {
+        charSearch(query) {
             if (query.length < 3) {
                 return;
             }
@@ -148,7 +148,7 @@ export default {
         charSearchDelayed: _.debounce((vm, searchTerm) => {
             vm.charSearchResult = [];
             vm.charSearchIsLoading = true;
-            new CharacterApi().findCharacter(searchTerm, { currentOnly: 'true' }, function(error, data) {
+            new CharacterApi().findCharacter(searchTerm, { currentOnly: 'true' }, (error, data) => {
                 vm.charSearchIsLoading = false;
                 if (error) {
                     return;
@@ -157,12 +157,10 @@ export default {
             });
         }, 250),
 
-        request: function() {
-            if (! this.selectedCharacter || ! this.esiRoute) {
+        request() {
+            if (!this.selectedCharacter || !this.esiRoute) {
                 return;
             }
-
-            const vm = this;
 
             const api = new ESIApi();
             const params = {
@@ -171,20 +169,20 @@ export default {
                 'route': this.esiRoute,
                 'debug': this.debug ? 'true' : 'false',
             };
-            const callback = function(error, data, response) {
+            const callback = (error, data, response) => {
                 let result;
-                vm.status = response.statusCode;
+                this.status = response.statusCode;
                 try {
                     result = JSON.parse(response.text);
-                    vm.body = result.hasOwnProperty('body') ? result.body : result;
-                    vm.headers = result.headers || [];
+                    this.body = result.hasOwnProperty('body') ? result.body : result;
+                    this.headers = result.headers || [];
                 } catch(e) {
-                    vm.body = response.text;
+                    this.body = response.text;
                 }
             };
 
             if (this.httpMethod === 'POST') {
-                api.requestPost(vm.requestBody, params, callback);
+                api.requestPost(this.requestBody, params, callback);
             } else {
                 api.request(params, callback);
             }

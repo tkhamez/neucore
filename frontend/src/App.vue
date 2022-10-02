@@ -161,7 +161,7 @@ export default {
         }
     },
 
-    created () {
+    created() {
         // environment variables
         Data.envVars = {
             baseUrl: process.env.BASE_URL,
@@ -201,17 +201,16 @@ export default {
         this.emitter.on('settingsChange', () => {
             this.getSettings();
         });
-        this.emitter.on('message', (data) => {
+        this.emitter.on('message', data => {
             this.showMessage(data.text, data.type, data.timeout);
         });
-        this.emitter.on('showCharacters', (playerId) => {
+        this.emitter.on('showCharacters', playerId => {
             this.$refs.charactersModal.showCharacters(playerId);
         });
 
         // refresh session every 5 minutes
-        const vm = this;
-        window.setInterval(function() {
-            vm.getAuthenticatedCharacter(true);
+        window.setInterval(() => {
+            this.getAuthenticatedCharacter(true);
         }, 1000*60*5);
 
         // get initial data
@@ -222,13 +221,13 @@ export default {
     },
 
     watch: {
-        settings: function() {
+        settings() {
             window.document.title = this.settings.customization_document_title;
         }
     },
 
     methods: {
-        showMessage: function(text, type, timeout) {
+        showMessage(text, type, timeout) {
             this.messageTxt = text;
             this.messageType = `alert-${type}`;
             if (timeout) {
@@ -236,9 +235,8 @@ export default {
                     window.clearTimeout(this.messageTimeout);
                     this.messageTimeout = null;
                 }
-                const vm = this;
                 this.messageTimeout = window.setTimeout(() => {
-                    vm.messageTxt = '';
+                    this.messageTxt = '';
                 }, timeout);
             }
         },
@@ -251,9 +249,11 @@ export default {
             this.route = hash.substring(1).split('/');
 
             // handle routes that do not have a page
-            const vm = this;
             if (['login-unknown', 'login', 'login-alt', 'login-custom'].indexOf(this.route[0]) !== -1) {
-                authResult(['login-alt', 'login-custom'].indexOf(this.route[0]) !== -1 ? 'success' : '');
+                authResult(
+                    ['login-alt', 'login-custom'].indexOf(this.route[0]) !== -1 ? 'success' : '',
+                    this
+                );
                 // Set hash value to redirect value from login or remove it, so that it does not appear in bookmarks,
                 // for example.
                 window.location.hash = this.loginRedirect;
@@ -270,9 +270,10 @@ export default {
 
             /**
              * @param {string} [successMessageType]
+             * @param vm The vue instance
              */
-            function authResult(successMessageType) {
-                new AuthApi().result(function(error, data) {
+            function authResult(successMessageType, vm) {
+                new AuthApi().result((error, data) => {
                     if (error) {
                         window.console.error(error);
                         return;
@@ -288,9 +289,8 @@ export default {
             }
         },
 
-        getSettings: function() {
-            const vm = this;
-            new SettingsApi().systemList(function(error, data) {
+        getSettings() {
+            new SettingsApi().systemList((error, data) => {
                 if (error) {
                     return;
                 }
@@ -300,41 +300,38 @@ export default {
                         JSON.parse(variable.value) :
                         variable.value;
                 }
-                vm.store.setSettings(settings);
-                vm.settingsLoaded = true;
+                this.store.setSettings(settings);
+                this.settingsLoaded = true;
             });
         },
 
-        getAuthenticatedCharacter: function(ping) {
-            const vm = this;
-            new CharacterApi().userCharacterShow(function(error, data) {
+        getAuthenticatedCharacter(ping) {
+            new CharacterApi().userCharacterShow((error, data) => {
                 if (error) { // 403 usually
-                    vm.authChar = null;
-                    vm.store.setPlayer(null);
-                    vm.page = 'Home';
+                    this.authChar = null;
+                    this.store.setPlayer(null);
+                    this.page = 'Home';
                 } else if (!ping) { // don't update because it triggers watch events
-                    vm.authChar = data;
+                    this.authChar = data;
                 }
-                vm.authLoaded = true;
+                this.authLoaded = true;
             });
         },
 
-        getPlayer: function() {
-            const vm = this;
-            new PlayerApi().userPlayerShow(function(error, data) {
+        getPlayer() {
+            new PlayerApi().userPlayerShow((error, data) => {
                 if (error) { // 403 usually
-                    vm.store.setPlayer(null);
+                    this.store.setPlayer(null);
                     return;
                 }
-                vm.store.setPlayer(data);
+                this.store.setPlayer(data);
             });
         },
 
-        logout: function() {
-            const vm = this;
+        logout() {
             new AuthApi().logout(() => {
-                vm.authChar = null;
-                vm.store.setPlayer(null);
+                this.authChar = null;
+                this.store.setPlayer(null);
                 window.location.hash = '';
             });
         },
@@ -342,7 +339,7 @@ export default {
 }
 
 function getCsrfHeader(vm) {
-    new AuthApi().authCsrfToken(function(error, data) {
+    new AuthApi().authCsrfToken((error, data) => {
         if (error) {
             vm.csrfToken = '';
         } else {

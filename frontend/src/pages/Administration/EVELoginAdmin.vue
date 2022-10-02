@@ -203,7 +203,7 @@ export default {
         route: Array,
     },
 
-    data: function() {
+    data() {
         return {
             Data: Data,
             h: new Helper(this),
@@ -217,76 +217,73 @@ export default {
         }
     },
 
-    mounted: function() {
+    mounted() {
         window.scrollTo(0,0);
         getLogins(this);
         getRoles(this);
     },
 
     watch: {
-        route () {
+        route() {
             getLogin(this);
             getTokens(this);
         },
     },
 
     methods: {
-        mouseover (ele) {
+        mouseover(ele) {
             $(ele.target).addClass('text-warning');
         },
 
-        mouseleave (ele) {
+        mouseleave(ele) {
             $(ele.target).removeClass('text-warning');
         },
 
-        showCreateModal: function() {
+        showCreateModal() {
             this.$refs.editModal.showCreateModal();
         },
 
-        showDeleteModal: function() {
+        showDeleteModal() {
             this.$refs.editModal.showDeleteModal(this.activeLogin);
         },
 
-        create (id) {
-            const vm = this;
+        create(id) {
             new SettingsApi().userSettingsEveLoginCreate(id, (error, data, response) => {
                 if (response.status === 400) {
-                    vm.h.message('Missing or invalid name.', 'error');
+                    this.h.message('Missing or invalid name.', 'error');
                 } else if (error) {
-                    vm.h.message('Error creating login.', 'error');
+                    this.h.message('Error creating login.', 'error');
                 } else {
-                    vm.$refs.editModal.hideModal();
-                    vm.h.message('Login created.', 'success');
+                    this.$refs.editModal.hideModal();
+                    this.h.message('Login created.', 'success');
                     window.location.hash = `#EVELoginAdmin/${data.id}`;
-                    getLogins(vm);
+                    getLogins(this);
                 }
             });
         },
 
-        deleteIt (id) {
-            const vm = this;
-            new SettingsApi().userSettingsEveLoginDelete(id, (error) => {
+        deleteIt(id) {
+            new SettingsApi().userSettingsEveLoginDelete(id, error => {
                 if (error) {
-                    vm.h.message('Error deleting login', 'error');
+                    this.h.message('Error deleting login', 'error');
                 } else {
-                    vm.$refs.editModal.hideModal();
-                    vm.h.message('Login deleted.', 'success');
+                    this.$refs.editModal.hideModal();
+                    this.h.message('Login deleted.', 'success');
                     window.location.hash = '#EVELoginAdmin';
-                    getLogins(vm);
+                    getLogins(this);
                 }
             });
         },
 
-        update () {
-            const vm = this;
-            new SettingsApi().userSettingsEveLoginUpdate(vm.activeLogin, (error, data, response) => {
+        update() {
+            new SettingsApi().userSettingsEveLoginUpdate(this.activeLogin, (error, data, response) => {
                 if (response.status === 400) {
-                    vm.h.message('Missing or invalid name.', 'error');
+                    this.h.message('Missing or invalid name.', 'error');
                 } else if (error) {
-                    vm.h.message('Error saving login.', 'error');
+                    this.h.message('Error saving login.', 'error');
                 } else {
-                    vm.h.message('Login saved.', 'success');
-                    getLogins(vm);
+                    this.h.message('Login saved.', 'success');
+                    getLogins(this);
                 }
             });
         },

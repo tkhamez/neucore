@@ -52,7 +52,7 @@ export default {
         route: Array,
     },
 
-    data () {
+    data() {
         return {
             h: new Helper(this),
             tab: 'Customization',
@@ -61,7 +61,7 @@ export default {
         }
     },
 
-    mounted () {
+    mounted() {
         window.scrollTo(0,0);
         setTab(this);
 
@@ -69,20 +69,20 @@ export default {
         this.emitter.emit('settingsChange');
     },
 
-    unmounted () {
+    unmounted() {
         // Make sure the data is updated everywhere.
         this.emitter.emit('settingsChange');
     },
 
     watch: {
-        route () {
+        route() {
             setTab(this);
             this.emitter.emit('settingsChange');
         },
     },
 
     methods: {
-        changeSettingDelayed (name, value) {
+        changeSettingDelayed(name, value) {
             // use value from parameter (input event) instead of value from this.settings
             // because the model is not updated on touch devices during IME composition
             this.changeSettingDebounced(this, name, value);
@@ -92,11 +92,10 @@ export default {
             vm.changeSetting(name, value);
         }, 250),
 
-        changeSetting (name, value) {
-            const vm = this;
+        changeSetting(name, value) {
             new SettingsApi().systemChange(name, value, (error, data, response) => {
                 if (error && response.statusCode === 403) {
-                    vm.h.message('Unauthorized.', 'error');
+                    this.h.message('Unauthorized.', 'error');
                 }
             });
         },
@@ -104,15 +103,13 @@ export default {
         /**
          * Load alliance and corporation list, used by child components.
          */
-        loadLists () {
-            const vm = this;
-
+        loadLists() {
             // get alliances
             new AllianceApi().all((error, data) => {
                 if (error) { // 403 usually
                     return;
                 }
-                vm.alliances = data;
+                this.alliances = data;
             });
 
             // get corporations
@@ -120,7 +117,7 @@ export default {
                 if (error) { // 403 usually
                     return;
                 }
-                vm.corporations = data;
+                this.corporations = data;
             });
         },
 

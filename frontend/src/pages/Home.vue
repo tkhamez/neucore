@@ -243,7 +243,7 @@ export default {
         authChar: Object,
     },
 
-    data: function() {
+    data() {
         return {
             h: new Helper(this),
             settings: toRef(this.store.state, 'settings'),
@@ -267,7 +267,7 @@ export default {
         }
     },
 
-    created () {
+    created() {
         this.md = markdownIt({ typographer: true })
             .use(mdEmoji)
             .use(mdSup)
@@ -277,12 +277,12 @@ export default {
             .use(mdMark)
             .use(mdAttrs) // for classes, like .text-warning, .bg-primary
         ;
-        this.md.renderer.rules.emoji = function(token, idx) {
+        this.md.renderer.rules.emoji = (token, idx) => {
             return `<span class="emoji">${token[idx].content}</span>`;
         };
     },
 
-    mounted () { // after "redirect" from another page
+    mounted() { // after "redirect" from another page
         window.scrollTo(0, 0);
         this.emitter.emit('playerChange'); // Ensure group memberships are up-to-date.
 
@@ -294,16 +294,16 @@ export default {
     },
 
     watch: {
-        settings () {
+        settings() {
             this.markdownHtml = this.md.render(this.settings.customization_home_markdown);
             this.markdownLoginText = this.md.render(this.settings.customization_login_text);
         },
 
-        authChar: function() { // for primary login and logout
+        authChar() { // for primary login and logout
             checkDeactivated(this);
         },
 
-        player: function() {
+        player() {
             if (!this.player) {
                 return;
             }
@@ -312,20 +312,18 @@ export default {
     },
 
     methods: {
-        makeMain: function(characterId) {
-            const vm = this;
-            new PlayerApi().setMain(characterId, function(error) {
+        makeMain(characterId) {
+            new PlayerApi().setMain(characterId, error => {
                 if (error) { // 403 usually
                     return;
                 }
-                vm.emitter.emit('playerChange');
+                this.emitter.emit('playerChange');
             });
         },
 
-        update: function(characterId) {
-            const vm = this;
-            (new Character(this)).updateCharacter(characterId, function() {
-                vm.emitter.emit('playerChange');
+        update(characterId) {
+            (new Character(this)).updateCharacter(characterId, () => {
+                this.emitter.emit('playerChange');
             });
         },
 
@@ -339,9 +337,8 @@ export default {
         },
 
         deleteChar() {
-            const vm = this;
-            (new Character(vm)).deleteCharacter(this.charToDelete.id, null, function() {
-                vm.emitter.emit('playerChange');
+            (new Character(this)).deleteCharacter(this.charToDelete.id, null, () => {
+                this.emitter.emit('playerChange');
             });
             if (this.deleteCharModal) {
                 this.deleteCharModal.hide();
@@ -349,11 +346,11 @@ export default {
             this.charToDelete = null;
         },
 
-        showEsiTokens (character, showInvalid) {
+        showEsiTokens(character, showInvalid) {
             this.$refs.esiTokensModal.showModal(character, showInvalid);
         },
 
-        filteredEveLogins () {
+        filteredEveLogins() {
             return this.eveLogins.filter(eveLogin => {
                 return eveLogin.name.indexOf(Data.loginPrefixProtected) !== 0 ||
                        eveLogin.name === Data.loginNames.tracking
@@ -387,7 +384,7 @@ function checkDeactivated(vm) {
         return;
     }
 
-    new PlayerApi().groupsDisabled(function(error, data) {
+    new PlayerApi().groupsDisabled((error, data) => {
         if (error) { // 403 usually
             return;
         }

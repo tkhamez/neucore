@@ -6,7 +6,7 @@ export { superAgentPlugin as default };
  * @returns {function}
  */
 function superAgentPlugin(helper) {
-    return function (request) {
+    return request => {
         if (['POST', 'PUT', 'DELETE'].indexOf(request.method) !== -1) {
             request.set('X-CSRF-Token', helper.vm.csrfToken);
         }
@@ -14,7 +14,7 @@ function superAgentPlugin(helper) {
         request.withCredentials();
 
         helper.ajaxLoading(true);
-        request.on('end', function () {
+        request.on('end', () => {
             helper.ajaxLoading(false);
         });
 

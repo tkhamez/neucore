@@ -69,7 +69,7 @@ export default {
         CharacterSearch,
         CharacterResult,
     },
-    data: function() {
+    data() {
         return {
             h: new Helper(this),
             input: '',
@@ -78,12 +78,11 @@ export default {
         }
     },
     methods: {
-        find () {
-            const vm = this;
-            vm.result = [];
-            new PlayerApi().playerGroupCharactersByAccount(vm.input, function(error, data) {
+        find() {
+            this.result = [];
+            new PlayerApi().playerGroupCharactersByAccount(this.input, (error, data) => {
                 if (! error) {
-                    vm.result = data;
+                    this.result = data;
                 }
             })
         }

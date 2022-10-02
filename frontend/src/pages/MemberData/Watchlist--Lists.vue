@@ -130,7 +130,7 @@ export default {
         manageIds: Array,
     },
 
-    data () {
+    data() {
         return {
             h: new Helper(this),
             listContent: {
@@ -145,15 +145,15 @@ export default {
         }
     },
 
-    mounted () {
+    mounted() {
         loadList(this);
     },
 
     watch: {
-        id () {
+        id() {
             loadList(this);
         },
-        tab () {
+        tab() {
             loadList(this);
         },
     },
@@ -167,13 +167,12 @@ export default {
             );
         },
 
-        addToAllowlist (playerId) {
+        addToAllowlist(playerId) {
             if (! this.id) {
                 return;
             }
-            const vm = this;
             new WatchlistApi().watchlistExemptionAdd(this.id, playerId, () => {
-                loadList(vm);
+                loadList(this);
             });
         },
 
@@ -181,11 +180,10 @@ export default {
          * @param {string} type Players, Alliances or Corporations
          * @param {number} id
          */
-         removeFromAllowlist (type, id) {
+         removeFromAllowlist(type, id) {
             if (! this.id) {
                 return;
             }
-            const vm = this;
             const api = new WatchlistApi();
             let method;
             if (type === 'Players') {
@@ -198,7 +196,7 @@ export default {
                 return;
             }
             api[method].apply(api, [this.id, id, () => {
-                loadList(vm, true);
+                loadList(this, true);
             }]);
         },
 
@@ -206,7 +204,7 @@ export default {
          * @param {array} entities
          * @returns {string}
          */
-        nameList (entities) {
+        nameList(entities) {
             return entities.map(entity => {
                 return entity.name;
             }).join(', ');
@@ -216,7 +214,7 @@ export default {
 
 /**
  * @param vm
- * @param {bool} [onlyPlayers] for allowlist, reload players only
+ * @param {boolean} [onlyPlayers] for allowlist, reload players only
  */
 function loadList(vm, onlyPlayers) {
     if (! vm.id) {
