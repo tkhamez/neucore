@@ -544,41 +544,83 @@ class EsiDataTest extends TestCase
         $this->client->setMiddleware(function () {
             static $requestNumber = 0;
             $requestNumber ++;
-            if ($requestNumber < 3) {
+            if (in_array($requestNumber, [1, 2, 3, 6])) {
                 $msg = '... {\"error\":\"Ensure all IDs are valid before resolving.\"}';
                 throw new ApiException($msg, 404, [], $msg);
             }
             return function () {};
         });
         $this->client->setResponse(
-            new Response(404),
-            new Response(404),
-            new Response(200, [], '[{
-                "id": 11,
-                "name": "The Name",
-                "category": "character"
-            }]')
+            new Response(404), // r1 - 1-1000
+            new Response(404), // r2 - 1-100
+            new Response(404), // r3 - 1-10
+            new Response(200, [], '[{"id": 1, "name": "N 1", "category": "character"}]'), // r4 - 1
+            new Response(200, [], '[]'), // r5 - 2
+            new Response(404), // r6 - 3,
+            new Response(200, [], '[{"id": 4, "name": "N 4", "category": "character"}]'), // r7 - 4
+            new Response(200, [], '[]'), // r8 - 5
+            new Response(200, [], '[]'), // r9 - 6
+            new Response(200, [], '[]'), // r10 - 7
+            new Response(200, [], '[]'), // r11 - 8
+            new Response(200, [], '[]'), // r12 - 9
+            new Response(200, [], '[{"id": 10, "name": "N 10", "category": "character"}]'), // r13 - 10
+            new Response(200, [], '[{"id": 11, "name": "N 11", "category": "character"}]'), // r14 - 11-20
+            new Response(200, [], '[]'), // r15 - 21-30
+            new Response(200, [], '[]'), // r16 - 31-40
+            new Response(200, [], '[]'), // r17 - 41-50
+            new Response(200, [], '[]'), // r18 - 51-60
+            new Response(200, [], '[]'), // r19 - 61-70
+            new Response(200, [], '[]'), // r20 - 71-80
+            new Response(200, [], '[]'), // r21 - 81-90
+            new Response(200, [], '[{"id": 100, "name": "N 100", "category": "character"}]'), // r22 - 91-100
+            new Response(200, [], '[{"id": 200, "name": "N 200", "category": "character"}]'), // r23 - 101-200
+            new Response(200, [], ''), // r24 - 201-300
+            new Response(200, [], ''), // r25 - 301-400
+            new Response(200, [], ''), // r26 - 401-500
+            new Response(200, [], ''), // r27 - 501-600
+            new Response(200, [], ''), // r28 - 601-700
+            new Response(200, [], ''), // r29 - 701-800
+            new Response(200, [], ''), // r30 - 801-900
+            new Response(200, [], '[{"id": 1000, "name": "N 1000", "category": "character"}]'), // r31 - 901-1000
+            new Response(200, [], '[{"id": 1500, "name": "N 1500", "category": "character"}]') // r32 - 1001 - 1500
         );
 
-        $names = $this->esiData->fetchUniverseNames([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+        $names = $this->esiData->fetchUniverseNames(range(1, 1500));
 
-        $this->assertSame(1, count($names));
-        $this->assertSame(11, $names[0]->getId());
-        $this->assertSame('The Name', $names[0]->getName());
+        $this->assertSame(8, count($names));
+        $this->assertSame(1, $names[0]->getId());
+        $this->assertSame(4, $names[1]->getId());
+        $this->assertSame(10, $names[2]->getId());
+        $this->assertSame(11, $names[3]->getId());
+        $this->assertSame(100, $names[4]->getId());
+        $this->assertSame(200, $names[5]->getId());
+        $this->assertSame(1000, $names[6]->getId());
+        $this->assertSame(1500, $names[7]->getId());
+        $this->assertSame('N 1', $names[0]->getName());
         $this->assertSame(PostUniverseNames200Ok::CATEGORY_CHARACTER, $names[0]->getCategory());
 
         $records = $this->log->getHandler()->getRecords();
-        $this->assertSame(2, count($records));
+        $this->assertSame(4, count($records));
         $this->assertSame(
-            'fetchUniverseNames: Invalid IDs in request, trying again with fewer IDs.',
+            'fetchUniverseNames: Invalid ID(s) in request, trying again with max. 100 IDs.',
             $records[0]['message']
         );
         $this->assertNull($records[0]['context']['IDs'] ?? null);
         $this->assertSame(
-            '... {\"error\":\"Ensure all IDs are valid before resolving.\"}',
+            'fetchUniverseNames: Invalid ID(s) in request, trying again with max. 10 IDs.',
             $records[1]['message']
         );
-        $this->assertSame([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], $records[1]['context']['IDs']);
+        $this->assertNull($records[1]['context']['IDs'] ?? null);
+        $this->assertSame(
+            'fetchUniverseNames: Invalid ID(s) in request, trying again with max. 1 IDs.',
+            $records[2]['message']
+        );
+        $this->assertNull($records[2]['context']['IDs'] ?? null);
+        $this->assertSame(
+            '... {\"error\":\"Ensure all IDs are valid before resolving.\"}',
+            $records[3]['message']
+        );
+        $this->assertSame([3], $records[3]['context']['IDs']);
     }
 
     public function testFetchStructure_NoToken()

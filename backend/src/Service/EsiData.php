@@ -348,6 +348,10 @@ class EsiData
     }
 
     /**
+     * Requests names for IDs from ESI.
+     *
+     * Note: All IDs need to be valid, but it seems that ESI sometimes complains about an ID that will work later.
+     *
      * @param array $ids Valid IDs
      * @return PostUniverseNames200Ok[]
      * @see https://esi.evetech.net/ui/#/Universe/post_universe_names
@@ -371,17 +375,20 @@ class EsiData
                     is_string($body) &&
                     strpos($body, 'Ensure all IDs are valid before resolving') !== false
                 ) {
-                    if (count($checkIds) > 10) {
-                        // Try again with fewer IDs
-                        $this->log->warning('fetchUniverseNames: Invalid IDs in request, trying again with fewer IDs.');
-                        foreach (array_chunk($checkIds, 10) as $chunks) {
-                            $names = array_merge($names, $this->fetchUniverseNames($chunks));
-                        }
-                        return $names;
+                    // Try again with fewer IDs
+                    if (count($checkIds) > 100) {
+                        $names = $this->fetchUniverseNamesChunked($names, $checkIds, 100);
+                    } elseif (count($checkIds) > 10) {
+                        $names = $this->fetchUniverseNamesChunked($names, $checkIds, 10);
+                    } elseif (count($checkIds) > 1) {
+                        $names = $this->fetchUniverseNamesChunked($names, $checkIds, 1);
+                    } else {
+                        $context['IDs'] = $checkIds;
+                        $this->log->error($e->getMessage(), $context);
                     }
-                    $context['IDs'] = $checkIds;
+                } else {
+                    $this->log->error($e->getMessage(), $context);
                 }
-                $this->log->error($e->getMessage(), $context);
             } catch (\Exception $e) {
                 $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             }
@@ -568,5 +575,17 @@ class EsiData
             $this->objectManager->flush();
         }
         return $alliance;
+    }
+
+    /**
+     * @return PostUniverseNames200Ok[]
+     */
+    private function fetchUniverseNamesChunked(array $names, array $checkIds, int $chunkSize): array
+    {
+        $this->log->warning("fetchUniverseNames: Invalid ID(s) in request, trying again with max. $chunkSize IDs.");
+        foreach (array_chunk($checkIds, $chunkSize) as $chunks) {
+            $names = array_merge($names, $this->fetchUniverseNames($chunks));
+        }
+        return $names;
     }
 }
