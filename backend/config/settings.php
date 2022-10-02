@@ -13,9 +13,9 @@ return [
         'NEUCORE_LOG_ROTATION'      => 'weekly',
         'NEUCORE_LOG_FORMAT'        => 'multiline',
         'NEUCORE_CACHE_DIR'         => Application::ROOT_DIR . '/var/cache',
-        'NEUCORE_SESSION_SECURE'    => 1,
+        'NEUCORE_SESSION_SECURE'    => '1',
         'NEUCORE_SESSION_SAME_SITE' => 'Lax',
-        'NEUCORE_ERROR_REPORTING'   => E_ALL,
+        'NEUCORE_ERROR_REPORTING'   => (string)E_ALL,
     ],
 
     'monolog' => [
