@@ -6,7 +6,7 @@ dd mm yyyy
 
 - Fixed and improved `/universe/names/` ESI requests.
 - Some refactoring of the frontend, which also slightly changes the behavior when changing system settings.
-- Small text (UI and log) improvement and fixes.
+- Other small improvements and fixes.
 
 ## 1.36.1
 

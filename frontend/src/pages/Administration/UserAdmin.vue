@@ -503,7 +503,10 @@ export default {
 
     updated() {
         document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(tooltip => {
-            return new Tooltip(tooltip)
+            if (tooltip.dataset.tooltipInit !== '1') {
+                tooltip.dataset.tooltipInit = '1';
+                return new Tooltip(tooltip);
+            }
         });
     },
 
