@@ -99,7 +99,7 @@ class CheckTokens extends Command
         $this->sleep = intval($input->getOption('sleep'));
         $this->executeLogOutput($input, $output);
 
-        $this->writeLine('Started "check-tokens"', false);
+        $this->writeLine("Started \"check-tokens\" (characters: $this->characters)", false);
         $this->check($charId);
         $this->writeLine('Finished "check-tokens"', false);
 
