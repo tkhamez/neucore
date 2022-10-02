@@ -28,8 +28,8 @@
                            :href="`#EVELoginAdmin/${login.id}/${contentType}`">
                             {{ login.name }}
                         </a>
-                        <span v-if="login.name.indexOf(Data.loginPrefixProtected) === -1"
-                              v-cloak class="entity-actions">
+                        <span v-cloak v-if="login.name.indexOf(Data.loginPrefixProtected) === -1"
+                              class="entity-actions">
                             <span role="img" aria-label="delete" title="delete"
                                   class="far fa-trash-alt me-1"
                                   @mouseover="mouseover" @mouseleave="mouseleave"
@@ -40,7 +40,7 @@
             </div>
         </div>
 
-        <div v-if="activeLogin" v-cloak class="col-lg-8">
+        <div v-cloak v-if="activeLogin" class="col-lg-8">
             <div class="card border-secondary mb-3" >
                 <h4 class="card-header">{{ activeLogin.name }}</h4>
             </div>
@@ -61,12 +61,12 @@
                 </li>
             </ul>
 
-            <div v-if="contentType === 'login'" v-cloak class="card border-secondary mb-3">
+            <div v-cloak v-if="contentType === 'login'" class="card border-secondary mb-3">
                 <div class="card-body">
-                    <p v-if="activeLogin" v-cloak>
+                    <p v-cloak v-if="activeLogin">
                         Login URL <a :href="loginUrl">{{ loginUrl }}</a>.
                     </p>
-                    <div v-if="activeLogin" v-cloak>
+                    <div v-cloak v-if="activeLogin">
                         <label class="col-form-label w-100 pb-1">
                             Name
                             <input type="text" class="form-control" :disabled="disabled"
@@ -109,11 +109,11 @@
                 </div> <!-- card-body -->
             </div> <!-- card -->
 
-            <div v-if="contentType === 'tokens'" v-cloak class="card border-secondary mb-3 table-responsive">
+            <div v-cloak v-if="contentType === 'tokens'" class="card border-secondary mb-3 table-responsive">
                 <table class="table table-hover mb-0 nc-table-sm" aria-describedby="ESI Tokens">
                     <thead>
                         <tr>
-                            <th scope="col">Character</th>
+                            <th scope="col" colspan="2">Character</th>
                             <th scope="col">Account</th>
                             <th scope="col" colspan="2">Corporation</th>
                             <th scope="col" colspan="2">Alliance</th>
@@ -123,6 +123,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="token in tokens">
+                            <td>{{ token.character ? token.character.id : '' }}</td>
                             <td>{{ token.character ? token.character.name : '' }}</td>
                             <td>
                                 <span v-if="h.hasRole('user-chars')">
@@ -219,14 +220,15 @@ export default {
 
     mounted() {
         window.scrollTo(0,0);
-        getLogins(this);
-        getRoles(this);
+        fetchLogins(this);
+        fetchRoles(this);
     },
 
     watch: {
         route() {
-            getLogin(this);
-            getTokens(this);
+            if (getLogin(this)) {
+                fetchTokens(this);
+            }
         },
     },
 
@@ -257,7 +259,7 @@ export default {
                     this.$refs.editModal.hideModal();
                     this.h.message('Login created.', 'success');
                     window.location.hash = `#EVELoginAdmin/${data.id}`;
-                    getLogins(this);
+                    fetchLogins(this);
                 }
             });
         },
@@ -270,7 +272,7 @@ export default {
                     this.$refs.editModal.hideModal();
                     this.h.message('Login deleted.', 'success');
                     window.location.hash = '#EVELoginAdmin';
-                    getLogins(this);
+                    fetchLogins(this);
                 }
             });
         },
@@ -283,14 +285,14 @@ export default {
                     this.h.message('Error saving login.', 'error');
                 } else {
                     this.h.message('Login saved.', 'success');
-                    getLogins(this);
+                    fetchLogins(this);
                 }
             });
         },
     },
 }
 
-function getRoles(vm) {
+function fetchRoles(vm) {
     new SettingsApi().userSettingsEveLoginRoles((error, data) => {
         if (!error) {
             vm.allEveRoles = data;
@@ -298,12 +300,14 @@ function getRoles(vm) {
     });
 }
 
-function getLogins(vm) {
+function fetchLogins(vm) {
     new SettingsApi().userSettingsEveLoginList((error, data) => {
         if (!error) {
             vm.logins = data;
-            getLogin(vm);
-            getTokens(vm);
+            if (getLogin(vm)) {
+                fetchTokens(vm);
+            }
+            fetchTokens(vm);
         }
     });
 }
@@ -324,9 +328,16 @@ function getLogin(vm) {
             break;
         }
     }
+
+    if (vm.activeLogin.name === Data.loginNames.default && vm.contentType === 'tokens') {
+        window.location.hash = `EVELoginAdmin/${vm.activeLogin.id}/login`;
+        return false;
+    }
+
+    return true;
 }
 
-function getTokens(vm) {
+function fetchTokens(vm) {
     if (vm.contentType !== 'tokens') {
         return;
     }
