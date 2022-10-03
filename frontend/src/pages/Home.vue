@@ -289,7 +289,6 @@ export default {
         this.loginHost = Data.envVars.backendHost;
 
         loginAddRedirect(this);
-        checkDeactivated(this);
         getEveLogins(this);
     },
 
@@ -297,10 +296,6 @@ export default {
         settings() {
             this.markdownHtml = this.md.render(this.settings.customization_home_markdown);
             this.markdownLoginText = this.md.render(this.settings.customization_login_text);
-        },
-
-        authChar() { // for primary login and logout
-            checkDeactivated(this);
         },
 
         player() {

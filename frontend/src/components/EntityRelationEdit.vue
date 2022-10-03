@@ -251,6 +251,11 @@ export default {
         sticky: Number,
 
         searchCurrentOnly: Boolean,
+
+        /**
+         * Optional content for the select box. If not provided a request will be made to get it.
+         */
+        selectContent: Array,
     },
 
     data() {
@@ -260,8 +265,8 @@ export default {
             player: toRef(this.store.state, 'player'),
             newObject: "", // empty string to select the first entry in the drop-down
             placeholder: "", // placeholder for the multi-select
-            selectContent: [], // all options from backend
-            currentSelectContent: [], // copy of selectContent without items from the table
+            selectContentLoaded: [], // all options from backend
+            currentSelectContent: [], // copy of selectContentLoaded without items from the table
             tableContent: [],
             showGroupsEntity: null, // one alliance or corporation object with groups
             withGroups: [], // all alliances or corporations with groups
@@ -327,7 +332,7 @@ export default {
             this.newObject = "";
         },
 
-        selectContent() {
+        selectContentLoaded() {
             this.removeSelectedOptions();
         },
 
@@ -370,7 +375,11 @@ export default {
         },
 
         getSelectContent() {
-            this.selectContent = [];
+            if (this.selectContent) {
+                this.selectContentLoaded = this.selectContent;
+                return;
+            }
+            this.selectContentLoaded = [];
 
             let api;
             let method;
@@ -407,7 +416,7 @@ export default {
                 api = new GroupApi();
                 method = 'userGroupAll';
             } else if (this.contentType === 'roles') {
-                this.selectContent = [
+                this.selectContentLoaded = [
                     { id: 'app-groups', name: 'app-groups' },
                     { id: 'app-chars', name: 'app-chars' },
                     { id: 'app-tracking', name: 'app-tracking' },
@@ -426,7 +435,7 @@ export default {
                 if (error) { // 403 usually
                     return;
                 }
-                this.selectContent = data;
+                this.selectContentLoaded = data;
             }]);
         },
 
@@ -560,9 +569,9 @@ export default {
         },
 
         removeSelectedOptions() {
-            this.currentSelectContent = [...this.selectContent]; // copy by value
+            this.currentSelectContent = [...this.selectContentLoaded]; // copy by value
             let removed = 0;
-            for (const [index, option] of this.selectContent.entries()) {
+            for (const [index, option] of this.selectContentLoaded.entries()) {
                 for (const row of this.tableContent) {
                     if (row.id === option.id) {
                         this.currentSelectContent.splice(index - removed, 1);

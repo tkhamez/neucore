@@ -11,8 +11,10 @@
                 Alliances and corporations whose members are included in the list if they
                 also have characters in other (not NPC) corporations.
             </p>
-            <admin :sticky="sticky" :contentType="'alliances'" :type="'Watchlist'" :typeId="list.id"></admin>
-            <admin :sticky="sticky" :contentType="'corporations'" :type="'Watchlist'" :typeId="list.id"></admin>
+            <admin v-if="dataLoaded" :sticky="sticky" :contentType="'alliances'"
+                   :type="'Watchlist'" :typeId="list.id" :selectContent="alliances"></admin>
+            <admin v-if="dataLoaded" :sticky="sticky" :contentType="'corporations'"
+                   :type="'Watchlist'" :typeId="list.id" :selectContent="corporations"></admin>
         </div>
 
         <div class="card-header bg-light text-dark"><strong>Kicklist</strong></div>
@@ -31,10 +33,10 @@
                     <span class="far fa-plus-square"></span> corporations
                 </a>
             </p>
-            <admin ref="adminAllianceKick" :sticky="sticky"
-                   :contentType="'alliances'" :type="'WatchlistKicklist'" :typeId="list.id"></admin>
-            <admin ref="adminCorpKick" :sticky="sticky"
-                   :contentType="'corporations'" :type="'WatchlistKicklist'" :typeId="list.id"></admin>
+            <admin ref="adminAllianceKick" v-if="dataLoaded" :sticky="sticky" :contentType="'alliances'"
+                   :type="'WatchlistKicklist'" :typeId="list.id" :selectContent="alliances"></admin>
+            <admin ref="adminCorpKick" v-if="dataLoaded" :sticky="sticky" :contentType="'corporations'"
+                   :type="'WatchlistKicklist'" :typeId="list.id" :selectContent="corporations"></admin>
         </div>
 
         <div class="card-header bg-light text-dark"><strong>Allowlist</strong></div>
@@ -43,10 +45,10 @@
                 Alliances and corporations that should be treated like NPC corporations
                 (usually personal alt corporations).
             </p>
-            <admin :sticky="sticky"
-                   :contentType="'alliances'" :type="'WatchlistAllowlist'" :typeId="list.id"></admin>
-            <admin :sticky="sticky"
-                   :contentType="'corporations'" :type="'WatchlistAllowlist'" :typeId="list.id"></admin>
+            <admin v-if="dataLoaded" :sticky="sticky" :contentType="'alliances'"
+                   :type="'WatchlistAllowlist'" :typeId="list.id" :selectContent="alliances"></admin>
+            <admin v-if="dataLoaded" :sticky="sticky" :contentType="'corporations'"
+                   :type="'WatchlistAllowlist'" :typeId="list.id" :selectContent="corporations"></admin>
         </div>
     </div>
 </div>
@@ -55,6 +57,7 @@
 <script>
 import AddEntity from '../../components/EntityAdd.vue';
 import Admin     from '../../components/EntityRelationEdit.vue';
+import {AllianceApi, CorporationApi} from "neucore-js-client";
 
 export default {
     components: {
@@ -69,7 +72,27 @@ export default {
     data() {
         return {
             sticky: 87,
+            dataLoaded: false,
+            alliances: null,
+            corporations: null,
         }
+    },
+
+    mounted() {
+        new AllianceApi().all((error, data) => {
+            if (error) {
+                return;
+            }
+            this.alliances = data;
+            this.dataLoaded = this.corporations !== null;
+        });
+        new CorporationApi().userCorporationAll((error, data) => {
+            if (error) {
+                return;
+            }
+            this.corporations = data;
+            this.dataLoaded = this.alliances !== null;
+        });
     },
 
     methods: {

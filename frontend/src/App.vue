@@ -217,7 +217,13 @@ export default {
         this.getSettings();
         getCsrfHeader(this);
         this.getAuthenticatedCharacter();
-        this.getPlayer();
+    },
+
+    mounted() {
+        // These pages trigger a "playerChange" event, so it is not necessary to load the player already here.
+        if (['Home', 'Groups', 'GroupManagement'].indexOf(this.page) === -1) {
+            this.getPlayer();
+        }
     },
 
     watch: {

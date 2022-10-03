@@ -55,7 +55,6 @@ export default {
 
     mounted() {
         window.scrollTo(0, 0);
-        getData(this);
 
         window.addEventListener('resize', () => {
             for (const prop in this.charts) { // for...of does not work here
@@ -110,14 +109,6 @@ export default {
             getHourlyAppRequestsData(this)
         },
     },
-}
-
-function getData(vm) {
-    getPlayerLoginsData(vm);
-    getTotalMonthlyAppData(vm);
-    getMonthlyAppRequestsData(vm);
-    getTotalDailyAppData(vm);
-    getHourlyAppRequestsData(vm);
 }
 
 function getPlayerLoginsData(vm) {
