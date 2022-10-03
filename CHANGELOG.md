@@ -1,14 +1,14 @@
 # Changelog
 
-## next
+## 1.37.0
 
-dd mm yyyy
+3 Oct 2022
 
 - New: Added an optional global IP based rate limit for all requests to the backend.
 - Change: The HTTP rate limit headers are now added only when rate limiting is active for apps, not when it is 
-  configured only.
+  configured only. They are also added if the global rate limiting in on.
 - Fixed and improved `/universe/names/` ESI requests.
-- Some refactoring of the frontend, which also slightly changes the behavior when changing system settings.
+- Some refactoring of the frontend, which slightly changes the behavior when changing system settings.
 - Other small improvements and fixes.
 
 ## 1.36.1
