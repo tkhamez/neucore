@@ -80,6 +80,10 @@ class RateLimitAppTest extends TestCase
 
         $this->assertSame('-1', $response->getHeader(RateLimit::HEADER_REMAIN)[0]);
         $this->assertEqualsWithDelta(4.5, $response->getHeader(RateLimit::HEADER_RESET)[0], 1.0);
+        $this->assertStringStartsWith(
+            'Application rate limit exceeded with 51 requests in ', // ... ~5.5 seconds
+            $response->getBody()->__toString()
+        );
 
         $logs = $this->logger->getHandler()->getRecords();
         $this->assertSame(1, count($logs));

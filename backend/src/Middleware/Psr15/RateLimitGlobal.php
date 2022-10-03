@@ -74,6 +74,9 @@ class RateLimitGlobal extends RateLimit implements MiddlewareInterface
                 "limit exceeded with $numRequests request in $elapsedTime seconds."
             );
             $response = $this->responseFactory->createResponse(429); // Too Many Requests
+            $response->getBody()->write(
+                "Global rate limit exceeded with $numRequests requests in $elapsedTime seconds."
+            );
         } else {
             $response = $handler->handle($request);
         }

@@ -75,6 +75,9 @@ class RateLimitApp extends RateLimit implements MiddlewareInterface
             );
             if ($this->active) {
                 $response = $this->responseFactory->createResponse(429); // Too Many Requests
+                $response->getBody()->write(
+                    "Application rate limit exceeded with $numRequests requests in $elapsedTime seconds."
+                );
             }
         }
         if (!$response) {
