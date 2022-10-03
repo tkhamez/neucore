@@ -110,7 +110,7 @@ class AppRateLimitTest extends TestCase
 
     public function testProcess_configured_notActive()
     {
-        ($this->repoFactory->getSystemVariableRepository()->find(SystemVariable::API_RATE_LIMIT_ACTIVE))
+        $this->repoFactory->getSystemVariableRepository()->find(SystemVariable::API_RATE_LIMIT_ACTIVE)
             ->setValue('0');
         $this->om->flush();
 
@@ -121,8 +121,8 @@ class AppRateLimitTest extends TestCase
 
         $this->assertSame(200, $response->getStatusCode());
 
-        $this->assertSame('-1', $response->getHeader(AppRateLimit::HEADER_REMAIN)[0]);
-        $this->assertEqualsWithDelta(4.5, $response->getHeader(AppRateLimit::HEADER_RESET)[0], 1.0);
+        $this->assertFalse($response->hasHeader(AppRateLimit::HEADER_REMAIN));
+        $this->assertFalse($response->hasHeader(AppRateLimit::HEADER_RESET));
 
         $logs = $this->logger->getHandler()->getRecords();
         $this->assertSame(1, count($logs));
@@ -134,7 +134,7 @@ class AppRateLimitTest extends TestCase
 
     public function testProcess_notConfigured()
     {
-        ($this->repoFactory->getSystemVariableRepository()->find(SystemVariable::API_RATE_LIMIT_MAX_REQUESTS))
+        $this->repoFactory->getSystemVariableRepository()->find(SystemVariable::API_RATE_LIMIT_MAX_REQUESTS)
             ->setValue('');
         $this->om->flush();
 

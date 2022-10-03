@@ -83,9 +83,13 @@ class AppRateLimit implements MiddlewareInterface
             $response = $handler->handle($request);
         }
 
-        return $response
-            ->withHeader(self::HEADER_REMAIN, $remaining)
-            ->withHeader(self::HEADER_RESET, $resetIn);
+        if ($this->active) {
+            $response = $response
+                ->withHeader(self::HEADER_REMAIN, $remaining)
+                ->withHeader(self::HEADER_RESET, $resetIn);
+        }
+
+        return $response;
     }
 
     private function readConfig(): void

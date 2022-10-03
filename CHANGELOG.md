@@ -4,6 +4,8 @@
 
 dd mm yyyy
 
+- Change: The HTTP rate limit headers are now added only when rate limiting is active for apps, not when it is 
+  configured only.
 - Fixed and improved `/universe/names/` ESI requests.
 - Some refactoring of the frontend, which also slightly changes the behavior when changing system settings.
 - Other small improvements and fixes.

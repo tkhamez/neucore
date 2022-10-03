@@ -53,9 +53,9 @@
     <div class="card-header mt-3"><h6>API Rate Limit for Apps</h6></div>
     <div class="card-body">
         <p>
-            If configured, each response will contain the headers 'X-Neucore-Rate-Limit-Remain' and
-            'X-Neucore-Rate-Limit-Reset'. If enabled, each request results in error 429 "Too many requests"
-            if the limit has been exceeded.
+            If enabled, each response contains the headers "X-Neucore-Rate-Limit-Remain" and
+            "X-Neucore-Rate-Limit-Reset". If the limit is exceeded, this results in a 429 "Too many requests"
+            response. If it is only configured but not active, it will only log when an app exceeds the limit.
         </p>
         <label class="mt-2 display-block">
             <input type="text" pattern="[0-9]*" class="form-control input-inline" name="api_rate_limit_max_requests"

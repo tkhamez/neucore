@@ -81,9 +81,11 @@ curl --header "Authorization: Bearer MTpteSBhd2Vzb21lIHNlY3JldA==" https://neuco
 
 ### Rate Limit
 
-If the API rate limiting is configured (UI: Admin -> Settings -> Features), each response will contain 
-the headers `X-Neucore-Rate-Limit-Remain` and `X-Neucore-Rate-Limit-Reset`. If enabled, each request results 
-in an error 429 "Too many requests" if the limit has been exceeded.
+If the API rate limiting is enabled (UI: Admin -> Settings -> Features), each response will contain 
+the headers `X-Neucore-Rate-Limit-Remain` and `X-Neucore-Rate-Limit-Reset`. A request results in an error 
+429 "Too many requests" if the limit has been exceeded.
+
+If it is configured only, but not active, it is logged when an app exceeds the limit.
 
 ### ESI Error Limit
 
