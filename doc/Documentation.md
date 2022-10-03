@@ -7,7 +7,7 @@
 - [Application API](#application-api)
   * [Authentication](#authentication)
   * [Rate Limit](#rate-limit)
-  * [ESI Error Limit](#esi-error-limit)
+  * [ESI Proxy](#esi-proxy)
 - [Service Registration Plugins](#service-registration-plugins)
 - [Player Accounts](#player-accounts)
   * [Character Registration](#character-registration)
@@ -87,7 +87,16 @@ the headers `X-Neucore-Rate-Limit-Remain` and `X-Neucore-Rate-Limit-Reset`. A re
 
 If it is configured only, but not active, it is logged when an app exceeds the limit.
 
-### ESI Error Limit
+### ESI Proxy 
+
+The endpoint `/app/v2/esi` acts as an ESI proxy for each character token that was added.
+
+There's a command `bin/console check-tokens` that can be used as a cronjob to keep the refresh token valid. It 
+also implements refresh token rotation.
+
+The API respects the ESI cache headers and will return a cached response if it is still valid.
+
+#### ESI Error Limit
 
 The ESI error limit of 100 errors every 60 seconds is reduced to 80 errors every 60 seconds. It is  
 shared between all applications that use the ESI API endpoint. The `X-Esi-Error-Limit-Remain` header is
