@@ -213,6 +213,10 @@ export default {
     watch: {
         route() {
             this.getData();
+        },
+
+        player() {
+            this.getData();
         }
     },
 
@@ -230,7 +234,7 @@ export default {
             this.contentType = '';
 
             this.groupId = this.route[1] ? parseInt(this.route[1], 10) : null;
-            if (this.groupId === null ) {
+            if (this.groupId === null) {
                 return;
             }
             if (this.player.managerGroups.map(group => group.id).indexOf(this.groupId) === -1) {

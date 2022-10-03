@@ -128,6 +128,10 @@ export default {
     watch: {
         route() {
             this.setRoute();
+        },
+
+        player() {
+            this.setRoute();
         }
     },
 
