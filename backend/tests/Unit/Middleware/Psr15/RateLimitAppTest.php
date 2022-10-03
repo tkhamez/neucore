@@ -8,7 +8,8 @@ namespace Tests\Unit\Middleware\Psr15;
 use Neucore\Entity\App;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Middleware\Psr15\AppRateLimit;
+use Neucore\Middleware\Psr15\RateLimitApp;
+use Neucore\Middleware\Psr15\RateLimit;
 use Neucore\Service\AppAuth;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\SystemVariableStorage;
@@ -20,11 +21,11 @@ use Tests\Logger;
 use Tests\RequestFactory;
 use Tests\RequestHandler;
 
-class AppRateLimitTest extends TestCase
+class RateLimitAppTest extends TestCase
 {
     private \Doctrine\Persistence\ObjectManager $om;
 
-    private AppRateLimit $middleware;
+    private RateLimitApp $middleware;
 
     private Logger $logger;
 
@@ -56,10 +57,10 @@ class AppRateLimitTest extends TestCase
         $this->storage = new SystemVariableStorage($this->repoFactory, new ObjectManager($this->om, $this->logger));
         $this->storage->set(
             Variables::API_RATE_LIMIT . '_' . $this->appId,
-            (string) \json_encode((object) ['remaining' => '0', 'created' => time() - 5])
+            (string) \json_encode((object) ['remaining' => 0, 'created' => time() - 5])
         );
 
-        $this->middleware = new AppRateLimit(
+        $this->middleware = new RateLimitApp(
             new AppAuth($this->repoFactory, $this->om),
             $this->storage,
             new ResponseFactory(),
@@ -77,8 +78,8 @@ class AppRateLimitTest extends TestCase
 
         $this->assertSame(429, $response->getStatusCode());
 
-        $this->assertSame('-1', $response->getHeader(AppRateLimit::HEADER_REMAIN)[0]);
-        $this->assertEqualsWithDelta(4.5, $response->getHeader(AppRateLimit::HEADER_RESET)[0], 1.0);
+        $this->assertSame('-1', $response->getHeader(RateLimit::HEADER_REMAIN)[0]);
+        $this->assertEqualsWithDelta(4.5, $response->getHeader(RateLimit::HEADER_RESET)[0], 1.0);
 
         $logs = $this->logger->getHandler()->getRecords();
         $this->assertSame(1, count($logs));
@@ -92,7 +93,7 @@ class AppRateLimitTest extends TestCase
     {
         $this->storage->set(
             Variables::API_RATE_LIMIT . '_' . $this->appId,
-            (string) \json_encode((object) ['remaining' => '10', 'created' => time() - 15])
+            (string) \json_encode((object) ['remaining' => 10, 'created' => time() - 15])
         );
 
         $request = RequestFactory::createRequest();
@@ -103,8 +104,8 @@ class AppRateLimitTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
 
         $this->assertSame([
-            AppRateLimit::HEADER_REMAIN => ['49'],
-            AppRateLimit::HEADER_RESET => ['10.0'],
+            RateLimit::HEADER_REMAIN => ['49'],
+            RateLimit::HEADER_RESET => ['10'],
         ], $response->getHeaders());
     }
 
@@ -121,8 +122,8 @@ class AppRateLimitTest extends TestCase
 
         $this->assertSame(200, $response->getStatusCode());
 
-        $this->assertFalse($response->hasHeader(AppRateLimit::HEADER_REMAIN));
-        $this->assertFalse($response->hasHeader(AppRateLimit::HEADER_RESET));
+        $this->assertFalse($response->hasHeader(RateLimit::HEADER_REMAIN));
+        $this->assertFalse($response->hasHeader(RateLimit::HEADER_RESET));
 
         $logs = $this->logger->getHandler()->getRecords();
         $this->assertSame(1, count($logs));

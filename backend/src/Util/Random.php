@@ -6,7 +6,7 @@ namespace Neucore\Util;
 
 use Exception;
 
-class Random
+abstract class Random
 {
     /**
      * Generates a random string.

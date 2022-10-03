@@ -28,5 +28,13 @@ class Variables
      */
     public const ESI_THROTTLED = 'esi_throttled';
 
+    /**
+     * Prefix for the application API rate limit.
+     */
     public const API_RATE_LIMIT = 'api_rate_limit';
+
+    /**
+     * Prefix for the global IP based rate limit.
+     */
+    public const GLOBAL_RATE_LIMIT = 'global_rate_limit';
 }

@@ -16,6 +16,8 @@ return [
         'NEUCORE_SESSION_SECURE'    => '1',
         'NEUCORE_SESSION_SAME_SITE' => 'Lax',
         'NEUCORE_ERROR_REPORTING'   => (string)E_ALL,
+        'NEUCORE_RATE_LIMIT_MAX'   => '0',
+        'NEUCORE_RATE_LIMIT_TIME'   => '0',
     ],
 
     'monolog' => [
@@ -91,5 +93,10 @@ return [
 
     'di' => [
         'cache_dir' => '${NEUCORE_CACHE_DIR}/di'
+    ],
+
+    'rate_limit' => [
+        'max' => '${NEUCORE_RATE_LIMIT_MAX}',
+        'time' => '${NEUCORE_RATE_LIMIT_TIME}',
     ],
 ];

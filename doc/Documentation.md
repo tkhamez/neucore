@@ -3,7 +3,7 @@
 <!-- toc -->
 
 - [Features](#features)
-- [Installation](#installation)
+- [Installation and Configuration](#installation-and-configuration)
 - [Application API](#application-api)
   * [Authentication](#authentication)
   * [Rate Limit](#rate-limit)
@@ -39,8 +39,8 @@
 * Creation of groups and apps with managers.
 * Automatic group assignment for players based on corporations and alliances from all of their characters.
 * Advanced group configuration: private, public, default, required and forbidden groups.
-* Group applications for groups, optionally automatically acceptable.
-* Optional automatic temporary removal of groups if ESI tokens are invalid.
+* Member applications for groups, optionally automatically acceptable.
+* Optional automatic temporary removal of groups if an ESI token is invalid.
 * Optional alternative login that does not require any ESI scopes (e.g. for guest account).
 * Corporation member tracking.
 * Optional EVE mail notifications for invalid ESI tokens and missing characters (via member tracking).
@@ -49,6 +49,7 @@
 * An [ESI](http://esi.evetech.net) proxy for all characters and their tokens, optionally available for apps, 
   compatible with the ESI OpenAPI definition file. See also [api-examples](api-examples).
 * Service registration via [plugins](https://github.com/tkhamez/neucore-plugin).
+* Configurable rate limits for request to the backend.
 * CLI commands for data updates from ESI.
 * Mobile-friendly.
 
@@ -58,9 +59,11 @@ only the routes listed in the group `Application` are for Neucore applications. 
 separate OpenAPI definition file at 
 [https://your.domain/application-api-3.yml](https://neucore.tian-space.net/application-api-3.yml).
 
-## Installation
+## Installation and Configuration
 
 See [Install.md](Install.md).
+
+Read `backend/.env.dist` for some optional configuration that is not (yet) described here.
 
 ## Application API
 
@@ -81,9 +84,12 @@ curl --header "Authorization: Bearer MTpteSBhd2Vzb21lIHNlY3JldA==" https://neuco
 
 ### Rate Limit
 
-If the API rate limiting is enabled (UI: Admin -> Settings -> Features), each response will contain 
+If the API rate limit is enabled (UI: Admin -> Settings -> Features), each response will contain 
 the headers `X-Neucore-Rate-Limit-Remain` and `X-Neucore-Rate-Limit-Reset`. A request results in an error 
 429 "Too many requests" if the limit has been exceeded.
+
+If the global, IP-based rate limit is also active, the headers contain the values of the rate limit 
+with the lower "remain" value.
 
 If it is configured only, but not active, it is logged when an app exceeds the limit.
 
@@ -250,7 +256,7 @@ The console application has commands to:
 - send EVE mail to accounts with deactivated groups.
 - delete expired HTTP cache entries.
 
-See `backend/bin/run-jobs.sh` for a script that runs them all.
+See `backend/bin/run-jobs.sh` for a script that runs them all in a sensible order.
 
 ## Data Structure (Backend)
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Neucore\Middleware\Psr15;
 
-use Neucore\Entity\App;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AppAuth;
@@ -17,12 +16,8 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 
-class AppRateLimit implements MiddlewareInterface
+class RateLimitApp extends RateLimit implements MiddlewareInterface
 {
-    public const HEADER_REMAIN = 'X-Neucore-Rate-Limit-Remain';
-
-    public const HEADER_RESET = 'X-Neucore-Rate-Limit-Reset';
-
     private AppAuth $appAuth;
 
     private StorageInterface $storage;
@@ -68,12 +63,15 @@ class AppRateLimit implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        list($remaining, $resetIn, $numRequests, $elapsedTime) = $this->checkLimit($app);
+        $key = Variables::API_RATE_LIMIT . '_' . $app->getId();
+        list($remaining, $resetIn, $numRequests, $elapsedTime) =
+            $this->checkLimit($key, $this->storage, $this->maxRequests, $this->resetTime);
 
         $response = null;
         if ($remaining < 0) {
             $this->logger->info(
-                "{$this->logPrefix($app)} limit exceeded with $numRequests request in $elapsedTime seconds."
+                "API Rate Limit: App {$app->getId()} '{$app->getName()}', " .
+                "limit exceeded with $numRequests request in $elapsedTime seconds."
             );
             if ($this->active) {
                 $response = $this->responseFactory->createResponse(429); // Too Many Requests
@@ -84,9 +82,7 @@ class AppRateLimit implements MiddlewareInterface
         }
 
         if ($this->active) {
-            $response = $response
-                ->withHeader(self::HEADER_REMAIN, $remaining)
-                ->withHeader(self::HEADER_RESET, $resetIn);
+            $response = $this->addHeader($response, $remaining, $resetIn);
         }
 
         return $response;
@@ -107,39 +103,5 @@ class AppRateLimit implements MiddlewareInterface
         $this->maxRequests = $maxRequestsVar ? abs((int) $maxRequestsVar->getValue()) : 0;
         $this->resetTime = $resetTimeVar ? abs((int) $resetTimeVar->getValue()) : 0;
         $this->active = $activeVar && $activeVar->getValue();
-    }
-
-    private function checkLimit(App $app): array
-    {
-        $key = Variables::API_RATE_LIMIT . '_' . $app->getId();
-
-        $value = $this->storage->get($key);
-        $variable = $value ? \json_decode($value) : null;
-        if ($variable === null) {
-            $variable = new \stdClass();
-            $variable->remaining = $this->maxRequests - 1;
-            $variable->created = microtime(true);
-        } else {
-            $variable->remaining --;
-        }
-
-        $resetIn = ceil(($variable->created + $this->resetTime - microtime(true)) * 10) / 10; // header value
-        $numRequests = $this->maxRequests - $variable->remaining;
-        $elapsedTime = round(microtime(true) - $variable->created, 1); // log value
-
-        if ($resetIn <= 0) {
-            $variable->remaining = $this->maxRequests - 1;
-            $variable->created = microtime(true);
-            $resetIn = $this->resetTime;
-        }
-
-        $this->storage->set($key, (string) \json_encode($variable));
-
-        return [$variable->remaining, sprintf("%.1F", $resetIn), $numRequests, $elapsedTime];
-    }
-
-    private function logPrefix(App $app): string
-    {
-        return "API Rate Limit: App {$app->getId()} '{$app->getName()}',";
     }
 }

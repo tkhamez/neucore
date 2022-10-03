@@ -4,6 +4,7 @@
 
 dd mm yyyy
 
+- New: Added an optional global IP based rate limit for all requests to the backend.
 - Change: The HTTP rate limit headers are now added only when rate limiting is active for apps, not when it is 
   configured only.
 - Fixed and improved `/universe/names/` ESI requests.

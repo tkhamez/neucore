@@ -34,7 +34,8 @@ use Neucore\Middleware\Psr15\Cors;
 use Neucore\Middleware\Psr15\BodyParams;
 use Neucore\Middleware\Psr15\CSRFToken;
 use Neucore\Middleware\Psr15\HSTS;
-use Neucore\Middleware\Psr15\AppRateLimit;
+use Neucore\Middleware\Psr15\RateLimitApp;
+use Neucore\Middleware\Psr15\RateLimitGlobal;
 use Neucore\Service\SessionData;
 use Neucore\Slim\SessionMiddleware;
 use Neucore\Service\AppAuth;
@@ -274,7 +275,7 @@ class Application
 
         // Add middleware, last added will be executed first.
 
-        $app->add($this->container->get(AppRateLimit::class));
+        $app->add($this->container->get(RateLimitApp::class));
         $app->add($this->container->get(AppRequestCount::class));
         $app->add(new CSRFToken(
             $this->container->get(ResponseFactoryInterface::class),
@@ -315,6 +316,9 @@ class Application
         $app->addRoutingMiddleware();
 
         $app->add($this->container->get(BodyParams::class));
+
+        // Add the global rate limit before the database connection is used.
+        $app->add($this->container->get(RateLimitGlobal::class));
 
         $errorMiddleware = $app->addErrorMiddleware(false, true, true);
         $errorMiddleware->setDefaultErrorHandler(new Slim\ErrorHandler(

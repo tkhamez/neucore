@@ -26,7 +26,7 @@
 
 Below are several alternatives for running Neucore.
 
-All methods share the same configuration via environment variables, see [.env.dist](../backend/.env.dist).
+All installation methods share the same configuration via environment variables, see [.env.dist](../backend/.env.dist).
 
 ### Run Docker Image
 
