@@ -11,6 +11,8 @@
 A web application for [EVE Online](https://www.eveonline.com) communities to organise their members into groups, 
 monitor them and provide access to external services.
 
+Demo: https://neucore.tian-space.net.
+
 ## Table of Contents
 
 <!-- toc -->
@@ -38,8 +40,6 @@ Main features:
 
 For more information, see the [doc](doc/README.md) directory, which also contains some 
 [screenshots](doc/screenshots/README.md).
-
-A demo installation is available at https://neucore.tian-space.net.
 
 ## Getting started
 
