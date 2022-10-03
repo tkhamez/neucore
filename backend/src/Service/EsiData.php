@@ -583,6 +583,7 @@ class EsiData
     private function fetchUniverseNamesChunked(array $names, array $checkIds, int $chunkSize): array
     {
         $this->log->warning("fetchUniverseNames: Invalid ID(s) in request, trying again with max. $chunkSize IDs.");
+        $chunkSize = max(1, min($chunkSize, PHP_INT_MAX));
         foreach (array_chunk($checkIds, $chunkSize) as $chunks) {
             $names = array_merge($names, $this->fetchUniverseNames($chunks));
         }

@@ -53,7 +53,7 @@ class RateLimit
         }
 
         return $response
-            ->withHeader(self::HEADER_REMAIN, $remaining)
-            ->withHeader(self::HEADER_RESET, $resetIn);
+            ->withHeader(self::HEADER_REMAIN, (string)$remaining)
+            ->withHeader(self::HEADER_RESET, (string)$resetIn);
     }
 }

@@ -40,9 +40,10 @@ final class Version20220828164937 extends AbstractMigration
         }
 
         foreach ($data as $token) {
+            $charId = $token['characterId'] ?? 0;
             $character = $this->connection->executeQuery(
                 'SELECT id FROM characters WHERE id = ?',
-                [$token['characterId']]
+                [$charId]
             )->fetchAssociative();
             if (!$character || !isset($character['id'])) {
                 continue;
@@ -52,11 +53,11 @@ final class Version20220828164937 extends AbstractMigration
                                          valid_token, valid_token_time) 
                 VALUES (:characterId, :eveLoginId, :refresh, :access, :expires, :valid, :validTime)',
                 [
-                    'characterId' => $token['characterId'],
+                    'characterId' => $charId,
                     'eveLoginId' => $eveLoginId,
-                    'refresh' => $token['refresh'],
-                    'access' => $token['access'],
-                    'expires' => $token['expires'],
+                    'refresh' => $token['refresh'] ?? '',
+                    'access' => $token['access'] ?? '',
+                    'expires' => $token['expires'] ?? 0,
                     'valid' => empty($token['refresh']) ? null : 1, // assume it is valid, or it will not be checked again
                     'validTime' => date('Y-m-d H:i:s'),
                 ]

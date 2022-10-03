@@ -32,7 +32,6 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Psr7\Factory\ResponseFactory;
-use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 
 class Container
 {

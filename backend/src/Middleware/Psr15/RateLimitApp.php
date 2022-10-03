@@ -58,7 +58,7 @@ class RateLimitApp extends RateLimit implements MiddlewareInterface
 
         $this->readConfig();
 
-        if ($this->maxRequests === 0 || $this->resetTime === 0) {
+        if (!$this->maxRequests || !$this->resetTime) {
             // Feature is not configured.
             return $handler->handle($request);
         }

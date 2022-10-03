@@ -14,14 +14,17 @@ parameters:
 			message: '#Cannot call method (.*) on DI\\Container\|null.#'
 			path: %currentWorkingDirectory%/src/Application.php
 		-
-			message: '#Property (.*) is never written, only read.#'
-			path: %currentWorkingDirectory%/src/Entity/*
-		-
 			message: '#invalid type(.*)only iterables are supported#'
 			path: %currentWorkingDirectory%/src/Data/ServiceConfiguration.php
 		-
 			message: '#invalid type(.*)only iterables are supported#'
 			path: %currentWorkingDirectory%/src/Data/ServiceConfigurationURL.php
+		-
+			message: '#Property (.*) is never written, only read.#'
+			path: %currentWorkingDirectory%/src/Entity/*
+		-
+			message: '#Parameter \#1 \$pdoOrDsn (.*) object\|resource given.#'
+			path: %currentWorkingDirectory%/src/Factory/SessionHandlerFactory.php
 		-
 			message: '#Method (.*)getServiceImplementation(.*) should return (.*) but returns object.#'
 			path: %currentWorkingDirectory%/src/Service/ServiceRegistration.php
