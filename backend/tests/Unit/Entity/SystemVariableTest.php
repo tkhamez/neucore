@@ -53,7 +53,7 @@ class SystemVariableTest extends TestCase
         $var5 = new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_ACTIVE);
         $this->assertSame('0', $var5->setValue('')->getValue());
 
-        $var6 = new SystemVariable(SystemVariable::API_RATE_LIMIT_ACTIVE);
+        $var6 = new SystemVariable(SystemVariable::RATE_LIMIT_APP_ACTIVE);
         $this->assertSame('1', $var6->setValue('some text')->getValue());
     }
 
@@ -68,10 +68,10 @@ class SystemVariableTest extends TestCase
         $var2 = new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_RESEND);
         $this->assertSame('0', $var2->setValue('abc')->getValue());
 
-        $var3 = new SystemVariable(SystemVariable::API_RATE_LIMIT_RESET_TIME);
+        $var3 = new SystemVariable(SystemVariable::RATE_LIMIT_APP_RESET_TIME);
         $this->assertSame('10', $var3->setValue('-10')->getValue());
 
-        $var4 = new SystemVariable(SystemVariable::API_RATE_LIMIT_MAX_REQUESTS);
+        $var4 = new SystemVariable(SystemVariable::RATE_LIMIT_APP_MAX_REQUESTS);
         $this->assertSame('0', $var4->setValue('')->getValue());
     }
 

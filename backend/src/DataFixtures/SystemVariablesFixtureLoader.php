@@ -66,9 +66,9 @@ class SystemVariablesFixtureLoader
                 'Documentation is available on GitHub.',
                 SystemVariable::SCOPE_PUBLIC
             ],
-            SystemVariable::API_RATE_LIMIT_MAX_REQUESTS         => ['', SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::API_RATE_LIMIT_RESET_TIME           => ['', SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::API_RATE_LIMIT_ACTIVE               => ['', SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::RATE_LIMIT_APP_MAX_REQUESTS         => ['', SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::RATE_LIMIT_APP_RESET_TIME           => ['', SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::RATE_LIMIT_APP_ACTIVE               => ['', SystemVariable::SCOPE_SETTINGS],
         ];
         foreach ($vars as $name => $data) {
             $var = $repository->find($name);

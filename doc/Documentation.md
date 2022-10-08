@@ -88,7 +88,7 @@ If the API rate limit is enabled (UI: Admin -> Settings -> Features), each respo
 the headers `X-Neucore-Rate-Limit-Remain` and `X-Neucore-Rate-Limit-Reset`. A request results in an error 
 429 "Too many requests" if the limit has been exceeded.
 
-If the global, IP-based rate limit is also active, the headers contain the values of the rate limit 
+If the IP-based rate limit is also active, the headers contain the values of the rate limit 
 with the lower "remain" value.
 
 If it is configured only, but not active, it is logged when an app exceeds the limit.

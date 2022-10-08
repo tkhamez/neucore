@@ -4,15 +4,16 @@
 
 dd mm yyyy
 
-- Small UI fixes.
+- **BC Break** The body message of the IP-based rate limit error response (status 429) slightly changed.
+- Small UI fixes and refactoring.
 
 ## 1.37.0
 
 3 Oct 2022
 
-- New: Added an optional global IP based rate limit for all requests to the backend.
+- New: Added an optional IP based rate limit for all requests to the backend.
 - Change: The HTTP rate limit headers are now added only when rate limiting is active for apps, not when it is 
-  configured only. They are also added if the global rate limiting in on.
+  configured only. They are also added if the IP based rate limiting in on.
 - Fixed and improved `/universe/names/` ESI requests.
 - Some refactoring of the frontend, which slightly changes the behavior when changing system settings.
 - Other small improvements and fixes.

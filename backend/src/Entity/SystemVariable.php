@@ -263,17 +263,17 @@ class SystemVariable implements \JsonSerializable
     /**
      * Scope = settings
      */
-    public const API_RATE_LIMIT_MAX_REQUESTS = 'api_rate_limit_max_requests';
+    public const RATE_LIMIT_APP_MAX_REQUESTS = 'rate_limit_app_max_requests';
 
     /**
      * Scope = settings
      */
-    public const API_RATE_LIMIT_RESET_TIME = 'api_rate_limit_reset_time';
+    public const RATE_LIMIT_APP_RESET_TIME = 'rate_limit_app_reset_time';
 
     /**
      * Scope = settings
      */
-    public const API_RATE_LIMIT_ACTIVE = 'api_rate_limit_active';
+    public const RATE_LIMIT_APP_ACTIVE = 'rate_limit_app_active';
 
     public const TOKEN_ID = 'id';
     public const TOKEN_ACCESS = 'access';
@@ -334,13 +334,13 @@ class SystemVariable implements \JsonSerializable
             case self::GROUPS_REQUIRE_VALID_TOKEN:
             case self::MAIL_INVALID_TOKEN_ACTIVE:
             case self::MAIL_MISSING_CHARACTER_ACTIVE:
-            case self::API_RATE_LIMIT_ACTIVE:
+            case self::RATE_LIMIT_APP_ACTIVE:
                 $this->value = $value ? '1' : '0';
                 break;
             case self::ACCOUNT_DEACTIVATION_DELAY:
             case self::MAIL_MISSING_CHARACTER_RESEND:
-            case self::API_RATE_LIMIT_RESET_TIME:
-            case self::API_RATE_LIMIT_MAX_REQUESTS:
+            case self::RATE_LIMIT_APP_RESET_TIME:
+            case self::RATE_LIMIT_APP_MAX_REQUESTS:
                 $this->value = (string) abs((int) $value);
                 break;
             case self::MAIL_INVALID_TOKEN_ALLIANCES:

@@ -16,7 +16,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 
-class RateLimitGlobal extends RateLimit implements MiddlewareInterface
+class RateLimitIP extends RateLimit implements MiddlewareInterface
 {
     /**
      * Only used in unit tests.
@@ -62,7 +62,7 @@ class RateLimitGlobal extends RateLimit implements MiddlewareInterface
         }
 
         $ip = Http::ipAddress();
-        $key = Variables::GLOBAL_RATE_LIMIT . '_' . str_replace(['.', ':', ','], '', $ip);
+        $key = Variables::RATE_LIMIT_IP . '_' . str_replace(['.', ':', ','], '', $ip);
         list($remaining, $resetIn, $numRequests, $elapsedTime) =
             $this->checkLimit($key, $this->storage, $maxRequests, $resetTime);
 
@@ -70,12 +70,12 @@ class RateLimitGlobal extends RateLimit implements MiddlewareInterface
             $appId = Http::appId();
             $appIdLog = empty($appId) ? '' : ", App-ID $appId";
             $this->logger->info(
-                "Global Rate Limit: IP $ip$appIdLog, " .
+                "IP Rate Limit: $ip$appIdLog, " .
                 "limit exceeded with $numRequests request in $elapsedTime seconds."
             );
             $response = $this->responseFactory->createResponse(429); // Too Many Requests
             $response->getBody()->write(
-                "Global rate limit exceeded with $numRequests requests in $elapsedTime seconds."
+                "IP rate limit exceeded with $numRequests requests in $elapsedTime seconds."
             );
         } else {
             $response = $handler->handle($request);

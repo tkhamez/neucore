@@ -35,7 +35,7 @@ use Neucore\Middleware\Psr15\BodyParams;
 use Neucore\Middleware\Psr15\CSRFToken;
 use Neucore\Middleware\Psr15\HSTS;
 use Neucore\Middleware\Psr15\RateLimitApp;
-use Neucore\Middleware\Psr15\RateLimitGlobal;
+use Neucore\Middleware\Psr15\RateLimitIP;
 use Neucore\Service\SessionData;
 use Neucore\Slim\SessionMiddleware;
 use Neucore\Service\AppAuth;
@@ -317,8 +317,8 @@ class Application
 
         $app->add($this->container->get(BodyParams::class));
 
-        // Add the global rate limit before the database connection is used.
-        $app->add($this->container->get(RateLimitGlobal::class));
+        // Add the IP based rate limit before the database connection is used.
+        $app->add($this->container->get(RateLimitIP::class));
 
         $errorMiddleware = $app->addErrorMiddleware(false, true, true);
         $errorMiddleware->setDefaultErrorHandler(new Slim\ErrorHandler(

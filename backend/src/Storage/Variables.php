@@ -31,10 +31,10 @@ class Variables
     /**
      * Prefix for the application API rate limit.
      */
-    public const API_RATE_LIMIT = 'api_rate_limit';
+    public const RATE_LIMIT_APP = 'rate_limit_app';
 
     /**
-     * Prefix for the global IP based rate limit.
+     * Prefix for the IP-based rate limit.
      */
-    public const GLOBAL_RATE_LIMIT = 'global_rate_limit';
+    public const RATE_LIMIT_IP = 'rate_limit_ip';
 }

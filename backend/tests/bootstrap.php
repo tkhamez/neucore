@@ -8,7 +8,7 @@ use Monolog\ErrorHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Neucore\Application;
-use Neucore\Middleware\Psr15\RateLimitGlobal;
+use Neucore\Middleware\Psr15\RateLimitIP;
 
 date_default_timezone_set('UTC');
 
@@ -24,7 +24,7 @@ ErrorHandler::register($log);
 ini_set('log_errors', '0');
 
 // Other settings
-RateLimitGlobal::$active = false;
+RateLimitIP::$active = false;
 
 // Create DB schema
 (new Helper())->updateDbSchema();

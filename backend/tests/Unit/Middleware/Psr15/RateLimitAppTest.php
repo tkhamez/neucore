@@ -42,9 +42,9 @@ class RateLimitAppTest extends TestCase
         $this->om = $helper->getObjectManager();
 
         $app = (new App())->setName('Test app')->setSecret((string) password_hash('secret', PASSWORD_BCRYPT));
-        $maxRequests = (new SystemVariable(SystemVariable::API_RATE_LIMIT_MAX_REQUESTS))->setValue('50');
-        $reset = (new SystemVariable(SystemVariable::API_RATE_LIMIT_RESET_TIME))->setValue('10');
-        $active = (new SystemVariable(SystemVariable::API_RATE_LIMIT_ACTIVE))->setValue('1');
+        $maxRequests = (new SystemVariable(SystemVariable::RATE_LIMIT_APP_MAX_REQUESTS))->setValue('50');
+        $reset = (new SystemVariable(SystemVariable::RATE_LIMIT_APP_RESET_TIME))->setValue('10');
+        $active = (new SystemVariable(SystemVariable::RATE_LIMIT_APP_ACTIVE))->setValue('1');
         $this->om->persist($app);
         $this->om->persist($maxRequests);
         $this->om->persist($reset);
@@ -56,7 +56,7 @@ class RateLimitAppTest extends TestCase
         $this->repoFactory = new RepositoryFactory($this->om);
         $this->storage = new SystemVariableStorage($this->repoFactory, new ObjectManager($this->om, $this->logger));
         $this->storage->set(
-            Variables::API_RATE_LIMIT . '_' . $this->appId,
+            Variables::RATE_LIMIT_APP . '_' . $this->appId,
             (string) \json_encode((object) ['remaining' => 0, 'created' => time() - 5])
         );
 
@@ -96,7 +96,7 @@ class RateLimitAppTest extends TestCase
     public function testProcess_reset()
     {
         $this->storage->set(
-            Variables::API_RATE_LIMIT . '_' . $this->appId,
+            Variables::RATE_LIMIT_APP . '_' . $this->appId,
             (string) \json_encode((object) ['remaining' => 10, 'created' => time() - 15])
         );
 
@@ -115,7 +115,7 @@ class RateLimitAppTest extends TestCase
 
     public function testProcess_configured_notActive()
     {
-        $this->repoFactory->getSystemVariableRepository()->find(SystemVariable::API_RATE_LIMIT_ACTIVE)
+        $this->repoFactory->getSystemVariableRepository()->find(SystemVariable::RATE_LIMIT_APP_ACTIVE)
             ->setValue('0');
         $this->om->flush();
 
@@ -139,7 +139,7 @@ class RateLimitAppTest extends TestCase
 
     public function testProcess_notConfigured()
     {
-        $this->repoFactory->getSystemVariableRepository()->find(SystemVariable::API_RATE_LIMIT_MAX_REQUESTS)
+        $this->repoFactory->getSystemVariableRepository()->find(SystemVariable::RATE_LIMIT_APP_MAX_REQUESTS)
             ->setValue('');
         $this->om->flush();
 

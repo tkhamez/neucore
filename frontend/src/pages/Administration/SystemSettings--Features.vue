@@ -58,23 +58,23 @@
             response. If it is only configured but not active, it will only log when an app exceeds the limit.
         </p>
         <label class="mt-2 display-block">
-            <input type="text" pattern="[0-9]*" class="form-control input-inline" name="api_rate_limit_max_requests"
-                   v-model="settings.api_rate_limit_max_requests"
-                   v-on:input="$emit('changeSettingDelayed', 'api_rate_limit_max_requests', $event.target.value)">
+            <input type="text" pattern="[0-9]*" class="form-control input-inline" name="rate_limit_app_max_requests"
+                   v-model="settings.rate_limit_app_max_requests"
+                   v-on:input="$emit('changeSettingDelayed', 'rate_limit_app_max_requests', $event.target.value)">
             Maximum requests.
         </label>
         <label class="mt-2 display-block">
-            <input type="text" pattern="[0-9]*" class="form-control input-inline" name="api_rate_limit_reset_time"
-                   v-model="settings.api_rate_limit_reset_time"
-                   v-on:input="$emit('changeSettingDelayed', 'api_rate_limit_reset_time', $event.target.value)">
+            <input type="text" pattern="[0-9]*" class="form-control input-inline" name="rate_limit_app_reset_time"
+                   v-model="settings.rate_limit_app_reset_time"
+                   v-on:input="$emit('changeSettingDelayed', 'rate_limit_app_reset_time', $event.target.value)">
             Reset time in seconds.
         </label>
         <div class="form-check">
-            <label class="form-check-label" for="api_rate_limit_active">Active.</label>
+            <label class="form-check-label" for="rate_limit_app_active">Active.</label>
             <input class="form-check-input" type="checkbox" value="1"
-                   id="api_rate_limit_active" name="api_rate_limit_active"
-                   :checked="settings.api_rate_limit_active === '1'"
-                   @change="$emit('changeSetting', 'api_rate_limit_active', $event.target.checked ? '1' : '0')">
+                   id="rate_limit_app_active" name="rate_limit_app_active"
+                   :checked="settings.rate_limit_app_active === '1'"
+                   @change="$emit('changeSetting', 'rate_limit_app_active', $event.target.checked ? '1' : '0')">
         </div>
     </div>
 
