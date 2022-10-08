@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Small UI fixes.
+
 ## 1.37.0
 
 3 Oct 2022

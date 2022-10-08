@@ -192,12 +192,6 @@ export default {
         });
     },
 
-    unmounted() {
-        this.unauthorized = null;
-        this.selectedPlayer = null;
-        this.characterMovements = [];
-    },
-
     methods: {
         characterName(characterId) {
             for (const character of this.selectedPlayer.characters) {
@@ -209,18 +203,24 @@ export default {
         },
 
         showCharacters(playerId) {
-            new Modal('#playerModal').show();
+            const modalElement = document.getElementById('playerModal');
+            new Modal(modalElement).show();
+            modalElement.addEventListener('hide.bs.modal', () => {
+                this.unauthorized = null;
+                this.selectedPlayer = null;
+                this.characterMovements = [];
+            })
             this.fetchCharacters(playerId);
         },
 
         fetchCharacters(playerId) {
             this.unauthorized = null;
+            this.selectedPlayer = null;
+            this.characterMovements = [];
             new PlayerApi().characters(playerId, (error, data, response) => {
                 if (error) {
                     if (response.statusCode === 403) {
                         this.unauthorized = true;
-                        this.selectedPlayer = null;
-                        this.characterMovements = [];
                     }
                     return;
                 }
