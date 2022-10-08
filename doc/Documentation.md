@@ -49,13 +49,13 @@
 * An [ESI](http://esi.evetech.net) proxy for all characters and their tokens, optionally available for apps, 
   compatible with the ESI OpenAPI definition file. See also [api-examples](api-examples).
 * Service registration via [plugins](https://github.com/tkhamez/neucore-plugin).
-* Configurable rate limits for request to the backend.
+* Configurable rate limits for apps or IP-based for request to the backend.
 * CLI commands for data updates from ESI.
-* Mobile-friendly.
+* Usable on small touch screens.
 
 All API functions are documented with OpenAPI and can be found at 
 [https://your.domain/api.html](https://neucore.tian-space.net/api). Most of these endpoints are for the frontend, 
-only the routes listed in the group `Application` are for Neucore applications. For these there is also a 
+only the routes listed in the `Application` groups are for Neucore applications. For these there is also a 
 separate OpenAPI definition file at 
 [https://your.domain/application-api-3.yml](https://neucore.tian-space.net/application-api-3.yml).
 

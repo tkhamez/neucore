@@ -34,8 +34,7 @@ Main features:
 - Login via EVE SSO, no e-mail address required.
 - Group membership management (manually and with various ways to automate membership).
 - Corporation member tracking and character watchlists.
-- [ESI](http://esi.evetech.net) proxy for all characters.
-- An API for applications to read group membership, ESI data and more.
+- API for various data including an [ESI](http://esi.evetech.net) proxy for all characters.
 - Service registration via [plugins](https://github.com/tkhamez/neucore-plugin) (e.g. Discord, Mumble).
 
 For more information, see the [doc](doc/README.md) directory, which also contains some 
