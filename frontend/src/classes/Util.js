@@ -1,4 +1,7 @@
 
+import _ from "lodash";
+import {CorporationApi} from "neucore-js-client";
+
 export default class Util {
 
     /**
@@ -61,4 +64,23 @@ export default class Util {
         }
         return str;
     }
+
+    static findCorporationDelayed = _.debounce((query, callback) => {
+        if (typeof query !== typeof '') {
+            return;
+        }
+        if (query === '') {
+            callback([]);
+        }
+        if (query.length < 3) {
+            return;
+        }
+        new CorporationApi().userCorporationFind(query, (error, data) => {
+            if (error) {
+                callback([]);
+                return;
+            }
+            callback(data);
+        });
+    }, 250);
 }

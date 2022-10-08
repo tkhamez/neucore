@@ -86,17 +86,19 @@ Select and table to add and remove objects from other objects.
                 Groups whose members are allowed to edit the list configuration.
             </p>
 
-            <multiselect v-if="!useSearch"
+            <multiselect v-if="!useCharacterSearch"
                          v-model="newObject" :options="currentSelectContent"
                          v-bind:placeholder="placeholder"
                          label="name" track-by="id"
-                         :loading="false"
+                         :loading="isLoading"
+                         :searchable="true"
+                         @search-change="findSelectContent"
                          :custom-label="customLabel">
             </multiselect>
 
-            <character-search v-if="useSearch" :admin="searchAdmin" :currentOnly="searchCurrentOnly"
+            <character-search v-if="useCharacterSearch" :admin="searchAdmin" :currentOnly="searchCurrentOnly"
                               v-on:result="searchResult = $event"></character-search>
-            <character-result v-if="useSearch" :admin="searchAdmin"
+            <character-result v-if="useCharacterSearch" :admin="searchAdmin"
                               :searchResult="searchResult"
                               :selectedPlayers="tableContent"
                               v-on:add="addOrRemoveEntityToEntity($event, 'add')"
@@ -212,6 +214,7 @@ import {
 } from 'neucore-js-client';
 import Data from '../classes/Data';
 import Helper from "../classes/Helper";
+import Util from "../classes/Util";
 import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterResult from '../components/CharacterResult.vue';
 
@@ -270,7 +273,8 @@ export default {
             tableContent: [],
             showGroupsEntity: null, // one alliance or corporation object with groups
             withGroups: [], // all alliances or corporations with groups
-            useSearch: false,
+            isLoading: false,
+            useCharacterSearch: false,
             searchAdmin: false,
             searchResult: [],
             directors: [],
@@ -286,7 +290,7 @@ export default {
     },
 
     mounted() {
-        setUseSearch(this);
+        setUseCharacterSearch(this);
         this.customPlaceholder();
         this.getSelectContent();
         if (this.typeId || this.typeName) {
@@ -314,7 +318,7 @@ export default {
         },
 
         contentType() {
-            setUseSearch(this);
+            setUseCharacterSearch(this);
             this.newObject = "";
             this.customPlaceholder();
             this.getSelectContent();
@@ -374,6 +378,16 @@ export default {
             return label
         },
 
+        findSelectContent(query) {
+            if (this.contentType === 'corporations') {
+                this.isLoading = true;
+                Util.findCorporationDelayed(query, (result) => {
+                    this.isLoading = false;
+                    this.selectContentLoaded = result;
+                });
+            }
+        },
+
         getSelectContent() {
             if (this.selectContent) {
                 this.selectContentLoaded = this.selectContent;
@@ -391,8 +405,7 @@ export default {
                     method = 'appManagers';
                 }
             } else if (this.contentType === 'corporations') {
-                api = new CorporationApi();
-                method = 'userCorporationAll';
+                return; // This uses Ajax search
             } else if (this.contentType === 'alliances') {
                 api = new AllianceApi();
                 method = 'all';
@@ -777,11 +790,11 @@ function callApi(vm, api, method, param1, param2, callback) {
     }]);
 }
 
-function setUseSearch(vm) {
-    vm.useSearch =
+function setUseCharacterSearch(vm) {
+    vm.useCharacterSearch =
         (vm.type === 'App' && vm.contentType === 'managers') ||
         (vm.type === 'Group' && vm.contentType === 'managers');
-    vm.searchAdmin = vm.useSearch; // same conditions atm.
+    vm.searchAdmin = vm.useCharacterSearch; // same conditions atm.
 }
 
 function fetchDirector(vm) {
