@@ -5,7 +5,8 @@
 dd mm yyyy
 
 - **BC Break** The body message of the IP-based rate limit error response (status 429) slightly changed.
-- Small UI fixes and refactoring.
+- Small UI fixes and improvements
+- Some refactoring.
 
 ## 1.37.0
 
