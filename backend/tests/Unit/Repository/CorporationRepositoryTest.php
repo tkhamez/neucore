@@ -17,15 +17,9 @@ use Tests\Helper;
 
 class CorporationRepositoryTest extends TestCase
 {
-    /**
-     * @var ObjectManager
-     */
-    private $om;
+    private ObjectManager $om;
 
-    /**
-     * @var CorporationRepository
-     */
-    private $repository;
+    private CorporationRepository $repository;
 
     protected function setUp(): void
     {
@@ -104,5 +98,23 @@ class CorporationRepositoryTest extends TestCase
         $this->assertSame(102, $actual[0]->getId());
         $this->assertSame(1010, $actual[1]->getId());
         $this->assertSame(1011, $actual[2]->getId());
+    }
+
+    public function testFindByNamePartialMatch()
+    {
+        $corp3 = (new Corporation())->setId(55)->setTicker('t1')->setName('company 3');
+        $corp2 = (new Corporation())->setId(56)->setTicker('t2')->setName('corp 2');
+        $corp1 = (new Corporation())->setId(57)->setTicker('t1')->setName('corp 1');
+        $this->om->persist($corp3);
+        $this->om->persist($corp2);
+        $this->om->persist($corp1);
+        $this->om->flush();
+
+        $actual = $this->repository->findByNamePartialMatch('orp');
+        $this->assertSame(2, count($actual));
+        $this->assertSame('corp 1', $actual[0]->getName());
+        $this->assertSame('corp 2', $actual[1]->getName());
+        $this->assertSame(57, $actual[0]->getID());
+        $this->assertSame(56, $actual[1]->getID());
     }
 }

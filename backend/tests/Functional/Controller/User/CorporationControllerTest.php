@@ -85,7 +85,6 @@ class CorporationControllerTest extends WebTestCase
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->loginUser(6); # not a group-admin
-
         $response = $this->runApp('GET', '/api/user/corporation/all');
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -105,6 +104,36 @@ class CorporationControllerTest extends WebTestCase
             ],
             $this->parseJsonBody($response)
         );
+    }
+
+    public function testFind403()
+    {
+        $this->setupDb();
+
+        $response1 = $this->runApp('GET', '/api/user/corporation/find/abc');
+        $this->assertSame(403, $response1->getStatusCode());
+
+        $this->loginUser(6); # not a group-admin
+        $response2 = $this->runApp('GET', '/api/user/corporation/find/abc');
+        $this->assertSame(403, $response2->getStatusCode());
+    }
+
+    public function testFind200()
+    {
+        $this->setupDb();
+        $this->loginUser(7);
+
+        $response1 = $this->runApp('GET', '/api/user/corporation/find/rp%20'); // only 2 chars
+        $this->assertSame(200, $response1->getStatusCode());
+        $this->assertSame([], $this->parseJsonBody($response1));
+
+        $response2 = $this->runApp('GET', '/api/user/corporation/find/rp%202');
+        $this->assertSame(200, $response2->getStatusCode());
+        $this->assertSame([[
+            'id' => 222,
+            'name' => 'corp 2',
+            'ticker' => 't2'
+        ]], $this->parseJsonBody($response2));
     }
 
     public function testWithGroups403()

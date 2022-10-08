@@ -117,15 +117,20 @@ class Corporation implements \JsonSerializable
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
      */
-    public function jsonSerialize(bool $includeTrackingDate = false, bool $includeAutoAllowlist = false): array
-    {
+    public function jsonSerialize(
+        bool $includeTrackingDate = false,
+        bool $includeAutoAllowlist = false,
+        bool $includeAlliance = true
+    ): array {
         $data = [
             'id' => $this->getId(),
             'name' => $this->name,
             'ticker' => $this->ticker,
-            'alliance' => $this->alliance,
-            // API: groups are not included by default
         ];
+
+        if ($includeAlliance) {
+            $data['alliance'] = $this->alliance;
+        }
 
         if ($includeTrackingDate) {
             $data['trackingLastUpdate'] = $this->trackingLastUpdate !== null ?

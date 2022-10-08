@@ -168,6 +168,7 @@ Alliance API
 
 Corporation API
 - List all corporations. `GET /user/corporation/all`
+- Returns a list of corporation that matches the name (partial matching). `GET /user/corporation/find/{name}`
 - List all corporations that have groups assigned. `GET /user/corporation/with-groups`
 - Add an EVE corporation to the database. `POST /user/corporation/add/{id}`
 - Add a group to the corporation. `PUT /user/corporation/{id}/add-group/{gid}`
@@ -299,6 +300,7 @@ Alliance API
 
 Corporation API
 - List all corporations. `GET /user/corporation/all`
+- Returns a list of corporation that matches the name (partial matching). `GET /user/corporation/find/{name}`
 
 Settings API
 - Change a system settings variable. `PUT /user/settings/system/change/{name}`
@@ -368,6 +370,7 @@ Alliance API
 
 Corporation API
 - List all corporations. `GET /user/corporation/all`
+- Returns a list of corporation that matches the name (partial matching). `GET /user/corporation/find/{name}`
 - Add an EVE corporation to the database. `POST /user/corporation/add/{id}`
 
 Watchlist API

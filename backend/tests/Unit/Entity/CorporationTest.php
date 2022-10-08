@@ -46,6 +46,12 @@ class CorporationTest extends TestCase
             'trackingLastUpdate' => '2019-12-19T13:44:02Z',
             'autoAllowlist' => true,
         ], $corp->jsonSerialize(true, true));
+
+        $this->assertSame([
+            'id' => 123,
+            'name' => 'test corp',
+            'ticker' => 'ABC',
+        ], $corp->jsonSerialize(false, false, false));
     }
 
     public function testSetGetId()

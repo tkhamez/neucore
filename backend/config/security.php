@@ -64,6 +64,7 @@ return [
     '/api/user/corporation/{id}/add-group-tracking'    => [Role::TRACKING_ADMIN],
     '/api/user/corporation/{id}/remove-group-tracking' => [Role::TRACKING_ADMIN],
     '/api/user/corporation/all'                        => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER, Role::SETTINGS],
+    '/api/user/corporation/find/{name}'                => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER, Role::SETTINGS],
     '/api/user/corporation/add/{id}'                   => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER],
     '/api/user/corporation'                            => [Role::GROUP_ADMIN],
 

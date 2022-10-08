@@ -69,7 +69,7 @@ class CorporationController extends BaseController
      *     path="/user/corporation/all",
      *     operationId="userCorporationAll",
      *     summary="List all corporations.",
-     *     description="Needs role: group-admin",
+     *     description="Needs role: group-admin, watchlist-manager, settings",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
      *     @OA\Response(
@@ -88,6 +88,46 @@ class CorporationController extends BaseController
         return $this->withJson(
             $this->repositoryFactory->getCorporationRepository()->findBy([], ['name' => 'ASC'])
         );
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/user/corporation/find/{name}",
+     *     operationId="userCorporationFind",
+     *     summary="Returns a list of corporation that matches the name (partial matching).",
+     *     description="Needs role: group-admin, watchlist-manager, settings",
+     *     tags={"Corporation"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="name",
+     *         in="path",
+     *         required=true,
+     *         description="Name of the corporation (min. 3 characters).",
+     *         @OA\Schema(type="string", minLength=3)
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of corporations.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized"
+     *     )
+     * )
+     */
+    public function find(string $name): ResponseInterface
+    {
+        $name = trim($name);
+        if (mb_strlen($name) < 3) {
+            return $this->withJson([]);
+        }
+
+        $retVal = $this->repositoryFactory->getCorporationRepository()->findByNamePartialMatch($name);
+
+        return $this->withJson(array_map(function(Corporation $corporation) {
+            return $corporation->jsonSerialize(false, false, false);
+        }, $retVal));
     }
 
     /**

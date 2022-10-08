@@ -22,7 +22,7 @@ class CorporationRepository extends EntityRepository
     /**
      * @return Corporation[]
      */
-    public function getAllWithGroups()
+    public function getAllWithGroups(): array
     {
         return $this->createQueryBuilder('c')
             ->join('c.groups', 'g')
@@ -35,7 +35,7 @@ class CorporationRepository extends EntityRepository
     /**
      * @return Corporation[]
      */
-    public function getAllWithMemberTrackingData()
+    public function getAllWithMemberTrackingData(): array
     {
         // TODO this is a bad query, joins too much, CPU intensive
 
@@ -61,5 +61,18 @@ class CorporationRepository extends EntityRepository
             ->setParameter('ids', $corporationIds)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @return Corporation[]
+     */
+    public function findByNamePartialMatch(string $name): array
+    {
+        $query = $this->createQueryBuilder('c')
+            ->where('c.name LIKE :name')
+            ->addOrderBy('c.name', 'ASC')
+            ->setParameter('name', "%$name%");
+
+        return $query->getQuery()->getResult();
     }
 }
