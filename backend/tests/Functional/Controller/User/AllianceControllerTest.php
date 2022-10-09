@@ -67,36 +67,6 @@ class AllianceControllerTest extends WebTestCase
         $this->em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
-    public function testAll403()
-    {
-        $this->setupDb();
-
-        $response = $this->runApp('GET', '/api/user/alliance/all');
-        $this->assertEquals(403, $response->getStatusCode());
-
-        $this->loginUser(6); # not a user-admin
-
-        $response = $this->runApp('GET', '/api/user/alliance/all');
-        $this->assertEquals(403, $response->getStatusCode());
-    }
-
-    public function testAll200()
-    {
-        $this->setupDb();
-        $this->loginUser(7);
-
-        $response = $this->runApp('GET', '/api/user/alliance/all');
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSame(
-            [
-                ['id' => 222, 'name' => '1 alli 2', 'ticker' => 't200'],
-                ['id' => 111, 'name' => '2 alli 1', 'ticker' => 't100'],
-                ['id' => 333, 'name' => 'alli 3', 'ticker' => 't300']
-            ],
-            $this->parseJsonBody($response)
-        );
-    }
-
     public function testFind403()
     {
         $this->setupDb();

@@ -87,7 +87,6 @@ return [
     '/api/user/app/{id}/remove-eve-login/{eveLoginId}'  => ['PUT',    [AppController::class, 'removeEveLogin']],
     '/api/user/app/{id}/change-secret'                  => ['PUT',    [AppController::class, 'changeSecret']],
 
-    '/api/user/alliance/all'                     => ['GET',  [AllianceController::class, 'all']],
     '/api/user/alliance/find/{query}'            => ['GET',  [AllianceController::class, 'find']],
     '/api/user/alliance/alliances'               => ['POST', [AllianceController::class, 'alliances']],
     '/api/user/alliance/with-groups'             => ['GET',  [AllianceController::class, 'withGroups']],

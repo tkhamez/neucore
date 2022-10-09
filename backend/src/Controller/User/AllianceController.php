@@ -27,32 +27,6 @@ class AllianceController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/user/alliance/all",
-     *     operationId="all",
-     *     summary="List all alliances.",
-     *     description="Needs role: group-admin",
-     *     tags={"Alliance"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of alliances.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Alliance"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
-    public function all(): ResponseInterface
-    {
-        return $this->withJson(
-            $this->repositoryFactory->getAllianceRepository()->findBy([], ['name' => 'ASC'])
-        );
-    }
-
-    /**
-     * @OA\Get(
      *     path="/user/alliance/find/{query}",
      *     operationId="userAllianceFind",
      *     summary="Returns a list of alliances that matches the query (partial matching name or ticker).",

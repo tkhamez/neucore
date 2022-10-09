@@ -160,7 +160,6 @@ Service API
 Allows a player to create groups and add and remove managers or corporation and alliances.
 
 Alliance API
-- List all alliances. `GET /user/alliance/all`
 - Returns a list of alliances that matches the query (partial matching name or ticker). `GET /user/alliance/find/{query}`
 - Returns alliances found by ID. `POST /user/alliance/alliances`
 - List all alliances that have groups assigned. `GET /user/alliance/with-groups`
@@ -298,7 +297,6 @@ ESI API
 Allows a player to change the system settings.
 
 Alliance API
-- List all alliances. `GET /user/alliance/all`
 - Returns a list of alliances that matches the query (partial matching name or ticker). `GET /user/alliance/find/{query}`
 - Returns alliances found by ID. `POST /user/alliance/alliances`
 
@@ -375,7 +373,6 @@ Allows a player to edit exemptions and settings of a watch list to which they ha
 This role is assigned automatically based on group membership.
 
 Alliance API
-- List all alliances. `GET /user/alliance/all`
 - Returns a list of alliances that matches the query (partial matching name or ticker). `GET /user/alliance/find/{query}`
 - Returns alliances found by ID. `POST /user/alliance/alliances`
 - Add an EVE alliance to the database. `POST /user/alliance/add/{id}`

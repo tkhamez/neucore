@@ -40,7 +40,6 @@ return [
 
     '/api/app'                                     => [Role::APP], // only showV1
 
-    '/api/user/alliance/all'       => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER, Role::SETTINGS],
     '/api/user/alliance/find'      => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER, Role::SETTINGS],
     '/api/user/alliance/alliances' => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER, Role::SETTINGS],
     '/api/user/alliance/add/{id}'  => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER],
