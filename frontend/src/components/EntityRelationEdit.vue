@@ -229,7 +229,7 @@ export default {
 
     props: {
         /**
-         * Content of the select box, e. g. "managers"
+         * Content of the select box, e.g. "managers"
          */
         contentType: '',
 
@@ -254,11 +254,6 @@ export default {
         sticky: Number,
 
         searchCurrentOnly: Boolean,
-
-        /**
-         * Optional content for the select box. If not provided a request will be made to get it.
-         */
-        selectContent: Array,
     },
 
     data() {
@@ -350,9 +345,9 @@ export default {
             if (this.contentType === 'managers') {
                 this.placeholder = 'Add manager';
             } else if (this.contentType === 'alliances') {
-                this.placeholder = 'Add alliance';
+                this.placeholder = 'Add alliance (type to search)';
             } else if (this.contentType === 'corporations') {
-                this.placeholder = 'Add corporation';
+                this.placeholder = 'Add corporation (type to search)';
             } else if (
                 this.contentType === 'groups' || this.contentType === 'groupsManage' ||
                 this.contentType === 'requiredGroups' || this.contentType === 'forbiddenGroups'
@@ -379,9 +374,10 @@ export default {
         },
 
         findSelectContent(query) {
-            if (this.contentType === 'corporations') {
+            if (['corporations', 'alliances'].indexOf(this.contentType) !== -1) {
+                const type = this.contentType === 'corporations' ? 'Corporations' : 'Alliances';
                 this.isLoading = true;
-                Util.findCorporationDelayed(query, (result) => {
+                Util.findCorporationsOrAlliancesDelayed(query, type, result => {
                     this.isLoading = false;
                     this.selectContentLoaded = result;
                 });
@@ -389,10 +385,6 @@ export default {
         },
 
         getSelectContent() {
-            if (this.selectContent) {
-                this.selectContentLoaded = this.selectContent;
-                return;
-            }
             this.selectContentLoaded = [];
 
             let api;
@@ -404,11 +396,8 @@ export default {
                 } else if (this.type === 'App') {
                     method = 'appManagers';
                 }
-            } else if (this.contentType === 'corporations') {
-                return; // This uses Ajax search
-            } else if (this.contentType === 'alliances') {
-                api = new AllianceApi();
-                method = 'all';
+            } else if (['corporations', 'alliances'].indexOf(this.contentType) !== -1) {
+                return; // These use Ajax search
             } else if (
                 (
                     this.type === 'App' ||

@@ -22,9 +22,7 @@
         </li>
     </ul>
 
-    <!-- "allAlliances" is only for "Features" and "Mails" tabs -->
     <component v-bind:is="tab"
-               :allAlliances="alliances"
                @changeSettingDelayed="changeSettingDelayed"
                @changeSetting="changeSetting"
     ></component>
@@ -34,7 +32,7 @@
 
 <script>
 import _ from 'lodash';
-import {AllianceApi, SettingsApi} from 'neucore-js-client';
+import {SettingsApi} from 'neucore-js-client';
 import Helper from "../../classes/Helper";
 import Customization from './SystemSettings--Customization.vue';
 import Features from './SystemSettings--Features.vue';
@@ -96,35 +94,6 @@ export default {
                     this.h.message('Unauthorized.', 'error');
                 }
             });
-        },
-
-        /**
-         * Load alliance and corporation list, used by child components.
-         */
-        loadLists() {
-            // get alliances
-            new AllianceApi().all((error, data) => {
-                if (error) { // 403 usually
-                    return;
-                }
-                this.alliances = data;
-            });
-        },
-
-        /**
-         * Helper function for alliance and corporation form selects used by child components.
-         */
-        buildIdArray (value, list) {
-            const result = [];
-            for (const id of value.split(',')) {
-                for (const item of list) {
-                    if (item.id === parseInt(id)) {
-                        result.push(item);
-                        break;
-                    }
-                }
-            }
-            return result;
         },
 
         /**

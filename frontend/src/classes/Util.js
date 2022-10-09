@@ -1,6 +1,6 @@
 
 import _ from "lodash";
-import {CorporationApi} from "neucore-js-client";
+import {AllianceApi, CorporationApi} from "neucore-js-client";
 
 export default class Util {
 
@@ -65,7 +65,11 @@ export default class Util {
         return str;
     }
 
-    static findCorporationDelayed = _.debounce((query, callback) => {
+    static findCorporationsOrAlliancesDelayed = _.debounce((query, type, callback) => {
+        if (['Corporations', 'Alliances'].indexOf(type) === -1) {
+            return;
+        }
+
         if (typeof query !== typeof '') {
             return;
         }
@@ -75,12 +79,16 @@ export default class Util {
         if (query.length < 3) {
             return;
         }
-        new CorporationApi().userCorporationFind(query, (error, data) => {
+
+        const api = type === 'Corporations' ? new CorporationApi() : new AllianceApi();
+        const method = type === 'Corporations' ? 'userCorporationFind' : 'userAllianceFind';
+
+        api[method].apply(api, [query, (error, data) => {
             if (error) {
                 callback([]);
                 return;
             }
             callback(data);
-        });
+        }]);
     }, 250);
 }

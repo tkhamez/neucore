@@ -37,15 +37,16 @@
         <label class="col-form-label">Alliances</label>
         <multiselect v-model="mailInvalidTokenAlliances" :options="allAlliances"
                      label="name" track-by="id" :multiple="true"
-                     :loading="false" :searchable="true"
-                     placeholder="Select alliances">
+                     :loading="isLoading" :searchable="true"
+                     @search-change="(query) => findAlliancesOrCorporations(query, 'Alliances')"
+                     placeholder="Select alliances (type to search)">
         </multiselect>
         <label class="col-form-label">Corporations</label>
         <multiselect v-model="mailInvalidTokenCorporations" :options="allCorporations"
                      label="name" track-by="id" :multiple="true"
                      :loading="isLoading" :searchable="true"
-                     @search-change="findCorporations"
-                     placeholder="Select corporations">
+                     @search-change="(query) => findAlliancesOrCorporations(query, 'Corporations')"
+                     placeholder="Select corporations (type to search)">
         </multiselect>
         <br>
         <label class="col-form-label" for="mailInvalidTokenSubject">Subject</label>
@@ -111,7 +112,7 @@
 
 <script>
 import Multiselect from '@suadelabs/vue3-multiselect';
-import {CorporationApi, SettingsApi} from 'neucore-js-client';
+import {AllianceApi, CorporationApi, SettingsApi} from 'neucore-js-client';
 import Data from "../../classes/Data";
 import Helper from "../../classes/Helper";
 import Util from "../../classes/Util";
@@ -123,21 +124,16 @@ export default {
 
     inject: ['store'],
 
-    props: {
-        allAlliances: Array,
-    },
-
     data() {
         return {
             h: new Helper(this),
             settings: { ...this.store.state.settings },
             loginNames: Data.loginNames,
             loginHost: '',
-            allAlliancesLoaded: false,
             isLoading: false,
+            allAlliances: [],
             allCorporations: [],
             trackingCorporations: [],
-            trackingCorporationsLoaded: false,
             mailInvalidTokenAlliances: null,
             mailInvalidTokenCorporations: null,
             mailMissingCharacterCorporations: null,
@@ -147,17 +143,11 @@ export default {
     mounted() {
         this.loginHost = Data.envVars.backendHost;
 
-        // noinspection JSUnresolvedFunction
-        this.$parent.loadLists();
         getTrackedCorporations(this);
+        readSettings(this);
     },
 
     watch: {
-        allAlliances() {
-            this.allAlliancesLoaded = true;
-            readSettings(this);
-        },
-
         mailInvalidTokenAlliances(newValues, oldValues) {
             // noinspection JSUnresolvedFunction
             const newValue = this.$parent.buildIdString(newValues, oldValues, this.mailInvalidTokenAlliances);
@@ -192,11 +182,15 @@ export default {
             this.$emit('changeSetting', 'mail_character', '');
         },
 
-        findCorporations(query) {
+        findAlliancesOrCorporations(query, type) {
             this.isLoading = true;
-            Util.findCorporationDelayed(query, (result) => {
+            Util.findCorporationsOrAlliancesDelayed(query, type, result => {
                 this.isLoading = false;
-                this.allCorporations = result;
+                if (type === 'Corporations') {
+                    this.allCorporations = result;
+                } else {
+                    this.allAlliances = result;
+                }
             });
         },
 
@@ -232,17 +226,11 @@ function getTrackedCorporations(vm) {
     new CorporationApi().corporationAllTrackedCorporations((error, data) => {
         if (!error) {
             vm.trackingCorporations = data;
-            vm.trackingCorporationsLoaded = true;
-            readSettings(vm);
         }
     });
 }
 
 function readSettings(vm) {
-    if (!vm.allAlliancesLoaded || !vm.trackingCorporationsLoaded) {
-        return; // wait for necessary data
-    }
-
     vm.mailInvalidTokenAlliances = [];
     vm.mailInvalidTokenCorporations = [];
     vm.mailMissingCharacterCorporations = [];
@@ -251,7 +239,11 @@ function readSettings(vm) {
 
     for (const [name, value] of Object.entries(vm.settings)) {
         if (name === 'mail_invalid_token_alliances') {
-            vm.mailInvalidTokenAlliances = vm.$parent.buildIdArray(value, vm.allAlliances);
+            new AllianceApi().userAllianceAlliances(value.split(','), (error, data) => {
+                if (!error) {
+                    vm.mailInvalidTokenAlliances = data;
+                }
+            });
         } else if (name === 'mail_invalid_token_corporations') {
             corporationApi.userCorporationCorporations(value.split(','), (error, data) => {
                 if (!error) {

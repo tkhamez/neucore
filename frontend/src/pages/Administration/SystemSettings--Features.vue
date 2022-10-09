@@ -28,15 +28,16 @@
         <label class="col-form-label">Alliances</label>
         <multiselect v-model="accountDeactivationAlliances" :options="allAlliances"
                      label="name" track-by="id" :multiple="true"
-                     :loading="false" :searchable="true"
-                     placeholder="Select alliances">
+                     :loading="isLoading" :searchable="true"
+                     @search-change="(query) => findAlliancesOrCorporations(query, 'Alliances')"
+                     placeholder="Select alliances (type to search)">
         </multiselect>
         <label class="col-form-label">Corporations</label>
         <multiselect v-model="accountDeactivationCorporations" :options="allCorporations"
                      label="name" track-by="id" :multiple="true"
                      :loading="isLoading" :searchable="true"
-                     @search-change="findCorporations"
-                     placeholder="Select corporations">
+                     @search-change="(query) => findAlliancesOrCorporations(query, 'Corporations')"
+                     placeholder="Select corporations (type to search)">
         </multiselect>
         <label class="mt-4 display-block">
             <input type="text" pattern="[0-9]*" class="form-control input-inline"
@@ -127,7 +128,7 @@
 
 <script>
 import Multiselect from '@suadelabs/vue3-multiselect';
-import {CorporationApi} from "neucore-js-client";
+import {AllianceApi, CorporationApi} from "neucore-js-client";
 import Util from "../../classes/Util";
 
 export default {
@@ -137,15 +138,11 @@ export default {
 
     inject: ['store'],
 
-    props: {
-        allAlliances: Array,
-    },
-
     data() {
         return {
             settings: { ...this.store.state.settings },
-            allAlliancesLoaded: false,
             isLoading: false,
+            allAlliances: [],
             allCorporations: [],
             accountDeactivationAlliances: null,
             accountDeactivationCorporations: null,
@@ -153,20 +150,10 @@ export default {
     },
 
     mounted() {
-        // noinspection JSUnresolvedFunction
-        this.$parent.loadLists();
+        readSettings(this);
     },
 
     watch: {
-        settings() {
-            readSettings(this);
-        },
-
-        allAlliances() {
-            this.allAlliancesLoaded = true;
-            readSettings(this);
-        },
-
         accountDeactivationAlliances(newValues, oldValues) {
             // noinspection JSUnresolvedFunction
             const newValue = this.$parent.buildIdString(newValues, oldValues, this.accountDeactivationAlliances);
@@ -187,27 +174,31 @@ export default {
     },
 
     methods: {
-        findCorporations(query) {
+        findAlliancesOrCorporations(query, type) {
             this.isLoading = true;
-            Util.findCorporationDelayed(query, (result) => {
+            Util.findCorporationsOrAlliancesDelayed(query, type, result => {
                 this.isLoading = false;
-                this.allCorporations = result;
+                if (type === 'Corporations') {
+                    this.allCorporations = result;
+                } else {
+                    this.allAlliances = result;
+                }
             });
         },
     },
 }
 
 function readSettings(vm) {
-    if (!vm.allAlliancesLoaded || !vm.settings.hasOwnProperty('account_deactivation_delay')) {
-        return; // wait for alliance and corporation list and settings
-    }
-
     vm.accountDeactivationAlliances = [];
     vm.accountDeactivationCorporations = [];
 
     for (const [name, value] of Object.entries(vm.settings)) {
         if (name === 'account_deactivation_alliances') {
-            vm.accountDeactivationAlliances = vm.$parent.buildIdArray(value, vm.allAlliances);
+            new AllianceApi().userAllianceAlliances(value.split(','), (error, data) => {
+                if (!error) {
+                    vm.accountDeactivationAlliances = data;
+                }
+            });
         }
         if (name === 'account_deactivation_corporations') {
             new CorporationApi().userCorporationCorporations(value.split(','), (error, data) => {
