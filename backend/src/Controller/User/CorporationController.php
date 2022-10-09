@@ -123,11 +123,56 @@ class CorporationController extends BaseController
             return $this->withJson([]);
         }
 
-        $retVal = $this->repositoryFactory->getCorporationRepository()->findByNameOrTickerPartialMatch($name);
+        $result = $this->repositoryFactory->getCorporationRepository()->findByNameOrTickerPartialMatch($name);
 
-        return $this->withJson(array_map(function(Corporation $corporation) {
-            return $corporation->jsonSerialize(false, false, false);
-        }, $retVal));
+        return $this->withJson($this->minimalCorporationsResult($result));
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/user/corporation/corporations",
+     *     operationId="userCorporationCorporations",
+     *     summary="Returns corporations found by ID.",
+     *     description="Needs role: group-admin, watchlist-manager, settings",
+     *     tags={"Corporation"},
+     *     security={{"Session"={}, "CSRF"={}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="EVE IDs of corporations.",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(type="array", @OA\Items(type="integer"))
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of corporations.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Invalid body."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function corporations(ServerRequestInterface $request): ResponseInterface
+    {
+        $ids = $this->getIntegerArrayFromBody($request);
+
+        if ($ids === null) {
+            return $this->response->withStatus(400);
+        }
+        if (empty($ids)) {
+            return $this->withJson([]);
+        }
+
+        $result = $this->repositoryFactory->getCorporationRepository()->findBy(['id' => $ids], ['name' => 'ASC']);
+
+        return $this->withJson($this->minimalCorporationsResult($result));
     }
 
     /**
@@ -696,7 +741,7 @@ class CorporationController extends BaseController
     }
 
     /**
-     * Checks if logged in user is member of a group that may see the member tracking data of a corporation.
+     * Checks if logged-in user is member of a group that may see the member tracking data of a corporation.
      */
     private function checkPermission(Corporation $corporation): bool
     {
@@ -707,5 +752,16 @@ class CorporationController extends BaseController
             }
         }
         return false;
+    }
+
+    /**
+     * @param Corporation[] $corporations
+     * @return Corporation[]
+     */
+    private function minimalCorporationsResult(array $corporations): array
+    {
+        return array_map(function(Corporation $corporation) {
+            return $corporation->jsonSerialize(false, false, false);
+        }, $corporations);
     }
 }

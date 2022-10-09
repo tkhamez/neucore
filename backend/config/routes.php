@@ -100,6 +100,7 @@ return [
 
     '/api/user/corporation/all'                                  => ['GET',  [CorporationController::class, 'all']],
     '/api/user/corporation/find/{name}'                          => ['GET',  [CorporationController::class, 'find']],
+    '/api/user/corporation/corporations'                         => ['POST', [CorporationController::class, 'corporations']],
     '/api/user/corporation/with-groups'                          => ['GET',  [CorporationController::class, 'withGroups']],
     '/api/user/corporation/add/{id}'                             => ['POST', [CorporationController::class, 'add']],
     '/api/user/corporation/{id}/add-group/{gid}'                 => ['PUT',  [CorporationController::class, 'addGroup']],

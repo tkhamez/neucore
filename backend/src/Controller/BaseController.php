@@ -64,7 +64,7 @@ abstract class BaseController
     {
         $ids = $request->getParsedBody();
 
-        if (! is_array($ids)) {
+        if (!is_array($ids)) {
             return null;
         }
 
