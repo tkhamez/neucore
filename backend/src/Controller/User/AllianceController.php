@@ -11,6 +11,7 @@ use Neucore\Service\EsiData;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @OA\Tag(
@@ -48,6 +49,91 @@ class AllianceController extends BaseController
         return $this->withJson(
             $this->repositoryFactory->getAllianceRepository()->findBy([], ['name' => 'ASC'])
         );
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/user/alliance/find/{query}",
+     *     operationId="userAllianceFind",
+     *     summary="Returns a list of alliances that matches the query (partial matching name or ticker).",
+     *     description="Needs role: group-admin, watchlist-manager, settings",
+     *     tags={"Alliance"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="query",
+     *         in="path",
+     *         required=true,
+     *         description="Name or ticker of the alliance (min. 3 characters).",
+     *         @OA\Schema(type="string", minLength=3)
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of alliances.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Alliance"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized"
+     *     )
+     * )
+     */
+    public function find(string $query): ResponseInterface
+    {
+        $query = trim($query);
+        if (mb_strlen($query) < 3) {
+            return $this->withJson([]);
+        }
+
+        $result = $this->repositoryFactory->getAllianceRepository()->findByNameOrTickerPartialMatch($query);
+
+        return $this->withJson($result);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/user/alliance/alliances",
+     *     operationId="userAllianceAlliances",
+     *     summary="Returns alliances found by ID.",
+     *     description="Needs role: group-admin, watchlist-manager, settings",
+     *     tags={"Alliance"},
+     *     security={{"Session"={}, "CSRF"={}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="EVE IDs of alliances.",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(type="array", @OA\Items(type="integer"))
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of alliances.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Alliance"))
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Invalid body."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function alliances(ServerRequestInterface $request): ResponseInterface
+    {
+        $ids = $this->getIntegerArrayFromBody($request);
+
+        if ($ids === null) {
+            return $this->response->withStatus(400);
+        }
+        if (empty($ids)) {
+            return $this->withJson([]);
+        }
+
+        $result = $this->repositoryFactory->getAllianceRepository()->findBy(['id' => $ids], ['name' => 'ASC']);
+
+        return $this->withJson($result);
     }
 
     /**

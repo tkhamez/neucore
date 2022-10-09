@@ -40,9 +40,11 @@ return [
 
     '/api/app'                                     => [Role::APP], // only showV1
 
-    '/api/user/alliance/all'      => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER, Role::SETTINGS],
-    '/api/user/alliance/add/{id}' => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER],
-    '/api/user/alliance'          => [Role::GROUP_ADMIN],
+    '/api/user/alliance/all'       => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER, Role::SETTINGS],
+    '/api/user/alliance/find'      => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER, Role::SETTINGS],
+    '/api/user/alliance/alliances' => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER, Role::SETTINGS],
+    '/api/user/alliance/add/{id}'  => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER],
+    '/api/user/alliance'           => [Role::GROUP_ADMIN],
 
     '/api/user/app/{id}/change-secret' => [Role::APP_MANAGER],
     '/api/user/app/{id}/show'          => [Role::APP_MANAGER, Role::APP_ADMIN],
@@ -63,7 +65,7 @@ return [
     '/api/user/corporation/{id}/get-groups-tracking'   => [Role::TRACKING_ADMIN],
     '/api/user/corporation/{id}/add-group-tracking'    => [Role::TRACKING_ADMIN],
     '/api/user/corporation/{id}/remove-group-tracking' => [Role::TRACKING_ADMIN],
-    '/api/user/corporation/find/{name}'                => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER, Role::SETTINGS],
+    '/api/user/corporation/find'                       => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER, Role::SETTINGS],
     '/api/user/corporation/corporations'               => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER, Role::SETTINGS],
     '/api/user/corporation/add/{id}'                   => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER],
     '/api/user/corporation'                            => [Role::GROUP_ADMIN],

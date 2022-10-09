@@ -66,17 +66,17 @@ class CorporationController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/user/corporation/find/{name}",
+     *     path="/user/corporation/find/{query}",
      *     operationId="userCorporationFind",
-     *     summary="Returns a list of corporation that matches the name (partial matching).",
+     *     summary="Returns a list of corporations that matches the query (partial matching name or ticker).",
      *     description="Needs role: group-admin, watchlist-manager, settings",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
-     *         name="name",
+     *         name="query",
      *         in="path",
      *         required=true,
-     *         description="Name of the corporation (min. 3 characters).",
+     *         description="Name or ticker of the corporation (min. 3 characters).",
      *         @OA\Schema(type="string", minLength=3)
      *     ),
      *     @OA\Response(
@@ -90,14 +90,14 @@ class CorporationController extends BaseController
      *     )
      * )
      */
-    public function find(string $name): ResponseInterface
+    public function find(string $query): ResponseInterface
     {
-        $name = trim($name);
-        if (mb_strlen($name) < 3) {
+        $query = trim($query);
+        if (mb_strlen($query) < 3) {
             return $this->withJson([]);
         }
 
-        $result = $this->repositoryFactory->getCorporationRepository()->findByNameOrTickerPartialMatch($name);
+        $result = $this->repositoryFactory->getCorporationRepository()->findByNameOrTickerPartialMatch($query);
 
         return $this->withJson($this->minimalCorporationsResult($result));
     }

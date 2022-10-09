@@ -88,6 +88,8 @@ return [
     '/api/user/app/{id}/change-secret'                  => ['PUT',    [AppController::class, 'changeSecret']],
 
     '/api/user/alliance/all'                     => ['GET',  [AllianceController::class, 'all']],
+    '/api/user/alliance/find/{query}'            => ['GET',  [AllianceController::class, 'find']],
+    '/api/user/alliance/alliances'               => ['POST', [AllianceController::class, 'alliances']],
     '/api/user/alliance/with-groups'             => ['GET',  [AllianceController::class, 'withGroups']],
     '/api/user/alliance/add/{id}'                => ['POST', [AllianceController::class, 'add']],
     '/api/user/alliance/{id}/add-group/{gid}'    => ['PUT',  [AllianceController::class, 'addGroup']],
@@ -98,7 +100,7 @@ return [
     '/api/user/character/show'                  => ['GET', [CharacterController::class, 'show']],
     '/api/user/character/{id}/update'           => ['PUT', [CharacterController::class, 'update']],
 
-    '/api/user/corporation/find/{name}'                          => ['GET',  [CorporationController::class, 'find']],
+    '/api/user/corporation/find/{query}'                         => ['GET',  [CorporationController::class, 'find']],
     '/api/user/corporation/corporations'                         => ['POST', [CorporationController::class, 'corporations']],
     '/api/user/corporation/with-groups'                          => ['GET',  [CorporationController::class, 'withGroups']],
     '/api/user/corporation/add/{id}'                             => ['POST', [CorporationController::class, 'add']],

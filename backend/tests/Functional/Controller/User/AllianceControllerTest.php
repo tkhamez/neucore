@@ -89,12 +89,96 @@ class AllianceControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [
-                ['id' => 111, 'name' => 'alli 1', 'ticker' => 'a1'],
-                ['id' => 222, 'name' => 'alli 2', 'ticker' => 'a2'],
-                ['id' => 333, 'name' => 'alli 3', 'ticker' => 'a3']
+                ['id' => 222, 'name' => '1 alli 2', 'ticker' => 't200'],
+                ['id' => 111, 'name' => '2 alli 1', 'ticker' => 't100'],
+                ['id' => 333, 'name' => 'alli 3', 'ticker' => 't300']
             ],
             $this->parseJsonBody($response)
         );
+    }
+
+    public function testFind403()
+    {
+        $this->setupDb();
+
+        $response1 = $this->runApp('GET', '/api/user/alliance/find/abc');
+        $this->assertSame(403, $response1->getStatusCode());
+
+        $this->loginUser(6); # not a group-admin
+        $response2 = $this->runApp('GET', '/api/user/alliance/find/abc');
+        $this->assertSame(403, $response2->getStatusCode());
+    }
+
+    public function testFind200()
+    {
+        $this->setupDb();
+        $this->loginUser(7);
+
+        $response1 = $this->runApp('GET', '/api/user/alliance/find/li%20'); // only 2 chars
+        $this->assertSame(200, $response1->getStatusCode());
+        $this->assertSame([], $this->parseJsonBody($response1));
+
+        $response2 = $this->runApp('GET', '/api/user/alliance/find/li%202');
+        $this->assertSame(200, $response2->getStatusCode());
+        $this->assertSame([[
+            'id' => 222,
+            'name' => '1 alli 2',
+            'ticker' => 't200'
+        ]], $this->parseJsonBody($response2));
+
+        $response3 = $this->runApp('GET', '/api/user/alliance/find/300');
+        $this->assertSame(200, $response3->getStatusCode());
+        $this->assertSame([[
+            'id' => 333,
+            'name' => 'alli 3',
+            'ticker' => 't300'
+        ]], $this->parseJsonBody($response3));
+    }
+
+    public function testAlliances403()
+    {
+        $this->setupDb();
+
+        $response1 = $this->runApp('POST', '/api/user/alliance/alliances');
+        $this->assertSame(403, $response1->getStatusCode());
+
+        $this->loginUser(6); # not a group-admin
+        $response2 = $this->runApp('POST', '/api/user/alliance/alliances');
+        $this->assertSame(403, $response2->getStatusCode());
+    }
+
+    public function testAlliances400()
+    {
+        $this->setUpDb();
+        $this->loginUser(7);
+
+        $response = $this->runApp(
+            'POST', '/api/user/alliance/alliances',
+            null,
+            ['Content-Type' => 'application/json']
+        );
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function testAlliances200()
+    {
+        $this->setUpDb();
+        $this->loginUser(7);
+
+        $response = $this->runApp(
+            'POST', '/api/user/alliance/alliances',
+            [222, 111],
+            ['Content-Type' => 'application/json']
+        );
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $body = $this->parseJsonBody($response);
+        $expected = [
+            ['id' => 222, 'name' => '1 alli 2', 'ticker' => 't200'],
+            ['id' => 111, 'name' => '2 alli 1', 'ticker' => 't100']
+        ];
+        $this->assertSame($expected, $body);
     }
 
     public function testWithGroups403()
@@ -119,16 +203,16 @@ class AllianceControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [
-                ['id' => 111, 'name' => 'alli 1', 'ticker' => 'a1', 'groups' => [
-                    ['id' => $this->groupId1, 'name' => 'group 1', 'description' => null,
-                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
-                ]],
-                ['id' => 222, 'name' => 'alli 2', 'ticker' => 'a2', 'groups' => [
+                ['id' => 222, 'name' => '1 alli 2', 'ticker' => 't200', 'groups' => [
                     ['id' => $this->groupId1, 'name' => 'group 1', 'description' => null,
                         'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                     ['id' => $this->groupId2, 'name' => 'group 2', 'description' => null,
                         'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
-                ]]
+                ]],
+                ['id' => 111, 'name' => '2 alli 1', 'ticker' => 't100', 'groups' => [
+                    ['id' => $this->groupId1, 'name' => 'group 1', 'description' => null,
+                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
+                ]],
             ],
             $this->parseJsonBody($response)
         );
@@ -351,9 +435,9 @@ class AllianceControllerTest extends WebTestCase
         $this->helper->addCharacterMain('User', 6, [Role::USER]);
         $this->helper->addCharacterMain('Admin', 7, [Role::USER, Role::GROUP_ADMIN]);
 
-        $alli1 = (new Alliance())->setId(111)->setTicker('a1')->setName('alli 1');
-        $alli2 = (new Alliance())->setId(222)->setTicker('a2')->setName('alli 2');
-        $alli3 = (new Alliance())->setId(333)->setTicker('a3')->setName('alli 3');
+        $alli1 = (new Alliance())->setId(111)->setTicker('t100')->setName('2 alli 1');
+        $alli2 = (new Alliance())->setId(222)->setTicker('t200')->setName('1 alli 2');
+        $alli3 = (new Alliance())->setId(333)->setTicker('t300')->setName('alli 3');
 
         $group1 = (new Group())->setName('group 1');
         $group2 = (new Group())->setName('group 2');

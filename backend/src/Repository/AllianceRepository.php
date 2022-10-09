@@ -22,7 +22,7 @@ class AllianceRepository extends EntityRepository
     /**
      * @return Alliance[]
      */
-    public function getAllWithGroups()
+    public function getAllWithGroups(): array
     {
         return $this->createQueryBuilder('a')
             ->join('a.groups', 'g')
@@ -30,5 +30,19 @@ class AllianceRepository extends EntityRepository
             ->orderBy('a.name')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @return Alliance[]
+     */
+    public function findByNameOrTickerPartialMatch(string $search): array
+    {
+        $query = $this->createQueryBuilder('a')
+            ->where('a.name LIKE :search')
+            ->orWhere('a.ticker LIKE :search')
+            ->addOrderBy('a.name', 'ASC')
+            ->setParameter('search', "%$search%");
+
+        return $query->getQuery()->getResult();
     }
 }
