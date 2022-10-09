@@ -34,7 +34,8 @@
         <label class="col-form-label">Corporations</label>
         <multiselect v-model="accountDeactivationCorporations" :options="allCorporations"
                      label="name" track-by="id" :multiple="true"
-                     :loading="false" :searchable="true"
+                     :loading="isLoading" :searchable="true"
+                     @search-change="findCorporations"
                      placeholder="Select corporations">
         </multiselect>
         <label class="mt-4 display-block">
@@ -126,6 +127,8 @@
 
 <script>
 import Multiselect from '@suadelabs/vue3-multiselect';
+import {CorporationApi} from "neucore-js-client";
+import Util from "../../classes/Util";
 
 export default {
     components: {
@@ -136,20 +139,21 @@ export default {
 
     props: {
         allAlliances: Array,
-        allCorporations: Array,
     },
 
     data() {
         return {
             settings: { ...this.store.state.settings },
             allAlliancesLoaded: false,
-            allCorporationsLoaded: false,
+            isLoading: false,
+            allCorporations: [],
             accountDeactivationAlliances: null,
             accountDeactivationCorporations: null,
         }
     },
 
     mounted() {
+        // noinspection JSUnresolvedFunction
         this.$parent.loadLists();
     },
 
@@ -163,12 +167,8 @@ export default {
             readSettings(this);
         },
 
-        allCorporations() {
-            this.allCorporationsLoaded = true;
-            readSettings(this);
-        },
-
         accountDeactivationAlliances(newValues, oldValues) {
+            // noinspection JSUnresolvedFunction
             const newValue = this.$parent.buildIdString(newValues, oldValues, this.accountDeactivationAlliances);
             if (newValue === null) {
                 return;
@@ -177,6 +177,7 @@ export default {
         },
 
         accountDeactivationCorporations(newValues, oldValues) {
+            // noinspection JSUnresolvedFunction
             const newValue = this.$parent.buildIdString(newValues, oldValues, this.accountDeactivationCorporations);
             if (newValue === null) {
                 return;
@@ -184,14 +185,20 @@ export default {
             this.$emit('changeSetting', 'account_deactivation_corporations', newValue);
         },
     },
+
+    methods: {
+        findCorporations(query) {
+            this.isLoading = true;
+            Util.findCorporationDelayed(query, (result) => {
+                this.isLoading = false;
+                this.allCorporations = result;
+            });
+        },
+    },
 }
 
 function readSettings(vm) {
-    if (
-        !vm.allAlliancesLoaded ||
-        !vm.allCorporationsLoaded ||
-        !vm.settings.hasOwnProperty('account_deactivation_delay')
-    ) {
+    if (!vm.allAlliancesLoaded || !vm.settings.hasOwnProperty('account_deactivation_delay')) {
         return; // wait for alliance and corporation list and settings
     }
 
@@ -203,7 +210,11 @@ function readSettings(vm) {
             vm.accountDeactivationAlliances = vm.$parent.buildIdArray(value, vm.allAlliances);
         }
         if (name === 'account_deactivation_corporations') {
-            vm.accountDeactivationCorporations = vm.$parent.buildIdArray(value, vm.allCorporations);
+            new CorporationApi().userCorporationCorporations(value.split(','), (error, data) => {
+                if (!error) {
+                    vm.accountDeactivationCorporations = data;
+                }
+            });
         }
     }
 }

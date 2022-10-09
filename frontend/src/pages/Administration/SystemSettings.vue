@@ -22,10 +22,9 @@
         </li>
     </ul>
 
-    <!-- "allAlliances" and "allCorporations" are only for "Features" and "Mails" tabs -->
+    <!-- "allAlliances" is only for "Features" and "Mails" tabs -->
     <component v-bind:is="tab"
                :allAlliances="alliances"
-               :allCorporations="corporations"
                @changeSettingDelayed="changeSettingDelayed"
                @changeSetting="changeSetting"
     ></component>
@@ -35,7 +34,7 @@
 
 <script>
 import _ from 'lodash';
-import {AllianceApi, CorporationApi, SettingsApi} from 'neucore-js-client';
+import {AllianceApi, SettingsApi} from 'neucore-js-client';
 import Helper from "../../classes/Helper";
 import Customization from './SystemSettings--Customization.vue';
 import Features from './SystemSettings--Features.vue';
@@ -57,7 +56,6 @@ export default {
             h: new Helper(this),
             tab: 'Customization',
             alliances: [],
-            corporations: [],
         }
     },
 
@@ -110,14 +108,6 @@ export default {
                     return;
                 }
                 this.alliances = data;
-            });
-
-            // get corporations
-            new CorporationApi().userCorporationAll((error, data) => {
-                if (error) { // 403 usually
-                    return;
-                }
-                this.corporations = data;
             });
         },
 
