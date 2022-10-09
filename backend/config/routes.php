@@ -98,7 +98,6 @@ return [
     '/api/user/character/show'                  => ['GET', [CharacterController::class, 'show']],
     '/api/user/character/{id}/update'           => ['PUT', [CharacterController::class, 'update']],
 
-    '/api/user/corporation/all'                                  => ['GET',  [CorporationController::class, 'all']],
     '/api/user/corporation/find/{name}'                          => ['GET',  [CorporationController::class, 'find']],
     '/api/user/corporation/corporations'                         => ['POST', [CorporationController::class, 'corporations']],
     '/api/user/corporation/with-groups'                          => ['GET',  [CorporationController::class, 'withGroups']],

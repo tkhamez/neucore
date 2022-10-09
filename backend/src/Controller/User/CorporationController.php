@@ -66,32 +66,6 @@ class CorporationController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/user/corporation/all",
-     *     operationId="userCorporationAll",
-     *     summary="List all corporations.",
-     *     description="Needs role: group-admin, watchlist-manager, settings",
-     *     tags={"Corporation"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of corporations.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
-    public function all(): ResponseInterface
-    {
-        return $this->withJson(
-            $this->repositoryFactory->getCorporationRepository()->findBy([], ['name' => 'ASC'])
-        );
-    }
-
-    /**
-     * @OA\Get(
      *     path="/user/corporation/find/{name}",
      *     operationId="userCorporationFind",
      *     summary="Returns a list of corporation that matches the name (partial matching).",

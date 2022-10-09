@@ -77,35 +77,6 @@ class CorporationControllerTest extends WebTestCase
         $this->em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
-    public function testAll403()
-    {
-        $this->setupDb();
-
-        $response = $this->runApp('GET', '/api/user/corporation/all');
-        $this->assertEquals(403, $response->getStatusCode());
-
-        $this->loginUser(6); # not a group-admin
-        $response = $this->runApp('GET', '/api/user/corporation/all');
-        $this->assertEquals(403, $response->getStatusCode());
-    }
-
-    public function testAll200()
-    {
-        $this->setupDb();
-        $this->loginUser(7);
-
-        $response = $this->runApp('GET', '/api/user/corporation/all');
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSame(
-            [
-                ['id' => 222, 'name' => '1 corp 2', 'ticker' => 't200', 'alliance' => null],
-                ['id' => 111, 'name' => '2 corp 1', 'ticker' => 't100', 'alliance' => null],
-                ['id' => 333, 'name' => 'corp 3', 'ticker' => 't300', 'alliance' => null]
-            ],
-            $this->parseJsonBody($response)
-        );
-    }
-
     public function testFind403()
     {
         $this->setupDb();

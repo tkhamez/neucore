@@ -167,7 +167,6 @@ Alliance API
 - Remove a group from the alliance. `PUT /user/alliance/{id}/remove-group/{gid}`
 
 Corporation API
-- List all corporations. `GET /user/corporation/all`
 - Returns a list of corporation that matches the name (partial matching). `GET /user/corporation/find/{name}`
 - Returns corporations found by ID. `POST /user/corporation/corporations`
 - List all corporations that have groups assigned. `GET /user/corporation/with-groups`
@@ -300,7 +299,6 @@ Alliance API
 - List all alliances. `GET /user/alliance/all`
 
 Corporation API
-- List all corporations. `GET /user/corporation/all`
 - Returns a list of corporation that matches the name (partial matching). `GET /user/corporation/find/{name}`
 - Returns corporations found by ID. `POST /user/corporation/corporations`
 
@@ -371,7 +369,6 @@ Alliance API
 - Add an EVE alliance to the database. `POST /user/alliance/add/{id}`
 
 Corporation API
-- List all corporations. `GET /user/corporation/all`
 - Returns a list of corporation that matches the name (partial matching). `GET /user/corporation/find/{name}`
 - Returns corporations found by ID. `POST /user/corporation/corporations`
 - Add an EVE corporation to the database. `POST /user/corporation/add/{id}`
