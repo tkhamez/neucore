@@ -142,10 +142,12 @@ export default {
         return {
             settings: { ...this.store.state.settings },
             isLoading: false,
+            allAlliancesChanged: 0,
+            allCorporationsChanged: 0,
             allAlliances: [],
             allCorporations: [],
-            accountDeactivationAlliances: null,
-            accountDeactivationCorporations: null,
+            accountDeactivationAlliances: [],
+            accountDeactivationCorporations: [],
         }
     },
 
@@ -154,20 +156,21 @@ export default {
     },
 
     watch: {
-        accountDeactivationAlliances(newValues, oldValues) {
-            const newValue = Util.buildIdString(newValues, oldValues, this.accountDeactivationAlliances);
-            if (newValue === null) {
-                return;
+        accountDeactivationAlliances() {
+            this.allAlliancesChanged++;
+            // First change is when mounted (why?), second when data was loaded.
+            if (this.allAlliancesChanged > 2) {
+                const newValue = Util.buildIdString(this.accountDeactivationAlliances);
+                this.$emit('changeSetting', 'account_deactivation_alliances', newValue);
             }
-            this.$emit('changeSetting', 'account_deactivation_alliances', newValue);
         },
 
-        accountDeactivationCorporations(newValues, oldValues) {
-            const newValue = Util.buildIdString(newValues, oldValues, this.accountDeactivationCorporations);
-            if (newValue === null) {
-                return;
+        accountDeactivationCorporations() {
+            this.allCorporationsChanged++;
+            if (this.allCorporationsChanged > 2) {
+                const newValue = Util.buildIdString(this.accountDeactivationCorporations);
+                this.$emit('changeSetting', 'account_deactivation_corporations', newValue);
             }
-            this.$emit('changeSetting', 'account_deactivation_corporations', newValue);
         },
     },
 

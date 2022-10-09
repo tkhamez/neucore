@@ -131,12 +131,15 @@ export default {
             loginNames: Data.loginNames,
             loginHost: '',
             isLoading: false,
+            allAlliancesChanged: 0,
+            allCorporationsChanged: 0,
+            trackingCorporationsChanged: 0,
             allAlliances: [],
             allCorporations: [],
             trackingCorporations: [],
-            mailInvalidTokenAlliances: null,
-            mailInvalidTokenCorporations: null,
-            mailMissingCharacterCorporations: null,
+            mailInvalidTokenAlliances: [],
+            mailInvalidTokenCorporations: [],
+            mailMissingCharacterCorporations: [],
         }
     },
 
@@ -148,28 +151,28 @@ export default {
     },
 
     watch: {
-        mailInvalidTokenAlliances(newValues, oldValues) {
-            const newValue = Util.buildIdString(newValues, oldValues, this.mailInvalidTokenAlliances);
-            if (newValue === null) {
-                return;
+        mailInvalidTokenAlliances() {
+            this.allAlliancesChanged++;
+            if (this.allAlliancesChanged > 2) {
+                const newValue = Util.buildIdString(this.mailInvalidTokenAlliances);
+                this.$emit('changeSetting', 'mail_invalid_token_alliances', newValue);
             }
-            this.$emit('changeSetting', 'mail_invalid_token_alliances', newValue);
         },
 
-        mailInvalidTokenCorporations(newValues, oldValues) {
-            const newValue = Util.buildIdString(newValues, oldValues, this.mailInvalidTokenCorporations);
-            if (newValue === null) {
-                return;
+        mailInvalidTokenCorporations() {
+            this.allCorporationsChanged++;
+            if (this.allCorporationsChanged > 2) {
+                const newValue = Util.buildIdString(this.mailInvalidTokenCorporations);
+                this.$emit('changeSetting', 'mail_invalid_token_corporations', newValue);
             }
-            this.$emit('changeSetting', 'mail_invalid_token_corporations', newValue);
         },
 
-        mailMissingCharacterCorporations(newValues, oldValues) {
-            const newValue = Util.buildIdString(newValues, oldValues, this.mailMissingCharacterCorporations);
-            if (newValue === null) {
-                return;
+        mailMissingCharacterCorporations() {
+            this.trackingCorporationsChanged++;
+            if (this.trackingCorporationsChanged > 2) {
+                const newValue = Util.buildIdString(this.mailMissingCharacterCorporations);
+                this.$emit('changeSetting', 'mail_missing_character_corporations', newValue);
             }
-            this.$emit('changeSetting', 'mail_missing_character_corporations', newValue);
         },
     },
 
