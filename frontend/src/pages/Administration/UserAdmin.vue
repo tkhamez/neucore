@@ -637,7 +637,9 @@ export default {
             if (!this.playerEdit) {
                 return;
             }
-            new Player(this).updateServices(this.playerEdit);
+            new Player(this).updateServices(this.playerEdit, () => {
+                getPlayer(this)
+            });
         },
 
         showEsiTokens(character) {

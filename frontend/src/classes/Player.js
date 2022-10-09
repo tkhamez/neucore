@@ -50,8 +50,9 @@ export default class Player {
      * Update all service accounts of the player.
      *
      * @param {object} player
+     * @param {function} callback
      */
-    updateServices(player) {
+    updateServices(player, callback) {
         const self = this;
         new ServiceApi().serviceUpdateAllAccounts(player.id, (error, data) => {
             if (error) {
@@ -59,6 +60,7 @@ export default class Player {
                 return;
             }
             self.helper.message(`Updated ${data} service account(s).`, 'success', 3000);
+            callback();
             if (player.id === self.vm.globalStore.state.player.id) {
                 self.vm.emitter.emit('playerChange');
             }

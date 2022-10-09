@@ -243,7 +243,9 @@ export default {
             if (!this.selectedPlayer) {
                 return;
             }
-            new Player(this).updateServices(this.selectedPlayer);
+            new Player(this).updateServices(this.selectedPlayer, () => {
+                this.fetchCharacters(this.selectedPlayer.id);
+            });
         },
 
         getTokenTitle(character) {
