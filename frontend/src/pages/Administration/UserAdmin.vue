@@ -327,7 +327,7 @@
                             <tbody>
                                 <tr v-for="group in playerEdit.groups">
                                     <td>{{ group.id }}</td>
-                                    <td :class="{ 'groups-disabled': playerEditDeactivated }">
+                                    <td>
                                         <a v-if="h.hasRole('group-admin')"
                                            :href="`#GroupAdmin/${group.id}/members`"
                                            title="Group Administration">{{ group.name }}</a>
@@ -707,8 +707,5 @@ function getEveLogins(vm) {
     .update-account {
         float: right;
         cursor: pointer;
-    }
-    .groups-disabled {
-        text-decoration: line-through;
     }
 </style>

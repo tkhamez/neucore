@@ -189,15 +189,15 @@ body.neucore {
     text-decoration: underline;
     text-decoration-style: dotted;
 }
+a {
+    text-decoration-style: dotted;
+}
 a.external:after {
-    position: relative;
-    top: -1px;
-    right: -1px;
     //noinspection CssNoGenericFontName
     font-family: 'Font Awesome 6 Free';
     display: inline-block;
     text-decoration: none;
-    margin: 0 1px;
+    margin-left: 2px;
     font-size: 0.8em;
     font-weight: 900;
     color: grey;
