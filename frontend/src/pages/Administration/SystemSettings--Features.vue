@@ -155,8 +155,7 @@ export default {
 
     watch: {
         accountDeactivationAlliances(newValues, oldValues) {
-            // noinspection JSUnresolvedFunction
-            const newValue = this.$parent.buildIdString(newValues, oldValues, this.accountDeactivationAlliances);
+            const newValue = Util.buildIdString(newValues, oldValues, this.accountDeactivationAlliances);
             if (newValue === null) {
                 return;
             }
@@ -164,8 +163,7 @@ export default {
         },
 
         accountDeactivationCorporations(newValues, oldValues) {
-            // noinspection JSUnresolvedFunction
-            const newValue = this.$parent.buildIdString(newValues, oldValues, this.accountDeactivationCorporations);
+            const newValue = Util.buildIdString(newValues, oldValues, this.accountDeactivationCorporations);
             if (newValue === null) {
                 return;
             }

@@ -65,6 +65,27 @@ export default class Util {
         return str;
     }
 
+    /**
+     * Helper function for alliance and corporation form selects in settings.
+     */
+    static buildIdString(newValues, oldValues, model) {
+        if (oldValues === null) {
+            return null;
+        }
+        const oldIds = [];
+        for (const oldValue of oldValues) {
+            oldIds.push(oldValue.id);
+        }
+        const newIds = [];
+        for (const item of model) {
+            newIds.push(item.id);
+        }
+        if (newIds.join(',') === oldIds.join(',')) {
+            return null;
+        }
+        return newIds.join(',');
+    }
+
     static findCorporationsOrAlliancesDelayed = _.debounce((query, type, callback) => {
         if (['Corporations', 'Alliances'].indexOf(type) === -1) {
             return;

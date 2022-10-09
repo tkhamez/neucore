@@ -149,8 +149,7 @@ export default {
 
     watch: {
         mailInvalidTokenAlliances(newValues, oldValues) {
-            // noinspection JSUnresolvedFunction
-            const newValue = this.$parent.buildIdString(newValues, oldValues, this.mailInvalidTokenAlliances);
+            const newValue = Util.buildIdString(newValues, oldValues, this.mailInvalidTokenAlliances);
             if (newValue === null) {
                 return;
             }
@@ -158,8 +157,7 @@ export default {
         },
 
         mailInvalidTokenCorporations(newValues, oldValues) {
-            // noinspection JSUnresolvedFunction
-            const newValue = this.$parent.buildIdString(newValues, oldValues, this.mailInvalidTokenCorporations);
+            const newValue = Util.buildIdString(newValues, oldValues, this.mailInvalidTokenCorporations);
             if (newValue === null) {
                 return;
             }
@@ -167,8 +165,7 @@ export default {
         },
 
         mailMissingCharacterCorporations(newValues, oldValues) {
-            // noinspection JSUnresolvedFunction
-            const newValue = this.$parent.buildIdString(newValues, oldValues, this.mailMissingCharacterCorporations);
+            const newValue = Util.buildIdString(newValues, oldValues, this.mailMissingCharacterCorporations);
             if (newValue === null) {
                 return;
             }

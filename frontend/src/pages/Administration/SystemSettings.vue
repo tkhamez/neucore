@@ -95,27 +95,6 @@ export default {
                 }
             });
         },
-
-        /**
-         * Helper function for alliance and corporation form selects used by child components.
-         */
-        buildIdString (newValues, oldValues, model) {
-            if (oldValues === null) {
-                return null;
-            }
-            const oldIds = [];
-            for (const oldValue of oldValues) {
-                oldIds.push(oldValue.id);
-            }
-            const newIds = [];
-            for (const item of model) {
-                newIds.push(item.id);
-            }
-            if (newIds.join(',') === oldIds.join(',')) {
-                return null;
-            }
-            return newIds.join(',');
-        },
     },
 }
 
