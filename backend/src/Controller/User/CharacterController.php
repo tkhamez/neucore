@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
+use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
 use Neucore\Service\EsiData;
@@ -186,8 +187,9 @@ class CharacterController extends BaseController
      *     path="/user/character/{id}/update",
      *     operationId="update",
      *     summary="Update a character with data from ESI.",
-     *     description="Needs role: user to update own characters or user-admin, user-manager, group-admin, app-admin
-                        or user-chars to update any character. It also updates groups and verifies the OAuth token.",
+     *     description="Needs role: user to update own characters or user-admin, user-manager, group-admin, app-admin,
+                        user-chars, tracking or watchlist to update any character. It also updates groups and
+                        verifies the OAuth token.",
      *     tags={"Character"},
      *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
@@ -199,12 +201,12 @@ class CharacterController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="200",
-     *         description="The updated character.",
-     *         @OA\JsonContent(ref="#/components/schemas/Character")
+     *         description="The character was updated.",
+     *         @OA\JsonContent(type="integer")
      *     ),
      *     @OA\Response(
      *         response="204",
-     *         description="If the character was deleted because the owner hash changed."
+     *         description="The character was deleted because the owner hash changed."
      *     ),
      *     @OA\Response(
      *         response="403",
@@ -222,12 +224,25 @@ class CharacterController extends BaseController
      */
     public function update(string $id, Account $accountService): ResponseInterface
     {
+        // Note that user with the role tracking or watchlist should only update characters from
+        // account from the respective lists, but there's no harm allowing them to update all as long as
+        // this does not return any data, otherwise this would need to check permissions like it's done
+        // for /user/player/{id}/characters.
+
         // get player account
         $player = $this->getUser($this->userAuth)->getPlayer();
 
         // find character
         $char = null;
-        if ($player->mayUpdateOtherPlayer()) {
+        if (
+            $player->hasRole(Role::USER_ADMIN) ||
+            $player->hasRole(Role::USER_MANAGER) ||
+            $player->hasRole(Role::GROUP_ADMIN) ||
+            $player->hasRole(Role::APP_ADMIN) ||
+            $player->hasRole(Role::USER_CHARS) ||
+            $player->hasRole(Role::TRACKING) ||
+            $player->hasRole(Role::WATCHLIST)
+        ) {
             $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
         } else {
             foreach ($player->getCharacters() as $c) {
@@ -264,7 +279,8 @@ class CharacterController extends BaseController
         $accountService->updateGroups($updatePlayerId); // flushes the entity manager
 
         if ($updatedChar !== null) {
-            return $this->withJson($updatedChar);
+            // Do not return account data because roles tracking and watchlist may execute this.
+            return $this->withJson(1); // Status 200
         } else {
             return $this->response->withStatus(204);
         }

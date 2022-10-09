@@ -325,6 +325,9 @@ Corporation API
 Player API
 - Show player with characters, moved characters, groups and service accounts. `GET /user/player/{id}/characters`
 
+Service API
+- Update all service accounts of one player. `PUT /user/service/update-all-accounts/{playerId}`
+
 #### tracking-admin
 
 Allows a player to change the tracking corporation/groups configuration.
@@ -358,6 +361,9 @@ Watchlist API
 - List of alliances for the kicklist. `GET /user/watchlist/{id}/kicklist-alliance/list`
 - List of corporations for the corporation allowlist. `GET /user/watchlist/{id}/allowlist-corporation/list`
 - List of alliances for the alliance allowlist. `GET /user/watchlist/{id}/allowlist-alliance/list`
+
+Service API
+- Update all service accounts of one player. `PUT /user/service/update-all-accounts/{playerId}`
 
 #### watchlist-manager
 

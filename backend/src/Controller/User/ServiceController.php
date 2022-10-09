@@ -370,7 +370,8 @@ class ServiceController extends BaseController
      *     path="/user/service/update-all-accounts/{playerId}",
      *     operationId="serviceUpdateAllAccounts",
      *     summary="Update all service accounts of one player.",
-     *     description="Needs role: user-admin, user-manager, group-admin, app-admin or user-chars",
+     *     description="Needs role: user-admin, user-manager, group-admin, app-admin, user-chars, tracking or
+                        watchlist",
      *     tags={"Service"},
      *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
@@ -383,7 +384,7 @@ class ServiceController extends BaseController
      *     @OA\Response(
      *         response="200",
      *         description="Account(s) updated.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/UpdateAccountsResult"))
+     *         @OA\JsonContent(type="integer")
      *     ),
      *     @OA\Response(
      *         response="403",
@@ -395,12 +396,12 @@ class ServiceController extends BaseController
      *     )
      * )
      */
-    public function updateAllAccounts(string $playerId, UserAuth $userAuth): ResponseInterface
+    public function updateAllAccounts(string $playerId): ResponseInterface
     {
-        $loggedInPlayer = $this->getUser($userAuth)->getPlayer();
-        if (!$loggedInPlayer->mayUpdateOtherPlayer()) {
-            return $this->response->withStatus(403);
-        }
+        // Note that user with the role tracking or watchlist should only update accounts from
+        // the respective lists, but there's no harm allowing them to update all as long as
+        // this does not return any data, otherwise this would need to check permissions like it's done
+        // for /user/player/{id}/characters.
 
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
         if (!$player) {
@@ -409,7 +410,8 @@ class ServiceController extends BaseController
 
         $updated = $this->serviceRegistration->updatePlayerAccounts($player);
 
-        return $this->withJson($updated);
+        // Do not return account data because roles tracking and watchlist may execute this.
+        return $this->withJson(count($updated));
     }
 
     /**

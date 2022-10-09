@@ -207,44 +207,6 @@ class PlayerTest extends TestCase
         $this->assertFalse($player->hasRole('role2'));
     }
 
-    public function testMayUpdateOtherPlayer()
-    {
-        $player = new Player();
-        $role = new Role(1);
-        $role->setName(Role::USER);
-        $player->addRole($role);
-
-        $this->assertFalse($player->mayUpdateOtherPlayer());
-
-        foreach ([
-                     Role::SERVICE_ADMIN,
-                     Role::STATISTICS,
-                     Role::ESI,
-                     Role::SETTINGS,
-                     Role::TRACKING_ADMIN,
-                     Role::WATCHLIST_ADMIN,
-                     Role::GROUP_MANAGER,
-                     Role::APP_MANAGER,
-                     Role::TRACKING,
-                     Role::WATCHLIST,
-                     Role::WATCHLIST_MANAGER,
-                 ] as $roleName) {
-            $role->setName($roleName);
-            $this->assertFalse($player->mayUpdateOtherPlayer());
-        }
-
-        foreach ([
-                     Role::USER_ADMIN,
-                     Role::USER_MANAGER,
-                     Role::GROUP_ADMIN,
-                     Role::APP_ADMIN,
-                     Role::USER_CHARS,
-                 ] as $roleName) {
-            $role->setName($roleName);
-            $this->assertTrue($player->mayUpdateOtherPlayer());
-        }
-    }
-
     public function testAddGetRemoveCharacter()
     {
         $play = new Player();

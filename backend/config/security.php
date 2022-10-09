@@ -134,7 +134,7 @@ return [
 
     '/api/user/service-admin/'              => [Role::SERVICE_ADMIN],
     '/api/user/service/update-all-accounts' => [Role::USER_ADMIN, Role::USER_MANAGER, Role::GROUP_ADMIN,
-                                                Role::APP_ADMIN, Role::USER_CHARS],
+                                                Role::APP_ADMIN, Role::USER_CHARS, Role::TRACKING, Role::WATCHLIST],
     '/api/user/service/'                    => [Role::USER],
 
     '/api/user/statistics/'     => [Role::STATISTICS],

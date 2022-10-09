@@ -274,30 +274,7 @@ class CharacterControllerTest extends WebTestCase
 
         $this->assertEquals(200, $response->getStatusCode());
 
-        $expected = [
-            'id' => 96061222,
-            'name' => 'Char 96061222',
-            'main' => true,
-            'created' => null,
-            'validToken' => true,
-            'validTokenTime' => '2019-08-03T23:12:45Z',
-            'tokenLastChecked' => null,
-            'corporation' => [
-                'id' => $this->corpId,
-                'name' => 'The Corp updated.',
-                'ticker' => 'TICK',
-                'alliance' => null
-            ]
-        ];
-        $actual = $this->parseJsonBody($response);
-
-        $this->assertMatchesRegularExpression(
-            '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/',
-            $actual['lastUpdate']
-        );
-        unset($actual['lastUpdate']);
-
-        $this->assertSame($expected, $actual);
+        $this->assertSame(1, $this->parseJsonBody($response));
 
         // check group
         $this->helper->getObjectManager()->clear();

@@ -535,7 +535,7 @@ class ServiceControllerTest extends WebTestCase
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals([['serviceName' => 'S3', 'characterId' => 1]], $this->parseJsonBody($response));
+        $this->assertEquals(1, $this->parseJsonBody($response));
         $this->assertSame(
             ['ServiceController::updateAllAccounts: S3: '],
             $this->log->getMessages()
