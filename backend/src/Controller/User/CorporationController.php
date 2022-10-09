@@ -123,7 +123,7 @@ class CorporationController extends BaseController
             return $this->withJson([]);
         }
 
-        $retVal = $this->repositoryFactory->getCorporationRepository()->findByNamePartialMatch($name);
+        $retVal = $this->repositoryFactory->getCorporationRepository()->findByNameOrTickerPartialMatch($name);
 
         return $this->withJson(array_map(function(Corporation $corporation) {
             return $corporation->jsonSerialize(false, false, false);

@@ -98,9 +98,9 @@ class CorporationControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [
-                ['id' => 111, 'name' => 'corp 1', 'ticker' => 't1', 'alliance' => null],
-                ['id' => 222, 'name' => 'corp 2', 'ticker' => 't2', 'alliance' => null],
-                ['id' => 333, 'name' => 'corp 3', 'ticker' => 't3', 'alliance' => null]
+                ['id' => 111, 'name' => 'corp 1', 'ticker' => 't100', 'alliance' => null],
+                ['id' => 222, 'name' => 'corp 2', 'ticker' => 't200', 'alliance' => null],
+                ['id' => 333, 'name' => 'corp 3', 'ticker' => 't300', 'alliance' => null]
             ],
             $this->parseJsonBody($response)
         );
@@ -132,8 +132,16 @@ class CorporationControllerTest extends WebTestCase
         $this->assertSame([[
             'id' => 222,
             'name' => 'corp 2',
-            'ticker' => 't2'
+            'ticker' => 't200'
         ]], $this->parseJsonBody($response2));
+
+        $response3 = $this->runApp('GET', '/api/user/corporation/find/300');
+        $this->assertSame(200, $response3->getStatusCode());
+        $this->assertSame([[
+            'id' => 333,
+            'name' => 'corp 3',
+            'ticker' => 't300'
+        ]], $this->parseJsonBody($response3));
     }
 
     public function testWithGroups403()
@@ -158,11 +166,11 @@ class CorporationControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [
-                ['id' => 111, 'name' => 'corp 1', 'ticker' => 't1', 'alliance' => null, 'groups' => [
+                ['id' => 111, 'name' => 'corp 1', 'ticker' => 't100', 'alliance' => null, 'groups' => [
                     ['id' => $this->group1->getId(), 'name' => 'group 1', 'description' => null,
                         'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
                 ]],
-                ['id' => 222, 'name' => 'corp 2', 'ticker' => 't2', 'alliance' => null, 'groups' => [
+                ['id' => 222, 'name' => 'corp 2', 'ticker' => 't200', 'alliance' => null, 'groups' => [
                     ['id' => $this->group1->getId(), 'name' => 'group 1', 'description' => null,
                         'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                     ['id' => $this->gid2, 'name' => 'group 2', 'description' => null,
@@ -675,7 +683,7 @@ class CorporationControllerTest extends WebTestCase
         $this->assertSame([[
             'id' => 222,
             'name' => 'corp 2',
-            'ticker' => 't2',
+            'ticker' => 't200',
             'alliance' => null,
             'trackingLastUpdate' => '2019-12-19T13:44:02Z',
         ]], $this->parseJsonBody($response2));
@@ -704,7 +712,7 @@ class CorporationControllerTest extends WebTestCase
         $this->assertSame([[
             'id' => 222,
             'name' => 'corp 2',
-            'ticker' => 't2',
+            'ticker' => 't200',
             'alliance' => null,
             'trackingLastUpdate' => '2019-12-19T13:44:02Z',
         ]], $this->parseJsonBody($response3));
@@ -768,10 +776,10 @@ class CorporationControllerTest extends WebTestCase
             ->getPlayer();
         $this->h->addCharacterMain('User Admin', 8, [Role::USER, Role::TRACKING_ADMIN]);
 
-        $corp1 = (new Corporation())->setId(111)->setTicker('t1')->setName('corp 1');
-        $corp2 = (new Corporation())->setId(222)->setTicker('t2')->setName('corp 2')
+        $corp1 = (new Corporation())->setId(111)->setTicker('t100')->setName('corp 1');
+        $corp2 = (new Corporation())->setId(222)->setTicker('t200')->setName('corp 2')
             ->setTrackingLastUpdate(new \DateTime('2019-12-19 13:44:02'));
-        $corp3 = (new Corporation())->setId(333)->setTicker('t3')->setName('corp 3');
+        $corp3 = (new Corporation())->setId(333)->setTicker('t300')->setName('corp 3');
 
         $this->group1 = (new Group())->setName('group 1');
         $group2 = (new Group())->setName('group 2');

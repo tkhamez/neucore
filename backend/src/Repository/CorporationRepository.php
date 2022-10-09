@@ -66,12 +66,13 @@ class CorporationRepository extends EntityRepository
     /**
      * @return Corporation[]
      */
-    public function findByNamePartialMatch(string $name): array
+    public function findByNameOrTickerPartialMatch(string $search): array
     {
         $query = $this->createQueryBuilder('c')
-            ->where('c.name LIKE :name')
+            ->where('c.name LIKE :search')
+            ->orWhere('c.ticker LIKE :search')
             ->addOrderBy('c.name', 'ASC')
-            ->setParameter('name', "%$name%");
+            ->setParameter('search', "%$search%");
 
         return $query->getQuery()->getResult();
     }

@@ -100,21 +100,26 @@ class CorporationRepositoryTest extends TestCase
         $this->assertSame(1011, $actual[2]->getId());
     }
 
-    public function testFindByNamePartialMatch()
+    public function testFindByNameOrTickerPartialMatch()
     {
-        $corp3 = (new Corporation())->setId(55)->setTicker('t1')->setName('company 3');
-        $corp2 = (new Corporation())->setId(56)->setTicker('t2')->setName('corp 2');
-        $corp1 = (new Corporation())->setId(57)->setTicker('t1')->setName('corp 1');
+        $corp3 = (new Corporation())->setId(55)->setTicker('t300')->setName('company 3');
+        $corp2 = (new Corporation())->setId(56)->setTicker('t200')->setName('corp 2');
+        $corp1 = (new Corporation())->setId(57)->setTicker('t100')->setName('corp 1');
         $this->om->persist($corp3);
         $this->om->persist($corp2);
         $this->om->persist($corp1);
         $this->om->flush();
 
-        $actual = $this->repository->findByNamePartialMatch('orp');
-        $this->assertSame(2, count($actual));
-        $this->assertSame('corp 1', $actual[0]->getName());
-        $this->assertSame('corp 2', $actual[1]->getName());
-        $this->assertSame(57, $actual[0]->getID());
-        $this->assertSame(56, $actual[1]->getID());
+        $actual1 = $this->repository->findByNameOrTickerPartialMatch('orp');
+        $this->assertSame(2, count($actual1));
+        $this->assertSame('corp 1', $actual1[0]->getName());
+        $this->assertSame('corp 2', $actual1[1]->getName());
+        $this->assertSame(57, $actual1[0]->getID());
+        $this->assertSame(56, $actual1[1]->getID());
+
+        $actual2 = $this->repository->findByNameOrTickerPartialMatch('100');
+        $this->assertSame(1, count($actual2));
+        $this->assertSame('corp 1', $actual2[0]->getName());
+        $this->assertSame(57, $actual2[0]->getID());
     }
 }
