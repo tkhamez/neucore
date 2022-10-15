@@ -10,6 +10,7 @@ dd mm yyyy
 - Added Ajax search for the alliance and corporation select boxes instead of initially populating them with all.
 - Small UI fixes and improvements.
 - Some refactoring.
+- Updated dependencies.
 
 ## 1.37.0
 
