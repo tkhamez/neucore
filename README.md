@@ -100,7 +100,7 @@ contact [Tian Khamez](https://evewho.com/character/96061222) on
 **Donations**
 
 If you want to support the development of this application, you can send ISK to the character `Tian Khamez` so 
-that I have to spend less time earning ISK in-game ;).
+I can spend more time coding instead of earning ISK in the game ;).
 
 **Report Vulnerabilities**
 
@@ -109,7 +109,7 @@ Vulnerabilities can be reported privately to tkhamez@gmail.com.
 **Origin**
 
 The software was originally developed for the [Brave Collective](https://www.bravecollective.com),
-when CCP shut down the old API and we had to replace our Core system.
+when CCP shut down the old API, and we had to replace our Core system.
 
 This is also where the name "Neucore" (new Core) comes from.
 
