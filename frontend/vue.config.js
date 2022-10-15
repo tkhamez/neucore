@@ -1,6 +1,6 @@
 const { defineConfig } = require('@vue/cli-service')
 const path = require('path');
-const CompressionPlugin = require("compression-webpack-plugin");
+const CompressionPlugin = require('compression-webpack-plugin');
 const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
 
 const defaultTheme = { 'theme-darkly': './src/themes/darkly.scss' };
@@ -79,7 +79,7 @@ module.exports = defineConfig(() => {
                 return args;
             });
             if (production) {
-                config.plugin("progress").use(require("webpack/lib/ProgressPlugin"))
+                config.plugin('progress').use(require('webpack/lib/ProgressPlugin'))
             }
         },
     };
