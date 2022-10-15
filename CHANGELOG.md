@@ -5,13 +5,15 @@
 15 Oct 2022
 
 - **BC Break** The body message of the IP-based rate limit error response (status 429) slightly changed.
-- Security: Added option to disable login with alts.
+- Security: Added option to disable login with alts (see [sso-issues#79][si79]).
 - Allow roles tracking and watchlist to update characters and services from all accounts.
 - Show new or old Neucore account (if available) for characters that were transferred to another EVE account.
 - Added Ajax search for the alliance and corporation select boxes instead of initially populating them with all.
 - Small UI fixes and improvements.
 - Some refactoring.
 - Updated dependencies.
+
+[si79]: https://github.com/ccpgames/sso-issues/issues/79
 
 ## 1.37.0
 
