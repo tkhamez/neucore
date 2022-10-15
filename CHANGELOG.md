@@ -7,6 +7,7 @@ dd mm yyyy
 - **BC Break** The body message of the IP-based rate limit error response (status 429) slightly changed.
 - Added option to disable login with alts.
 - Allow roles tracking and watchlist to update characters and services from all accounts.
+- Show new or old Neucore account (if available) for characters that were transferred to another EVE account.
 - Added Ajax search for the alliance and corporation select boxes instead of initially populating them with all.
 - Small UI fixes and improvements.
 - Some refactoring.

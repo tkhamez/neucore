@@ -10,16 +10,30 @@ export default class Character {
         }
         const movements = [];
         for (const removed of data.removedCharacters) {
+            // noinspection JSIncompatibleTypesComparison
             if (removed.reason === 'moved') {
                 removed.reason = 'removed';
+                removed.playerName = removed.newPlayerName;
+                removed.playerId = removed.newPlayerId;
+            }
+            // noinspection JSIncompatibleTypesComparison
+            if (removed.reason === 'moved-owner-changed') {
+                removed.reason = 'removed (owner changed)';
                 removed.playerName = removed.newPlayerName;
                 removed.playerId = removed.newPlayerId;
             }
             movements.push(removed);
         }
         for (const incoming of data.incomingCharacters) {
+            // noinspection JSIncompatibleTypesComparison
             if (incoming.reason === 'moved') {
                 incoming.reason = 'incoming';
+                incoming.playerName = incoming.player.name;
+                incoming.playerId = incoming.player.id;
+            }
+            // noinspection JSIncompatibleTypesComparison
+            if (incoming.reason === 'moved-owner-changed') {
+                incoming.reason = 'incoming (owner changed)';
                 incoming.playerName = incoming.player.name;
                 incoming.playerId = incoming.player.id;
             }

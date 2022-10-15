@@ -122,8 +122,12 @@ Modal window with all characters of one player.
                                     <span class="text-muted">Action:</span>
                                     {{ movedChar.reason }}<br>
 
-                                    <span v-if="movedChar.reason === 'incoming'" class="text-muted">Old Player: </span>
-                                    <span v-if="movedChar.reason === 'removed'" class="text-muted">New Player: </span>
+                                    <span v-if="movedChar.reason.indexOf('incoming') !== -1" class="text-muted">
+                                        Old Player:&nbsp;
+                                    </span>
+                                    <span v-if="movedChar.reason.indexOf('removed') !== -1" class="text-muted">
+                                        New Player:&nbsp;
+                                    </span>
                                     <span v-if="movedChar.playerName">
                                         <a href="#" @click.prevent="fetchCharacters(movedChar.playerId)">
                                             {{ movedChar.playerName }} #{{ movedChar.playerId }}
