@@ -80,7 +80,7 @@
         </div>
     </div>
 
-    <div class="card-header mt-3"><h6>Miscellaneous</h6></div>
+    <div class="card-header mt-3"><h6>Login</h6></div>
     <div class="card-body">
         <p>"Managed" Logins</p>
         <div class="form-check">
@@ -94,6 +94,20 @@
         </div>
 
         <hr>
+        <p>Alt Logins</p>
+        <div class="form-check">
+            <label class="form-check-label" for="disable_alt_login">
+                Disables login with characters that are not the main character of an account.
+            </label>
+            <input class="form-check-input" type="checkbox" value="1"
+                   id="disable_alt_login" name="disable_alt_login"
+                   :checked="settings.disable_alt_login === '1'"
+                   @change="$emit('changeSetting', 'disable_alt_login', $event.target.checked ? '1' : '0')">
+        </div>
+    </div>
+
+    <div class="card-header mt-3"><h6>Miscellaneous</h6></div>
+    <div class="card-body">
         <p>Character Deletion</p>
         <div class="form-check">
             <label class="form-check-label" for="allow_character_deletion">

@@ -66,6 +66,8 @@ class SettingsControllerTest extends WebTestCase
     {
         $this->setupDb(false);
 
+        // Note: the list of variables is not complete
+
         $response = $this->runApp('GET', '/api/user/settings/system/list');
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
@@ -83,6 +85,8 @@ class SettingsControllerTest extends WebTestCase
     {
         $this->setupDb();
         $this->loginUser(5); // role: USER
+
+        // Note: the list of variables is not complete
 
         $response = $this->runApp('GET', '/api/user/settings/system/list');
         $this->assertEquals(200, $response->getStatusCode());
@@ -105,11 +109,14 @@ class SettingsControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(6); // roles: USER, SETTINGS
 
+        // Note: the list of variables is not complete
+
         $response = $this->runApp('GET', '/api/user/settings/system/list');
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
             ['name' => SystemVariable::ALLOW_LOGIN_MANAGED, 'value' => '0'],
+            ['name' => SystemVariable::DISABLE_ALT_LOGIN, 'value' => '0'],
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
             ['name' => SystemVariable::MAIL_CHARACTER, 'value' => 'The char'],
             ['name' => 'esiDataSource', 'value' => $_ENV['NEUCORE_EVE_DATASOURCE'] ?? 'tranquility'],
@@ -346,33 +353,28 @@ class SettingsControllerTest extends WebTestCase
         $corp = (new Corporation())->setId(2020)->setAlliance($alli);
         $admin->setCorporation($corp);
 
-        $var1 = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
-        $var2 = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
-        $var4 = new SystemVariable(SystemVariable::MAIL_CHARACTER);
-        $var5 = new SystemVariable(SystemVariable::MAIL_TOKEN);
-        $var8 = new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED);
-
-        $var1->setValue("0");
-        $var2->setValue("1");
-        $var4->setValue("The char");
-        $var5->setValue((string) \json_encode([
+        $var1 = (new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION))->setValue("0");
+        $var2 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue("1")
+            ->setScope(SystemVariable::SCOPE_SETTINGS);
+        $var4 = (new SystemVariable(SystemVariable::MAIL_CHARACTER))->setValue("The char")
+            ->setScope(SystemVariable::SCOPE_SETTINGS);
+        $var5 = (new SystemVariable(SystemVariable::MAIL_TOKEN))->setValue((string) \json_encode([
             'id' => 123,
             'access' => 'access-token',
             'refresh' => 'refresh-token',
             'expires' => time() + 10000,
-        ]));
-        $var8->setValue("0");
-
-        $var2->setScope(SystemVariable::SCOPE_SETTINGS);
-        $var4->setScope(SystemVariable::SCOPE_SETTINGS);
-        $var5->setScope(SystemVariable::SCOPE_BACKEND);
-        $var8->setScope(SystemVariable::SCOPE_SETTINGS);
+        ]))->setScope(SystemVariable::SCOPE_BACKEND);
+        $var8 = (new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED))->setValue("0")
+            ->setScope(SystemVariable::SCOPE_SETTINGS);
+        $var9 = (new SystemVariable(SystemVariable::DISABLE_ALT_LOGIN))->setValue('0')
+            ->setScope(SystemVariable::SCOPE_SETTINGS);
 
         $this->em->persist($var1);
         $this->em->persist($var2);
         $this->em->persist($var4);
         $this->em->persist($var5);
         $this->em->persist($var8);
+        $this->em->persist($var9);
         $this->em->persist($this->service1);
         $this->em->persist($this->service2);
         $this->em->persist($service3);

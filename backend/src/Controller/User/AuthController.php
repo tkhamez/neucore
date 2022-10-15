@@ -170,6 +170,8 @@ class AuthController extends BaseController
                 if ($result === UserAuth::LOGIN_AUTHENTICATED_SUCCESS) {
                     $success = true;
                     $successMessage = 'Login successful.';
+                } elseif ($result === UserAuth::LOGIN_ALT_FAILED) {
+                    $errorMessage = 'Login failed. Please use your main character to login.';
                 } elseif ($result === UserAuth::LOGIN_AUTHENTICATED_FAIL) {
                     $errorMessage = 'Failed to authenticate user.';
                 } elseif ($result === UserAuth::LOGIN_CHARACTER_ADDED_SUCCESS) {

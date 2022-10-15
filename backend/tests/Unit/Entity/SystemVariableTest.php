@@ -33,7 +33,7 @@ class SystemVariableTest extends TestCase
         $this->assertSame('abc', $var->setValue('abc')->getValue());
     }
 
-    public function testSetValue_AllowCharacterDeletion()
+    public function testSetValue_Boolean()
     {
         $var = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
         $this->assertSame('0', $var->setValue('0')->getValue());
@@ -44,24 +44,29 @@ class SystemVariableTest extends TestCase
         $var2 = new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED);
         $this->assertSame('1', $var2->setValue('some text')->getValue());
 
-        $var3 = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
-        $this->assertSame('0', $var3->setValue('')->getValue());
+        $var3 = new SystemVariable(SystemVariable::DISABLE_ALT_LOGIN);
+        $this->assertSame('1', $var3->setValue('some text')->getValue());
 
-        $var4 = new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE);
-        $this->assertSame('1', $var4->setValue('some text')->getValue());
+        $var4 = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
+        $this->assertSame('0', $var4->setValue('')->getValue());
 
-        $var5 = new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_ACTIVE);
-        $this->assertSame('0', $var5->setValue('')->getValue());
+        $var5 = new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE);
+        $this->assertSame('1', $var5->setValue('some text')->getValue());
 
-        $var6 = new SystemVariable(SystemVariable::RATE_LIMIT_APP_ACTIVE);
-        $this->assertSame('1', $var6->setValue('some text')->getValue());
+        $var6 = new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_ACTIVE);
+        $this->assertSame('0', $var6->setValue('')->getValue());
+
+        $var7 = new SystemVariable(SystemVariable::RATE_LIMIT_APP_ACTIVE);
+        $this->assertSame('1', $var7->setValue('some text')->getValue());
     }
 
-    public function testSetValue_AccountDeactivationDelay()
+    public function testSetValue_Integer()
     {
         $var = new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_DELAY);
         $this->assertSame('0', $var->setValue('abc')->getValue());
         $this->assertSame('10', $var->setValue('-10')->getValue());
+        $this->assertSame('10', $var->setValue('10.8')->getValue());
+        $this->assertSame('10', $var->setValue('10,800')->getValue());
         $this->assertSame('10', $var->setValue('10')->getValue());
         $this->assertSame('0', $var->setValue('')->getValue());
 
@@ -75,7 +80,7 @@ class SystemVariableTest extends TestCase
         $this->assertSame('0', $var4->setValue('')->getValue());
     }
 
-    public function testSetValue_MailInvalidTokenAlliances()
+    public function testSetValue_ListOfIntegers()
     {
         $var = new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES);
         $this->assertSame('123,456', $var->setValue(' 123 , 456 , abc, ')->getValue());
@@ -102,7 +107,7 @@ class SystemVariableTest extends TestCase
         $this->assertSame(" Test\ntext\n ", $var4->setValue(" Test\ntext\n ")->getValue());
     }
 
-    public function testSetValue_Images()
+    public function testSetValue_Base64Image()
     {
         $var1 = new SystemVariable(SystemVariable::CUSTOMIZATION_HOME_LOGO);
         $this->assertSame('', $var1->setValue('abc')->getValue());
@@ -115,7 +120,7 @@ class SystemVariableTest extends TestCase
         $this->assertSame('data:image/png;base64,T/3+a=', $var2->setValue('data:image/png;base64,T/3+a=')->getValue());
     }
 
-    public function testSetValue_MailInvalidTokenSubject()
+    public function testSetValue_SingleLineText()
     {
         // This is the default validation, single line text, so no extra test for others like this.
 

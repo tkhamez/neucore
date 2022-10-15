@@ -87,6 +87,7 @@ class Helper
         array $scopes = ['scope1', 'scope2'],
         string $charName = 'Name',
         string $ownerHash = 'hash',
+        int $charId = 123,
         string $ownerHashKey = 'owner'
     ): array {
         // create key
@@ -97,7 +98,7 @@ class Helper
         $jwsBuilder = new JWSBuilder($algorithmManager);
         $payload = (string)json_encode([
             'scp' => count($scopes) > 1 ? $scopes : ($scopes[0] ?? null),
-            'sub' => 'CHARACTER:EVE:123',
+            'sub' => "CHARACTER:EVE:$charId",
             'name' => $charName,
             $ownerHashKey => $ownerHash,
             'exp' => time() + 3600,

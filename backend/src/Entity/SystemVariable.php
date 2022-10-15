@@ -25,12 +25,12 @@ use OpenApi\Annotations as OA;
 class SystemVariable implements \JsonSerializable
 {
     /**
-     * Public variables.
+     * Public variables, visible to all users, even before login.
      */
     public const SCOPE_PUBLIC = 'public';
 
     /**
-     * Variables that are only visible on the settings page.
+     * Variables that are only visible to users with the "settings" role.
      */
     public const SCOPE_SETTINGS = 'settings';
 
@@ -56,6 +56,15 @@ class SystemVariable implements \JsonSerializable
      * Scope = settings
      */
     public const ALLOW_LOGIN_MANAGED = 'allow_login_managed';
+
+    /**
+     * System settings variable, "0" or "1".
+     *
+     * Disables login with characters that are not the main character of an account.
+     *
+     * Scope = settings
+     */
+    public const DISABLE_ALT_LOGIN = 'disable_alt_login';
 
     /**
      * System settings variable, "0" or "1".
@@ -331,6 +340,7 @@ class SystemVariable implements \JsonSerializable
         switch ($this->name) {
             case self::ALLOW_CHARACTER_DELETION:
             case self::ALLOW_LOGIN_MANAGED:
+            case self::DISABLE_ALT_LOGIN:
             case self::GROUPS_REQUIRE_VALID_TOKEN:
             case self::MAIL_INVALID_TOKEN_ACTIVE:
             case self::MAIL_MISSING_CHARACTER_ACTIVE:

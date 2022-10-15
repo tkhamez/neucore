@@ -233,7 +233,7 @@ class CheckTokensTest extends ConsoleTestCase
      */
     public function testExecute_ValidTokenUnexpectedData()
     {
-        list($token) = Helper::generateToken(['scope1', 'scope2'], 'Name', 'coh3', 'invalid');
+        list($token) = Helper::generateToken(['scope1', 'scope2'], 'Name', 'coh3', 123, 'invalid');
 
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3');
         $this->helper->addNewPlayerToCharacterAndFlush($c);

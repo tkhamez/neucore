@@ -12,6 +12,7 @@ use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
+use Neucore\Entity\SystemVariable;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Psr\Http\Message\ServerRequestInterface;
@@ -37,6 +38,8 @@ class UserAuth implements RoleProviderInterface
     const LOGIN_CHARACTER_ADDED_FAIL = 4;
 
     const LOGIN_ACCOUNTS_MERGED = 5;
+
+    const LOGIN_ALT_FAILED = 6;
 
     private SessionData $session;
 
@@ -105,9 +108,12 @@ class UserAuth implements RoleProviderInterface
     {
         $this->getUser();
         if ($this->user === null) {
-            if ($this->authenticate($eveAuth)) {
+            $result = $this->authenticate($eveAuth);
+            if ($result === 0) {
                 return self::LOGIN_AUTHENTICATED_SUCCESS;
-            } else {
+            } elseif ($result === 2) { // Login with alt but only main logins are allowed
+                return self::LOGIN_ALT_FAILED;
+            } else { // 1, other error
                 return self::LOGIN_AUTHENTICATED_FAIL;
             }
         } else {
@@ -188,20 +194,20 @@ class UserAuth implements RoleProviderInterface
      * Creates character with player account if it is missing.
      *
      * @param EveAuthentication $eveAuth
-     * @return bool
+     * @return int 0 = success, >0 = error
      */
-    private function authenticate(EveAuthentication $eveAuth): bool
+    private function authenticate(EveAuthentication $eveAuth): int
     {
         $characterId = $eveAuth->getCharacterId();
         $char = $this->repositoryFactory->getCharacterRepository()->find($characterId);
 
         $updateAutoGroups = false;
         if ($char === null || $char->getCharacterOwnerHash() !== $eveAuth->getCharacterOwnerHash()) {
-            // first login or changed owner, create account
+            // First login or changed owner, create account.
             $userRole = $this->repositoryFactory->getRoleRepository()->findBy(['name' => Role::USER]);
             if (count($userRole) !== 1) {
                 $this->log->critical('UserAuth::authenticate(): Role "'.Role::USER.'" not found.');
-                return false;
+                return 1;
             }
             $updateAutoGroups = true;
             if ($char === null) {
@@ -212,6 +218,14 @@ class UserAuth implements RoleProviderInterface
                 $this->accountService->updateGroups($oldPlayerId); // flushes the entity manager
             }
             $char->getPlayer()->addRole($userRole[0]);
+        } else {
+            // Login with existing character
+            $disableAltLogin = $this->repositoryFactory->getSystemVariableRepository()
+                ->findOneBy(['name' => SystemVariable::DISABLE_ALT_LOGIN]);
+            if ($disableAltLogin && $disableAltLogin->getValue() === '1' && !$char->getMain()) {
+                $this->log->debug("Login with alt {$char->getId()} denied.");
+                return 2;
+            }
         }
 
         $char->setCharacterOwnerHash($eveAuth->getCharacterOwnerHash());
@@ -221,14 +235,14 @@ class UserAuth implements RoleProviderInterface
         }
 
         if (!$success) {
-            return false;
+            return 1;
         }
 
         $this->accountService->increaseLoginCount($char->getPlayer());
         $this->user = $char;
         $this->session->set('character_id', $this->user->getId());
 
-        return true;
+        return 0;
     }
 
     private function addAltMoveOrMergeAccounts(EveAuthentication $eveAuth, Player $player): int

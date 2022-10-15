@@ -30,7 +30,7 @@ class SettingsController extends BaseController
 
     private const COLUMN_VALUE = 'value';
 
-    private array $validScopes = [SystemVariable::SCOPE_PUBLIC, SystemVariable::SCOPE_SETTINGS];
+    private const VALID_SCOPES = [SystemVariable::SCOPE_PUBLIC, SystemVariable::SCOPE_SETTINGS];
 
     /**
      * @noinspection PhpUnused
@@ -54,7 +54,7 @@ class SettingsController extends BaseController
         $groupRepository = $this->repositoryFactory->getGroupRepository();
 
         if (in_array(Role::SETTINGS, $userAuth->getRoles())) {
-            $scopes = $this->validScopes;
+            $scopes = self::VALID_SCOPES;
         } else {
             $scopes = [SystemVariable::SCOPE_PUBLIC];
         }
@@ -143,7 +143,7 @@ class SettingsController extends BaseController
     public function systemChange(string $name, ServerRequestInterface $request, EveMail $eveMail): ResponseInterface {
         $variable = $this->repositoryFactory->getSystemVariableRepository()->find($name);
 
-        if ($variable === null || ! in_array($variable->getScope(), $this->validScopes)) {
+        if ($variable === null || !in_array($variable->getScope(), self::VALID_SCOPES)) {
             return $this->response->withStatus(404);
         }
 

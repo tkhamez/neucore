@@ -422,7 +422,7 @@ class AuthControllerTest extends WebTestCase
     /**
      * @throws \Exception
      */
-    public function testCallback_AltLoginError()
+    public function testCallback_AddAltLoginError()
     {
         $this->helper->addCharacterMain('User1', 654);
         $this->loginUser(654);
@@ -442,10 +442,7 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state='.$state,
             null,
             null,
-            [
-                ClientInterface::class => $this->client,
-                LoggerInterface::class => $this->log,
-            ],
+            [ClientInterface::class => $this->client, LoggerInterface::class => $this->log],
             [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']]
         );
         $this->assertSame(302, $response->getStatusCode());
@@ -461,7 +458,7 @@ class AuthControllerTest extends WebTestCase
     /**
      * @throws \Exception
      */
-    public function testCallback_AltLogin()
+    public function testCallback_AddAlt()
     {
         $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER, Role::GROUP_MANAGER]);
 
@@ -492,6 +489,51 @@ class AuthControllerTest extends WebTestCase
 
         $this->assertSame(
             ['success' => true, 'message' => 'Character added to player account.'],
+            $_SESSION['auth_result']
+        );
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testCallback_NoAltLoginError()
+    {
+        $setting = (new SystemVariable(SystemVariable::DISABLE_ALT_LOGIN))->setValue('1');
+        $this->helper->getObjectManager()->persist($setting);
+        $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER, Role::GROUP_MANAGER]);
+
+        $main = $this->helper->addCharacterMain('User1', 654, [Role::USER], ['group1']);
+        $alt = $this->helper->addCharacterToPlayer('Alt1', 987, $main->getPlayer());
+
+        list($token, $keySet) = Helper::generateToken(
+            ['read-this'],
+            'Alt1',
+            (string)$alt->getCharacterOwnerHash(),
+            987
+        );
+        $state = $this->getStatePrefix(EveLogin::NAME_DEFAULT) . self::$state;
+        $_SESSION['auth_state'] = $state;
+
+        $this->client->setResponse(
+            new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'), // for getAccessToken()
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
+            new Response(200, [], '{"name": "char name", "corporation_id": 102}'), // getCharactersCharacterId()
+            new Response(200, [], '[]'), // postCharactersAffiliation())
+            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}') // getCorporationsCorporationId()
+        );
+
+        $response = $this->runApp(
+            'GET',
+            '/login-callback?state='.$state,
+            null,
+            null,
+            [ClientInterface::class => $this->client, LoggerInterface::class => $this->log],
+            [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']]
+        );
+        $this->assertSame(302, $response->getStatusCode());
+
+        $this->assertSame(
+            ['success' => false, 'message' => 'Login failed. Please use your main character to login.'],
             $_SESSION['auth_result']
         );
     }

@@ -26,6 +26,7 @@ class SystemVariablesFixtureLoader
             SystemVariable::FETCH_STRUCTURE_NAME_ERROR_DAYS     => ['3=7,10=30', SystemVariable::SCOPE_SETTINGS],
             SystemVariable::ALLOW_CHARACTER_DELETION            => ['0',  SystemVariable::SCOPE_PUBLIC],
             SystemVariable::ALLOW_LOGIN_MANAGED                 => ['0',  SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::DISABLE_ALT_LOGIN                   => ['0',  SystemVariable::SCOPE_SETTINGS],
             SystemVariable::MAIL_INVALID_TOKEN_ACTIVE           => ['',   SystemVariable::SCOPE_SETTINGS],
             SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES        => ['',   SystemVariable::SCOPE_SETTINGS],
             SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS     => ['',   SystemVariable::SCOPE_SETTINGS],

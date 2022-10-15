@@ -212,6 +212,23 @@ class UserAuthTest extends TestCase
         $this->assertSame($user->getPlayer()->getId(), $player->getId());
     }
 
+    public function testLogin_Authenticate_ExistingNoAltLogin()
+    {
+        SessionData::setReadOnly(false);
+        $setting = (new SystemVariable(SystemVariable::DISABLE_ALT_LOGIN))->setValue('1');
+        $this->om->persist($setting);
+        $main = $this->helper->addCharacterMain('Main character', 9013, [Role::USER]);
+        $alt = $this->helper->addCharacterToPlayer('Alt character', 9014, $main->getPlayer());
+
+        $token = new AccessToken(['access_token' => 'ac', 'expires' => 1525456785, 'refresh_token' => 'rt'] );
+        $result = $this->service->login(
+            new EveAuthentication(9014, 'Alt character', (string)$alt->getCharacterOwnerHash(), $token)
+        );
+
+        $this->assertSame(UserAuth::LOGIN_ALT_FAILED, $result);
+        $this->assertSame('Login with alt 9014 denied.', $this->log->getHandler()->getRecords()[0]['message']);
+    }
+
     public function testLogin_Authenticate_NewOwner()
     {
         SessionData::setReadOnly(false);
