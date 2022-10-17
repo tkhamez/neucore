@@ -488,7 +488,7 @@ Allows an app to make an ESI request on behalf of a character from the database.
 
 Application - ESI API
 - Returns character IDs of characters that have an ESI token (including invalid) of an EVE login. `GET /app/v1/esi/eve-login/{name}/characters`
-- Returns data of valid tokens for an EVE login. `GET /app/v1/esi/eve-login/{name}/token-data`
+- Returns data for all valid tokens (roles are also checked if applicable) for an EVE login. `GET /app/v1/esi/eve-login/{name}/token-data`
 - Makes an ESI GET or POST request on behalf on an EVE character and returns the result. `/app/v2/esi`  
   This endpoint can also be used with OpenAPI clients generated for ESI,
   see [api-examples](api-examples) for more.

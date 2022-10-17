@@ -151,7 +151,7 @@ class EsiController extends BaseController
      * @OA\Get(
      *     path="/app/v1/esi/eve-login/{name}/token-data",
      *     operationId="esiEveLoginTokenDataV1",
-     *     summary="Returns data of valid tokens for an EVE login.",
+     *     summary="Returns data for all valid tokens (roles are also checked if applicable) for an EVE login.",
      *     description="Needs role: app-esi.",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
