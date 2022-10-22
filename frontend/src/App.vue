@@ -180,6 +180,7 @@ export default {
         // configure neucore-js-client
         ApiClient.instance.basePath = `${Data.envVars.backendHost}/api`;
         ApiClient.instance.plugins = [superAgentPlugin(this.h)];
+        delete ApiClient.instance.defaultHeaders['User-Agent'];
 
         // Store redirect param from login
         this.loginRedirect = Util.getHashParameter('redirect', '');
