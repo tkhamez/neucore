@@ -20,60 +20,23 @@
             %><link href="<%= file %>" rel="<%= alternate %> stylesheet"><%
         }
         %>
-        <script type="text/javascript">
-            function setTheme(theme) {
-                window.APP_DEFAULT_THEME = theme;
-                const links = document.getElementsByTagName('link');
-                for (let i = 0; i < links.length; i++) {
-                    if (links[i].getAttribute('href').indexOf('css/theme-' + theme.toLowerCase()) !== -1) {
-                        links[i].disabled = false;
-                        links[i].setAttribute('rel', 'stylesheet');
-                        break;
-                    }
-                }
-            }
-        </script>
+        <script type="text/javascript" src="<%= BASE_URL %>setup.js"></script>
         <script type="text/javascript" src="<%= BASE_URL %>theme.js"></script>
     </head>
 
-    <body class="neucore" style="background-color: #333333; color: #dddddd; font-family: sans-serif;">
-
+    <body class="neucore">
         <noscript>
             <h1>Neucore - Alliance Core Services</h1>
             <p>
                 A web application for EVE Online communities to organise their members into groups,
-                monitor them and provide access to external services,
-                <a style="color: cyan" href="https://github.com/tkhamez/neucore" target="_blank"
-                   rel="noopener noreferrer">GitHub tkhamez/neucore</a>.
+                monitor them and provide access to external services.
+                <br>
+                <a href="https://github.com/tkhamez/neucore" target="_blank"
+                   rel="noopener noreferrer">github.com/tkhamez/neucore</a>
             </p>
-            <br>
-            <small style="font-weight: bold">You need to enable <em>JavaScript</em> to run this application.</small>
+            <small><strong>You need to enable <em>JavaScript</em> to run this application.</strong></small>
         </noscript>
 
-        <div id="unsupportedBrowser" style="display: none; padding: 10px">
-            <h3 style="font-weight: bold">Neucore - Alliance Core Services</h3>
-            <small style="font-weight: bold">
-                You are using an <span style="color: orangered"><em>outdated</em> browser</span>. Please
-                <a style="color: cyan" href="https://browsehappy.com/" target="_blank"
-                   rel="noopener noreferrer">upgrade your browser</a> to improve your experience and security.
-            </small>
-            <br>
-        </div>
-
-        <!--suppress JSUnusedGlobalSymbols -->
-        <script>
-            const isBrowserSupported = () => 1;
-        </script>
-        <script>
-            if (typeof isBrowserSupported !== typeof Function) {
-                document.getElementById('unsupportedBrowser').style.display = 'block';
-            } else {
-                document.getElementById('unsupportedBrowser').remove();
-                document.body.removeAttribute('style');
-            }
-        </script>
-
         <div id="app"></div>
-
     </body>
 </html>

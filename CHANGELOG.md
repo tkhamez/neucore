@@ -7,6 +7,8 @@ dd mm 2022
 - **BC break**: Removed NEUCORE_HSTS_MAX_AGE option (Strict-Transport-Security). This should be better set at the 
   HTTP server.
 - Improved session security.
+- Removed inline CSS styles and JavaScript code to use a better value for the Content Security Policy header.
+- The check if the browser is supported has been removed.
 - Small UI fixes and improvements.
 
 ## 1.38.0
