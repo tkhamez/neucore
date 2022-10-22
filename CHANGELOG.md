@@ -4,6 +4,8 @@
 
 dd mm 2022
 
+- **BC break**: Removed NEUCORE_HSTS_MAX_AGE option (Strict-Transport-Security). This should be better set at the 
+  HTTP server.
 - Improved session security.
 - Small UI fixes and improvements.
 

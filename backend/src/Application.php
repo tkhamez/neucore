@@ -33,7 +33,6 @@ use Neucore\Middleware\Psr15\AppRequestCount;
 use Neucore\Middleware\Psr15\Cors;
 use Neucore\Middleware\Psr15\BodyParams;
 use Neucore\Middleware\Psr15\CSRFToken;
-use Neucore\Middleware\Psr15\HSTS;
 use Neucore\Middleware\Psr15\RateLimitApp;
 use Neucore\Middleware\Psr15\RateLimitIP;
 use Neucore\Service\SessionData;
@@ -294,11 +293,6 @@ class Application
             $this->container->get(UserAuth::class),
             ['route_pattern' => ['/api/user', '/plugin']]
         ));
-
-        $hsts = $config['HSTS']['max_age'];
-        if (trim($hsts) !== '') {
-            $app->add(new HSTS((int)$hsts));
-        }
 
         $app->add(new SessionMiddleware(
             $this->container->get(SessionHandlerFactory::class),

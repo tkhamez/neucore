@@ -52,10 +52,6 @@ return [
         'allow_origin' => '${NEUCORE_ALLOW_ORIGIN}',
     ],
 
-    'HSTS' => [
-        'max_age' => '${NEUCORE_HSTS_MAX_AGE}',
-    ],
-
     'session' => [
         'secure'    => '${NEUCORE_SESSION_SECURE}',
         'same_site' => '${NEUCORE_SESSION_SAME_SITE}',
