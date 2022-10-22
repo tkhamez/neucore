@@ -136,10 +136,10 @@ In a real production environment you want to set up a reverse proxy server with 
 
 You can also create the image yourself. Clone the repository and build a distribution (see below) or 
 [download](https://github.com/tkhamez/neucore/releases) it and place it in the subdirectory `dist`
-(create it if it doesn't exist). Then execute the following (adjust the filename):
+(create it if it doesn't exist). Make sure there is only one `neucore-*.tar.gz` file. Then execute 
+the following:
 
 ```shell
-rm -Rf dist/neucore && tar -xf dist/neucore-1.33.0.tar.gz -C dist
 docker build --no-cache -t neucore .
 ```
 

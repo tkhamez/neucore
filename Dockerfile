@@ -1,11 +1,17 @@
 # Creates an image for production
 
+
+FROM php:8.1-apache-bullseye AS build
+
+COPY dist/neucore-*.tar.gz /var/www/neucore.tar.gz
+RUN tar -xf /var/www/neucore.tar.gz -C /var/www
+
+
 FROM php:8.1-apache-bullseye
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-    apt-get install apt-utils && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends libgmp-dev libzip4 libzip-dev libicu-dev && \
     docker-php-ext-install pdo_mysql bcmath gmp zip intl opcache mysqli && \
@@ -20,7 +26,7 @@ RUN pecl channel-update pecl.php.net &&  \
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 RUN a2enmod rewrite
 
-COPY dist/neucore/web/ /var/www/html/
-COPY dist/neucore/backend/ /var/www/backend
+COPY --from=build /var/www/neucore/web /var/www/html
+COPY --from=build /var/www/neucore/backend /var/www/backend
 RUN chown www-data /var/www/backend/var/cache
 RUN chown www-data /var/www/backend/var/logs
