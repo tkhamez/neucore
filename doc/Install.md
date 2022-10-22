@@ -10,6 +10,9 @@
   * [Deploy on Heroku](#deploy-on-heroku)
   * [Deploy on AWS Beanstalk](#deploy-on-aws-beanstalk)
 - [Post Installation](#post-installation)
+  * [Cronjob](#cronjob)
+  * [Customization](#customization)
+  * [Security](#security)
 - [Build Distribution](#build-distribution)
 
 <!-- tocstop -->
@@ -260,8 +263,7 @@ See [bravecollective/neucore-beanstalk](https://github.com/bravecollective/neuco
 
 ## Post Installation
 
-Adjust `web/dist/theme.js` if you want another default theme or add additional JavaScript code, e.g. for user
-tracking.
+### Cronjob
 
 Set up necessary cron jobs, e.g. every 8 hours using a lock file (adjust user and paths):
 ```
@@ -269,6 +271,22 @@ Set up necessary cron jobs, e.g. every 8 hours using a lock file (adjust user an
 ```
 
 The output is logged to backend/var/logs.
+
+### Customization
+
+Adjust `web/dist/theme.js` if you want another default theme or add additional JavaScript code, e.g. for
+analytics software. 
+
+### Security
+
+It is recommended to set the following HTTP headers in the web server configuration:
+
+```
+Strict-Transport-Security "max-age=31536000"
+Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://images.evetech.net; font-src 'self' data:; connect-src 'self' https://esi.evetech.net;"
+X-Frame-Options "sameorigin"
+X-Content-Type-Options "nosniff"
+```
 
 ## Build Distribution
 
