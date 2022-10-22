@@ -299,10 +299,11 @@ export default {
         },
 
         player() {
-            if (!this.player) {
-                return;
+            if (this.player) {
+                checkDeactivated(this);
+            } else {
+                this.deactivated = false;
             }
-            checkDeactivated(this);
         },
     },
 

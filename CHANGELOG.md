@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm 2022
+
+- Small UI fixes and improvements.
+
 ## 1.38.0
 
 15 Oct 2022
