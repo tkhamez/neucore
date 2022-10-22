@@ -7,7 +7,7 @@ namespace Neucore\Middleware\Psr15;
 use Neucore\Storage\StorageInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class RateLimit
+abstract class RateLimit
 {
     public const HEADER_REMAIN = 'X-Neucore-Rate-Limit-Remain';
 
