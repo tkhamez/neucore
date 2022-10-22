@@ -39,14 +39,14 @@
                      label="name" track-by="id" :multiple="true"
                      :loading="isLoading" :searchable="true"
                      @search-change="(query) => findAlliancesOrCorporations(query, 'Alliances')"
-                     placeholder="Select alliances (type to search)">
+                     :placeholder="`Select alliances ${messages.typeToSearch2}`">
         </multiselect>
         <label class="col-form-label">Corporations</label>
         <multiselect v-model="mailInvalidTokenCorporations" :options="allCorporations"
                      label="name" track-by="id" :multiple="true"
                      :loading="isLoading" :searchable="true"
                      @search-change="(query) => findAlliancesOrCorporations(query, 'Corporations')"
-                     placeholder="Select corporations (type to search)">
+                     :placeholder="`Select corporations ${messages.typeToSearch2}`">
         </multiselect>
         <br>
         <label class="col-form-label" for="mailInvalidTokenSubject">Subject</label>
@@ -129,6 +129,7 @@ export default {
             h: new Helper(this),
             settings: { ...this.store.state.settings },
             loginNames: Data.loginNames,
+            messages: Data.messages,
             loginHost: '',
             isLoading: false,
             allAlliancesChanged: 0,

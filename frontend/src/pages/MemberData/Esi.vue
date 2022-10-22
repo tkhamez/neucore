@@ -9,7 +9,7 @@
                 <multiselect v-model="selectedCharacter" :options="charSearchResult"
                              id="selectedCharacter"
                              label="character_name" track-by="character_id"
-                             placeholder="Type to search (min. 3 characters)"
+                             :placeholder="messages.typeToSearch1"
                              :searchable="true"
                              :loading="charSearchIsLoading"
                              :internal-search="false"
@@ -100,6 +100,7 @@ export default {
     data() {
         return {
             h: new Helper(this),
+            messages: Data.messages,
             status: null,
             headers: [],
             body: '',

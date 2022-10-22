@@ -45,6 +45,8 @@ export default class Data {
             ' of one of the forbidden groups.',
         errorRoleRequiredGroup: 'This player is not a member of a group required for this role.',
         itemNameAllowedCharsHelp: 'Allowed characters (no spaces): A-Z a-z 0-9 - . _',
+        typeToSearch1: 'Type to search (min. 3 characters)',
+        typeToSearch2: '(type to search, min. 3 characters)',
     }
 
     static loginPrefixProtected = 'core.';

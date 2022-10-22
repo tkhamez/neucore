@@ -30,14 +30,14 @@
                      label="name" track-by="id" :multiple="true"
                      :loading="isLoading" :searchable="true"
                      @search-change="(query) => findAlliancesOrCorporations(query, 'Alliances')"
-                     placeholder="Select alliances (type to search)">
+                     :placeholder="`Select alliances ${messages.typeToSearch2}`">
         </multiselect>
         <label class="col-form-label">Corporations</label>
         <multiselect v-model="accountDeactivationCorporations" :options="allCorporations"
                      label="name" track-by="id" :multiple="true"
                      :loading="isLoading" :searchable="true"
                      @search-change="(query) => findAlliancesOrCorporations(query, 'Corporations')"
-                     placeholder="Select corporations (type to search)">
+                     :placeholder="`Select corporations ${messages.typeToSearch2}`">
         </multiselect>
         <label class="mt-4 display-block">
             <input type="text" pattern="[0-9]*" class="form-control input-inline"
@@ -143,6 +143,7 @@
 <script>
 import Multiselect from '@suadelabs/vue3-multiselect';
 import {AllianceApi, CorporationApi} from "neucore-js-client";
+import Data from "../../classes/Data";
 import Util from "../../classes/Util";
 
 export default {
@@ -155,6 +156,7 @@ export default {
     data() {
         return {
             settings: { ...this.store.state.settings },
+            messages: Data.messages,
             isLoading: false,
             allAlliancesChanged: 0,
             allCorporationsChanged: 0,

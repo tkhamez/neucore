@@ -14,7 +14,7 @@ Modal window to add alliances or corporations to the database.
                     <label class="form-label">Search {{ addType }}</label>
                     <multiselect v-model="searchSelected" :options="searchResults"
                                  label="name" track-by="id"
-                                 placeholder="Type to search"
+                                 :placeholder="messages.typeToSearch1"
                                  :searchable="true"
                                  :loading="searchIsLoading"
                                  :internal-search="false"
@@ -38,6 +38,7 @@ import _ from 'lodash';
 import {Modal} from "bootstrap";
 import Multiselect from '@suadelabs/vue3-multiselect';
 import {AllianceApi, CorporationApi} from 'neucore-js-client';
+import Data from "../classes/Data";
 import Helper from "../classes/Helper";
 
 export default {
@@ -51,6 +52,7 @@ export default {
         return {
             h: new Helper(this),
             settings: toRef(this.store.state, 'settings'),
+            messages: Data.messages,
             addType: '', // alliance or corp
             searchIsLoading: false,
             searchResults: [],

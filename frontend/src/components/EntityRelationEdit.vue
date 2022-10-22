@@ -345,9 +345,9 @@ export default {
             if (this.contentType === 'managers') {
                 this.placeholder = 'Add manager';
             } else if (this.contentType === 'alliances') {
-                this.placeholder = 'Add alliance (type to search)';
+                this.placeholder = `Add alliance ${Data.messages.typeToSearch2}`;
             } else if (this.contentType === 'corporations') {
-                this.placeholder = 'Add corporation (type to search)';
+                this.placeholder = `Add corporation ${Data.messages.typeToSearch2}`;
             } else if (
                 this.contentType === 'groups' || this.contentType === 'groupsManage' ||
                 this.contentType === 'requiredGroups' || this.contentType === 'forbiddenGroups'
