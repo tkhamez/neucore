@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Slim;
 
+use Neucore\Controller\User\AuthController;
 use Neucore\Factory\SessionHandlerFactory;
 use Neucore\Service\SessionData;
 use Psr\Http\Message\ResponseInterface;
@@ -82,7 +83,13 @@ class SessionMiddleware implements MiddlewareInterface
             session_write_close();
         }
 
-        return $handler->handle($request);
+        $response = $handler->handle($request);
+
+        if ($response->hasHeader(AuthController::HEADER_LOGIN) && PHP_SAPI !== 'cli') {
+            session_regenerate_id();
+        }
+
+        return $response;
     }
 
     private function shouldStartSession(RouteInterface $route = null): bool
@@ -121,6 +128,8 @@ class SessionMiddleware implements MiddlewareInterface
         ini_set('session.gc_maxlifetime', '1440'); // 24 minutes
         ini_set('session.gc_probability', '1');
         ini_set('session.gc_divisor', '100');
+        ini_set('session.use_strict_mode', '1');
+        ini_set('session.use_only_cookies', '1');
 
         session_set_save_handler(($this->sessionHandlerFactory)(), true);
     }

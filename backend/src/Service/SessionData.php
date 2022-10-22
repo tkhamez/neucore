@@ -13,10 +13,7 @@ use Neucore\Exception\RuntimeException;
  */
 class SessionData
 {
-    /**
-     * @var bool
-     */
-    private static $readOnly = true;
+    private static bool $readOnly = true;
 
     public static function setReadOnly(bool $readOnly): void
     {
@@ -28,10 +25,7 @@ class SessionData
         return self::$readOnly;
     }
 
-    /**
-     * @return array|null
-     */
-    public function getAll()
+    public function getAll(): ?array
     {
         return $_SESSION ?? null;
     }
@@ -39,12 +33,11 @@ class SessionData
     /**
      * Get a session variable.
      *
-     * @param string $key
      * @param mixed $default
-     * @throws RuntimeException If session is not started
      * @return mixed
+     * @throws RuntimeException If session is not started
      */
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
         if (! isset($_SESSION)) {
             throw new RuntimeException('Session not started.');
@@ -55,10 +48,8 @@ class SessionData
     /**
      * Set a session variable.
      *
-     * @param string $key
      * @param mixed $value
      * @throws RuntimeException If session is read-only or not started
-     * @return $this
      */
     public function set(string $key, $value): self
     {

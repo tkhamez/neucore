@@ -4,6 +4,7 @@
 
 dd mm 2022
 
+- Improved session security.
 - Small UI fixes and improvements.
 
 ## 1.38.0

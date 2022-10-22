@@ -61,6 +61,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class AuthController extends BaseController
 {
+    /**
+     * This header is set if a user was logged in during the request.
+     */
+    public const HEADER_LOGIN = 'X-Neucore-Login';
+
     private const SESS_AUTH_STATE = 'auth_state';
 
     private const SESS_AUTH_RESULT = 'auth_result';
@@ -170,6 +175,7 @@ class AuthController extends BaseController
                 if ($result === UserAuth::LOGIN_AUTHENTICATED_SUCCESS) {
                     $success = true;
                     $successMessage = 'Login successful.';
+                    $this->response = $this->response->withHeader(self::HEADER_LOGIN, '1');
                 } elseif ($result === UserAuth::LOGIN_ALT_FAILED) {
                     $errorMessage = 'Login failed. Please use your main character to login.';
                 } elseif ($result === UserAuth::LOGIN_AUTHENTICATED_FAIL) {

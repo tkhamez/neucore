@@ -7,6 +7,7 @@ namespace Tests\Functional\Controller\User;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
+use Neucore\Controller\User\AuthController;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
@@ -417,6 +418,7 @@ class AuthControllerTest extends WebTestCase
         $this->assertSame(302, $response->getStatusCode());
 
         $this->assertSame(['success' => true, 'message' => 'Login successful.'], $_SESSION['auth_result']);
+        $this->assertSame('1', $response->getHeaderLine(AuthController::HEADER_LOGIN));
     }
 
     /**
