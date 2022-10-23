@@ -25,6 +25,11 @@ RUN pecl channel-update pecl.php.net &&  \
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 RUN a2enmod rewrite
+RUN a2enmod headers
+RUN echo 'Header always set Strict-Transport-Security "max-age=31536000"' > /etc/apache2/conf-enabled/neucore.conf
+RUN echo "Header always set Content-Security-Policy \"default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://images.evetech.net; font-src 'self' data:; connect-src 'self' https://esi.evetech.net;\"" >> /etc/apache2/conf-enabled/neucore.conf
+RUN echo 'Header always set X-Frame-Options "sameorigin"'                >> /etc/apache2/conf-enabled/neucore.conf
+RUN echo 'Header always set X-Content-Type-Options "nosniff"'            >> /etc/apache2/conf-enabled/neucore.conf
 
 COPY --from=build /var/www/neucore/web /var/www/html
 COPY --from=build /var/www/neucore/backend /var/www/backend
