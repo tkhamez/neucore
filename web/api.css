@@ -1,0 +1,14 @@
+
+body {
+    background: #ccc;
+}
+
+.swagger-ui .scheme-container,
+.swagger-ui .opblock .opblock-section-header {
+    background: #ddd;
+}
+
+.servers-title,
+.servers {
+    display: none;
+}

@@ -3,51 +3,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="shortcut icon" href="/swagger-ui-dist/favicon-32x32.png">
-    <link rel="stylesheet" type="text/css" href="/swagger-ui-dist/swagger-ui.css" />
+    <link rel="icon" href="/swagger-ui-dist/favicon-32x32.png">
+    <link rel="stylesheet" href="/swagger-ui-dist/swagger-ui.css">
+    <link rel="stylesheet" href="/api.css">
     <title>Neucore API</title>
-    <style>
-        body {
-            background: #ccc;
-        }
-        .swagger-ui .scheme-container,
-        .swagger-ui .opblock .opblock-section-header {
-            background: #ddd;
-        }
-        .servers-title,
-        .servers {
-            display: none;
-        }
-    </style>
 </head>
 <body>
     <div id="swagger-ui"></div>
-
-    <script src="/swagger-ui-dist/swagger-ui-bundle.js" charset="UTF-8"> </script>
-    <script src="/swagger-ui-dist/swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
-    <script>
-        const baseUrl = `${location.protocol}//${location.hostname}:${location.port}/`;
-        const ui = SwaggerUIBundle({
-            urls: [
-                { url: `${baseUrl}application-api-3.yml`, name: "Application API" },
-                { url: `${baseUrl}frontend-api-3.yml`, name: "Frontend API" },
-                { url: `${baseUrl}openapi-3.yaml`, name: "Complete API" },
-            ],
-            dom_id: '#swagger-ui',
-            deepLinking: true,
-            docExpansion: 'list',
-            defaultModelsExpandDepth: 0,
-            presets: [
-                SwaggerUIBundle.presets.apis,
-                SwaggerUIStandalonePreset,
-            ],
-            layout: 'StandaloneLayout',
-            validatorUrl: null,
-        });
-        ui.getConfigs().requestInterceptor = function(e) {
-            e.url = e.url.replace(/http(s)?:\/\/localhost\//i, baseUrl);
-            return e;
-        };
-    </script>
+    <script type="text/javascript" src="/swagger-ui-dist/swagger-ui-bundle.js"></script>
+    <script type="text/javascript" src="/swagger-ui-dist/swagger-ui-standalone-preset.js"></script>
+    <script type="text/javascript" src="/api.js"></script>
 </body>
 </html>
