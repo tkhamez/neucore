@@ -127,6 +127,19 @@ class AuthControllerTest extends WebTestCase
         $this->assertStringStartsWith($this->getStatePrefix(EveLogin::NAME_MAIL), $sess->get('auth_state'));
     }
 
+    public function testCallback_EmptyState()
+    {
+        $_SESSION = ['auth_state' => '', 'auth_result' => null];
+
+        $response = $this->runApp('GET', '/login-callback?state=123');
+        $this->assertSame(302, $response->getStatusCode());
+
+        $this->assertSame(
+            ['success' => false, 'message' => 'OAuth state missing.'],
+            $_SESSION['auth_result']
+        );
+    }
+
     public function testCallback_InvalidStateException()
     {
         $state = self::$state;

@@ -143,18 +143,26 @@ class AuthController extends BaseController
         EveMail $mailService,
         EsiData $esiData
     ): ResponseInterface {
-        $state = (string) $this->session->get(self::SESS_AUTH_STATE);
+        $state = (string)$this->session->get(self::SESS_AUTH_STATE);
         $loginName = $this->getLoginNameFromState($state);
         $redirectUrl = $this->getRedirectUrl($loginName);
+
+        if (empty($state)) {
+            $this->session->set(self::SESS_AUTH_RESULT, [
+                self::KEY_RESULT_SUCCESS => false,
+                self::KEY_RESULT_MESSAGE => 'OAuth state missing.',
+            ]);
+            return $this->redirect($redirectUrl);
+        }
 
         $this->session->delete(self::SESS_AUTH_STATE);
         $this->authProvider->setScopes($this->getLoginScopes($state));
 
         try {
             $eveAuth = $this->authProvider->validateAuthenticationV2(
-                $this->getQueryParam($request, 'state'),
+                (string)$this->getQueryParam($request, 'state'),
                 $state,
-                $this->getQueryParam($request, 'code', '')
+                (string)$this->getQueryParam($request, 'code')
             );
         } catch (Exception $e) {
             $this->session->set(self::SESS_AUTH_RESULT, [
