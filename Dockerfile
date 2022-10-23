@@ -12,7 +12,6 @@ FROM php:8.1-apache-bullseye
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-    apt-get upgrade -y && \
     apt-get install -y --no-install-recommends libgmp-dev libzip4 libzip-dev libicu-dev && \
     docker-php-ext-install pdo_mysql bcmath gmp zip intl opcache mysqli && \
     apt-get remove --purge -y libgmp-dev libzip-dev libicu-dev && \
@@ -24,14 +23,14 @@ RUN pecl channel-update pecl.php.net &&  \
     docker-php-ext-enable apcu
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-RUN a2enmod rewrite
-RUN a2enmod headers
-RUN echo 'Header always set Strict-Transport-Security "max-age=31536000"' > /etc/apache2/conf-enabled/neucore.conf
-RUN echo "Header always set Content-Security-Policy \"default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://images.evetech.net; font-src 'self' data:; connect-src 'self' https://esi.evetech.net;\"" >> /etc/apache2/conf-enabled/neucore.conf
-RUN echo 'Header always set X-Frame-Options "sameorigin"'                >> /etc/apache2/conf-enabled/neucore.conf
-RUN echo 'Header always set X-Content-Type-Options "nosniff"'            >> /etc/apache2/conf-enabled/neucore.conf
+
+RUN a2enmod rewrite headers
+RUN echo 'Header always set Strict-Transport-Security "max-age=31536000"' > /etc/apache2/conf-enabled/neucore.conf && \
+    echo "Header always set Content-Security-Policy \"default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://images.evetech.net; font-src 'self' data:; connect-src 'self' https://esi.evetech.net;\"" >> /etc/apache2/conf-enabled/neucore.conf && \
+    echo 'Header always set X-Frame-Options "sameorigin"'                >> /etc/apache2/conf-enabled/neucore.conf && \
+    echo 'Header always set X-Content-Type-Options "nosniff"'            >> /etc/apache2/conf-enabled/neucore.conf
 
 COPY --from=build /var/www/neucore/web /var/www/html
 COPY --from=build /var/www/neucore/backend /var/www/backend
-RUN chown www-data /var/www/backend/var/cache
-RUN chown www-data /var/www/backend/var/logs
+RUN chown www-data /var/www/backend/var/cache && \
+    chown www-data /var/www/backend/var/logs
