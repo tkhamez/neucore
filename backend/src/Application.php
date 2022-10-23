@@ -297,9 +297,8 @@ class Application
         $app->add(new SessionMiddleware(
             $this->container->get(SessionHandlerFactory::class),
             [
-                SessionMiddleware::OPTION_NAME                   => 'neucore',
+                SessionMiddleware::OPTION_NAME                   => 'neucore_session',
                 SessionMiddleware::OPTION_SECURE                 => $config['session']['secure'],
-                SessionMiddleware::OPTION_SAME_SITE              => $config['session']['same_site'],
                 SessionMiddleware::OPTION_ROUTE_INCLUDE_PATTERN  => ['/api/user', '/login', '/plugin'],
                 SessionMiddleware::OPTION_ROUTE_BLOCKING_PATTERN => ['/api/user/auth', '/login', '/plugin'],
             ]
