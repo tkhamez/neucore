@@ -6,7 +6,7 @@
 - [Installation and Configuration](#installation-and-configuration)
 - [Application API](#application-api)
   * [Authentication](#authentication)
-  * [Rate Limit](#rate-limit)
+  * [Rate Limits](#rate-limits)
   * [ESI Proxy](#esi-proxy)
 - [Service Registration Plugins](#service-registration-plugins)
 - [Player Accounts](#player-accounts)
@@ -82,16 +82,18 @@ Example:
 curl --header "Authorization: Bearer MTpteSBhd2Vzb21lIHNlY3JldA==" https://neucore.tld/api/app/v1/show
 ```
 
-### Rate Limit
+### Rate Limits
 
-If the API rate limit is enabled (UI: Admin -> Settings -> Features), each response will contain 
+If the *API rate limit for apps* is enabled (UI: Admin -> Settings -> Features), each response will contain 
 the headers `X-Neucore-Rate-Limit-Remain` and `X-Neucore-Rate-Limit-Reset`. A request results in an error 
 429 "Too many requests" if the limit has been exceeded.
 
-If the IP-based rate limit is also active, the headers contain the values of the rate limit 
+If it is configured only, but not active, it is logged when an app exceeds the limit.
+
+If the *IP-based rate limit* is also active (environment variable), the headers contain the values of the rate limit 
 with the lower "remain" value.
 
-If it is configured only, but not active, it is logged when an app exceeds the limit.
+Note that IP-based rate limit works without a database connection and needs the APCu PHP extension.
 
 ### ESI Proxy 
 
