@@ -10,7 +10,6 @@ dd mm 2022
 - Improved session security.
 - Removed inline CSS styles and JavaScript code to use a better value for the Content Security Policy header.
 - Added security related HTTP headers to the web server in the Docker image.
-- The check if the browser is supported has been removed.
 - Small UI fixes and improvements.
 
 ## 1.38.0

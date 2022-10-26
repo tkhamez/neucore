@@ -283,10 +283,13 @@ It is recommended to set the following HTTP headers in the web server configurat
 
 ```
 Strict-Transport-Security "max-age=31536000"
-Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://images.evetech.net; font-src 'self' data:; connect-src 'self' https://esi.evetech.net;"
+Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' data:; font-src 'self' data:; img-src 'self' data: https://images.evetech.net; connect-src 'self' https://esi.evetech.net;"
 X-Frame-Options "sameorigin"
 X-Content-Type-Options "nosniff"
 ```
+
+Note that style-src 'unsafe-inline' is only needed for the charts under Admin -> Statistics for the tooltips. So 
+if you don't care about that, you can remove it.
 
 ## Build Distribution
 
