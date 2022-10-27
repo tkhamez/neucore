@@ -141,17 +141,17 @@
                                 <td>{{ `${application.player.name} #${application.player.id}` }}</td>
                                 <td>{{ Util.formatDate(application.created) }}</td>
                                 <td>
-                                    <button v-if="application.status === 'pending' || application.status === 'denied'"
-                                            class="btn btn-success btn-sm"
-                                            v-on:click="accept(application.id, application.player.id)">
-                                        Accept
-                                    </button>
-                                </td>
-                                <td>
                                     <button v-if="application.status === 'pending'"
                                             class="btn btn-warning btn-sm"
                                             v-on:click="deny(application.id)">
                                         Deny
+                                    </button>
+                                </td>
+                                <td>
+                                    <button v-if="application.status === 'pending' || application.status === 'denied'"
+                                            class="btn btn-success btn-sm"
+                                            v-on:click="accept(application.id, application.player.id)">
+                                        Accept
                                     </button>
                                 </td>
                             </tr>
