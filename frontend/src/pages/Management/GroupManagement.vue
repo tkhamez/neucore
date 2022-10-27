@@ -51,13 +51,11 @@
                 <div v-cloak v-if="groupId" class="card-body">
                     <p class="small">
                         Managers:
-                        <span v-for="groupManager in groupManagers" class="text-info">{{ groupManager.name }}, </span>
+                        <span class="text-info">{{ groupManagers.map(manager => manager.name).join(', ') }}</span>
                     </p>
                     <p class="small">
-                        Groups that are a prerequisite for being a member of this group:
-                        <span v-for="requiredGroup in requiredGroups" class="text-info">
-                            {{ requiredGroup.name }},
-                        </span>
+                        Required groups:
+                        <span class="text-info">{{ requiredGroups.map(group => group.name).join(', ') }}</span>
                         <span v-if="requiredGroups.length === 0" class="text-info">(none)</span>
                         <br>
                         <span class="text-muted">
@@ -66,10 +64,8 @@
                         </span>
                     </p>
                     <p class="small">
-                        Groups that an account cannot be a member of to be a member of this group:
-                        <span v-for="forbiddenGroup in forbiddenGroups" class="text-info">
-                            {{ forbiddenGroup.name }},
-                        </span>
+                        Forbidden groups:
+                        <span class="text-info">{{ forbiddenGroups.map(group => group.name).join(', ') }}</span>
                         <span v-if="forbiddenGroups.length === 0" class="text-info">(none)</span>
                         <br>
                         <span class="text-muted">
