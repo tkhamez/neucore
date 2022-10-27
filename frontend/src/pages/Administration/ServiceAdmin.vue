@@ -139,7 +139,8 @@
                             <input type="text" class="form-control" :id="`configTarget${idx}`" v-model="url.target">
                         </div>
                     </div>
-                    <button class="btn btn-sm btn-primary mb-2" v-on:click.prevent="addUrl()">Add link</button>
+                    <button class="btn btn-sm btn-primary mb-2" v-on:click.prevent="addUrl()">Add link</button><br>
+                    <small class="text-muted">Note: To remove a link button clear all fields and save </small>
 
                     <label class="col-form-label w-100">
                         Text Top
@@ -172,7 +173,7 @@
                         <span class="form-text">Additional configuration for the plugin.</span>
                     </label>
 
-                    <button class="mt-3 btn btn-success" v-on:click.prevent="saveConfiguration">save</button>
+                    <button class="mt-3 btn btn-success" v-on:click.prevent="saveConfiguration">Save</button>
                 </div> <!-- card-body -->
             </div> <!-- card -->
         </div> <!-- col -->

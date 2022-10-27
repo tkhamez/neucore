@@ -23,7 +23,7 @@
                             Choose this if the character was sold to another player, check the
                             <a class="external" href="https://forums.eveonline.com/c/marketplace/character-bazaar"
                                target="_blank" rel="noopener noreferrer">Character Bazaar</a>.
-                            Creates an "removed character" entry.
+                            Creates a "removed character" entry.
                         </span>
                     </label>
                     <label class="mb-3">
@@ -31,7 +31,7 @@
                         Player Lost Access<br>
                         <span class="text-muted small">
                             Select this if the player has lost access to the EVE account that contains
-                            this character. Creates an "removed character" entry.
+                            this character. Creates a "removed character" entry.
                         </span>
                     </label>
                     <label class="mb-3">

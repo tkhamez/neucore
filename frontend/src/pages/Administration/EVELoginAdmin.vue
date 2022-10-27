@@ -102,7 +102,7 @@
                         </p>
                         <div class="mt-3">
                             <button class="btn btn-success" :disabled="disabled" v-on:click.prevent="update">
-                                save
+                                Save
                             </button>
                         </div>
                     </div>
