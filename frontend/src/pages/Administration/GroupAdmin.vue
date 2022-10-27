@@ -75,7 +75,8 @@
                         <span class="far fa-plus-square add-alli-corp"
                               @mouseover="mouseover"
                               @mouseleave="mouseleave"
-                              v-on:click="showAddAlliCorpModal('Alliance')"></span>
+                              v-on:click="showAddAlliCorpModal('Alliance')"
+                              title="Add alliance"></span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -86,7 +87,8 @@
                         <span class="far fa-plus-square add-alli-corp"
                               @mouseover="mouseover"
                               @mouseleave="mouseleave"
-                              v-on:click="showAddAlliCorpModal('Corporation')"></span>
+                              v-on:click="showAddAlliCorpModal('Corporation')"
+                              title="Add corporation"></span>
                     </a>
                 </li>
                 <li class="nav-item">

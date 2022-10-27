@@ -55,7 +55,8 @@
                     <div v-if="playerData" class="card-body">
                         <h4>
                             <span v-if="h.hasRole('user-admin')">
-                                <a :href="`#UserAdmin/${playerData.id}`">{{ playerData.name }} #{{ playerData.id }}</a>
+                                <a :href="`#UserAdmin/${playerData.id}`" title="User Administration">
+                                    {{ playerData.name }} #{{ playerData.id }}</a>
                             </span>
                             <span v-if="!h.hasRole('user-admin')">{{ playerData.name }} #{{ playerData.id }}</span>
                         </h4>
