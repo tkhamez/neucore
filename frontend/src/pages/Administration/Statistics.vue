@@ -173,13 +173,15 @@ const chartOption = {
         renderMode: 'richText',
     },
     grid: {
+        left: 80,
+        right: 10,
         bottom: 60,
     },
     legend: {
         bottom: 10,
         data: [],
     },
-    //toolbox: { feature: { saveAsImage: {} } },
+    toolbox: { feature: { saveAsImage: {} } },
     xAxis: {
         type: 'category',
         data: [],
