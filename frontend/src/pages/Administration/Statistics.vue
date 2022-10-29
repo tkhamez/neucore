@@ -170,8 +170,7 @@ const chartOption = {
             color: 'rgb(205, 205, 205)',
         },
         trigger: 'axis',
-        enterable: true,
-        //confine: true,
+        renderMode: 'richText',
     },
     grid: {
         bottom: 60,
@@ -304,7 +303,11 @@ function initChart(vm, id, options) {
     if (vm.charts[id]) {
         vm.charts[id].dispose();
     }
-    const chart = echarts.init(document.getElementById(id), 'dark', {renderer: 'svg'});
+    const chart = echarts.init(
+        document.getElementById(id),
+        'dark',
+        { renderer: 'canvas' }
+    );
     chart.setOption(options, true);
     vm.charts[id] = chart;
 }
