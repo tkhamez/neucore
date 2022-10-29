@@ -6,6 +6,8 @@ dd mm 2022
 
 - **BC break**: Removed NEUCORE_HSTS_MAX_AGE option (Strict-Transport-Security). This should be better set at the
   HTTP server, see also [Install#security](./doc/Install.md#security).
+- **BC break**: Moved `web/dist/favicon.ico` to `web/favicon.ico`, this prevents some 404 errors in the logs.
+- Added robots.txt.
 - Removed NEUCORE_SESSION_SAME_SITE option because there's no reason to change it.
 - Improved session security.
 - Removed inline CSS styles and JavaScript code to use a better value for the Content Security Policy header.

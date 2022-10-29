@@ -78,6 +78,14 @@ module.exports = defineConfig(() => {
                 }
                 return args;
             });
+            config.plugin('copy').tap(args => {
+                if (production) {
+                    // This favicon.ico is only used for dev mode to prevent 404 errors.
+                    // For production, it's already in web/favicon.ico.
+                    args[0].patterns[0].globOptions.ignore.push(path.resolve(__dirname, 'public/favicon.ico'));
+                }
+                return args;
+            });
             if (production) {
                 config.plugin('progress').use(require('webpack/lib/ProgressPlugin'))
             }
