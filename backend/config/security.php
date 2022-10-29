@@ -56,6 +56,7 @@ return [
     '/api/user/character/find-character' => [Role::USER_ADMIN, Role::USER_MANAGER, Role::USER_CHARS],
     '/api/user/character/find-player'    => [Role::GROUP_MANAGER],
     '/api/user/character/{id}/update'    => [Role::USER],
+    '/api/user/character/add/'           => [Role::USER_ADMIN],
 
     '/api/user/corporation/tracked-corporations'       => [Role::TRACKING],
     '/api/user/corporation/all-tracked-corporations'   => [Role::TRACKING_ADMIN],

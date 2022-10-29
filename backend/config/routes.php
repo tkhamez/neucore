@@ -94,10 +94,11 @@ return [
     '/api/user/alliance/{id}/add-group/{gid}'    => ['PUT',  [AllianceController::class, 'addGroup']],
     '/api/user/alliance/{id}/remove-group/{gid}' => ['PUT',  [AllianceController::class, 'removeGroup']],
 
-    '/api/user/character/find-character/{name}' => ['GET', [CharacterController::class, 'findCharacter']],
-    '/api/user/character/find-player/{name}'    => ['GET', [CharacterController::class, 'findPlayer']],
-    '/api/user/character/show'                  => ['GET', [CharacterController::class, 'show']],
-    '/api/user/character/{id}/update'           => ['PUT', [CharacterController::class, 'update']],
+    '/api/user/character/find-character/{name}' => ['GET',  [CharacterController::class, 'findCharacter']],
+    '/api/user/character/find-player/{name}'    => ['GET',  [CharacterController::class, 'findPlayer']],
+    '/api/user/character/show'                  => ['GET',  [CharacterController::class, 'show']],
+    '/api/user/character/{id}/update'           => ['PUT',  [CharacterController::class, 'update']],
+    '/api/user/character/add/{id}'              => ['POST', [CharacterController::class, 'add']],
 
     '/api/user/corporation/find/{query}'                         => ['GET',  [CorporationController::class, 'find']],
     '/api/user/corporation/corporations'                         => ['POST', [CorporationController::class, 'corporations']],

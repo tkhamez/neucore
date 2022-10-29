@@ -35,12 +35,15 @@ class CharacterControllerTest extends WebTestCase
 
     private Logger $log;
 
+    private RepositoryFactory $repoFactory;
+
     protected function setUp(): void
     {
         $_SESSION = null;
         $this->helper = new Helper();
         $this->client = new Client();
         $this->log = new Logger('Test');
+        $this->repoFactory = (new RepositoryFactory($this->helper->getObjectManager()));
     }
 
     public function testShow403()
@@ -232,13 +235,12 @@ class CharacterControllerTest extends WebTestCase
         $this->assertSame(0, count($this->log->getHandler()->getRecords()));
 
         $this->helper->getObjectManager()->clear();
-        $repoFactory = (new RepositoryFactory($this->helper->getObjectManager()));
 
         // check that char was deleted (because owner hash changed)
-        $this->assertNull($repoFactory->getCharacterRepository()->find(96061222));
+        $this->assertNull($this->repoFactory->getCharacterRepository()->find(96061222));
 
         // there would be a group if the character 96061222 were not deleted, see also next test
-        $this->assertSame([], $repoFactory->getPlayerRepository()->find($this->playerId)->getGroupIds());
+        $this->assertSame([], $this->repoFactory->getPlayerRepository()->find($this->playerId)->getGroupIds());
     }
 
     /**
@@ -278,8 +280,7 @@ class CharacterControllerTest extends WebTestCase
 
         // check group
         $this->helper->getObjectManager()->clear();
-        $player = (new RepositoryFactory($this->helper->getObjectManager()))
-            ->getPlayerRepository()->find($this->playerId);
+        $player = $this->repoFactory->getPlayerRepository()->find($this->playerId);
         $this->assertSame('auto.bni', $player->getGroups()[0]->getName());
 
         // check char, corp, name change
@@ -322,6 +323,108 @@ class CharacterControllerTest extends WebTestCase
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testAdd_403()
+    {
+        $this->setupDb();
+
+        $response = $this->runApp('POST', '/api/user/character/add/456789');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->loginUser(96061222);
+        $response = $this->runApp('POST', '/api/user/character/add/456789');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAdd_500NoRole()
+    {
+        $this->helper->emptyDb();
+        $this->helper->addCharacterMain('Admin', 9, [Role::USER_ADMIN]);
+        $this->loginUser(9);
+
+        $response = $this->runApp('POST', '/api/user/character/add/456789');
+
+        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertSame('Could not find user role.', $this->parseJsonBody($response));
+    }
+
+    public function testAdd_409()
+    {
+        $this->setupDb();
+        $this->loginUser(9);
+
+        $response = $this->runApp('POST', '/api/user/character/add/96061222');
+
+        $this->assertEquals(409, $response->getStatusCode());
+        $this->assertSame('Character already exists.', $this->parseJsonBody($response));
+    }
+
+    public function testAdd_404()
+    {
+        $this->setupDb();
+        $this->loginUser(9);
+
+        $this->client->setResponse(new Response(404, [], '{"error": "Character not found"}'));
+
+        $response = $this->runApp('POST', '/api/user/character/add/456789', [], [], [
+            ClientInterface::class => $this->client
+        ]);
+
+        $this->assertSame(404, $response->getStatusCode());
+        $this->assertSame('Character not found.', $this->parseJsonBody($response));
+    }
+
+    public function testAdd_500EsiError1()
+    {
+        $this->setupDb();
+        $this->loginUser(9);
+
+        $this->client->setResponse(new Response(400));
+
+        $response = $this->runApp('POST', '/api/user/character/add/456789', [], [], [
+            ClientInterface::class => $this->client,
+            LoggerInterface::class => $this->log
+        ]);
+
+        $this->assertSame(500, $response->getStatusCode());
+        $this->assertSame('ESI error.', $this->parseJsonBody($response));
+        $this->assertStringStartsWith('[400] Error connecting to the API', $this->log->getMessages()[0]);
+    }
+
+    public function testAdd_500EsiError2()
+    {
+        $this->setupDb();
+        $this->loginUser(9);
+
+        $response = $this->runApp('POST', '/api/user/character/add/0', [], [], [
+            LoggerInterface::class => $this->log
+        ]);
+
+        $this->assertSame(500, $response->getStatusCode());
+        $this->assertSame('ESI error.', $this->parseJsonBody($response));
+        $this->assertStringStartsWith('invalid value ', $this->log->getMessages()[0]);
+    }
+
+    public function testAdd_201()
+    {
+        $this->setupDb();
+        $this->loginUser(9);
+
+        $this->client->setResponse(new Response(200, [], '{"name": "Char 456789"}'));
+
+        $response = $this->runApp('POST', '/api/user/character/add/456789', [], [], [
+            ClientInterface::class => $this->client
+        ]);
+
+        $this->assertSame(201, $response->getStatusCode());
+        $this->assertSame('', $response->getBody()->__toString());
+
+        $char = $this->repoFactory->getCharacterRepository()->find(456789);
+        $this->assertSame('Char 456789', $char->getName());
+        $this->assertTrue($char->getMain());
+        $this->assertSame('Char 456789', $char->getPlayer()->getName());
+        $this->assertSame([Role::USER], $char->getPlayer()->getRoleNames());
     }
 
     private function setupDb(string $token = null): void

@@ -98,6 +98,7 @@ Allows a player to add and remove roles from players.
 Character API
 - Returns a list of characters (together with the name of the player account/main character)
                     that matches the name (partial matching). `GET /user/character/find-character/{name}`
+- Add an EVE character to the database on a new account. `POST /user/character/add/{id}`
 
 Player API
 - List all players with characters. `GET /user/player/with-characters`

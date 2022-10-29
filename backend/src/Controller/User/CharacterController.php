@@ -6,9 +6,13 @@ declare(strict_types=1);
 namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
+use Neucore\Entity\Character;
+use Neucore\Entity\Player;
 use Neucore\Entity\Role;
+use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
+use Neucore\Service\Config;
 use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
@@ -16,6 +20,8 @@ use Neucore\Service\UserAuth;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
+use Swagger\Client\Eve\ApiException;
 
 /**
  * @OA\Tag(
@@ -284,5 +290,86 @@ class CharacterController extends BaseController
         } else {
             return $this->response->withStatus(204);
         }
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/user/character/add/{id}",
+     *     operationId="userCharacterAdd",
+     *     summary="Add an EVE character to the database on a new account.",
+     *     description="Needs role: user-admin",
+     *     tags={"Character"},
+     *     security={{"Session"={}, "CSRF"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="EVE character ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="201",
+     *         description="Successfully created account with character."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Character not found."
+     *     ),
+     *     @OA\Response(
+     *         response="409",
+     *         description="Character already exists in local database."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="Role not found or ESI error."
+     *     )
+     * )
+     */
+    public function add(
+        string $id,
+        Account $accountService,
+        EsiApiFactory $esiApiFactory,
+        Config $config,
+        LoggerInterface $log
+    ): ResponseInterface {
+        $charId = (int) $id;
+
+        $userRole = $this->repositoryFactory->getRoleRepository()->findBy(['name' => Role::USER]);
+        if (count($userRole) !== 1) {
+            return $this->withJson('Could not find user role.', 500);
+        }
+
+        $characterCheck = $this->repositoryFactory->getCharacterRepository()->find($charId);
+        if ($characterCheck) {
+            return $this->withJson('Character already exists.', 409);
+        }
+
+        // Check if EVE character exists
+        try {
+            $eveChar = $esiApiFactory->getCharacterApi()->getCharactersCharacterId($id, $config['eve']['datasource']);
+        } catch (ApiException $e) {
+            $body = $e->getResponseBody();
+            if ($e->getCode() === 404 && is_string($body) && strpos($body, 'Character not found') !== false) {
+                return $this->withJson('Character not found.', 404);
+            } else {
+                $log->error($e->getMessage());
+                return $this->withJson('ESI error.', 500);
+            }
+        } catch (\Exception $e) { // InvalidArgumentException
+            $log->error($e->getMessage());
+            return $this->withJson('ESI error.', 500);
+        }
+
+        // Create new account
+        $char = $accountService->createNewPlayerWithMain($charId, $eveChar->getName());
+        $char->getPlayer()->addRole($userRole[0]);
+        $this->objectManager->persist($char->getPlayer());
+        $this->objectManager->persist($char);
+
+        return $this->flushAndReturn(201);
     }
 }
