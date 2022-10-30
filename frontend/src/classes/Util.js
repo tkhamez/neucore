@@ -27,14 +27,34 @@ export default class Util {
         return defaultValue;
     }
 
-    static addHighlight(element, type) {
+    /**
+     * @param {object} event
+     * @param {string} [type]
+     */
+    static addHighlight(event, type) {
         type = type || 'info';
-        element.target.classList.add(`text-${type}`);
+        event.target.classList.add(`text-${type}`);
     }
 
-    static removeHighlight(element, type) {
+    /**
+     * @param {object} event
+     * @param {string} [type]
+     */
+    static removeHighlight(event, type) {
         type = type || 'info';
-        element.target.classList.remove(`text-${type}`);
+        event.target.classList.remove(`text-${type}`);
+    }
+
+    /**
+     * @param {HTMLElement|string} elementOrSelectors
+     */
+    static isVisible(elementOrSelectors) {
+        let elem = elementOrSelectors;
+        if (typeof elementOrSelectors === typeof '') {
+            elem = document.querySelector(elementOrSelectors);
+        }
+        // The following line is from jQuery.expr.pseudos.visible
+        return !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length);
     }
 
     /**

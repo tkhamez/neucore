@@ -136,10 +136,10 @@
 
 <script>
 import {toRef} from "vue";
-import $ from 'jquery';
 import {Collapse, Dropdown} from 'bootstrap';
 import Data from '../classes/Data';
 import Helper from "../classes/Helper";
+import Util from "../classes/Util";
 
 export default {
     inject: ['store'],
@@ -181,11 +181,10 @@ export default {
             this.page = this.route[0];
         },
         selectedTheme() {
-            const $body = $('body');
             for (const theme of this.themes) {
-                $body.removeClass(theme.toLowerCase());
+                document.body.classList.remove(theme.toLowerCase());
             }
-            $body.addClass(this.selectedTheme.toLowerCase());
+            document.body.classList.add(this.selectedTheme.toLowerCase());
         }
     },
 
@@ -195,43 +194,52 @@ export default {
                 return;
             }
             this.selectedTheme = name;
-            const $enable = $(`head link[href*='css/theme-${this.selectedTheme.toLowerCase()}']`);
-            if ($enable.attr('rel') === 'stylesheet') {
+            const enable = document.querySelector(`head link[href*='css/theme-${this.selectedTheme.toLowerCase()}']`);
+            if (enable.getAttribute('rel') === 'stylesheet') {
                 return;
             }
-            const $disable = $("head link[href*='css/theme-']");
-            $disable.attr('rel', 'alternate stylesheet');
-            $enable.attr('rel', 'stylesheet');
+            document.querySelectorAll("head link[href*='css/theme-']").forEach(link => {
+                link.setAttribute('rel', 'alternate stylesheet');
+            });
+            enable.setAttribute('rel', 'stylesheet');
         }
     },
 }
 
 function addNavBehaviour() {
-    const $navMain = $("#navbar01");
-    if ($navMain.length === 0) {
+    const navMain = document.getElementById('navbar01');
+    if (!navMain) {
         return;
     }
     const collapse = new Collapse('#navbar01', {toggle: false });
 
     // Close the un-collapsed navigation on click on a navigation item
-    $navMain.on('click', 'a:not([data-bs-toggle])', null, () => {
-        if ($('.navbar .navbar-toggler').is(':visible')) {
-            collapse.hide();
-        }
-    })
+    navMain.querySelectorAll('a:not([data-bs-toggle])').forEach(navItem => {
+        navItem.addEventListener('click', () => {
+            if (Util.isVisible('.navbar .navbar-toggler')) {
+                collapse.hide();
+            }
+        });
+    });
 
     // Open/close dropdown on mouse over/out.
-    $navMain.on('mouseover mouseout', '.dropdown', null, evt => {
-        if ($('.navbar .navbar-toggler').is(':visible')) {
-            return;
-        }
-        // Can't use toggle(), that gets it wrong sometimes.
-        if (evt.type === 'mouseover') {
-            new Dropdown($(evt.currentTarget).find('.dropdown-toggle')).show();
-        } else {
-            new Dropdown($(evt.currentTarget).find('.dropdown-toggle')).hide();
-            document.activeElement.blur(); // sometimes needed for some reason to remove the "active" font color
-        }
+    navMain.querySelectorAll('.dropdown').forEach(subNav => {
+        ['mouseover', 'mouseout'].forEach(type => {
+            subNav.addEventListener(type, evt => {
+                if (Util.isVisible('.navbar .navbar-toggler')) {
+                    return;
+                }
+                // noinspection JSUnresolvedFunction
+                const element = evt.currentTarget.querySelector('.dropdown-toggle');
+                // Can't use toggle(), that gets it wrong sometimes.
+                if (evt.type === 'mouseover') {
+                    new Dropdown(element).show();
+                } else {
+                    new Dropdown(element).hide();
+                    document.activeElement.blur(); // sometimes needed for some reason to remove the "active" color
+                }
+            });
+        });
     });
 }
 </script>
