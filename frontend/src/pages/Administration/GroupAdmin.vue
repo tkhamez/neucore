@@ -21,8 +21,7 @@
                 <h4 class="card-header">
                     Groups
                     <span class="far fa-plus-square add-group" title="Add group"
-                       @mouseover="mouseover"
-                       @mouseleave="mouseleave"
+                          @mouseover="U.addHighlight" @mouseleave="U.removeHighlight"
                        v-on:click="showCreateGroupModal()"></span>
                 </h4>
                 <div class="list-group">
@@ -38,13 +37,15 @@
                             </span>
                         </a>
                         <span class="entity-actions">
-                            <span role="img" aria-label="edit" title="edit"
-                                  class="fas fa-pencil-alt me-1"
-                                  @mouseover="mouseover" @mouseleave="mouseleave"
+                            <span role="img" aria-label="Edit" title="Edit"
+                                  class="fa-regular fa-pen-to-square me-1"
+                                  @mouseover="(ele) => U.addHighlight(ele, 'warning')"
+                                  @mouseleave="(ele) => U.removeHighlight(ele, 'warning')"
                                   v-on:click="showEditGroupModal(group)"></span>
-                            <span role="img" aria-label="delete" title="delete"
+                            <span role="img" aria-label="Delete" title="Delete"
                                   class="far fa-trash-alt me-1"
-                                  @mouseover="mouseover" @mouseleave="mouseleave"
+                                  @mouseover="(ele) => U.addHighlight(ele, 'danger')"
+                                  @mouseleave="(ele) => U.removeHighlight(ele, 'danger')"
                                   v-on:click="showDeleteGroupModal(group)"></span>
                         </span>
                     </span>
@@ -73,8 +74,7 @@
                        :href="`#GroupAdmin/${groupId}/alliances`">
                         Alliances
                         <span class="far fa-plus-square add-alli-corp"
-                              @mouseover="mouseover"
-                              @mouseleave="mouseleave"
+                              @mouseover="U.addHighlight" @mouseleave="U.removeHighlight"
                               v-on:click="showAddAlliCorpModal('Alliance')"
                               title="Add alliance"></span>
                     </a>
@@ -85,8 +85,7 @@
                        :href="`#GroupAdmin/${groupId}/corporations`">
                         Corporations
                         <span class="far fa-plus-square add-alli-corp"
-                              @mouseover="mouseover"
-                              @mouseleave="mouseleave"
+                              @mouseover="U.addHighlight" @mouseleave="U.removeHighlight"
                               v-on:click="showAddAlliCorpModal('Corporation')"
                               title="Add corporation"></span>
                     </a>
@@ -147,10 +146,10 @@
 </template>
 
 <script>
-import $ from 'jquery';
 import _ from "lodash";
 import {GroupApi} from 'neucore-js-client';
 import Helper from "../../classes/Helper";
+import Util from "../../classes/Util";
 import AddEntity  from '../../components/EntityAdd.vue';
 import Edit       from '../../components/EntityEdit.vue';
 import Admin      from '../../components/EntityRelationEdit.vue';
@@ -169,6 +168,7 @@ export default {
     data() {
         return {
             h: new Helper(this),
+            U: Util,
             groups: [],
             groupId: null, // current group
             groupName: '',
@@ -193,14 +193,6 @@ export default {
     },
 
     methods: {
-        mouseover(ele) {
-            $(ele.target).addClass('text-warning');
-        },
-
-        mouseleave(ele) {
-            $(ele.target).removeClass('text-warning');
-        },
-
         showCreateGroupModal() {
             this.$refs.editModal.showCreateModal();
         },

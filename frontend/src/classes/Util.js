@@ -27,6 +27,16 @@ export default class Util {
         return defaultValue;
     }
 
+    static addHighlight(element, type) {
+        type = type || 'info';
+        element.target.classList.add(`text-${type}`);
+    }
+
+    static removeHighlight(element, type) {
+        type = type || 'info';
+        element.target.classList.remove(`text-${type}`);
+    }
+
     /**
      * @param {string} name
      */

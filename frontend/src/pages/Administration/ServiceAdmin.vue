@@ -18,7 +18,7 @@
                 <h4 class="card-header">
                     Services
                     <span class="far fa-plus-square add-service" title="Add group"
-                          @mouseover="mouseover" @mouseleave="mouseleave"
+                          @mouseover="U.addHighlight" @mouseleave="U.removeHighlight"
                           v-on:click="showCreateModal()"></span>
                 </h4>
                 <div class="list-group">
@@ -30,13 +30,15 @@
                             {{ service.name }}
                         </a>
                         <span class="entity-actions">
-                            <span role="img" aria-label="edit" title="edit"
-                                  class="fas fa-pencil-alt me-1"
-                                  @mouseover="mouseover" @mouseleave="mouseleave"
+                            <span role="img" aria-label="Edit" title="Edit"
+                                  class="fa-regular fa-pen-to-square me-1"
+                                  @mouseover="(ele) => U.addHighlight(ele, 'warning')"
+                                  @mouseleave="(ele) => U.removeHighlight(ele, 'warning')"
                                   v-on:click="showEditModal(service)"></span>
-                            <span role="img" aria-label="delete" title="delete"
+                            <span role="img" aria-label="Delete" title="Delete"
                                   class="far fa-trash-alt me-1"
-                                  @mouseover="mouseover" @mouseleave="mouseleave"
+                                  @mouseover="(ele) => U.addHighlight(ele, 'danger')"
+                                  @mouseleave="(ele) => U.removeHighlight(ele, 'danger')"
                                   v-on:click="showDeleteModal(service)"></span>
                         </span>
                     </span>
@@ -182,9 +184,9 @@
 </template>
 
 <script>
-import $ from "jquery";
 import {ServiceApi, ServiceAdminApi} from "neucore-js-client";
 import Helper from "../../classes/Helper";
+import Util from "../../classes/Util";
 import Edit from '../../components/EntityEdit.vue';
 
 export default {
@@ -199,6 +201,7 @@ export default {
     data() {
         return {
             h: new Helper(this),
+            U: Util,
             services: [],
             activeService: null,
             requiredGroups: '',
@@ -293,12 +296,6 @@ export default {
             this.URLs.push({ url: '', title: '', target: '' });
         },
 
-        mouseover(ele) {
-            $(ele.target).addClass('text-warning');
-        },
-        mouseleave(ele) {
-            $(ele.target).removeClass('text-warning');
-        },
         showCreateModal() {
             this.$refs.editModal.showCreateModal();
         },

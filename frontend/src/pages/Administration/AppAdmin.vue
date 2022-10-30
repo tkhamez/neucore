@@ -18,8 +18,7 @@
                 <h4 class="card-header">
                     Apps
                     <span class="far fa-plus-square add-app" title="Add application"
-                       @mouseover="mouseover"
-                       @mouseleave="mouseleave"
+                          @mouseover="U.addHighlight" @mouseleave="U.removeHighlight"
                        v-on:click="showCreateAppModal()"></span>
                 </h4>
                 <div class="list-group">
@@ -30,13 +29,15 @@
                             {{ app.name }}
                         </a>
                         <span class="entity-actions">
-                            <span role="img" aria-label="edit" title="edit"
-                                  class="fas fa-pencil-alt me-1"
-                                  @mouseover="mouseover" @mouseleave="mouseleave"
+                            <span role="img" aria-label="Edit" title="Edit"
+                                  class="fa-regular fa-pen-to-square me-1"
+                                  @mouseover="(ele) => U.addHighlight(ele, 'warning')"
+                                  @mouseleave="(ele) => U.removeHighlight(ele, 'warning')"
                                   v-on:click="showRenameAppModal(app)"></span>
-                            <span role="img" aria-label="delete" title="delete"
+                            <span role="img" aria-label="Delete" title="Delete"
                                   class="far fa-trash-alt me-1"
-                                  @mouseover="mouseover"  @mouseleave="mouseleave"
+                                  @mouseover="(ele) => U.addHighlight(ele, 'danger')"
+                                  @mouseleave="(ele) => U.removeHighlight(ele, 'danger')"
                                   v-on:click="showDeleteAppModal(app)"></span>
                         </span>
                     </span>
@@ -80,9 +81,9 @@
 </template>
 
 <script>
-import $ from 'jquery';
 import {AppApi} from 'neucore-js-client';
 import Helper from "../../classes/Helper";
+import Util from "../../classes/Util";
 import Edit  from '../../components/EntityEdit.vue';
 import Admin from '../../components/EntityRelationEdit.vue';
 
@@ -99,6 +100,7 @@ export default {
     data() {
         return {
             h: new Helper(this),
+            U: Util,
             apps: [],
             appId: null, // current app
             appName: '',
@@ -119,14 +121,6 @@ export default {
     },
 
     methods: {
-        mouseover(ele) {
-            $(ele.target).addClass('text-warning');
-        },
-
-        mouseleave(ele) {
-            $(ele.target).removeClass('text-warning');
-        },
-
         showCreateAppModal() {
             this.$refs.editModal.showCreateModal();
         },

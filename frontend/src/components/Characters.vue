@@ -81,7 +81,7 @@ Modal window with all characters of one player.
                                         <div class="small col-4 text-end">
                                             <span class="text-muted">Added: </span>
                                             <span v-if="character.created">
-                                                {{ Util.formatDate(character.created) }}
+                                                {{ U.formatDate(character.created) }}
                                             </span>
                                         </div>
                                     </div>
@@ -116,7 +116,7 @@ Modal window with all characters of one player.
                                         {{ movedChar.characterName }}</a><br>
 
                                     <span v-if="movedChar.removedDate">
-                                        {{ Util.formatDate(movedChar.removedDate) }}<br>
+                                        {{ U.formatDate(movedChar.removedDate) }}<br>
                                     </span>
 
                                     <span class="text-muted">Action:</span>
@@ -180,7 +180,7 @@ export default {
 
     data() {
         return {
-            Util: Util,
+            U: Util,
             h: new Helper(this),
             selectedPlayer: null,
             characterMovements: [],

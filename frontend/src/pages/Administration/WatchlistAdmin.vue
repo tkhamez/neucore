@@ -18,8 +18,7 @@
                 <h4 class="card-header">
                     Watchlists
                     <span class="far fa-plus-square add-watchlist" title="Add watchlist"
-                          @mouseover="mouseover"
-                          @mouseleave="mouseleave"
+                          @mouseover="U.addHighlight" @mouseleave="U.removeHighlight"
                           v-on:click="showCreateWatchlistModal()"></span>
                 </h4>
                 <div class="list-group">
@@ -30,13 +29,15 @@
                            :href="`#WatchlistAdmin/${watchlist.id}/${contentType}`">{{ watchlist.name }}
                         </a>
                         <span class="entity-actions">
-                            <span role="img" aria-label="edit" title="edit"
-                                  class="fas fa-pencil-alt me-1"
-                                  @mouseover="mouseover" @mouseleave="mouseleave"
+                            <span role="img" aria-label="Edit" title="Edit"
+                                  class="fa-regular fa-pen-to-square me-1"
+                                  @mouseover="(ele) => U.addHighlight(ele, 'warning')"
+                                  @mouseleave="(ele) => U.removeHighlight(ele, 'warning')"
                                   v-on:click="showEditWatchlistModal(watchlist)"></span>
-                            <span role="img" aria-label="delete" title="delete"
+                            <span role="img" aria-label="Delete" title="Delete"
                                   class="far fa-trash-alt me-1"
-                                  @mouseover="mouseover" @mouseleave="mouseleave"
+                                  @mouseover="(ele) => U.addHighlight(ele, 'danger')"
+                                  @mouseleave="(ele) => U.removeHighlight(ele, 'danger')"
                                   v-on:click="showDeleteWatchlistModal(watchlist)"></span>
                         </span>
                     </span>
@@ -99,11 +100,11 @@
 </template>
 
 <script>
-import $ from "jquery";
 import {WatchlistApi} from 'neucore-js-client';
 import Admin from '../../components/EntityRelationEdit.vue';
 import Edit from '../../components/EntityEdit.vue';
 import Helper from "../../classes/Helper";
+import Util from "../../classes/Util";
 
 export default {
     components: {
@@ -118,6 +119,7 @@ export default {
     data() {
         return {
             h: new Helper(this),
+            U: Util,
             watchlists: [],
             currentWatchlist: null,
             contentType: '',
@@ -136,14 +138,6 @@ export default {
     },
 
     methods: {
-        mouseover(ele) {
-          $(ele.target).addClass('text-warning');
-        },
-
-        mouseleave(ele) {
-          $(ele.target).removeClass('text-warning');
-        },
-
         showCreateWatchlistModal() {
             this.$refs.editModal.showCreateModal();
         },

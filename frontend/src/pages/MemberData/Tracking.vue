@@ -79,7 +79,7 @@
                 <p class="small text-muted">
                     Last update:
                     <span v-if="corporation.trackingLastUpdate">
-                        {{ Util.formatDate(corporation.trackingLastUpdate) }}
+                        {{ U.formatDate(corporation.trackingLastUpdate) }}
                     </span>
                 </p>
             </div>
@@ -142,7 +142,7 @@ export default {
 
     data() {
         return {
-            Util: Util,
+            U: Util,
             h: new Helper(this),
             corporation: "", // empty string to select the first entry in the drop-down
             corporations: [],

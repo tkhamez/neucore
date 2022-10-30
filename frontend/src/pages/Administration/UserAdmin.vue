@@ -239,7 +239,7 @@
                                     <td>{{ character.main }}</td>
                                     <td>
                                         <span v-if="character.created">
-                                            {{ Util.formatDate(character.created) }}
+                                            {{ U.formatDate(character.created) }}
                                         </span>
                                     </td>
                                     <td>
@@ -248,7 +248,7 @@
                                     </td>
                                     <td>
                                         <span v-if="character.lastUpdate">
-                                            {{ Util.formatDate(character.lastUpdate) }}
+                                            {{ U.formatDate(character.lastUpdate) }}
                                         </span>
                                     </td>
                                     <td>
@@ -286,7 +286,7 @@
                                         </td>
                                         <td>
                                             <span v-if="movedCharacter.removedDate">
-                                                {{ Util.formatDate(movedCharacter.removedDate) }}
+                                                {{ U.formatDate(movedCharacter.removedDate) }}
                                             </span>
                                         </td>
                                         <td>{{ movedCharacter.reason }}</td>
@@ -445,7 +445,7 @@ export default {
 
     data() {
         return {
-            Util: Util,
+            U: Util,
             h: new Helper(this),
 
             settings: toRef(this.store.state, 'settings'),

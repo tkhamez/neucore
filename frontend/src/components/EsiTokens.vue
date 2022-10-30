@@ -47,12 +47,12 @@
                             </td>
                             <td v-if="page === 'UserAdmin'">
                                 <span v-if="esiToken.validTokenTime">
-                                    {{ Util.formatDate(esiToken.validTokenTime) }}
+                                    {{ U.formatDate(esiToken.validTokenTime) }}
                                 </span>
                             </td>
                             <td>
                                 <span v-if="esiToken.lastChecked">
-                                    {{ Util.formatDate(esiToken.lastChecked) }}
+                                    {{ U.formatDate(esiToken.lastChecked) }}
                                 </span>
                             </td>
                             <td>
@@ -87,7 +87,7 @@ export default {
 
     data() {
         return {
-            Util: Util,
+            U: Util,
             h: new Helper(this),
             loginNames: Data.loginNames,
             character: null,

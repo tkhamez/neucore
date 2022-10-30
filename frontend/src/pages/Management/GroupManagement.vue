@@ -135,7 +135,7 @@
                         <tbody>
                             <tr v-for="application in groupApplicationsByStatus(status)">
                                 <td>{{ `${application.player.name} #${application.player.id}` }}</td>
-                                <td>{{ Util.formatDate(application.created) }}</td>
+                                <td>{{ U.formatDate(application.created) }}</td>
                                 <td>
                                     <button v-if="application.status === 'pending'"
                                             class="btn btn-warning btn-sm"
@@ -184,7 +184,7 @@ export default {
 
     data() {
         return {
-            Util: Util,
+            U: Util,
             h: new Helper(this),
             player: toRef(this.store.state, 'player'),
             groupId: null,

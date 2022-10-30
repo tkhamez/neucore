@@ -17,7 +17,7 @@
                 <h4 class="card-header">
                     EVE Logins
                     <span class="far fa-plus-square add-login" title="Add group"
-                          @mouseover="mouseover" @mouseleave="mouseleave"
+                          @mouseover="U.addHighlight" @mouseleave="U.removeHighlight"
                           v-on:click="showCreateModal()"></span>
                 </h4>
                 <div class="list-group">
@@ -30,9 +30,10 @@
                         </a>
                         <span v-cloak v-if="login.name.indexOf(Data.loginPrefixProtected) === -1"
                               class="entity-actions">
-                            <span role="img" aria-label="delete" title="delete"
+                            <span role="img" aria-label="Delete" title="Delete"
                                   class="far fa-trash-alt me-1"
-                                  @mouseover="mouseover" @mouseleave="mouseleave"
+                                  @mouseover="(ele) => U.addHighlight(ele, 'danger')"
+                                  @mouseleave="(ele) => U.removeHighlight(ele, 'danger')"
                                   v-on:click="showDeleteModal(login)"></span>
                         </span>
                     </span>
@@ -187,11 +188,11 @@
 </template>
 
 <script>
-import $ from "jquery";
 import {SettingsApi} from "neucore-js-client";
 import Multiselect from '@suadelabs/vue3-multiselect';
 import Data from '../../classes/Data';
 import Helper from "../../classes/Helper";
+import Util from "../../classes/Util";
 import Edit from '../../components/EntityEdit.vue';
 
 export default {
@@ -208,6 +209,7 @@ export default {
         return {
             Data: Data,
             h: new Helper(this),
+            U: Util,
             logins: [],
             tokens: [],
             activeLogin: null,
@@ -233,14 +235,6 @@ export default {
     },
 
     methods: {
-        mouseover(ele) {
-            $(ele.target).addClass('text-warning');
-        },
-
-        mouseleave(ele) {
-            $(ele.target).removeClass('text-warning');
-        },
-
         showCreateModal() {
             this.$refs.editModal.showCreateModal();
         },
