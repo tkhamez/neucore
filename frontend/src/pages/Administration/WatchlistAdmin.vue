@@ -166,7 +166,7 @@ export default {
                     this.$refs.editModal.hideModal();
                     this.h.message('Watchlist created.', 'success');
                     window.location.hash = `#WatchlistAdmin/${data.id}`;
-                    getWatchlists(vm);
+                    getWatchlists(this);
                 }
             });
         },
