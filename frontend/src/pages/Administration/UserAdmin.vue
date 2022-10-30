@@ -53,8 +53,33 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
-                        :disabled="deleteReason === ''" v-on:click="deleteChar()">
+                        :disabled="deleteReason === ''" v-on:click="deleteCharacter()">
                     DELETE character
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div v-cloak class="modal fade" id="addCharModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add character to a new account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label>
+                    Character ID: &nbsp;
+                    <input type="text" pattern="[0-9]+" class="character-id" v-model="addCharId">
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-info"
+                        :disabled="addCharId === '' || addCharId.match(/[^0-9]/g)"
+                        v-on:click="addCharacter(addCharId)">
+                    Add
                 </button>
             </div>
         </div>
@@ -72,7 +97,12 @@
     <div v-cloak v-if="player" class="row">
         <div class="col-lg-4 sticky-column">
             <div class="card border-secondary mb-3" >
-                <h4 class="card-header">Characters</h4>
+                <h4 class="card-header">
+                    Characters
+                    <span class="far fa-plus-square add-character" title="Add character"
+                          @mouseover="U.addHighlight" @mouseleave="U.removeHighlight"
+                          v-on:click="openAddCharacter()"></span>
+                </h4>
                 <div class="card-body">
                     <!--suppress HtmlUnknownTag -->
                     <character-search v-on:result="onSearchResult($event)" :admin="true"></character-search>
@@ -419,7 +449,7 @@
 <script>
 import {toRef} from "vue";
 import {Modal, Tooltip} from "bootstrap";
-import {PlayerApi, SettingsApi} from 'neucore-js-client';
+import {CharacterApi, PlayerApi, SettingsApi} from 'neucore-js-client';
 import Character from "../../classes/Character";
 import Data from "../../classes/Data";
 import Player from "../../classes/Player";
@@ -473,9 +503,13 @@ export default {
             ],
             newRole: '',
             searchResult: [],
+
             deleteCharModal: null,
             charToDelete: null,
             deleteReason: '',
+
+            addCharModal: null,
+            addCharId: '',
         }
     },
 
@@ -654,7 +688,7 @@ export default {
             this.deleteCharModal.show();
         },
 
-        deleteChar() {
+        deleteCharacter() {
             const character = (new Character(this));
             character.deleteCharacter(this.charToDelete.id, this.deleteReason, () => {
                 getPlayer(this);
@@ -668,6 +702,29 @@ export default {
                 this.deleteCharModal.hide();
             }
             this.charToDelete = null;
+        },
+
+        openAddCharacter() {
+            this.addCharId = '';
+            this.addCharModal = new Modal('#addCharModal');
+            this.addCharModal.show();
+        },
+
+        addCharacter(id) {
+            new CharacterApi().userCharacterAdd(id, (error, data, response) => {
+                if (response.statusCode === 201) {
+                    this.h.message('Account with character created.', 'success', 2500);
+                    this.addCharModal.hide();
+                } else if (response.statusCode === 403) {
+                    this.h.message('Forbidden.', 'warning');
+                } else if (response.statusCode === 404) {
+                    this.h.message('Character not found.', 'warning');
+                } else if (response.statusCode === 409) {
+                    this.h.message('The character already exists.', 'warning');
+                } else if (response.statusCode === 500) {
+                    this.h.message(JSON.parse(response.text), 'danger');
+                }
+            })
         },
     },
 }
@@ -704,8 +761,14 @@ function getEveLogins(vm) {
 
 <!--suppress CssUnusedSymbol -->
 <style scoped>
-    .update-account {
+    .update-account,
+    .add-character
+    {
         float: right;
         cursor: pointer;
+    }
+
+    .character-id:invalid {
+        border: 1px solid red;
     }
 </style>
