@@ -195,7 +195,7 @@ export default {
             }
             this.selectedTheme = name;
             const enable = document.querySelector(`head link[href*='css/theme-${this.selectedTheme.toLowerCase()}']`);
-            if (enable.getAttribute('rel') === 'stylesheet') {
+            if (!enable || enable.getAttribute('rel') === 'stylesheet') {
                 return;
             }
             document.querySelectorAll("head link[href*='css/theme-']").forEach(link => {
