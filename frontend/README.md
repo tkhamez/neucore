@@ -8,6 +8,7 @@ The frontend is based on [Vue.js](https://vuejs.org) and
 <!-- toc -->
 
 - [Install](#install)
+- [Development Server](#development-server)
 - [Style Guide](#style-guide)
 - [OpenAPI Client](#openapi-client)
 - [Console Commands](#console-commands)
@@ -27,10 +28,15 @@ Compiles and minifies for production, this will also build the Swagger UI (api.h
 npm run build
 ```
 
+## Development Server
+
 Compiles and hot-reloads for development:
 ```
 npm run serve
 ```
+
+Note: The build for the development server does not support switching themes. This can be enabled by setting
+`devModeThemes` to `true` in `vue.config.js`. This will however disable CSS reloading.
 
 ## Style Guide
 

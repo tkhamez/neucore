@@ -14,6 +14,7 @@ dd mm 2022
 - Removed inline CSS styles and JavaScript code to use a better value for the Content Security Policy header.
 - Added security related HTTP headers to the web server in the Docker image.
 - Small UI fixes and improvements.
+- Dev: Fixed CSS reloading for development build, see also [README.md](./frontend/README.md#development-server).
 
 ## 1.38.0
 
