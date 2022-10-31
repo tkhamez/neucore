@@ -231,7 +231,12 @@
 
                     <hr>
 
-                    <h4>Characters</h4>
+                    <h4>
+                        Characters
+                        <span role="img" class="copy-characters fa-regular fa-copy"
+                              title="Copy character list to clipboard."
+                              v-on:click="copyCharacterList"></span>
+                    </h4>
                     <div class="table-responsive">
                         <table class="table table-hover nc-table-sm" aria-describedby="Characters">
                             <thead class="table-light">
@@ -274,7 +279,7 @@
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-info btn-sm mt-1"
-                                                v-on:click.prevent="showEsiTokens(character)">Show</button>
+                                                v-on:click="showEsiTokens(character)">Show</button>
                                     </td>
                                     <td>
                                         <span v-if="character.lastUpdate">
@@ -284,7 +289,7 @@
                                     <td>
                                         <button type="button" class="btn btn-danger btn-sm mt-1"
                                                 :disabled="authChar.id === character.id"
-                                                v-on:click.prevent="askDeleteChar(character.id, character.name)">
+                                                v-on:click="askDeleteChar(character.id, character.name)">
                                             Delete
                                         </button>
                                     </td>
@@ -429,7 +434,8 @@
                                 <tr v-for="serviceAccount in playerEdit.serviceAccounts">
                                     <td>[{{ serviceAccount.serviceId }}] {{ serviceAccount.serviceName }}</td>
                                     <td>
-                                        [{{ serviceAccount.characterId }}] {{ characterName(serviceAccount.characterId) }}
+                                        [{{ serviceAccount.characterId }}]
+                                        {{ characterName(serviceAccount.characterId) }}
                                     </td>
                                     <td>{{ serviceAccount.username }}</td>
                                     <td>{{ serviceAccount.name }}</td>
@@ -674,6 +680,10 @@ export default {
             });
         },
 
+        copyCharacterList() {
+            this.h.copyCharacterList(this.playerEdit.characters);
+        },
+
         showEsiTokens(character) {
             this.$refs.esiTokensModal.showModal(character);
         },
@@ -759,11 +769,10 @@ function getEveLogins(vm) {
 }
 </script>
 
-<!--suppress CssUnusedSymbol -->
 <style scoped>
     .update-account,
-    .add-character
-    {
+    .add-character,
+    .copy-characters {
         float: right;
         cursor: pointer;
     }

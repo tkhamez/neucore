@@ -78,6 +78,17 @@ export default class Helper {
         this.vm.emitter.emit('showCharacters', playerId);
     }
 
+    /**
+     * @param {Character[]} characters
+     */
+    copyCharacterList(characters) {
+        const names = [];
+        for (const character of characters) {
+            names.push(character.name);
+        }
+        this.vm.emitter.emit('copyText', names.join("\n"));
+    }
+
     characterPortrait(id, size) {
         if (this.vm.globalStore.state.settings.esiDataSource === 'singularity') {
             // there are no character images on Sisi at the moment.

@@ -17,7 +17,12 @@ Modal window with all characters of one player.
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-lg-7">
-                            <h6>Characters</h6>
+                            <h6>
+                                Characters
+                                <span role="img" class="copy-characters fa-regular fa-copy"
+                                      title="Copy character list to clipboard."
+                                      v-on:click="copyCharacterList"></span>
+                            </h6>
                             <ul class="list-group">
                                 <li v-for="character in selectedPlayer.characters"
                                     class="list-group-item p-1 pb-2 pt-2">
@@ -234,6 +239,10 @@ export default {
             });
         },
 
+        copyCharacterList() {
+            this.h.copyCharacterList(this.selectedPlayer.characters);
+        },
+
         updatePlayer() {
             if (!this.selectedPlayer) {
                 return;
@@ -268,5 +277,14 @@ export default {
         .list-group {
             margin-bottom: 1rem;
         }
+    }
+
+    .copy-characters {
+        float: right;
+        cursor: pointer;
+        position: relative;
+        top: 3px;
+        right: 6px;
+        font-size: .9em;
     }
 </style>

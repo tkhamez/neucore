@@ -8,6 +8,8 @@ dd mm 2022
   HTTP server, see also [Install#security](./doc/Install.md#security).
 - **BC break**: Moved `web/dist/favicon.ico` to `web/favicon.ico`, this prevents some 404 errors in the logs.
 - Added admin function to add a character to a new account.
+- Added function to copy a list of character names to the clipboard on the user admin page and in the player 
+  modal window.
 - Added robots.txt.
 - Removed NEUCORE_SESSION_SAME_SITE option because there's no reason to change it.
 - Improved session security.
@@ -168,7 +170,7 @@ ESI endpoint for apps:
 
 5 Feb 2022
 
-- Fix Member Tracking: Background was not always removed when the character modal window was closed.
+- Fix Member Tracking: Background was not always removed when the player modal window was closed.
 - Some small text and layout improvements.
 
 ## 1.31.0

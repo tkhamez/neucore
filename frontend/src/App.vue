@@ -10,6 +10,7 @@
         <nav-bar v-if="settingsLoaded" v-cloak :auth-char="authChar" :logout="logout" :route="route"></nav-bar>
 
         <charactersModal ref="charactersModal"></charactersModal>
+        <copy-text ref="copyText"></copy-text>
 
         <component v-if="settingsLoaded" v-cloak v-bind:is="page"
                    :route="route"
@@ -45,6 +46,7 @@ import Helper from "./classes/Helper";
 import Util   from "./classes/Util";
 import NavBar          from './components/NavBar.vue';
 import CharactersModal from './components/Characters.vue';
+import CopyText        from './components/CopyText.vue';
 import Home    from './pages/Home.vue';
 import Groups  from './pages/Groups.vue';
 import Service from './pages/Service.vue';
@@ -72,6 +74,7 @@ export default {
     components: {
         NavBar,
         CharactersModal,
+        CopyText,
         Home,
         Groups,
         Service,
@@ -207,6 +210,9 @@ export default {
         });
         this.emitter.on('showCharacters', playerId => {
             this.$refs.charactersModal.showCharacters(playerId);
+        });
+        this.emitter.on('copyText', characters => {
+            this.$refs.copyText.exec(characters);
         });
 
         // refresh session every 5 minutes
