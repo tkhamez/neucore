@@ -271,8 +271,10 @@ export default {
                 // for example.
                 window.location.hash = this.loginRedirect;
                 this.loginRedirect = '';
+                return;
             } else if (this.route[0] === 'login-mail') {
                 window.location.hash = 'SystemSettings/Mails';
+                return;
             }
 
             // set page, fallback to Home
