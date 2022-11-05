@@ -7,17 +7,18 @@
         <link rel="icon" href="/favicon.ico">
         <title>Neucore - Alliance Core Services</title>
         <%
-        // Manually inject required files
-        for (let i = 0; i < htmlWebpackPlugin.files.js.length; i++) {
-            const file = htmlWebpackPlugin.files.js[i];
-            if (!file.match(/js\/theme-/)) {
-                %><script defer src="<%= file %>"></script><%
+        if (!htmlWebpackPlugin.options.inject) {
+            for (let i = 0; i < htmlWebpackPlugin.files.js.length; i++) {
+                const file = htmlWebpackPlugin.files.js[i];
+                if (!file.match(/js\/theme-/)) {
+                    %><script defer src="<%= file %>"></script><%
+                }
             }
-        }
-        for (let i = 0; i < htmlWebpackPlugin.files.css.length; i++) {
-            const file = htmlWebpackPlugin.files.css[i];
-            const alternate = file.match(/css\/theme-/) ? 'alternate' : '';
-            %><link href="<%= file %>" rel="<%= alternate %> stylesheet"><%
+            for (let i = 0; i < htmlWebpackPlugin.files.css.length; i++) {
+                const file = htmlWebpackPlugin.files.css[i];
+                const alternate = file.match(/css\/theme-/) ? 'alternate' : '';
+                %><link href="<%= file %>" rel="<%= alternate %> stylesheet"><%
+            }
         }
         %>
         <script type="text/javascript" src="<%= BASE_URL %>browser-check.js"></script>
