@@ -6,8 +6,6 @@ declare(strict_types=1);
 namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
-use Neucore\Entity\Character;
-use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
@@ -22,6 +20,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\ApiException;
+use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 
 /**
  * @OA\Tag(
@@ -350,7 +349,9 @@ class CharacterController extends BaseController
 
         // Check if EVE character exists
         try {
-            $eveChar = $esiApiFactory->getCharacterApi()->getCharactersCharacterId($id, $config['eve']['datasource']);
+            $eveChar = $esiApiFactory
+                ->getCharacterApi()
+                ->getCharactersCharacterId($charId, $config['eve']['datasource']);
         } catch (ApiException $e) {
             $body = $e->getResponseBody();
             if ($e->getCode() === 404 && is_string($body) && strpos($body, 'Character not found') !== false) {
@@ -365,10 +366,12 @@ class CharacterController extends BaseController
         }
 
         // Create new account
-        $char = $accountService->createNewPlayerWithMain($charId, $eveChar->getName());
-        $char->getPlayer()->addRole($userRole[0]);
-        $this->objectManager->persist($char->getPlayer());
-        $this->objectManager->persist($char);
+        if ($eveChar instanceof GetCharactersCharacterIdOk) {
+            $char = $accountService->createNewPlayerWithMain($charId, $eveChar->getName());
+            $char->getPlayer()->addRole($userRole[0]);
+            $this->objectManager->persist($char->getPlayer());
+            $this->objectManager->persist($char);
+        }
 
         return $this->flushAndReturn(201);
     }

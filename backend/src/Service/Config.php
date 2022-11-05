@@ -80,7 +80,8 @@ class Config implements \ArrayAccess
     {
         $value = $_ENV[$name] ?? null;
         if ($value === null) {
-            $value = $_ENV[(str_replace('NEUCORE_', 'BRAVECORE_', $name))] ?? null;
+            $legacyName = str_replace('NEUCORE_', 'BRAVECORE_', $name);
+            $value = $_ENV[$legacyName] ?? null;
         }
 
         if ((string) $value === '' && isset($this->config['env_var_defaults'][$name])) {

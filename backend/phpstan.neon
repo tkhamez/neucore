@@ -64,3 +64,9 @@ parameters:
 		-
 			message: '#Method (.*) should return (.*) but returns (.*)#'
 			path: %currentWorkingDirectory%/tests/Unit/Service/OAuthTokenTest.php
+		-
+			message: '#Cannot call method (.*) on null.#'
+			path: %currentWorkingDirectory%/tests/Unit/*
+		-
+			message: '#Call to an undefined method #'
+			path: %currentWorkingDirectory%/tests/Unit/*
