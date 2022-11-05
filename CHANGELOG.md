@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 1.39.0
 
-dd mm 2022
+5 Nov 2022
 
 - **BC break**: Removed NEUCORE_HSTS_MAX_AGE option (Strict-Transport-Security). This should be better set at the
   HTTP server, see also [Install#security](./doc/Install.md#security).
