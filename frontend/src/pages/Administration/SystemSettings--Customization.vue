@@ -42,7 +42,7 @@
         <span class="form-text">Text below the headline on the home page.</span>
         <hr>
         <label for="customizationHomeLogo" class="col-form-label">Home Page Logo</label><br>
-        <img :src="settings.customization_home_logo" alt="logo">
+        <img :src="settings.customization_home_logo" alt="logo"> &nbsp;
         <input type="file" class="mt-1" ref="customization_home_logo"
                id="customizationHomeLogo" v-on:change="handleFileUpload('customization_home_logo')"><br>
         <span class="form-text">Organization logo used on the home page.</span>
