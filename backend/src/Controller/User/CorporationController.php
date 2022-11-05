@@ -9,6 +9,7 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Service\Account;
 use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
@@ -633,10 +634,10 @@ class CorporationController extends BaseController
      *         @OA\Schema(type="string", enum={"true", "false"})
      *     ),
      *     @OA\Parameter(
-     *         name="valid-token",
+     *         name="token-status",
      *         in="query",
-     *         description="Limit to characters with a valid (true) or invalid (false) token.",
-     *         @OA\Schema(type="string", enum={"true", "false"})
+     *         description="Limit to characters with a valid, invalid or no token.",
+     *         @OA\Schema(type="string", enum={"valid", "invalid", "none"})
      *     ),
      *     @OA\Parameter(
      *         name="token-status-changed",
@@ -671,7 +672,7 @@ class CorporationController extends BaseController
         $inactive = $this->getQueryParam($request, 'inactive');
         $active = $this->getQueryParam($request, 'active');
         $accountParam = $this->getQueryParam($request, 'account');
-        $validTokenParam = $this->getQueryParam($request, 'valid-token');
+        $tokenStatusParam = $this->getQueryParam($request, 'token-status');
         $tokenStatusChanged = $this->getQueryParam($request, 'token-status-changed');
         $mailCount = $this->getQueryParam($request, 'mail-count');
 
@@ -680,10 +681,13 @@ class CorporationController extends BaseController
         } else {
             $account = $accountParam === 'false' ? false : null;
         }
-        if ($validTokenParam === 'true') {
-            $validToken = true;
-        } else {
-            $validToken = $validTokenParam === 'false' ? false : null;
+        $tokenStatus = null;
+        if ($tokenStatusParam === 'valid') {
+            $tokenStatus = CorporationMemberRepository::TOKEN_STATUS_VALID;
+        } elseif ($tokenStatusParam === 'invalid') {
+            $tokenStatus = CorporationMemberRepository::TOKEN_STATUS_INVALID;
+        } elseif ($tokenStatusParam === 'none') {
+            $tokenStatus = CorporationMemberRepository::TOKEN_STATUS_NONE;
         }
 
         $members = $this->repositoryFactory
@@ -691,7 +695,7 @@ class CorporationController extends BaseController
             ->setInactive($inactive !== null ? (int) $inactive : null)
             ->setActive($active !== null ? (int) $active : null)
             ->setAccount($account)
-            ->setValidToken($validToken)
+            ->setTokenStatus($tokenStatus)
             ->setTokenChanged($tokenStatusChanged !== null ? (int) $tokenStatusChanged : null)
             ->setMailCount((int) $mailCount)
             ->findMatching((int) $id);

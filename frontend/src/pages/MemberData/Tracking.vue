@@ -42,17 +42,18 @@
                         <option value="true">with</option>
                         <option value="false">without</option>
                     </select>
-                    Limit to members with/without an <strong>account</strong>
+                    Limit to members <em>with/without</em> an <strong>account</strong>
                 </label>
             </div>
             <div class="col-sm-12 col-md-6 mb-1">
                 <label class="small">
-                    <select class="form-select form-select-sm input-option" v-model="formOptions.validToken">
+                    <select class="form-select form-select-sm input-option" v-model="formOptions.tokenStatus">
                         <option></option>
-                        <option value="true">valid</option>
-                        <option value="false">invalid</option>
+                        <option value="valid">valid</option>
+                        <option value="invalid">invalid</option>
+                        <option value="none">no</option>
                     </select>
-                    Limit to characters with a valid/invalid <strong>token</strong>
+                    Limit to characters with a <em>valid/invalid/no</em> <strong>token</strong>
                 </label>
             </div>
         </div>
@@ -150,7 +151,7 @@ export default {
                 daysActive: null,
                 daysInactive: null,
                 account: null,
-                validToken: null,
+                tokenStatus: null,
                 tokenChanged: null,
                 mailCount: null,
             },
@@ -232,7 +233,7 @@ function getMembers(vm) {
         inactive: vm.formOptions.daysInactive,
         active: vm.formOptions.daysActive,
         account: vm.formOptions.account,
-        validToken: vm.formOptions.validToken,
+        tokenStatus: vm.formOptions.tokenStatus,
         tokenStatusChanged: vm.formOptions.tokenChanged,
         mailCount: vm.formOptions.mailCount,
     };
@@ -269,7 +270,7 @@ function setOptionsFromPath(vm) {
         vm.formOptions.account = vm.route[4];
     }
     if (vm.route[5]) {
-        vm.formOptions.validToken = vm.route[5];
+        vm.formOptions.tokenStatus = vm.route[5];
     }
     if (vm.route[6]) {
         vm.formOptions.tokenChanged = vm.route[6];
@@ -285,7 +286,7 @@ function setPathFromOptions(vm) {
         vm.formOptions.daysInactive,
         vm.formOptions.daysActive,
         vm.formOptions.account,
-        vm.formOptions.validToken,
+        vm.formOptions.tokenStatus,
         vm.formOptions.tokenChanged,
         vm.formOptions.mailCount,
     ];

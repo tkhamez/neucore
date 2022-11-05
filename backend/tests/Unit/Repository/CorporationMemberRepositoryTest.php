@@ -16,6 +16,7 @@ use Neucore\Entity\EsiType;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\CorporationMemberRepository;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 
@@ -47,6 +48,8 @@ class CorporationMemberRepositoryTest extends TestCase
         $char2 = (new Character())->setId(20)->setName('Char 2')->setPlayer($player1)
             ->setCreated(self::$values->createdTime1)->setLastUpdate(self::$values->updatedTime1);
         $char5 = (new Character())->setId(50)->setName('Char 5')->setPlayer($player1);
+        $char6 = (new Character())->setId(60)->setName('Char 6')->setPlayer($player1);
+        $char7 = (new Character())->setId(70)->setName('Char 7')->setPlayer($player1);
         $token1 = (new EsiToken())->setEveLogin($eveLogin)->setRefreshToken('')->setAccessToken('')->setExpires(0)
             ->setValidToken(true)->setCharacter($char1);
         $token2 = (new EsiToken())->setEveLogin($eveLogin)->setRefreshToken('')->setAccessToken('')->setExpires(0)
@@ -54,6 +57,8 @@ class CorporationMemberRepositoryTest extends TestCase
             ->setLastChecked(self::$values->lastCheckedTime)->setCharacter($char2);
         $token5 = (new EsiToken())->setEveLogin($eveLogin)->setRefreshToken('')->setAccessToken('')->setExpires(0)
             ->setValidToken(true)->setCharacter($char5);
+        $token6 = (new EsiToken())->setEveLogin($eveLogin)->setRefreshToken('')->setAccessToken('')->setExpires(0)
+            ->setCharacter($char6);
         $corp1 = (new Corporation())->setId(1)->setName('Corp 1')->setTicker('C1');
         $corp2 = (new Corporation())->setId(2)->setName('Corp 2')->setTicker('C2');
         $member1 = (new CorporationMember())->setId($char1->getId())->setName('Member 1')->setCorporation($corp1)
@@ -72,6 +77,10 @@ class CorporationMemberRepositoryTest extends TestCase
             ->setLogonDate(new \DateTime('now -111 days +30 minutes'));
         $member5 = (new CorporationMember())->setId($char5->getId())->setName('Member 5')->setCorporation($corp2)
             ->setLogonDate(new \DateTime('now -110 days +30 minutes'));
+        $member6 = (new CorporationMember())->setId($char6->getId())->setName('Member 6')->setCorporation($corp2)
+            ->setLogonDate(new \DateTime('2022-11-05 14:03:36'));
+        $member7 = (new CorporationMember())->setId($char7->getId())->setName('Member 7')->setCorporation($corp2)
+            ->setLogonDate(new \DateTime('2022-11-05 14:03:37'));
 
         self::$om->persist($eveLogin);
         self::$om->persist($location);
@@ -80,9 +89,12 @@ class CorporationMemberRepositoryTest extends TestCase
         self::$om->persist($char1);
         self::$om->persist($char2);
         self::$om->persist($char5);
+        self::$om->persist($char6);
+        self::$om->persist($char7);
         self::$om->persist($token1);
         self::$om->persist($token2);
         self::$om->persist($token5);
+        self::$om->persist($token6);
         self::$om->persist($corp1);
         self::$om->persist($corp2);
         self::$om->persist($member1);
@@ -91,6 +103,8 @@ class CorporationMemberRepositoryTest extends TestCase
         self::$om->persist($member3);
         self::$om->persist($member4);
         self::$om->persist($member5);
+        self::$om->persist($member6);
+        self::$om->persist($member7);
 
         self::$om->flush();
         self::$om->clear();
@@ -105,7 +119,7 @@ class CorporationMemberRepositoryTest extends TestCase
         $repository->setAccount(false);
         $repository->setActive(110);
         $repository->setInactive(110);
-        $repository->setValidToken(false);
+        $repository->setTokenStatus($repository::TOKEN_STATUS_INVALID);
         $repository->setTokenChanged(100);
         $repository->setMailCount(2);
         $this->assertSame(0, count($repository->findMatching(1)));
@@ -221,18 +235,22 @@ class CorporationMemberRepositoryTest extends TestCase
         $this->assertSame('Member 1a', $actual2[1]->getName());
     }
 
-    public function testFindMatchingWithToken()
+    public function testFindMatchingTokenStatus()
     {
         $repository = (new RepositoryFactory(self::$om))->getCorporationMemberRepository();
 
-        $actual1 = $repository->setValidToken(true)->findMatching(1);
-        $actual2 = $repository->setValidToken(false)->findMatching(1);
+        $actual1 = $repository->setTokenStatus(CorporationMemberRepository::TOKEN_STATUS_VALID)->findMatching(1);
+        $actual2 = $repository->setTokenStatus(CorporationMemberRepository::TOKEN_STATUS_INVALID)->findMatching(1);
+        $actual3 = $repository->setTokenStatus(CorporationMemberRepository::TOKEN_STATUS_NONE)->findMatching(2);
 
         $this->assertSame(1, count($actual1));
         $this->assertSame(1, count($actual2));
+        $this->assertSame(2, count($actual3));
 
         $this->assertSame('Char 1', $actual1[0]->getCharacter()->getName());
         $this->assertSame('Char 2', $actual2[0]->getCharacter()->getName());
+        $this->assertSame('Char 7', $actual3[0]->getCharacter()->getName());
+        $this->assertSame('Char 6', $actual3[1]->getCharacter()->getName());
     }
 
     public function testFindMatchingTokenChanged()

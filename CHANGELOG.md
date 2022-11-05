@@ -7,6 +7,7 @@ dd mm 2022
 - **BC break**: Removed NEUCORE_HSTS_MAX_AGE option (Strict-Transport-Security). This should be better set at the
   HTTP server, see also [Install#security](./doc/Install.md#security).
 - **BC break**: Moved `web/dist/favicon.ico` to `web/favicon.ico`, this prevents some 404 errors in the logs.
+- Member Tracking: Added new filter option: no token.
 - Added admin function to add a character to a new account.
 - Added function to copy a list of character names to the clipboard on the user admin page and in the player 
   modal window.

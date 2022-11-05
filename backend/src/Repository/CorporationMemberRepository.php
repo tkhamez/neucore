@@ -19,41 +19,29 @@ use Neucore\Entity\Player;
  */
 class CorporationMemberRepository extends EntityRepository
 {
+    public const TOKEN_STATUS_VALID = 1;
+
+    public const TOKEN_STATUS_INVALID = 2;
+
+    public const TOKEN_STATUS_NONE = 3;
+
     private const NOW = 'now';
 
     private const DAYS = 'days';
 
     private const DATE_FORMAT = 'Y-m-d H:i:s';
 
-    /**
-     * @var int|null
-     */
-    private $active;
+    private ?int $active = null;
 
-    /**
-     * @var int|null
-     */
-    private $inactive;
+    private ?int $inactive = null;
 
-    /**
-     * @var bool|null
-     */
-    private $account;
+    private ?bool $account = null;
 
-    /**
-     * @var bool|null
-     */
-    private $validToken;
+    private ?int $tokenStatus = null;
 
-    /**
-     * @var int|null
-     */
-    private $tokenChanged;
+    private ?int $tokenChanged = null;
 
-    /**
-     * @var int|null
-     */
-    private $mailCount;
+    private ?int $mailCount = null;
 
     /**
      * Limit to members who were active in the last x days.
@@ -88,9 +76,9 @@ class CorporationMemberRepository extends EntityRepository
     /**
      * Limit to characters with a valid (true) or invalid (false) token
      */
-    public function setValidToken(?bool $validToken): self
+    public function setTokenStatus(?int $tokenStatus): self
     {
-        $this->validToken = $validToken;
+        $this->tokenStatus = $tokenStatus;
 
         return $this;
     }
@@ -123,7 +111,7 @@ class CorporationMemberRepository extends EntityRepository
         $this->setInactive(null);
         $this->setActive(null);
         $this->setAccount(null);
-        $this->setValidToken(null);
+        $this->setTokenStatus(null);
         $this->setTokenChanged(null);
         $this->setMailCount(null);
 
@@ -190,13 +178,15 @@ class CorporationMemberRepository extends EntityRepository
         } elseif ($this->account === false) {
             $qb->andWhere($qb->expr()->isNull('c.id'));
         }
-        if ($this->validToken !== null || $this->tokenChanged > 0) {
+        if ($this->tokenStatus !== null || $this->tokenChanged > 0) {
             $qb->andWhere('c.id IS NOT NULL');
         }
-        if ($this->validToken) {
+        if ($this->tokenStatus === self::TOKEN_STATUS_VALID) {
             $qb->andWhere($qb->expr()->eq('e.validToken', 1));
-        } elseif ($this->validToken === false) {
+        } elseif ($this->tokenStatus === self::TOKEN_STATUS_INVALID) {
             $qb->andWhere($qb->expr()->eq('e.validToken', 0));
+        } elseif ($this->tokenStatus === self::TOKEN_STATUS_NONE) {
+            $qb->andWhere($qb->expr()->isNull('e.validToken'));
         }
         if (
             $this->tokenChanged > 0 &&
