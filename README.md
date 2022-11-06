@@ -31,11 +31,10 @@ Demo: https://neucore.tian-space.net.
 
 Main features:
 
-- Login via EVE SSO, no e-mail address required.
-- Group membership management (manually and with various ways to automate membership).
-- Corporation member tracking and character watchlists.
+- Management of group memberships, manually and with various ways to automate membership.
 - API for various data including an [ESI](http://esi.evetech.net) proxy for all characters.
 - Service registration via [plugins](https://github.com/tkhamez/neucore-plugin) (e.g. Discord, Mumble).
+- Corporation member tracking and character watchlists.
 
 For more information, see the [doc](doc/README.md) directory, which also contains some 
 [screenshots](doc/screenshots/README.md).
@@ -49,7 +48,7 @@ See [doc/Install.md](doc/Install.md) for installation instructions.
 ### First Login and Customization
 
 - Login with an EVE character to create an account.
-- Open a console and run `bin/console make-admin 1`.
+- Open a console and run `backend/bin/console make-admin 1`.
 - Navigate to *Admin -> Settings* and change texts, links and images that are specific to your installation.
 
 ### Setting up Member Tracking and Watchlists
