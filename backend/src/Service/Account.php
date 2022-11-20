@@ -308,7 +308,7 @@ class Account
         // Check owner change
         if ($eveAuth->getCharacterOwnerHash() !== '') {
             // The next check should never be true because the token is already invalid
-            // after a character transfer - I hope ...
+            // after a character transfer - but apparently it can happen.
             if ($char->getCharacterOwnerHash() !== $eveAuth->getCharacterOwnerHash()) {
                 $this->deleteCharacter($char, RemovedCharacter::REASON_DELETED_OWNER_CHANGED);
                 $result = self::CHECK_CHAR_DELETED;
