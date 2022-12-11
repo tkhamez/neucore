@@ -7,7 +7,6 @@
   * [Run Docker Image](#run-docker-image)
   * [Manual Installation](#manual-installation)
   * [Docker Development Environment](#docker-development-environment)
-  * [Deploy on Heroku](#deploy-on-heroku)
   * [Deploy on AWS Beanstalk](#deploy-on-aws-beanstalk)
 - [Post Installation](#post-installation)
   * [Cronjob](#cronjob)
@@ -242,22 +241,6 @@ the database host is `neucore_db` and the database name also `neucore`.
 
 The web application is available at http://localhost:8080, the frontend development server at http://localhost:3000.
 The database is also available at `127.0.0.1:30306` and it's data is stored in the `.db` subdirectory.
-
-### Deploy on Heroku
-
-You can deploy the application on a free [Heroku](https://www.heroku.com) account.
-
-- Create a new app
-- Add a compatible database, e.g. JawsDB Maria.
-- Add the necessary config vars (see `backend/.env.dist` file) and set the following:
-  - NEUCORE_LOG_PATH=php://stderr
-  - NEUCORE_CACHE_DIR=/tmp
-- Add build packs in this order:
-  ```
-  heroku buildpacks:add heroku/java
-  heroku buildpacks:add heroku/nodejs
-  heroku buildpacks:add heroku/php
-  ```
 
 ### Deploy on AWS Beanstalk
 

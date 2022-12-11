@@ -4,8 +4,6 @@
 /.composer/*
 !/.composer/.gitkeep
 /dist
-/vendor/
-/.phpunit.result.cache
 
 # OS, IDEs
 .DS_Store

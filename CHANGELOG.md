@@ -5,6 +5,7 @@
 dd mm yyyy
 
 - **BC break**: Dropped PHP 7.4 support, minimum require version is now 8.0.
+- **BC break**: Removed files necessary to deploy on Heroku (I can't test it anymore because they removed free plans).
 - PHP 8.2 compatibility (no change was necessary, but it's tested now).
 
 ## 1.39.0
