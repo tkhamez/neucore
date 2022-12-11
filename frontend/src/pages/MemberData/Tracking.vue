@@ -131,6 +131,8 @@
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
+import 'datatables.net-bs5';
+import 'datatables.net-bs5/css/dataTables.bootstrap5.css';
 import {Tooltip} from 'bootstrap';
 import {CorporationApi} from 'neucore-js-client';
 import Helper from "../../classes/Helper";
