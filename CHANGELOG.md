@@ -7,8 +7,7 @@ dd mm yyyy
 - **BC break**: Dropped PHP 7.4 support, minimum require version is now 8.0.
 - **BC break**: Removed files necessary to deploy on Heroku (I can't test it anymore because they removed free plans).
 - PHP 8.2 compatibility (no change was necessary, but it's tested now).
-- Change: Added "allow-popups-to-escape-sandbox" value to the "sandbox" directive of the recommended CSP 
-  (Content-Security-Policy) header to make Eve Who links work again.
+- Changed the (recommended) Content Security Policy (CSP) header. This also fixes links to Eve Who.
 - Dev: Update to Node.js 18 LTS.
 
 ## 1.39.0
