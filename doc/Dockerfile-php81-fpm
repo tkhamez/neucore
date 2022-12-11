@@ -1,5 +1,6 @@
 FROM php:8.1-fpm-alpine
-RUN apk update && apk add --no-cache autoconf gcc g++ make gmp-dev libzip-dev icu-dev
+RUN apk update && \
+    apk add --no-cache autoconf gcc g++ make gmp-dev libzip-dev icu-dev
 RUN mkdir -p /usr/src/php/ext/apcu && \
     curl -fsSL https://pecl.php.net/get/apcu-5.1.21.tgz | tar xvz -C "/usr/src/php/ext/apcu" --strip 1
 RUN mkdir -p /usr/src/php/ext/ast && \

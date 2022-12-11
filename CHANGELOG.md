@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- PHP 8.2 compatibility (no change was necessary, but it's tested now).
+
 ## 1.39.0
 
 5 Nov 2022
