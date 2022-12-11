@@ -1,5 +1,5 @@
 #
-# NOTE: This is outdated because Neucore needs a higher PHP version now.
+# Note: this file is no longer maintained.
 #
 
 # Only tested on Linux with Vagrant 2 + libvirt.
