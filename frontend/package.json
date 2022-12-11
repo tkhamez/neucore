@@ -55,15 +55,12 @@
     "sass-loader": "^13.0.0",
     "webpack": "^5.74.0"
   },
-  "bundledDependencies": [
+  "bundleDependencies": [
     "neucore-js-client"
   ],
   "engines": {
     "node": "^16.15.1",
     "npm": "^8.11.0"
   },
-  "license": "MIT",
-  "bundleDependencies": [
-    "neucore-js-client"
-  ]
+  "license": "MIT"
 }
