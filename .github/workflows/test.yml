@@ -10,10 +10,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - php-version: '7.4'
+          - php-version: '8.0'
             db-image: mariadb
             db-version: '10.2'
-          - php-version: '8.0'
+          - php-version: '8.1'
             db-image: mariadb
             db-version: '10.6'
           - php-version: '8.1'
@@ -45,7 +45,7 @@ jobs:
       - name: Install
         run: cd backend && composer install
       - name: Test with code coverage
-        if: ${{ github.repository_owner == 'tkhamez' && matrix.php-version == '7.4' }}
+        if: ${{ github.repository_owner == 'tkhamez' && matrix.php-version == '8.0' }}
         env:
           NEUCORE_APP_ENV: dev
           NEUCORE_TEST_DATABASE_URL: 'mysql://root:@127.0.0.1/test'
@@ -54,7 +54,7 @@ jobs:
           NEUCORE_EVE_CALLBACK_URL: 'http://localhost'
         run: cd backend && vendor/bin/phpunit --coverage-clover var/logs/clover.xml
       - name: Test
-        if: ${{ github.repository_owner != 'tkhamez' || matrix.php-version != '7.4' }}
+        if: ${{ github.repository_owner != 'tkhamez' || matrix.php-version != '8.0' }}
         env:
           NEUCORE_APP_ENV: dev
           NEUCORE_TEST_DATABASE_URL: 'mysql://root:@127.0.0.1/test'
@@ -63,10 +63,10 @@ jobs:
           NEUCORE_EVE_CALLBACK_URL: 'http://localhost'
         run: cd backend && vendor/bin/phpunit
       - name: Setup SonarQube
-        if: ${{ github.repository_owner == 'tkhamez' && matrix.php-version == '7.4' }}
+        if: ${{ github.repository_owner == 'tkhamez' && matrix.php-version == '8.0' }}
         uses: warchant/setup-sonar-scanner@v3
       - name: SonarQube
-        if: ${{ github.repository_owner == 'tkhamez' && matrix.php-version == '7.4' }}
+        if: ${{ github.repository_owner == 'tkhamez' && matrix.php-version == '8.0' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: sonar-scanner

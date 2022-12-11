@@ -4,7 +4,7 @@
     "description": "",
     "license": "MIT",
     "require": {
-        "php-64bit": "^7.4|^8.0",
+        "php-64bit": "^8.0",
         "ext-curl": "*",
         "ext-dom": "*",
         "ext-gmp": "*",
@@ -97,7 +97,7 @@
     },
     "config": {
         "platform": {
-            "php": "7.4.0"
+            "php": "8.0.0"
         },
         "process-timeout": 0,
         "sort-packages": true

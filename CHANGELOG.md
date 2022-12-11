@@ -4,6 +4,7 @@
 
 dd mm yyyy
 
+- **BC break**: Dropped PHP 7.4 support, minimum require version is now 8.0.
 - PHP 8.2 compatibility (no change was necessary, but it's tested now).
 
 ## 1.39.0
