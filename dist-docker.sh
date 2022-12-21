@@ -14,19 +14,26 @@ git checkout-index -a -f --prefix=./dist/build/
 echo "NEUCORE_APP_ENV=prod"                                                          > dist/build/backend/.env
 echo "NEUCORE_DATABASE_URL=mysql://user:@127.0.0.1/db?serverVersion=mariadb-10.2.7" >> dist/build/backend/.env
 
+# Backend
 docker-compose exec neucore_php sh -c "cd ../dist/build/backend && composer install --no-dev --optimize-autoloader --no-interaction"
 docker-compose exec neucore_php sh -c "cd ../dist/build/backend && bin/doctrine orm:generate-proxies"
 docker-compose exec neucore_php sh -c "cd ../dist/build/backend && composer openapi"
 
+
+# OpenAPI JS client
 docker-compose run neucore_java /app/dist/build/frontend/openapi.sh
 docker-compose run neucore_node sh -c "cd ../dist/build/frontend/neucore-js-client && npm install"
 docker-compose run neucore_node sh -c "cd ../dist/build/frontend/neucore-js-client && npm run build"
+
+
+# Frontend
 docker-compose run neucore_node sh -c "cd ../dist/build/frontend && npm install"
 docker-compose run neucore_node sh -c "cd ../dist/build/frontend && npm run build"
 
+
+# Collect files and create archive
 cd dist/build || exit
 ./dist-collect-files.sh
-
 if [[ "$1" ]]; then
     NAME=$1
 else

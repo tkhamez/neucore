@@ -4,18 +4,18 @@ DIR=$(dirname "$(realpath "$0")")
 
 # generate the OpenAPI client
 
-VERSION=5.3.1
+VERSION=6.2.1
 FILENAME=openapi-generator-cli-${VERSION}.jar
 
 if [[ ! -f ${DIR}/${FILENAME} ]]; then
     wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/${VERSION}/${FILENAME} \
-        -O ${DIR}/${FILENAME}
+        -O "${DIR}"/${FILENAME}
 fi
 
-rm -Rf ${DIR}/neucore-js-client/*
+rm -Rf "${DIR}"/neucore-js-client/*
 
-java -jar ${DIR}/${FILENAME} generate \
-    -c ${DIR}/neucore-js-client-config.json \
-    -i ${DIR}/../web/frontend-api-3.yml \
+java -jar "${DIR}"/${FILENAME} generate \
+    -c "${DIR}"/neucore-js-client-config.json \
+    -i "${DIR}"/../web/frontend-api-3.yml \
     -g javascript \
-    -o ${DIR}/neucore-js-client
+    -o "${DIR}"/neucore-js-client

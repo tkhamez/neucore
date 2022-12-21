@@ -81,8 +81,8 @@ bin/doc-api-gen.php
 
 ### ESI routes
 
-The `/api/app/v1/esi` endpoint uses a denylist to block requests to publicly accessible ESI routes. 
-This list can be regenerated with:
+The `/api/app/v2/esi` endpoint uses a denylist to block requests to publicly accessible ESI routes. 
+This list is stored in `config/esi-paths-public.php` and can be regenerated with:
 
 ```
 bin/esi-paths-public.php

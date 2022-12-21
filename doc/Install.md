@@ -136,6 +136,18 @@ In a real production environment you want to set up a reverse proxy server with 
   --detach=true \
 ```
 
+Example reverse proxy configuration for Apache (without SSL):
+
+```
+<VirtualHost *:80>
+	ServerName neucore.tian-space.net
+	ProxyPreserveHost On
+	ProxyRequests off
+	ProxyPass / http://localhost:8080/
+	ProxyPassReverse / http://localhost:8080/
+</VirtualHost>
+```
+
 #### Create the Image
 
 You can also create the image yourself. Clone the repository and build a distribution (see below) or 

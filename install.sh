@@ -1,31 +1,23 @@
 #!/usr/bin/env bash
 
-# build backend (PHP)
+# Install backend, run database migrations and generate OpenAPI files.
 cd backend || exit
-if hash composer 2>/dev/null; then
-    COMPOSER_CMD=composer
-else
-    # for AWS Beanstalk (may not work anymore)
-    COMPOSER_CMD=composer.phar
-fi
 if [[ $1 = prod ]]; then
-    $COMPOSER_CMD install --no-dev --optimize-autoloader --no-interaction
-    $COMPOSER_CMD compile:prod --no-dev --no-interaction
+    composer install --no-dev --optimize-autoloader --no-interaction
+    composer compile:prod --no-dev --no-interaction
 else
-    $COMPOSER_CMD install
-    $COMPOSER_CMD compile
+    composer install
+    composer compile
 fi
 
-# generate OpenAPI JS client (Java)
-cd ../frontend || exit
-./openapi.sh
-
-# build frontend (Node.js)
+# Generate and build OpenAPI JavaScript client
+cd ../frontend && ./openapi.sh
 cd neucore-js-client || exit
 npm install
 npm run build
-cd .. || exit
-npm install
+
+# Build frontend
+cd .. && npm install
 if [[ $1 = prod ]]; then
     npm run build
 fi

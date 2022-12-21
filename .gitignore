@@ -23,4 +23,3 @@
 # Docker
 /.db/*
 !/.db/.gitkeep
-/docker-db

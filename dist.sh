@@ -14,23 +14,26 @@ git checkout-index -a -f --prefix=./dist/build/
 echo "NEUCORE_APP_ENV=prod"                                                          > dist/build/backend/.env
 echo "NEUCORE_DATABASE_URL=mysql://user:@127.0.0.1/db?serverVersion=mariadb-10.2.7" >> dist/build/backend/.env
 
+# Backend
 cd dist/build/backend || exit
 composer install --no-dev --optimize-autoloader --no-interaction
 bin/doctrine orm:generate-proxies
 composer openapi
 
-cd ../frontend || exit
-./openapi.sh
+# OpenAPI JS client
+cd ../frontend && ./openapi.sh
 cd neucore-js-client || exit
 npm install
 npm run build
-cd ..
+
+# Frontend
+cd .. || exit;
 npm install
 npm run build
 
+# Collect files and create archive
 cd .. || exit
 ./dist-collect-files.sh
-
 if [[ "$1" ]]; then
     NAME=$1
 else

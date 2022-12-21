@@ -4,11 +4,14 @@
 
 dd mm yyyy
 
-- **BC break**: Dropped PHP 7.4 support, minimum require version is now 8.0.
+- **BC break**: Dropped PHP 7.4 support, minimum required version is now 8.0.
 - **BC break**: Removed files necessary to deploy on Heroku (I can't test it anymore because they removed free plans).
 - PHP 8.2 compatibility (no change was necessary, but it's tested now).
-- Changed the (recommended) Content Security Policy (CSP) header. This also fixes links to Eve Who.
+- Changed the Content Security Policy (CSP) header (in the documentation and Docker). This also fixes links to Eve Who.
+- Added content compression to Docker container (prod).
+- Updated dependencies.
 - Dev: Update to Node.js 18 LTS.
+- Dev: Removed support for `composer.phar` in `install.sh`, it now needs the `composer` command to be available.
 
 ## 1.39.0
 
