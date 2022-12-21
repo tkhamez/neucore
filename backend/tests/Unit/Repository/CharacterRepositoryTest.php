@@ -15,25 +15,13 @@ use Neucore\Entity\Character;
 
 class CharacterRepositoryTest extends TestCase
 {
-    /**
-     * @var CharacterRepository
-     */
-    private static $repository;
+    private static CharacterRepository $repository;
 
-    /**
-     * @var Group
-     */
-    private static $group;
+    private static Group $group;
 
-    /**
-     * @var Player
-     */
-    private static $player1;
+    private static Player $player1;
 
-    /**
-     * @var Player
-     */
-    private static $player2;
+    private static Player $player2;
 
     public static function setUpBeforeClass(): void
     {

@@ -109,13 +109,13 @@ class UpdateServiceAccounts extends Command
 
         try {
             $allAccounts = $implementation->getAllAccounts();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->writeLine('  Could not get accounts for ' . $service->getName());
             return;
         }
         try {
             $allPlayerAccounts = $implementation->getAllPlayerAccounts();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->writeLine('  Could not get accounts for ' . $service->getName());
             return;
         }

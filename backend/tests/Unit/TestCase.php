@@ -17,7 +17,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $routingResults = $this->createMock(RoutingResults::class);
         $route = $this->createMock(RouteInterface::class);
 
-        $request = RequestFactory::createRequest($method, $path ? $path : '/');
+        $request = RequestFactory::createRequest($method, $path ?: '/');
         $request = $request->withAttribute(RouteContext::ROUTE_PARSER, $routeParser);
         $request = $request->withAttribute(RouteContext::ROUTING_RESULTS, $routingResults);
 

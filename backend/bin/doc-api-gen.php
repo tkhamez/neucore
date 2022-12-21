@@ -56,7 +56,7 @@ function getRoutesForRole(string $role, array $routes, array $securityDef): arra
     $result = [];
     foreach ($routes as $pattern => $conf) {
         foreach ($securityDef as $secured => $roles) {
-            if (strpos($pattern, $secured) !== 0) {
+            if (!str_starts_with($pattern, $secured)) {
                 continue;
             }
             if (in_array($role, $roles)) {

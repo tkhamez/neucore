@@ -28,25 +28,13 @@ use Tests\Helper;
 
 class EveMailTest extends TestCase
 {
-    /**
-     * @var EveMail
-     */
-    private $eveMail;
+    private EveMail $eveMail;
 
-    /**
-     * @var \Doctrine\Persistence\ObjectManager
-     */
-    private $om;
+    private \Doctrine\Persistence\ObjectManager $om;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repoFactory;
+    private RepositoryFactory $repoFactory;
 
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
     protected function setUp(): void
     {

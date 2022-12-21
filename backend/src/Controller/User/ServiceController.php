@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnusedAliasInspection */
 
 declare(strict_types=1);
@@ -173,7 +174,7 @@ class ServiceController extends BaseController
                 $serviceImplementation,
                 $this->getUser($userAuth)->getPlayer()->getCharacters()
             );
-        } catch (Exception $e) {
+        } catch (Exception) {
             return $this->response->withStatus(500);
         }
 
@@ -262,7 +263,7 @@ class ServiceController extends BaseController
         }
         try {
             $accounts = $this->serviceRegistration->getAccounts($serviceImplementation, $characters, false);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return $this->response->withStatus(500);
         }
         if (
@@ -469,7 +470,7 @@ class ServiceController extends BaseController
         // change password
         try {
             $newPassword = $serviceImplementation->resetPassword($account->getCharacterId());
-        } catch (Exception $e) {
+        } catch (Exception) {
             return $this->response->withStatus(500);
         }
 
@@ -546,7 +547,7 @@ class ServiceController extends BaseController
                 [$validCharacter],
                 false
             );
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->responseErrorCode = 500;
             return null;
         }

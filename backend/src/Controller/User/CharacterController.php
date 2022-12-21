@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnusedAliasInspection */
 
 declare(strict_types=1);
@@ -354,7 +355,7 @@ class CharacterController extends BaseController
                 ->getCharactersCharacterId($charId, $config['eve']['datasource']);
         } catch (ApiException $e) {
             $body = $e->getResponseBody();
-            if ($e->getCode() === 404 && is_string($body) && strpos($body, 'Character not found') !== false) {
+            if ($e->getCode() === 404 && is_string($body) && str_contains($body, 'Character not found')) {
                 return $this->withJson('Character not found.', 404);
             } else {
                 $log->error($e->getMessage());

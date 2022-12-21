@@ -11,7 +11,7 @@ use Slim\Psr7\Factory\ResponseFactory;
 
 class RequestHandler implements RequestHandlerInterface
 {
-    private $request;
+    private ServerRequestInterface $request;
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

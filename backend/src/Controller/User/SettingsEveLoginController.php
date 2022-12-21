@@ -53,7 +53,7 @@ class SettingsEveLoginController extends BaseController
      */
     public function create(string $name): ResponseInterface
     {
-        if (!preg_match($this->namePattern, $name) || strpos($name, EveLogin::INTERNAL_LOGIN_PREFIX) === 0) {
+        if (!preg_match($this->namePattern, $name) || str_starts_with($name, EveLogin::INTERNAL_LOGIN_PREFIX)) {
             return $this->response->withStatus(400);
         }
 
@@ -238,7 +238,7 @@ class SettingsEveLoginController extends BaseController
 
         if (
             !preg_match($this->namePattern, $data->name) ||
-            strpos($data->name, EveLogin::INTERNAL_LOGIN_PREFIX) === 0
+            str_starts_with($data->name, EveLogin::INTERNAL_LOGIN_PREFIX)
         ) {
             return $this->response->withStatus(400);
         }

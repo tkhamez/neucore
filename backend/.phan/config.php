@@ -15,7 +15,7 @@ return [
     // Note that the **only** effect of choosing `'5.6'` is to infer
     // that functions removed in php 7.0 exist.
     // (See `backward_compatibility_checks` for additional options)
-    'target_php_version' => '7.4',
+    'target_php_version' => '8.0',
 
     // A list of directories that should be parsed for class and
     // method information. After excluding the directories

@@ -17,17 +17,11 @@ use Tests\WriteErrorListener;
 
 class MakeAdminTest extends ConsoleTestCase
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private static $em;
+    private static EntityManagerInterface $em;
 
-    /**
-     * @var WriteErrorListener
-     */
-    private static $writeErrorListener;
+    private static WriteErrorListener $writeErrorListener;
 
-    private static $playerId;
+    private static int $playerId;
 
     public static function setupBeforeClass(): void
     {

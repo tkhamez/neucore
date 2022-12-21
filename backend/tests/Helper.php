@@ -191,7 +191,7 @@ class Helper
     {
         try {
             $connection = $this->getEm()->getConnection()->getDatabasePlatform();
-        } catch (Exception $e) {
+        } catch (Exception) {
             return 'error';
         }
         if ($connection instanceof SqlitePlatform) {
@@ -425,22 +425,19 @@ class Helper
         return $esiToken;
     }
 
-    /**
-     * @param mixed $hashAlgorithm
-     */
     public function addApp(
         string $name,
         string $secret,
         array $roles,
         ?string $eveLoginName = null,
-        $hashAlgorithm = PASSWORD_BCRYPT
+        string $hashAlgorithm = PASSWORD_BCRYPT
     ): App
     {
         $hash = $hashAlgorithm === 'md5' ? crypt($secret, '$1$12345678$') : password_hash($secret, $hashAlgorithm);
 
         $app = new App();
         $app->setName($name);
-        $app->setSecret((string) $hash);
+        $app->setSecret($hash);
         $this->getObjectManager()->persist($app);
 
         foreach ($this->addRoles($roles) as $role) {

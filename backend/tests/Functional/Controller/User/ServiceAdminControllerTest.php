@@ -13,20 +13,11 @@ use Tests\Helper;
 
 class ServiceAdminControllerTest extends WebTestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var ServiceRepository
-     */
-    private $repository;
+    private ServiceRepository $repository;
 
-    /**
-     * @var int
-     */
-    private $serviceId;
+    private int $serviceId;
 
     protected function setUp(): void
     {
@@ -121,7 +112,7 @@ class ServiceAdminControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'PUT',
-            "/api/user/service-admin/{$this->serviceId}/rename",
+            "/api/user/service-admin/$this->serviceId/rename",
             ['name' => ''],
             ['Content-Type' => 'application/x-www-form-urlencoded']
         );
@@ -135,7 +126,7 @@ class ServiceAdminControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'PUT',
-            "/api/user/service-admin/{$this->serviceId}/rename",
+            "/api/user/service-admin/$this->serviceId/rename",
             ['name' => 'Renamed Service'],
             ['Content-Type' => 'application/x-www-form-urlencoded']
         );
@@ -174,7 +165,7 @@ class ServiceAdminControllerTest extends WebTestCase
     {
         $this->loginUser(1);
 
-        $response = $this->runApp('DELETE', "/api/user/service-admin/{$this->serviceId}/delete");
+        $response = $this->runApp('DELETE', "/api/user/service-admin/$this->serviceId/delete");
 
         $this->assertEquals(204, $response->getStatusCode());
 
@@ -208,7 +199,7 @@ class ServiceAdminControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'PUT',
-            "/api/user/service-admin/{$this->serviceId}/save-configuration",
+            "/api/user/service-admin/$this->serviceId/save-configuration",
             ['configuration' => \json_encode(['phpClass' => 'class'])],
             ['Content-Type' => 'application/x-www-form-urlencoded']
         );
@@ -225,13 +216,13 @@ class ServiceAdminControllerTest extends WebTestCase
 
         $response1 = $this->runApp(
             'PUT',
-            "/api/user/service-admin/{$this->serviceId}/save-configuration",
+            "/api/user/service-admin/$this->serviceId/save-configuration",
             ['configuration' => ['invalid']],
             ['Content-Type' => 'application/x-www-form-urlencoded']
         );
         $response2 = $this->runApp(
             'PUT',
-            "/api/user/service-admin/{$this->serviceId}/save-configuration",
+            "/api/user/service-admin/$this->serviceId/save-configuration",
             ['configuration' => "invalid"],
             ['Content-Type' => 'application/x-www-form-urlencoded']
         );

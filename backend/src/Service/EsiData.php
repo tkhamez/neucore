@@ -148,7 +148,7 @@ class EsiData
         } catch (ApiException $e) {
             // Do not log and continue if character was deleted/biomassed
             $body = $e->getResponseBody();
-            if ($e->getCode() === 404 && is_string($body) && strpos($body, 'Character has been deleted') !== false) {
+            if ($e->getCode() === 404 && is_string($body) && str_contains($body, 'Character has been deleted')) {
                 $corpId = self::CORPORATION_DOOMHEIM_ID;
             } else {
                 $this->lastErrorCode = $e->getCode();
@@ -195,7 +195,7 @@ class EsiData
         if ($updated) {
             try {
                 $char->setLastUpdate(new \DateTime());
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 // ignore
             }
         }
@@ -273,7 +273,7 @@ class EsiData
 
         try {
             $corp->setLastUpdate(new \DateTime());
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // ignore
         }
 
@@ -335,7 +335,7 @@ class EsiData
 
         try {
             $alliance->setLastUpdate(new \DateTime());
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // ignore
         }
 
@@ -373,7 +373,7 @@ class EsiData
                 if (
                     $e->getCode() === 404 &&
                     is_string($body) &&
-                    strpos($body, 'Ensure all IDs are valid before resolving') !== false
+                    str_contains($body, 'Ensure all IDs are valid before resolving')
                 ) {
                     // Try again with fewer IDs
                     if (count($checkIds) > 100) {

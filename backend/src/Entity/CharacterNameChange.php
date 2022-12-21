@@ -25,36 +25,32 @@ class CharacterNameChange implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
-     * @var integer
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="Character", inversedBy="characterNameChanges")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     * @var Character
      */
-    private $character;
+    private Character $character;
 
     /**
      * @OA\Property()
      * @ORM\Column(type="string", length=255, name="old_name")
-     * @var string
      */
-    private $oldName = '';
+    private string $oldName = '';
 
     /**
      * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", name="change_date")
-     * @var \DateTime|null
      */
-    private $changeDate;
+    private ?\DateTime $changeDate = null;
 
     public function jsonSerialize(): array
     {
         return [
             'oldName' => $this->oldName,
-            'changeDate' => $this->changeDate !== null ? $this->changeDate->format(Api::DATE_FORMAT) : null,
+            'changeDate' => $this->changeDate?->format(Api::DATE_FORMAT),
         ];
     }
 

@@ -13,12 +13,9 @@ class Client extends \GuzzleHttp\Client
     /**
      * @var ResponseInterface[]
      */
-    private $responses = [];
+    private array $responses = [];
 
-    /**
-     * @var array
-     */
-    private $middleware = [];
+    private array $middleware = [];
 
     public function setMiddleware(callable ...$middleware): self
     {
@@ -59,7 +56,7 @@ class Client extends \GuzzleHttp\Client
     {
         foreach ($this->middleware as $callable) {
             $promise = new class($response) {
-                private $response;
+                private ResponseInterface $response;
                 public function __construct(ResponseInterface $response)
                 {
                     $this->response = $response;

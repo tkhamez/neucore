@@ -23,22 +23,13 @@ use Tests\Logger;
 
 class SendInvalidTokenMailTest extends ConsoleTestCase
 {
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
-    /**
-     * @var ObjectManager
-     */
-    private $om;
+    private ObjectManager $om;
 
-    private $playerId;
+    private int $playerId;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repoFactory;
+    private RepositoryFactory $repoFactory;
 
     protected function setUp(): void
     {

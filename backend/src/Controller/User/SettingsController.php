@@ -140,7 +140,8 @@ class SettingsController extends BaseController
      *
      * @see EveMail::deleteToken();
      */
-    public function systemChange(string $name, ServerRequestInterface $request, EveMail $eveMail): ResponseInterface {
+    public function systemChange(string $name, ServerRequestInterface $request, EveMail $eveMail): ResponseInterface
+    {
         $variable = $this->repositoryFactory->getSystemVariableRepository()->find($name);
 
         if ($variable === null || !in_array($variable->getScope(), self::VALID_SCOPES)) {

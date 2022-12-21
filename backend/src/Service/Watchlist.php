@@ -33,20 +33,11 @@ class Watchlist
 
     public const ALLOWLIST_ALLIANCE = 'allowlistAlliance';
 
-    /**
-     * @var PlayerRepository
-     */
-    private $playerRepository;
+    private PlayerRepository $playerRepository;
 
-    /**
-     * @var WatchlistRepository
-     */
-    private $watchlistRepository;
+    private WatchlistRepository $watchlistRepository;
 
-    /**
-     * @var CorporationRepository
-     */
-    private $corporationRepository;
+    private CorporationRepository $corporationRepository;
 
     public function __construct(RepositoryFactory $repositoryFactory)
     {

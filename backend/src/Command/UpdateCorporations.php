@@ -30,35 +30,17 @@ class UpdateCorporations extends Command
 
     public const UPDATE_NOK = 'update NOK';
 
-    /**
-     * @var CorporationRepository
-     */
-    private $corpRepo;
+    private CorporationRepository $corpRepo;
 
-    /**
-     * @var AllianceRepository
-     */
-    private $alliRepo;
+    private AllianceRepository $alliRepo;
 
-    /**
-     * @var EsiData
-     */
-    private $esiData;
+    private EsiData $esiData;
 
-    /**
-     * @var EntityManager
-     */
-    private $entityManager;
+    private EntityManager $entityManager;
 
-    /**
-     * @var int
-     */
-    private $sleep;
+    private int $sleep = 50;
 
-    /**
-     * @var int
-     */
-    private $dbResultLimit = 1000;
+    private int $dbResultLimit = 1000;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -87,12 +69,12 @@ class UpdateCorporations extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each update',
-                '50'
+                $this->sleep
             );
         $this->configureLogOutput($this);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $corpId = intval($input->getArgument('corporation'));
         $this->sleep = intval($input->getOption('sleep'));

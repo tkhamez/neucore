@@ -18,20 +18,11 @@ class CSRFToken implements MiddlewareInterface
 
     public const CSRF_SESSION_NAME = 'csrfToken';
 
-    /**
-     * @var ResponseFactoryInterface
-     */
-    private $responseFactory;
+    private ResponseFactoryInterface $responseFactory;
 
-    /**
-     * @var SessionData
-     */
-    private $sessionData;
+    private SessionData $sessionData;
 
-    /**
-     * @var string
-     */
-    private $includeRoute;
+    private string $includeRoute;
 
     public function __construct(
         ResponseFactoryInterface $responseFactory,
@@ -50,7 +41,7 @@ class CSRFToken implements MiddlewareInterface
         if ($route === null) {
             return $handler->handle($request);
         }
-        if (strpos($route->getPattern(), $this->includeRoute) !== 0) {
+        if (!str_starts_with($route->getPattern(), $this->includeRoute)) {
             return $handler->handle($request);
         }
 

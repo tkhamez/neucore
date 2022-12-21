@@ -33,11 +33,9 @@ class SessionData
     /**
      * Get a session variable.
      *
-     * @param mixed $default
-     * @return mixed
      * @throws RuntimeException If session is not started
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         if (! isset($_SESSION)) {
             throw new RuntimeException('Session not started.');
@@ -48,10 +46,9 @@ class SessionData
     /**
      * Set a session variable.
      *
-     * @param mixed $value
      * @throws RuntimeException If session is read-only or not started
      */
-    public function set(string $key, $value): self
+    public function set(string $key, mixed $value): self
     {
         if (self::$readOnly || ! isset($_SESSION)) {
             throw new RuntimeException('Session is read-only or not started.');

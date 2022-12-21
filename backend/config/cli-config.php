@@ -13,7 +13,7 @@ use Neucore\Application;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-/* @var EntityManagerInterface $em */
+/** @noinspection PhpUnhandledExceptionInspection */
 $em = (new Application())->buildContainer()->get(EntityManagerInterface::class);
 //$em->getConnection()->setAutoCommit(false);
 

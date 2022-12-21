@@ -16,20 +16,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class MakeAdmin extends Command
 {
-    /**
-     * @var PlayerRepository
-     */
-    private $playerRepository;
+    private PlayerRepository $playerRepository;
 
-    /**
-     * @var RoleRepository
-     */
-    private $roleRepository;
+    private RoleRepository $roleRepository;
 
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
+    private ObjectManager $objectManager;
 
     public function __construct(RepositoryFactory $repositoryFactory, ObjectManager $objectManager)
     {

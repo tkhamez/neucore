@@ -27,4 +27,5 @@ ini_set('log_errors', '0');
 RateLimitIP::$active = false;
 
 // Create DB schema
+/** @noinspection PhpUnhandledExceptionInspection */
 (new Helper())->updateDbSchema();

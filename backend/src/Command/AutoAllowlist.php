@@ -32,55 +32,25 @@ class AutoAllowlist extends Command
 
     private const KEY_IDS = 'ids';
 
-    /**
-     * @var Watchlist
-     */
-    private $watchlistService;
+    private Watchlist $watchlistService;
 
-    /**
-     * @var EsiData
-     */
-    private $esiData;
+    private EsiData $esiData;
 
-    /**
-     * @var int
-     */
-    private $sleep;
+    private ObjectManager $objectManager;
 
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
+    private OAuthToken $tokenService;
 
-    /**
-     * @var OAuthToken
-     */
-    private $tokenService;
+    private WatchlistRepository $watchlistRepository;
 
-    /**
-     * @var WatchlistRepository
-     */
-    private $watchlistRepository;
+    private CorporationRepository $corporationRepository;
 
-    /**
-     * @var CorporationRepository
-     */
-    private $corporationRepository;
+    private int $sleep = 50;
 
-    /**
-     * @var int
-     */
-    private $numCorporations;
+    private int $numCorporations = 0;
 
-    /**
-     * @var int
-     */
-    private $numCorporationsChecked;
+    private int $numCorporationsChecked = 0;
 
-    /**
-     * @var int
-     */
-    private $numCorporationsAllowed;
+    private int $numCorporationsAllowed = 0;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -113,12 +83,12 @@ class AutoAllowlist extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each player and check',
-                '50'
+                $this->sleep
             );
         $this->configureLogOutput($this);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->sleep = intval($input->getOption('sleep'));
         $id = intval($input->getArgument('id'));
@@ -184,7 +154,7 @@ class AutoAllowlist extends Command
      * @param int[] $watchedCorporationIds
      * @return array
      */
-    private function getAccountData(array $players, array $watchedCorporationIds)
+    private function getAccountData(array $players, array $watchedCorporationIds): array
     {
         $accountsData = [];
         $corporations = [];

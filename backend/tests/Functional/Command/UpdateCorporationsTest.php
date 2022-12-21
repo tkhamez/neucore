@@ -17,31 +17,17 @@ use Tests\Logger;
 
 class UpdateCorporationsTest extends ConsoleTestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private ObjectManager $om;
 
-    /**
-     * @var ObjectManager
-     */
-    private $om;
+    private Logger $log;
 
-    /**
-     * @var Logger
-     */
-    private $log;
-
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
     protected function setUp(): void
     {
-        $this->helper = new Helper();
-        $this->helper->emptyDb();
-        $this->om = $this->helper->getObjectManager();
+        $helper = new Helper();
+        $helper->emptyDb();
+        $this->om = $helper->getObjectManager();
 
         $this->log = new Logger('Test');
         $this->client = new Client();

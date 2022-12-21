@@ -12,15 +12,9 @@ class SystemVariableStorage implements StorageInterface
 {
     public const PREFIX = '__storage__';
 
-    /**
-     * @var SystemVariableRepository
-     */
-    protected $systemVariableRepository;
+    protected SystemVariableRepository $systemVariableRepository;
 
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
+    private ObjectManager $objectManager;
 
     public function __construct(RepositoryFactory $repositoryFactory, ObjectManager $objectManager)
     {
@@ -48,9 +42,6 @@ class SystemVariableStorage implements StorageInterface
     public function get(string $key): ?string
     {
         $variable = $this->systemVariableRepository->find(self::PREFIX . $key);
-        if ($variable !== null) {
-            return $variable->getValue();
-        }
-        return null;
+        return $variable?->getValue();
     }
 }

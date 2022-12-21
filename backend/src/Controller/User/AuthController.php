@@ -105,14 +105,11 @@ class AuthController extends BaseController
     public function login(string $name, ServerRequestInterface $request): ResponseInterface
     {
         // validate login ID
-        $loginName = null;
         if (in_array($name, EveLogin::INTERNAL_LOGIN_NAMES)) {
             $loginName = $name;
         } else {
             $eveLogin = $this->repositoryFactory->getEveLoginRepository()->findOneBy(['name' => $name]);
-            if ($eveLogin) {
-                $loginName = $eveLogin->getName();
-            }
+            $loginName = $eveLogin?->getName();
         }
         if (empty($loginName)) {
             $this->response->getBody()->write($this->getBodyWithHomeLink('Login not found.'));
@@ -129,7 +126,7 @@ class AuthController extends BaseController
             }
         }
 
-        $this->session->set(self::SESS_AUTH_REDIRECT, $this->getQueryParam($request,'redirect'));
+        $this->session->set(self::SESS_AUTH_REDIRECT, $this->getQueryParam($request, 'redirect'));
 
         return $this->redirectToLoginUrl($loginName);
     }
@@ -316,7 +313,7 @@ class AuthController extends BaseController
         if (empty($token)) {
             try {
                 $token = Random::chars(39);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $this->response->getBody()->write('Error.');
                 return $this->response->withStatus(500);
             }
@@ -342,7 +339,7 @@ class AuthController extends BaseController
     {
         try {
             $randomString = Random::chars(12);
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->response->getBody()->write('Error.');
             return $this->response->withStatus(500);
         }
@@ -384,10 +381,10 @@ class AuthController extends BaseController
 
     private function getLoginNameFromState(string $state): string
     {
-        if (strpos($state, self::STATE_PREFIX_SEPARATOR) === false) {
+        if (!str_contains($state, self::STATE_PREFIX_SEPARATOR)) {
             return '';
         }
-        return substr($state, 0, strpos($state, self::STATE_PREFIX_SEPARATOR));
+        return substr($state, 0, (int)strpos($state, self::STATE_PREFIX_SEPARATOR));
     }
 
     private function redirect(string $path): ResponseInterface

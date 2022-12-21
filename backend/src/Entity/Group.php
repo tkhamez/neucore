@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnusedAliasInspection */
 
 declare(strict_types=1);
@@ -70,51 +71,45 @@ class Group implements \JsonSerializable
     /**
      * @ORM\OneToMany(targetEntity="GroupApplication", mappedBy="group", cascade={"remove"})
      * @ORM\OrderBy({"created" = "DESC"})
-     * @var Collection
      */
-    private $applications;
+    private Collection $applications;
 
     /**
      * Group members.
      *
      * @ORM\ManyToMany(targetEntity="Player", mappedBy="groups")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $players;
+    private Collection $players;
 
     /**
      * @ORM\ManyToMany(targetEntity="Player", inversedBy="managerGroups")
      * @ORM\JoinTable(name="group_manager")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $managers;
+    private Collection $managers;
 
     /**
      * @ORM\ManyToMany(targetEntity="App", mappedBy="groups")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $apps;
+    private Collection $apps;
 
     /**
      * Corporations for automatic assignment.
      *
      * @ORM\ManyToMany(targetEntity="Corporation", mappedBy="groups")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $corporations;
+    private Collection $corporations;
 
     /**
      * Alliances for automatic assignment.
      *
      * @ORM\ManyToMany(targetEntity="Alliance", mappedBy="groups")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $alliances;
+    private Collection $alliances;
 
     /**
      * A player must be a member of one of these groups in order to be a member of this group.
@@ -122,9 +117,8 @@ class Group implements \JsonSerializable
      * @ORM\ManyToMany(targetEntity="Group")
      * @ORM\JoinTable(name="group_required_groups")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $requiredGroups;
+    private Collection $requiredGroups;
 
     /**
      * A player must not be a member of any of these groups in order to be a member of this group.
@@ -132,9 +126,8 @@ class Group implements \JsonSerializable
      * @ORM\ManyToMany(targetEntity="Group")
      * @ORM\JoinTable(name="group_forbidden_groups")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $forbiddenGroups;
+    private Collection $forbiddenGroups;
 
     /**
      * Contains only information that is of interest to clients.

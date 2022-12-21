@@ -10,6 +10,7 @@ use Neucore\Application;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+/** @noinspection PhpUnhandledExceptionInspection */
 $entityManager = (new Application())->buildContainer()->get(EntityManagerInterface::class);
 $entityManager->getConnection()->setAutoCommit(false); // Fixes "There is no active transaction" error during
                                                        // DB migrations with PHP 8.

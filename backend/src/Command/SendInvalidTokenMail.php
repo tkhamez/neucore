@@ -23,25 +23,13 @@ class SendInvalidTokenMail extends Command
     use LogOutput;
     use EsiRateLimited;
 
-    /**
-     * @var EveMail
-     */
-    private $eveMail;
+    private EveMail $eveMail;
 
-    /**
-     * @var PlayerRepository
-     */
-    private $playerRepository;
+    private PlayerRepository $playerRepository;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * @var int
-     */
-    private $sleep;
+    private int $sleep = 20;
 
     public function __construct(
         EveMail $eveMail,
@@ -68,12 +56,12 @@ class SendInvalidTokenMail extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in seconds after each mail sent (ESI rate limit is 4/min)',
-                '20'
+                $this->sleep
             );
         $this->configureLogOutput($this);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->sleep = intval($input->getOption('sleep'));
         $this->executeLogOutput($input, $output);
@@ -128,8 +116,8 @@ class SendInvalidTokenMail extends Command
                 $errMessage = $this->eveMail->invalidTokenSend($characterId);
                 if (
                     $errMessage === '' || // success
-                    strpos($errMessage, 'ContactCostNotApproved') !== false || // CSPA charge > 0
-                    strpos($errMessage, 'ContactOwnerUnreachable') !== false // sender is blocked
+                    str_contains($errMessage, 'ContactCostNotApproved') || // CSPA charge > 0
+                    str_contains($errMessage, 'ContactOwnerUnreachable') // sender is blocked
                 ) {
                     $this->eveMail->invalidTokenMailSent($playerId, true);
                     if ($errMessage === '') {

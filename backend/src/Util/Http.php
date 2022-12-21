@@ -28,17 +28,17 @@ abstract class Http
             return null;
         }
 
-        if (strpos($auth, 'Bearer ') === false) {
+        if (!str_contains($auth, 'Bearer ')) {
             return null;
         }
-        
+
         $token = str_replace('Bearer ', '', $auth);
         if (empty($token)) {
             return null;
         }
 
         $decoded = base64_decode($token);
-        if (strpos($decoded, ':') === false || substr_count($decoded, ':') !== 1) {
+        if (!str_contains($decoded, ':') || substr_count($decoded, ':') !== 1) {
             return null;
         }
 

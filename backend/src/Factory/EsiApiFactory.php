@@ -15,20 +15,11 @@ use Swagger\Client\Eve\Configuration;
 
 class EsiApiFactory
 {
-    /**
-     * @var array
-     */
-    private $instances = [];
+    private array $instances = [];
 
-    /**
-     * @var ClientInterface
-     */
-    private $client;
+    private ClientInterface $client;
 
-    /**
-     * @var Config
-     */
-    private $config;
+    private Config $config;
 
     public function __construct(ClientInterface $client, Config $config)
     {
@@ -61,12 +52,7 @@ class EsiApiFactory
         return $this->getInstance(UniverseApi::class, $accessToken);
     }
 
-    /**
-     * @param string $class
-     * @param string $token
-     * @return mixed
-     */
-    private function getInstance(string $class, string $token = '')
+    private function getInstance(string $class, string $token = ''): mixed
     {
         $key = $class.hash('sha256', $token);
 

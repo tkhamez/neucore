@@ -129,7 +129,7 @@ class MemberTracking
                 if ($entity instanceof EsiLocation) {
                     try {
                         $entity->setLastUpdate(new \DateTime());
-                    } catch (\Exception $e) {
+                    } catch (\Exception) {
                         // ignore
                     }
                 }

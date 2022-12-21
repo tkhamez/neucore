@@ -92,7 +92,7 @@ class Account
         $char->setMain(true);
         try {
             $char->setCreated(new \DateTime());
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // ignore
         }
         $char->setPlayer($player);
@@ -138,7 +138,7 @@ class Account
         // https://github.com/ccpgames/sso-issues/issues/68
         try {
             $char->setLastLogin(new \DateTime());
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // ignore
         }
 

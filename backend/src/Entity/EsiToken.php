@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnusedAliasInspection */
 
 declare(strict_types=1);
@@ -114,15 +115,14 @@ class EsiToken implements \JsonSerializable
             'characterId' => $this->character ? $this->character->getId() : 0,
             'playerId' => $this->character ? $this->character->getPlayer()->getId() : 0,
             'validToken' => $this->validToken,
-            'validTokenTime' => $this->validTokenTime !== null ?
-                $this->validTokenTime->format(Api::DATE_FORMAT) : null,
+            'validTokenTime' => $this->validTokenTime?->format(Api::DATE_FORMAT),
             'hasRoles' => $this->hasRoles,
-            'lastChecked' => $this->lastChecked !== null ? $this->lastChecked->format(Api::DATE_FORMAT) : null,
+            'lastChecked' => $this->lastChecked?->format(Api::DATE_FORMAT),
         ];
 
         if ($withCharacterDetails) {
-            $data['playerName'] = $this->character ? $this->character->getPlayer()->getName() : null;
-            $data['character'] = $this->character ? $this->character->jsonSerialize(true) : null;
+            $data['playerName'] = $this->character?->getPlayer()->getName();
+            $data['character'] = $this->character?->jsonSerialize(true);
         }
 
         return $data;

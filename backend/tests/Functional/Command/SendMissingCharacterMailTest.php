@@ -24,20 +24,11 @@ use Tests\Logger;
 
 class SendMissingCharacterMailTest extends ConsoleTestCase
 {
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
-    /**
-     * @var ObjectManager
-     */
-    private $om;
+    private ObjectManager $om;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repoFactory;
+    private RepositoryFactory $repoFactory;
 
     protected function setUp(): void
     {

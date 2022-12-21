@@ -235,7 +235,7 @@ class EsiController extends BaseController
      * @return ResponseInterface
      */
     private function prepareResponse(
-        $body,
+        mixed $body,
         bool $debug,
         ResponseInterface $response = null,
         int $code = 200

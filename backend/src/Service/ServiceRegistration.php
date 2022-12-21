@@ -38,7 +38,7 @@ class ServiceRegistration
         // configure autoloader
         $psr4Paths = (array) $serviceConfig->psr4Path;
         if (!empty($serviceConfig->psr4Prefix) && $psr4Paths !== []) {
-            if (substr((string)$serviceConfig->psr4Prefix, -1) !== '\\') {
+            if (!str_ends_with((string)$serviceConfig->psr4Prefix, '\\')) {
                 $serviceConfig->psr4Prefix .= '\\';
             }
             /** @noinspection PhpFullyQualifiedNameUsageInspection */
@@ -137,7 +137,7 @@ class ServiceRegistration
             if ($from) {
                 try {
                     $implementation->moveServiceAccount($player->getId(), $from->getId());
-                } catch (Exception $e) {
+                } catch (Exception) {
                     // Ignore, plugin should log errors.
                 }
             }
@@ -145,7 +145,7 @@ class ServiceRegistration
             $accounts = [];
             try {
                 $accounts = $this->getAccounts($implementation, $player->getCharacters());
-            } catch (Exception $e) {
+            } catch (Exception) {
                 // Do nothing, service should log its errors
             }
 

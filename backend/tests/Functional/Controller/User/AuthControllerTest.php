@@ -129,6 +129,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testCallback_EmptyState()
     {
+        /** @noinspection PhpArrayWriteIsNotUsedInspection */
         $_SESSION = ['auth_state' => '', 'auth_result' => null];
 
         $response = $this->runApp('GET', '/login-callback?state=123');
@@ -371,6 +372,7 @@ class AuthControllerTest extends WebTestCase
     public function testCallback_DefaultAuthError()
     {
         $state = $this->getStatePrefix(EveLogin::NAME_DEFAULT) . self::$state;
+        /** @noinspection PhpArrayWriteIsNotUsedInspection */
         $_SESSION = ['auth_state' => $state, 'auth_result' => null];
 
         list($token, $keySet) = Helper::generateToken(['read-this']);
@@ -410,6 +412,7 @@ class AuthControllerTest extends WebTestCase
 
         list($token, $keySet) = Helper::generateToken(['read-this', 'and-this']);
         $state = $this->getStatePrefix(EveLogin::NAME_DEFAULT) . self::$state;
+        /** @noinspection PhpArrayWriteIsNotUsedInspection */
         $_SESSION = ['auth_state' => $state, 'auth_result' => null];
 
         $this->client->setResponse(

@@ -132,10 +132,10 @@ class AppController extends BaseController
 
         try {
             $secret = Random::hex(64);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return $this->response->withStatus(500);
         }
-        $hash = (string) password_hash($secret, PASSWORD_BCRYPT);
+        $hash = password_hash($secret, PASSWORD_BCRYPT);
         if ($hash === '') {
             return $this->response->withStatus(500);
         }
@@ -809,10 +809,10 @@ class AppController extends BaseController
 
         try {
             $secret = Random::hex(64);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return $this->response->withStatus(500);
         }
-        $hash = (string) password_hash($secret, PASSWORD_BCRYPT);
+        $hash = password_hash($secret, PASSWORD_BCRYPT);
         if ($hash === '') {
             return $this->response->withStatus(500);
         }

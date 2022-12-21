@@ -1077,7 +1077,7 @@ class PlayerController extends BaseController
 
         // get character to delete
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
-        $player = $char ? $char->getPlayer() : null;
+        $player = $char?->getPlayer();
         if ($char === null || $player === null) {
             return $this->response->withStatus(404);
         }
@@ -1227,7 +1227,7 @@ class PlayerController extends BaseController
             if ($implementation) {
                 try {
                     $accounts = $serviceRegistration->getAccounts($implementation, $player->getCharacters());
-                } catch (Exception $e) {
+                } catch (Exception) {
                     // do nothing, service needs to log its errors
                 }
             }

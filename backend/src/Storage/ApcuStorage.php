@@ -14,11 +14,13 @@ class ApcuStorage implements StorageInterface
             throw new RuntimeException('String too long.');
         }
 
+        /** @noinspection PhpComposerExtensionStubsInspection */
         return (bool) apcu_store(self::PREFIX . $key, $value);
     }
 
     public function get(string $key): ?string
     {
+        /** @noinspection PhpComposerExtensionStubsInspection */
         $value = apcu_fetch(self::PREFIX . $key);
 
         if ($value === false) {

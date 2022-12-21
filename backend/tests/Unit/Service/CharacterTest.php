@@ -16,25 +16,13 @@ use Tests\Logger;
 
 class CharacterTest extends TestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var ObjectManager
-     */
-    private $om;
+    private ObjectManager $om;
 
-    /**
-     * @var Character
-     */
-    private $service;
+    private Character $service;
 
-    /**
-     * @var CharacterNameChangeRepository
-     */
-    private $repository;
+    private CharacterNameChangeRepository $repository;
 
     protected function setUp(): void
     {

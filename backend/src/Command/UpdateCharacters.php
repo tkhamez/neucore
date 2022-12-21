@@ -33,7 +33,7 @@ class UpdateCharacters extends Command
 
     private EntityManager $entityManager;
 
-    private ?int $sleep = null;
+    private int $sleep = 5;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -63,7 +63,7 @@ class UpdateCharacters extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each update',
-                '5'
+                $this->sleep
             );
         $this->configureLogOutput($this);
     }
@@ -144,7 +144,7 @@ class UpdateCharacters extends Command
 
                 try {
                     $char->setLastUpdate(new \DateTime());
-                } catch (\Exception $e) {
+                } catch (\Exception) {
                     // ignore
                 }
 

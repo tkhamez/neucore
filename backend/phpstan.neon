@@ -11,6 +11,9 @@ parameters:
 			message: '#Property (.*) has no type specified.#'
 			path: %currentWorkingDirectory%/*
 		-
+			message: '#Offset (.*) does not exist on array\|string\|null.#'
+			path: %currentWorkingDirectory%/*
+		-
 			message: '#Cannot call method (.*) on DI\\Container\|null.#'
 			path: %currentWorkingDirectory%/src/Application.php
 		-

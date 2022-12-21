@@ -9,15 +9,9 @@ use Neucore\Factory\RepositoryFactory;
 
 class Character
 {
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
+    private ObjectManager $objectManager;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
+    private RepositoryFactory $repositoryFactory;
 
     public function __construct(ObjectManager $objectManager, RepositoryFactory $repositoryFactory)
     {

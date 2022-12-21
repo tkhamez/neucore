@@ -15,20 +15,11 @@ use Tests\RequestHandler;
 
 class AppRequestCountTest extends TestCase
 {
-    /**
-     * @var int
-     */
-    private $appId;
+    private int $appId;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repoFactory;
+    private RepositoryFactory $repoFactory;
 
-    /**
-     * @var AppRequestCount
-     */
-    private $middleware;
+    private AppRequestCount $middleware;
 
     protected function setUp(): void
     {
@@ -36,7 +27,7 @@ class AppRequestCountTest extends TestCase
         $helper->emptyDb();
         $om = $helper->getObjectManager();
 
-        $app = (new App())->setName('Test app')->setSecret((string) password_hash('secret', PASSWORD_BCRYPT));
+        $app = (new App())->setName('Test app')->setSecret(password_hash('secret', PASSWORD_BCRYPT));
         $om->persist($app);
         $om->flush();
 

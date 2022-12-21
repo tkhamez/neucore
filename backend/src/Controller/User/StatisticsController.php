@@ -56,7 +56,7 @@ class StatisticsController extends BaseController
         $dateString = $this->getQueryParam($request, 'until', date('Y-m-01'));
         try {
             $date = new \DateTime($dateString);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // do nothing
         }
         $time = isset($date) ? $date->getTimestamp() : time();
@@ -100,7 +100,7 @@ class StatisticsController extends BaseController
         $dateString = $this->getQueryParam($request, 'until', date('Y-m-01'));
         try {
             $date = new \DateTime($dateString);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // do nothing
         }
         $time = isset($date) ? $date->getTimestamp() : time();
@@ -144,7 +144,7 @@ class StatisticsController extends BaseController
         $dateString = $this->getQueryParam($request, 'until', date('Y-m-01'));
         try {
             $date = new \DateTime($dateString);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // do nothing
         }
         $time = isset($date) ? $date->getTimestamp() : time();
@@ -189,7 +189,7 @@ class StatisticsController extends BaseController
         $dateString = $this->getQueryParam($request, 'until', date('Y-m-d'));
         try {
             $date = new \DateTime($dateString);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // do nothing
         }
         $time = isset($date) ? $date->getTimestamp() : time();
@@ -233,7 +233,7 @@ class StatisticsController extends BaseController
         $dateString = $this->getQueryParam($request, 'until', date('Y-m-d H')) . ':00';
         try {
             $date = new \DateTime($dateString);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // do nothing
         }
         $time = isset($date) ? $date->getTimestamp() : time();

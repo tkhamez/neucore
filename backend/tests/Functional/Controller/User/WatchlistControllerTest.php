@@ -17,84 +17,37 @@ use Tests\Helper;
 
 class WatchlistControllerTest extends WebTestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var ObjectManager 
-     */
-    private $em;
+    private ObjectManager $em;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
+    private RepositoryFactory $repositoryFactory;
 
-    /**
-     * @var Player
-     */
-    private $player1;
+    private Player $player1;
 
-    /**
-     * @var Player
-     */
-    private $player2;
+    private Player $player2;
 
-    /**
-     * @var Player
-     */
-    private $player3;
+    private Player $player3;
 
-    /**
-     * @var Corporation
-     */
-    private $corporation1;
+    private Corporation $corporation1;
 
-    /**
-     * @var Corporation
-     */
-    private $corporation2;
+    private Corporation $corporation2;
 
-    /**
-     * @var Corporation
-     */
-    private $corporation3;
+    private Corporation $corporation3;
 
-    /**
-     * @var Alliance
-     */
-    private $alliance1;
+    private Alliance $alliance1;
 
-    /**
-     * @var Alliance
-     */
-    private $alliance2;
+    private Alliance $alliance2;
 
-    /**
-     * @var Group
-     */
-    private $group1;
+    private Group $group1;
 
-    /**
-     * @var Group
-     */
-    private $group2;
+    private Group $group2;
 
-    /**
-     * @var Group
-     */
-    private $group3;
-    /**
-     * @var int
-     */
-    private $wl1;
+    private Group $group3;
 
-    /**
-     * @var int
-     */
-    private $wl2;
+    private int $wl1;
+
+    private int $wl2;
 
     protected function setUp(): void
     {

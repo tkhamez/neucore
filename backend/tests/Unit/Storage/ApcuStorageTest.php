@@ -10,10 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class ApcuStorageTest extends TestCase
 {
-    /**
-     * @var ApcuStorage
-     */
-    private $storage;
+    private ApcuStorage $storage;
 
     protected function setup(): void
     {
@@ -24,6 +21,7 @@ class ApcuStorageTest extends TestCase
             $this->markTestSkipped('APCu for CLI is not enabled.');
         }
 
+        /** @noinspection PhpComposerExtensionStubsInspection */
         apcu_clear_cache();
         $this->storage = new ApcuStorage();
     }
@@ -44,6 +42,7 @@ class ApcuStorageTest extends TestCase
     {
         $this->assertTrue($this->storage->set('key', 'value'));
 
+        /** @noinspection PhpComposerExtensionStubsInspection */
         $this->assertSame('value', apcu_fetch(ApcuStorage::PREFIX . 'key'));
     }
 

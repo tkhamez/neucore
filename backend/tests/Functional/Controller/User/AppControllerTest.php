@@ -26,51 +26,27 @@ use Tests\WriteErrorListener;
 
 class AppControllerTest extends WebTestCase
 {
-    /**
-     * @var WriteErrorListener
-     */
-    private static $writeErrorListener;
+    private static WriteErrorListener $writeErrorListener;
 
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
+    private EntityManagerInterface $em;
 
-    /**
-     * @var AppRepository
-     */
-    private $appRepo;
+    private AppRepository $appRepo;
 
-    /**
-     * @var GroupRepository
-     */
-    private $groupRepo;
+    private GroupRepository $groupRepo;
 
-    /**
-     * @var PlayerRepository
-     */
-    private $playerRepo;
+    private PlayerRepository $playerRepo;
 
-    private $gid;
+    private int $gid;
 
-    private $aid;
+    private int $aid;
 
-    /**
-     * @var int
-     */
-    private $eveLoginId1;
+    private int $eveLoginId1;
 
-    /**
-     * @var int
-     */
-    private $eveLoginId2;
+    private int $eveLoginId2;
 
-    private $pid3;
+    private int $pid3;
 
     public static function setupBeforeClass(): void
     {
@@ -847,7 +823,7 @@ class AppControllerTest extends WebTestCase
 
         $a = new App();
         $a->setName('app one');
-        $a->setSecret((string) password_hash('abc123', PASSWORD_BCRYPT));
+        $a->setSecret(password_hash('abc123', PASSWORD_BCRYPT));
         if (in_array('app', $addRoles)) {
             $a->addRole($roles[0]); // Role::APP
         }

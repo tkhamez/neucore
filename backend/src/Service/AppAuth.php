@@ -17,20 +17,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class AppAuth implements RoleProviderInterface
 {
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
+    private RepositoryFactory $repositoryFactory;
 
-    /**
-     * @var \Doctrine\Persistence\ObjectManager
-     */
-    private $objectManager;
+    private \Doctrine\Persistence\ObjectManager $objectManager;
 
-    /**
-     * @var App
-     */
-    private $app;
+    private ?App $app = null;
 
     public function __construct(RepositoryFactory $repositoryFactory, \Doctrine\Persistence\ObjectManager $objectManager)
     {
@@ -57,12 +48,7 @@ class AppAuth implements RoleProviderInterface
         return $roles;
     }
 
-    /**
-     *
-     * @param ServerRequestInterface $request
-     * @return NULL|App
-     */
-    public function getApp(ServerRequestInterface $request)
+    public function getApp(ServerRequestInterface $request): ?App
     {
         if ($this->app === null) {
             $this->authenticate($request);
@@ -71,12 +57,7 @@ class AppAuth implements RoleProviderInterface
         return $this->app;
     }
 
-    /**
-     *
-     * @param ServerRequestInterface $request
-     * @return void
-     */
-    private function authenticate(ServerRequestInterface $request)
+    private function authenticate(ServerRequestInterface $request): void
     {
         $token = $this->findToken($request);
         if ($token === null) {
@@ -99,16 +80,11 @@ class AppAuth implements RoleProviderInterface
         $appEntity = $this->repositoryFactory->getAppRepository()->find($appId);
         if ($appEntity !== null && password_verify($secret, $appEntity->getSecret())) {
             $this->app = $appEntity;
-            $this->upgradeHash($secret);
+            $this->upgradeHash($secret, $this->app);
         }
     }
 
-    /**
-     *
-     * @param ServerRequestInterface $request
-     * @return NULL|string
-     */
-    private function findToken(ServerRequestInterface $request)
+    private function findToken(ServerRequestInterface $request): ?string
     {
         $token = null;
         if ($request->hasHeader('Authorization')) {
@@ -125,14 +101,14 @@ class AppAuth implements RoleProviderInterface
     /**
      * upgrade hash if needed
      */
-    private function upgradeHash(string $secret): void
+    private function upgradeHash(string $secret, App $app): void
     {
-        if (password_needs_rehash($this->app->getSecret(), PASSWORD_BCRYPT)) {
-            $hash = (string) password_hash($secret, PASSWORD_BCRYPT);
+        if (password_needs_rehash($app->getSecret(), PASSWORD_BCRYPT)) {
+            $hash = password_hash($secret, PASSWORD_BCRYPT);
             if ($hash === '') {
                 return;
             }
-            $this->app->setSecret($hash);
+            $app->setSecret($hash);
             $this->objectManager->flush();
         }
     }

@@ -48,7 +48,7 @@ class OAuthToken
                 'refresh_token' => $esiToken->getRefreshToken(),
                 'expires' => (int) $esiToken->getExpires()
             ]);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // characters without a default "access_token" are okay.
         }
 
@@ -63,7 +63,7 @@ class OAuthToken
         }
         try {
             $jwt = new JsonWebToken($token);
-        } catch (\UnexpectedValueException $e) {
+        } catch (\UnexpectedValueException) {
             return [];
         }
 
@@ -132,7 +132,7 @@ class OAuthToken
     {
         try {
             $jwt = new JsonWebToken($token);
-        } catch (\UnexpectedValueException $e) {
+        } catch (\UnexpectedValueException) {
             return null;
         }
         return $jwt->getEveAuthentication();
@@ -150,7 +150,7 @@ class OAuthToken
 
         try {
             $token = $this->oauth->refreshAccessToken($existingToken);
-        } catch (InvalidGrantException $e) {
+        } catch (InvalidGrantException) {
             // Delete access token and set "valid" flag, but do not delete the refresh token (just in case
             // there was some kind of error, and it is in fact still valid).
             $esiToken->setAccessToken('');

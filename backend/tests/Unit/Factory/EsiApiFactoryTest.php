@@ -16,7 +16,7 @@ use Swagger\Client\Eve\Api\UniverseApi;
 
 class EsiApiFactoryTest extends TestCase
 {
-    private $config;
+    private Config $config;
 
     protected function setUp(): void
     {

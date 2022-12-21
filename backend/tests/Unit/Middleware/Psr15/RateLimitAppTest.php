@@ -41,7 +41,7 @@ class RateLimitAppTest extends TestCase
         $helper->emptyDb();
         $this->om = $helper->getObjectManager();
 
-        $app = (new App())->setName('Test app')->setSecret((string) password_hash('secret', PASSWORD_BCRYPT));
+        $app = (new App())->setName('Test app')->setSecret(password_hash('secret', PASSWORD_BCRYPT));
         $maxRequests = (new SystemVariable(SystemVariable::RATE_LIMIT_APP_MAX_REQUESTS))->setValue('50');
         $reset = (new SystemVariable(SystemVariable::RATE_LIMIT_APP_RESET_TIME))->setValue('10');
         $active = (new SystemVariable(SystemVariable::RATE_LIMIT_APP_ACTIVE))->setValue('1');

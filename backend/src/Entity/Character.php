@@ -151,7 +151,7 @@ class Character implements \JsonSerializable
             'id' => $this->getId(),
             'name' => $this->name,
             'main' => $this->main,
-            'created' => $this->created ? $this->created->format(Api::DATE_FORMAT) : null,
+            'created' => $this->created?->format(Api::DATE_FORMAT),
             'lastUpdate' => $this->getLastUpdate() !== null ? $this->getLastUpdate()->format(Api::DATE_FORMAT) : null,
             'validToken' => $this->getDefaultTokenValid(),
             'validTokenTime' => $this->getDefaultTokenValidTime() !== null ?
@@ -357,27 +357,27 @@ class Character implements \JsonSerializable
             $this->getCorporation() !== null ? $this->getCorporation()->getId() : null,
             $this->getCorporation() !== null ? $this->getCorporation()->getName() : null,
             $this->getCorporation() !== null ? $this->getCorporation()->getTicker() : null,
-            $alliance !== null ? $alliance->getId() : null,
-            $alliance !== null ? $alliance->getName() : null,
-            $alliance !== null ? $alliance->getTicker() : null
+            $alliance?->getId(),
+            $alliance?->getName(),
+            $alliance?->getTicker()
         );
     }
 
     private function getDefaultTokenValid(): ?bool
     {
         $token = $this->getEsiToken(EveLogin::NAME_DEFAULT);
-        return $token ? $token->getValidToken() : null;
+        return $token?->getValidToken();
     }
 
     private function getDefaultTokenValidTime(): ?\DateTime
     {
         $token = $this->getEsiToken(EveLogin::NAME_DEFAULT);
-        return $token ? $token->getValidTokenTime() : null;
+        return $token?->getValidTokenTime();
     }
 
     private function getDefaultTokenLastChecked(): ?\DateTime
     {
         $token = $this->getEsiToken(EveLogin::NAME_DEFAULT);
-        return $token ? $token->getLastChecked() : null;
+        return $token?->getLastChecked();
     }
 }

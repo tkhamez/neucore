@@ -29,17 +29,17 @@ use Tkhamez\Slim\RoleAuth\RoleProviderInterface;
  */
 class UserAuth implements RoleProviderInterface
 {
-    const LOGIN_AUTHENTICATED_SUCCESS = 1;
+    public const LOGIN_AUTHENTICATED_SUCCESS = 1;
 
-    const LOGIN_AUTHENTICATED_FAIL = 2;
+    public const LOGIN_AUTHENTICATED_FAIL = 2;
 
-    const LOGIN_CHARACTER_ADDED_SUCCESS = 3;
+    public const LOGIN_CHARACTER_ADDED_SUCCESS = 3;
 
-    const LOGIN_CHARACTER_ADDED_FAIL = 4;
+    public const LOGIN_CHARACTER_ADDED_FAIL = 4;
 
-    const LOGIN_ACCOUNTS_MERGED = 5;
+    public const LOGIN_ACCOUNTS_MERGED = 5;
 
-    const LOGIN_ALT_FAILED = 6;
+    public const LOGIN_ALT_FAILED = 6;
 
     private SessionData $session;
 
@@ -124,7 +124,7 @@ class UserAuth implements RoleProviderInterface
     public function findCharacterOnAccount(EveAuthentication $eveAuth): ?Character
     {
         $user = $this->getUser();
-        $character = $user ? $user->getPlayer()->getCharacter($eveAuth->getCharacterId()) : null;
+        $character = $user?->getPlayer()->getCharacter($eveAuth->getCharacterId());
         if ($character) {
             return $character;
         }
@@ -257,7 +257,7 @@ class UserAuth implements RoleProviderInterface
             $alt->setId($characterId);
             try {
                 $alt->setCreated(new \DateTime());
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 // ignore
             }
             $player->addCharacter($alt);
@@ -290,14 +290,11 @@ class UserAuth implements RoleProviderInterface
         }
     }
 
-    /**
-     * @return void
-     */
-    private function loadUser()
+    private function loadUser(): void
     {
         try {
             $userId = $this->session->get('character_id');
-        } catch (RuntimeException $e) {
+        } catch (RuntimeException) {
             // session could not be started, e.g. for 404 errors.
             return;
         }

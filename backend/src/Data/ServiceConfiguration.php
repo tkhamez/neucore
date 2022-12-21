@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnusedAliasInspection */
 
 declare(strict_types=1);
@@ -15,9 +16,9 @@ use OpenApi\Annotations as OA;
  */
 class ServiceConfiguration implements \JsonSerializable
 {
-    const ACTION_UPDATE_ACCOUNT = 'update-account';
+    public const ACTION_UPDATE_ACCOUNT = 'update-account';
 
-    const ACTION_RESET_PASSWORD = 'reset-password';
+    public const ACTION_RESET_PASSWORD = 'reset-password';
 
     /**
      * @OA\Property()

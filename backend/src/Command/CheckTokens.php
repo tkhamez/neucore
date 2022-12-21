@@ -41,7 +41,7 @@ class CheckTokens extends Command
 
     private ?string $characters = null;
 
-    private ?int $sleep = null;
+    private int $sleep = 50;
 
     private array $activePlayerIds = [];
 
@@ -87,7 +87,7 @@ class CheckTokens extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each check',
-                '50'
+                $this->sleep
             );
         $this->configureLogOutput($this);
     }

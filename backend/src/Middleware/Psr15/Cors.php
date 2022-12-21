@@ -18,15 +18,9 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class Cors implements MiddlewareInterface
 {
-    /**
-     * @var ResponseFactoryInterface
-     */
-    private $responseFactory;
+    private ResponseFactoryInterface $responseFactory;
 
-    /**
-     * @var array
-     */
-    private $allowOrigin;
+    private array $allowOrigin;
 
     /**
      * @param array $allowOrigin Example: ['https://frontend.domain.tld']

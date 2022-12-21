@@ -11,10 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ClearCache extends Command
 {
-    /**
-     * @var Config
-     */
-    private $config;
+    private Config $config;
 
     public function __construct(Config $config)
     {
@@ -30,7 +27,7 @@ class ClearCache extends Command
             ->setDescription('Deletes the PHP-DI, Doctrine and Guzzle caches.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $cleared = [];
         $cleared[] = $this->deleteDirectoryContent($this->config['di']['cache_dir']);

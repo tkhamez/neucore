@@ -16,10 +16,7 @@ use Psr\Http\Message\RequestInterface;
 
 class HttpClientFactoryTest extends TestCase
 {
-    /**
-     * @var HttpClientFactory
-     */
-    private $factory;
+    private HttpClientFactory $factory;
 
     protected function setUp(): void
     {

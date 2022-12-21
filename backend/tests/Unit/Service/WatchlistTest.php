@@ -16,45 +16,21 @@ use Tests\Helper;
 
 class WatchlistTest extends TestCase
 {
-    /**
-     * @var Watchlist
-     */
-    private static $watchlistService;
+    private static Watchlist $watchlistService;
 
-    /**
-     * @var Character
-     */
-    private static $char1;
+    private static Character $char1;
 
-    /**
-     * @var Character
-     */
-    private static $char2;
+    private static Character $char2;
 
-    /**
-     * @var Character
-     */
-    private static $char3;
+    private static Character $char3;
 
-    /**
-     * @var Character
-     */
-    private static $char4;
+    private static Character $char4;
 
-    /**
-     * @var Corporation
-     */
-    private static $corp1a;
+    private static Corporation $corp1a;
 
-    /**
-     * @var Corporation
-     */
-    private static $corp1b;
+    private static Corporation $corp1b;
 
-    /**
-     * @var int
-     */
-    private static $watchlistId;
+    private static int $watchlistId;
 
     public static function setUpBeforeClass(): void
     {

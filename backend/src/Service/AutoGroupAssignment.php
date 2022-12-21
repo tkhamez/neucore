@@ -133,7 +133,7 @@ class AutoGroupAssignment
 
         try {
             $player->setLastUpdate(new \DateTime());
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // ignore
         }
     }

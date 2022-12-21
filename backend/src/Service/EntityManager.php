@@ -11,10 +11,7 @@ use Psr\Log\LoggerInterface;
 
 class EntityManager extends EntityManagerDecorator
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
+    private LoggerInterface $log;
 
     public function __construct(EntityManagerInterface $wrapped, LoggerInterface $log)
     {
@@ -23,8 +20,7 @@ class EntityManager extends EntityManagerDecorator
     }
 
     /**
-     * @param mixed|null $entity
-     * @return bool
+     * @param mixed $entity
      */
     public function flush($entity = null): bool
     {

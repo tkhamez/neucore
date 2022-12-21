@@ -53,7 +53,7 @@ class EsiHeaders
         foreach (['warning', 'Warning'] as $headerName) {
             if ($response->hasHeader($headerName)) {
                 $warning = $response->getHeader($headerName)[0];
-                if (strpos($warning, '299') !== false) { // i. e. "299 - This route is deprecated"
+                if (str_contains($warning, '299')) { // i.e. "299 - This route is deprecated"
                     $this->logger->warning("$requestUri: $warning");
                 }
             }

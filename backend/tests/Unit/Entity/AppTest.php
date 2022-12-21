@@ -43,7 +43,7 @@ class AppTest extends TestCase
     public function testSetGetSecret()
     {
         $app = new App();
-        $pw = (string) password_hash('00h', PASSWORD_BCRYPT);
+        $pw = password_hash('00h', PASSWORD_BCRYPT);
         $app->setSecret($pw);
         $this->assertSame($pw, $app->getSecret());
     }

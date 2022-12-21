@@ -112,26 +112,23 @@ class Player implements \JsonSerializable
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Role"))
      * @ORM\ManyToMany(targetEntity="Role", inversedBy="players")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $roles;
+    private Collection $roles;
 
     /**
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Character"))
      * @ORM\OneToMany(targetEntity="Character", mappedBy="player")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $characters;
+    private Collection $characters;
 
     /**
      * Group applications.
      *
      * @ORM\OneToMany(targetEntity="GroupApplication", mappedBy="player")
      * @ORM\OrderBy({"created" = "DESC"})
-     * @var Collection
      */
-    private $groupApplications;
+    private Collection $groupApplications;
 
     /**
      * Group membership.
@@ -139,9 +136,8 @@ class Player implements \JsonSerializable
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      * @ORM\ManyToMany(targetEntity="Group", inversedBy="players")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $groups;
+    private Collection $groups;
 
     /**
      * Manager of groups.
@@ -149,9 +145,8 @@ class Player implements \JsonSerializable
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      * @ORM\ManyToMany(targetEntity="Group", mappedBy="managers")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $managerGroups;
+    private Collection $managerGroups;
 
     /**
      * Manager of apps.
@@ -159,9 +154,8 @@ class Player implements \JsonSerializable
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/App"))
      * @ORM\ManyToMany(targetEntity="App", mappedBy="managers")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $managerApps;
+    private Collection $managerApps;
 
     /**
      * Characters that were removed from a player (API: not included by default).
@@ -169,9 +163,8 @@ class Player implements \JsonSerializable
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/RemovedCharacter"))
      * @ORM\OneToMany(targetEntity="RemovedCharacter", mappedBy="player")
      * @ORM\OrderBy({"removedDate" = "ASC"})
-     * @var Collection
      */
-    private $removedCharacters;
+    private Collection $removedCharacters;
 
     /**
      * Characters that were moved from another player account to this account (API: not included by default).
@@ -179,9 +172,8 @@ class Player implements \JsonSerializable
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/RemovedCharacter"))
      * @ORM\OneToMany(targetEntity="RemovedCharacter", mappedBy="newPlayer")
      * @ORM\OrderBy({"removedDate" = "ASC"})
-     * @var Collection
      */
-    private $incomingCharacters;
+    private Collection $incomingCharacters;
 
     /**
      * Contains only information that is of interest for clients.

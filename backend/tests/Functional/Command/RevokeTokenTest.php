@@ -15,15 +15,9 @@ use Tests\Logger;
 
 class RevokeTokenTest extends ConsoleTestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
     protected function setUp(): void
     {

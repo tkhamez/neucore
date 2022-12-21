@@ -30,25 +30,15 @@ abstract class BaseController
         $this->repositoryFactory = $repositoryFactory;
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     * @param string $key
-     * @param  mixed $default
-     * @return mixed
-     */
-    protected function getQueryParam(ServerRequestInterface $request, string $key, $default = null)
+    protected function getQueryParam(ServerRequestInterface $request, string $key, mixed $default = null): mixed
     {
         return $request->getQueryParams()[$key] ?? $default;
     }
 
     /**
-     * @param ServerRequestInterface $request
-     * @param string $key
-     * @param  mixed $default
-     * @return mixed
      * @see \Slim\Psr7\Factory\ServerRequestFactory::createFromGlobals()
      */
-    protected function getBodyParam(ServerRequestInterface $request, string $key, $default = null)
+    protected function getBodyParam(ServerRequestInterface $request, string $key, mixed $default = null): mixed
     {
         $params = $request->getParsedBody();
         if (is_array($params) && isset($params[$key])) {
@@ -79,12 +69,7 @@ abstract class BaseController
         return (string) preg_replace('/[^[:print:]]/', '', trim($string));
     }
 
-    /**
-     * @param mixed $data
-     * @param int|null $status
-     * @return ResponseInterface
-     */
-    protected function withJson($data, ?int $status = null): ResponseInterface
+    protected function withJson(mixed $data, ?int $status = null): ResponseInterface
     {
         $json = (string) \json_encode($data);
 
@@ -98,12 +83,7 @@ abstract class BaseController
             ->withHeader('Content-Length', (string) strlen($json));
     }
 
-    /**
-     * @param int $status
-     * @param mixed|null $data
-     * @return ResponseInterface
-     */
-    protected function flushAndReturn(int $status, $data = null): ResponseInterface
+    protected function flushAndReturn(int $status, mixed $data = null): ResponseInterface
     {
         if (! $this->objectManager->flush()) {
             return $this->response->withStatus(500);
@@ -121,7 +101,7 @@ abstract class BaseController
      * Returns the logged-in user or an empty user object with an empty player object.
      *
      * This method should only be called if there is a user logged-in. It will return an "empty" character
-     * object with an empty player object attached if there is no logged-in user. Otherwise where would need
+     * object with an empty player object attached if there is no logged-in user. Otherwise, where would need
      * to be null-checks everywhere.
      */
     protected function getUser(UserAuth $userAuth): Character

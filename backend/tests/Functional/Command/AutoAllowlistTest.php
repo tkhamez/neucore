@@ -17,12 +17,9 @@ use Tests\Helper;
 
 class AutoAllowlistTest extends ConsoleTestCase
 {
-    /**
-     * @var ObjectManager
-     */
-    private $om;
+    private ObjectManager $om;
 
-    private $data = [];
+    private array $data = [];
 
     /**
      * @throws \Exception

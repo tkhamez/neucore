@@ -63,7 +63,7 @@ class AccountGroup
             $delay = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
                 ['name' => SystemVariable::ACCOUNT_DEACTIVATION_DELAY]
             );
-            $hours = $delay !== null ? (int) $delay->getValue() : 0;
+            $hours = (int)$delay?->getValue();
         }
 
         if ($player->hasCharacterWithInvalidTokenOlderThan($hours)) {

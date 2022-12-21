@@ -15,10 +15,7 @@ use Neucore\Entity\Corporation;
 
 class TrackingControllerTest extends WebTestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
     protected function setUp(): void
     {

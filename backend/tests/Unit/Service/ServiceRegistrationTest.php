@@ -29,10 +29,7 @@ class ServiceRegistrationTest extends TestCase
 {
     private const PSR_PREFIX = 'Tests\Unit\Service\ServiceRegistration_AutoloadTest';
 
-    /**
-     * @var ClassLoader
-     */
-    private static $loader;
+    private static ClassLoader $loader;
 
     private Logger $log;
 

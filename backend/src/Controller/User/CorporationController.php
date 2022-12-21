@@ -738,7 +738,7 @@ class CorporationController extends BaseController
      */
     private function minimalCorporationsResult(array $corporations): array
     {
-        return array_map(function(Corporation $corporation) {
+        return array_map(function (Corporation $corporation) {
             return $corporation->jsonSerialize(false, false, false);
         }, $corporations);
     }

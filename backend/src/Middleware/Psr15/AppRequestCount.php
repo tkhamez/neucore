@@ -15,20 +15,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class AppRequestCount implements MiddlewareInterface
 {
-    /**
-     * @var AppAuth
-     */
-    private $appAuth;
+    private AppAuth $appAuth;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
+    private RepositoryFactory $repositoryFactory;
 
-    /**
-     * @var ObjectManager
-     */
-    private $om;
+    private ObjectManager $om;
 
     public function __construct(
         AppAuth $appAuth,

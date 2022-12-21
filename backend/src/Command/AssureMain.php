@@ -14,20 +14,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class AssureMain extends Command
 {
-    /**
-     * @var PlayerRepository
-     */
-    private $playerRepository;
+    private PlayerRepository $playerRepository;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * @var Account
-     */
-    private $account;
+    private Account $account;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -49,12 +40,12 @@ class AssureMain extends Command
             ->addOption('db-result-limit', null, InputOption::VALUE_OPTIONAL, '', '1000');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Started "assure-main"');
         $dbResultLimit = intval($input->getOption('db-result-limit'));
 
-        foreach ($this->getPlayerIds($dbResultLimit, []) as $i => $playerIds) {
+        foreach ($this->getPlayerIds($dbResultLimit) as $i => $playerIds) {
             $this->entityManager->clear(); // detaches all objects from Doctrine
             foreach ($playerIds as $j => $playerId) {
                 if (! $this->entityManager->isOpen()) {
@@ -81,14 +72,14 @@ class AssureMain extends Command
         return 0;
     }
 
-    private function getPlayerIds(int $dbResultLimit, array $criteria = [], array $orderBy = []): iterable
+    private function getPlayerIds(int $dbResultLimit): iterable
     {
         $offset = $dbResultLimit * -1;
         do {
             $offset += $dbResultLimit;
             $playerIds = array_map(function (Player $player) {
                 return $player->getId();
-            }, $this->playerRepository->findBy($criteria, $orderBy, $dbResultLimit, $offset));
+            }, $this->playerRepository->findBy([], [], $dbResultLimit, $offset));
 
             yield $playerIds;
         } while (count($playerIds) === $dbResultLimit);

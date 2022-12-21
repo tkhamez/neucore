@@ -106,9 +106,8 @@ class EveLogin implements \JsonSerializable
 
     /**
      * @ORM\OneToMany(targetEntity="EsiToken", mappedBy="eveLogin")
-     * @var Collection
      */
-    private $esiTokens;
+    private Collection $esiTokens;
 
     public static function isValidObject(\stdClass $data): bool
     {

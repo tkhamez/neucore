@@ -30,7 +30,7 @@ class WebTestCase extends TestCase
     protected function runApp(
         string $requestMethod,
         string $requestUri,
-        $requestData = null,
+        object|array|string $requestData = null,
         array $headers = null,
         array $mocks = [],
         array $envVars = []
@@ -71,7 +71,7 @@ class WebTestCase extends TestCase
         }
 
         // add CSRF token, but only for "user" API, not apps
-        if (strpos($requestUri, '/api/user/') === 0 && in_array($requestMethod, ['POST', 'PUT', 'DELETE'])) {
+        if (str_starts_with($requestUri, '/api/user/') && in_array($requestMethod, ['POST', 'PUT', 'DELETE'])) {
             if (!isset($_SESSION)) {
                 $_SESSION = [];
             }
@@ -106,10 +106,7 @@ class WebTestCase extends TestCase
         return $response;
     }
 
-    /**
-     * @return mixed
-     */
-    protected function parseJsonBody(?ResponseInterface $response, bool $assoc = true)
+    protected function parseJsonBody(?ResponseInterface $response, bool $assoc = true): mixed
     {
         if (! $response) {
             return '';

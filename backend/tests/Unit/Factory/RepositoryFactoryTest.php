@@ -51,15 +51,9 @@ use Tests\Helper;
 
 class RepositoryFactoryTest extends TestCase
 {
-    /**
-     * @var ObjectManager
-     */
-    private $om;
+    private ObjectManager $om;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $factory;
+    private RepositoryFactory $factory;
 
     protected function setUp(): void
     {

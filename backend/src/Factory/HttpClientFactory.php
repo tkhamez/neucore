@@ -23,25 +23,13 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class HttpClientFactory implements HttpClientFactoryInterface
 {
-    /**
-     * @var Config
-     */
-    private $config;
+    private Config $config;
 
-    /**
-     * @var EsiHeaders
-     */
-    private $esiHeaders;
+    private EsiHeaders $esiHeaders;
 
-    /**
-     * @var Esi429Response
-     */
-    private $esi429Response;
+    private Esi429Response $esi429Response;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         Config $config,
@@ -91,7 +79,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
     private function getClient(?string $cacheKey): Client
     {
         /** @noinspection PhpUnusedLocalVariableInspection */
-        $debugFunc = function (MessageInterface $r) {
+        $debugFunc = function (MessageInterface $r): MessageInterface {
             if ($r instanceof RequestInterface) {
                 $this->logger->debug($r->getMethod() . ' ' . $r->getUri());
             } elseif ($r instanceof ResponseInterface) {

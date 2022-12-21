@@ -28,68 +28,59 @@ class CorporationMember implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(type="bigint")
      * @ORM\GeneratedValue(strategy="NONE")
-     * @var integer
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * EVE Character name.
      *
      * @OA\Property(type="string", nullable=true)
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @var string|null
      */
-    private $name;
+    private ?string $name = null;
 
     /**
      * @OA\Property(ref="#/components/schemas/EsiLocation", nullable=true)
      * @ORM\ManyToOne(targetEntity="EsiLocation")
      * @ORM\JoinColumn(name="esi_location_id")
-     * @var EsiLocation|null
      */
-    private $location;
+    private ?EsiLocation $location = null;
 
     /**
      * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", name="logoff_date", nullable=true)
-     * @var \DateTime
      */
-    private $logoffDate;
+    private ?\DateTime $logoffDate = null;
 
     /**
      * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", name="logon_date", nullable=true)
-     * @var \DateTime
      */
-    private $logonDate;
+    private ?\DateTime $logonDate = null;
 
     /**
      * @OA\Property(ref="#/components/schemas/EsiType", nullable=true)
      * @ORM\ManyToOne(targetEntity="EsiType")
      * @ORM\JoinColumn(name="esi_type_id")
-     * @var EsiType|null
      */
-    private $shipType;
+    private ?EsiType $shipType = null;
 
     /**
      * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", name="start_date", nullable=true)
-     * @var \DateTime
      */
-    private $startDate;
+    private ?\DateTime $startDate = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="Corporation", inversedBy="members")
      * @ORM\JoinColumn(nullable=false)
-     * @var Corporation
      */
-    private $corporation;
+    private Corporation $corporation;
 
     /**
      * @OA\Property(ref="#/components/schemas/Character", nullable=true)
-     * @var Character|null
      */
-    private $character;
+    private ?Character $character = null;
     // *not* mapped to Character entity, this relation is via primary key, although not defined for Doctrine
 
     /**
@@ -97,27 +88,24 @@ class CorporationMember implements \JsonSerializable
      *
      * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", name="missing_character_mail_sent_date", nullable=true)
-     * @var \DateTime|null
      */
-    private $missingCharacterMailSentDate;
+    private ?\DateTime $missingCharacterMailSentDate = null;
 
     /**
      * Result of the last sent mail (OK, Blocked, CSPA charge > 0)
      *
      * @OA\Property(nullable=true)
      * @ORM\Column(type="string", length=255, name="missing_character_mail_sent_result", nullable=true)
-     * @var string|null
      */
-    private $missingCharacterMailSentResult;
+    private ?string $missingCharacterMailSentResult = null;
 
     /**
      * Number of mails sent, is reset when the character is added.
      *
      * @OA\Property()
      * @ORM\Column(type="integer", name="missing_character_mail_sent_number")
-     * @var integer
      */
-    private $missingCharacterMailSentNumber = 0;
+    private int $missingCharacterMailSentNumber = 0;
 
     /**
      * {@inheritDoc}
@@ -129,12 +117,11 @@ class CorporationMember implements \JsonSerializable
             'id' => $this->getId(),
             'name' => $this->name,
             'location' => $this->location,
-            'logoffDate' => $this->getLogoffDate() !== null ? $this->getLogoffDate()->format(Api::DATE_FORMAT) : null,
-            'logonDate' => $this->getLogonDate() !== null ? $this->getLogonDate()->format(Api::DATE_FORMAT) : null,
+            'logoffDate' => $this->getLogoffDate()?->format(Api::DATE_FORMAT),
+            'logonDate' => $this->getLogonDate()?->format(Api::DATE_FORMAT),
             'shipType' => $this->shipType,
-            'startDate' => $this->getStartDate() !== null ? $this->getStartDate()->format(Api::DATE_FORMAT) : null,
-            'missingCharacterMailSentDate' => $this->getMissingCharacterMailSentDate() !== null ?
-                $this->getMissingCharacterMailSentDate()->format(Api::DATE_FORMAT) : null,
+            'startDate' => $this->getStartDate()?->format(Api::DATE_FORMAT),
+            'missingCharacterMailSentDate' => $this->getMissingCharacterMailSentDate()?->format(Api::DATE_FORMAT),
             'missingCharacterMailSentResult' => $this->missingCharacterMailSentResult,
             'missingCharacterMailSentNumber' => $this->missingCharacterMailSentNumber,
         ];
@@ -142,57 +129,35 @@ class CorporationMember implements \JsonSerializable
         if ($forUser) {
             $char = $this->getCharacter();
             $result = array_merge($result, [
-                'character' => $char !== null ? $char->jsonSerialize(false, false) : null,
-                'player' => $char !== null ? $char->getPlayer()->jsonSerialize(true) : null,
+                'character' => $char?->jsonSerialize(false, false),
+                'player' => $char?->getPlayer()->jsonSerialize(true),
             ]);
         }
 
         return $result;
     }
 
-    /**
-     * Set id.
-     *
-     * @param int $id
-     *
-     * @return CorporationMember
-     */
-    public function setId($id)
+    public function setId(int $id): static
     {
-        $this->id = (int) $id;
+        $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get id.
-     */
     public function getId(): int
     {
         // cast to int because Doctrine creates string for type bigint, also make sure it's no null
         return (int) $this->id;
     }
 
-    /**
-     * Set name.
-     *
-     * @param string|null $name
-     *
-     * @return CorporationMember
-     */
-    public function setName($name = null)
+    public function setName(?string $name = null): static
     {
         $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * Get name.
-     *
-     * @return string|null
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -209,50 +174,26 @@ class CorporationMember implements \JsonSerializable
         return $this->location;
     }
 
-    /**
-     * Set logoffDate.
-     *
-     * @param \DateTime $logoffDate
-     *
-     * @return CorporationMember
-     */
-    public function setLogoffDate($logoffDate)
+    public function setLogoffDate(\DateTime $logoffDate): static
     {
         $this->logoffDate = clone $logoffDate;
 
         return $this;
     }
 
-    /**
-     * Get logoffDate.
-     *
-     * @return \DateTime|null
-     */
-    public function getLogoffDate()
+    public function getLogoffDate(): ?\DateTime
     {
         return $this->logoffDate;
     }
 
-    /**
-     * Set logonDate.
-     *
-     * @param \DateTime $logonDate
-     *
-     * @return CorporationMember
-     */
-    public function setLogonDate($logonDate)
+    public function setLogonDate(\DateTime $logonDate): static
     {
         $this->logonDate = clone $logonDate;
 
         return $this;
     }
 
-    /**
-     * Get logonDate.
-     *
-     * @return \DateTime|null
-     */
-    public function getLogonDate()
+    public function getLogonDate(): ?\DateTime
     {
         return $this->logonDate;
     }
@@ -269,50 +210,26 @@ class CorporationMember implements \JsonSerializable
         return $this->shipType;
     }
 
-    /**
-     * Set startDate.
-     *
-     * @param \DateTime $startDate
-     *
-     * @return CorporationMember
-     */
-    public function setStartDate($startDate)
+    public function setStartDate(\DateTime $startDate): static
     {
         $this->startDate = clone $startDate;
 
         return $this;
     }
 
-    /**
-     * Get startDate.
-     *
-     * @return \DateTime|null
-     */
-    public function getStartDate()
+    public function getStartDate(): ?\DateTime
     {
         return $this->startDate;
     }
 
-    /**
-     * Set corporation.
-     *
-     * @param Corporation $corporation
-     *
-     * @return CorporationMember
-     */
-    public function setCorporation(Corporation $corporation)
+    public function setCorporation(Corporation $corporation): static
     {
         $this->corporation = $corporation;
 
         return $this;
     }
 
-    /**
-     * Get corporation.
-     *
-     * @return Corporation
-     */
-    public function getCorporation()
+    public function getCorporation(): Corporation
     {
         return $this->corporation;
     }

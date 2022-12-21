@@ -14,15 +14,9 @@ use Tests\Logger;
 
 class PluginControllerTest extends WebTestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var ObjectManager
-     */
-    private $om;
+    private ObjectManager $om;
 
     protected function setUp(): void
     {

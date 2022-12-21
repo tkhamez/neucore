@@ -33,7 +33,7 @@ class ConsoleTestCase extends TestCase
 
         try {
             $console = $app->getConsoleApp($mocks);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $e->getMessage();
         }
 

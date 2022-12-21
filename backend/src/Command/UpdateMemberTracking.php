@@ -37,7 +37,7 @@ class UpdateMemberTracking extends Command
     /**
      * Time in milliseconds
      */
-    private int $sleep;
+    private int $sleep = 50;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -69,7 +69,7 @@ class UpdateMemberTracking extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each update',
-                '50'
+                $this->sleep
             );
         $this->configureLogOutput($this);
     }

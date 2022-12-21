@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnusedAliasInspection */
 
 declare(strict_types=1);
@@ -365,7 +366,7 @@ class GroupController extends BaseController
 
         try {
             $this->group->setVisibility($choice);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return $this->response->withStatus(400);
         }
 

@@ -13,10 +13,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class HttpClientFactory implements HttpClientFactoryInterface
 {
-    /**
-     * @var \GuzzleHttp\Client
-     */
-    private $client;
+    private \GuzzleHttp\Client $client;
 
     public function __construct(\GuzzleHttp\Client $client)
     {

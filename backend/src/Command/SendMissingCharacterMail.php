@@ -26,30 +26,15 @@ class SendMissingCharacterMail extends Command
     use LogOutput;
     use EsiRateLimited;
 
-    /**
-     * @var EveMail
-     */
-    private $eveMail;
+    private EveMail $eveMail;
 
-    /**
-     * @var CorporationMemberRepository
-     */
-    private $corporationMemberRepository;
+    private CorporationMemberRepository $corporationMemberRepository;
 
-    /**
-     * @var SystemVariableRepository
-     */
-    private $sysVarRepository;
+    private SystemVariableRepository $sysVarRepository;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * @var int
-     */
-    private $sleep;
+    private int $sleep = 20;
 
     public function __construct(
         EveMail $eveMail,
@@ -77,12 +62,12 @@ class SendMissingCharacterMail extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in seconds after each mail sent (ESI rate limit is 4/min)',
-                '20'
+                $this->sleep
             );
         $this->configureLogOutput($this);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->sleep = intval($input->getOption('sleep'));
         $this->executeLogOutput($input, $output);
@@ -140,9 +125,9 @@ class SendMissingCharacterMail extends Command
                 $result = null;
                 if ($errorMessage == '') { // success
                     $result = Api::MAIL_OK;
-                } elseif (strpos($errorMessage, 'ContactCostNotApproved') !== false) {
+                } elseif (str_contains($errorMessage, 'ContactCostNotApproved')) {
                     $result = Api::MAIL_ERROR_CSPA;
-                } elseif (strpos($errorMessage, 'ContactOwnerUnreachable') !== false) {
+                } elseif (str_contains($errorMessage, 'ContactOwnerUnreachable')) {
                     $result = Api::MAIL_ERROR_BLOCKED;
                 }
                 if ($result !== null) {

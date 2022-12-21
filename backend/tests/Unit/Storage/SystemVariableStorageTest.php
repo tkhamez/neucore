@@ -15,15 +15,9 @@ use Tests\Logger;
 
 class SystemVariableStorageTest extends TestCase
 {
-    /**
-     * @var SystemVariableStorage
-     */
-    private $storage;
+    private SystemVariableStorage $storage;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repoFactory;
+    private RepositoryFactory $repoFactory;
 
     protected function setup(): void
     {

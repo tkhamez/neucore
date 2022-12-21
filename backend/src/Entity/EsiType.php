@@ -25,16 +25,14 @@ class EsiType implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(type="bigint")
      * @ORM\GeneratedValue(strategy="NONE")
-     * @var integer
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @OA\Property()
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @var string
      */
-    private $name;
+    private ?string $name = null;
 
     public function jsonSerialize(): array
     {
@@ -64,8 +62,8 @@ class EsiType implements \JsonSerializable
         return $this;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
-        return (string) $this->name;
+        return $this->name;
     }
 }

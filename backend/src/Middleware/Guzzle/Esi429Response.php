@@ -40,10 +40,10 @@ class Esi429Response
         if ($response->getStatusCode() === 500) {
             $body = $response->getBody()->__toString();
             if (
-                strpos($body, 'Undefined 429 response.') !== false &&
-                strpos($body, 'Original message:') !== false &&
-                strpos($body, 'Too many errors.') !== false &&
-                strpos($body, 'You have been temporarily throttled.') !== false
+                str_contains($body, 'Undefined 429 response.') &&
+                str_contains($body, 'Original message:') &&
+                str_contains($body, 'Too many errors.') &&
+                str_contains($body, 'You have been temporarily throttled.')
             ) {
                 $this->storage->set(Variables::ESI_THROTTLED, (string) (time() + 60));
             }

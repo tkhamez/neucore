@@ -14,15 +14,9 @@ use Tests\WriteErrorListener;
 
 class ObjectManagerTest extends TestCase
 {
-    /**
-     * @var WriteErrorListener
-     */
-    private static $writeErrorListener;
+    private static WriteErrorListener $writeErrorListener;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private static $em;
+    private static EntityManagerInterface $em;
 
     public static function setupBeforeClass(): void
     {

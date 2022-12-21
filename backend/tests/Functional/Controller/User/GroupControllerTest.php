@@ -53,7 +53,7 @@ class GroupControllerTest extends WebTestCase
 
     private int $pid2;
 
-    private int $groupAppID;
+    private ?int $groupAppID = null;
 
     public static function setupBeforeClass(): void
     {

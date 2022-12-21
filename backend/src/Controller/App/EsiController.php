@@ -588,7 +588,7 @@ class EsiController extends BaseController
         // get/validate input
         $esiPath = $this->getEsiPathWithQueryParams($request, $path);
         $dataSource = $this->getQueryParam($request, self::PARAM_DATASOURCE, '');
-        if (strpos($dataSource, ':') !== false) {
+        if (str_contains($dataSource, ':')) {
             $dataSourceTmp = explode(':', $dataSource);
             $characterId = $dataSourceTmp[0];
             $eveLoginName = !empty($dataSourceTmp[1]) ? $dataSourceTmp[1] : EveLogin::NAME_DEFAULT;

@@ -44,32 +44,28 @@ class GroupApplication implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
-     * @var integer
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @OA\Property(ref="#/components/schemas/Player")
      * @ORM\ManyToOne(targetEntity="Player", inversedBy="groupApplications")
      * @ORM\JoinColumn(nullable=false)
-     * @var Player
      */
-    private $player;
+    private Player $player;
 
     /**
      * @OA\Property(ref="#/components/schemas/Group")
      * @ORM\ManyToOne(targetEntity="Group", inversedBy="applications")
      * @ORM\JoinColumn(nullable=false)
-     * @var Group
      */
-    private $group;
+    private Group $group;
 
     /**
      * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", nullable=true)
-     * @var \DateTime
      */
-    private $created;
+    private ?\DateTime $created = null;
 
     /**
      * Group application status.
@@ -78,9 +74,8 @@ class GroupApplication implements \JsonSerializable
      *     enum={"pending", "accepted", "denied"})
      * )
      * @ORM\Column(type="string", length=16)
-     * @var string
      */
-    private $status = self::STATUS_PENDING;
+    private string $status = self::STATUS_PENDING;
 
     /**
      * {@inheritDoc}
@@ -93,88 +88,47 @@ class GroupApplication implements \JsonSerializable
             'player' => $this->player->jsonSerialize(true),
             'group' => $this->group,
             'status' => $this->status,
-            'created' => $this->getCreated() !== null ? $this->getCreated()->format(Api::DATE_FORMAT) : null,
+            'created' => $this->getCreated()?->format(Api::DATE_FORMAT),
         ];
     }
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set created.
-     *
-     * @param \DateTime $created
-     *
-     * @return GroupApplication
-     */
-    public function setCreated($created)
+    public function setCreated(\DateTime $created): static
     {
         $this->created = clone $created;
 
         return $this;
     }
 
-    /**
-     * Get created.
-     *
-     * @return \DateTime|null
-     */
-    public function getCreated()
+    public function getCreated(): ?\DateTime
     {
         return $this->created;
     }
 
-    /**
-     * Set player.
-     *
-     * @param Player $player
-     *
-     * @return GroupApplication
-     */
-    public function setPlayer(Player $player)
+    public function setPlayer(Player $player): static
     {
         $this->player = $player;
 
         return $this;
     }
 
-    /**
-     * Get player.
-     *
-     * @return Player
-     */
-    public function getPlayer()
+    public function getPlayer(): Player
     {
         return $this->player;
     }
 
-    /**
-     * Set group.
-     *
-     * @param Group $group
-     *
-     * @return GroupApplication
-     */
-    public function setGroup(Group $group)
+    public function setGroup(Group $group): static
     {
         $this->group = $group;
 
         return $this;
     }
 
-    /**
-     * Get group.
-     *
-     * @return Group
-     */
-    public function getGroup()
+    public function getGroup(): Group
     {
         return $this->group;
     }

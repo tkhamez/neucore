@@ -334,7 +334,7 @@ class EveMail
         ]);
         try {
             $accessToken = $this->authenticationProvider->refreshAccessToken($existingToken);
-        } catch (InvalidGrantException $e) {
+        } catch (InvalidGrantException) {
             // Delete invalid refresh token so that it cannot be used again.
             $this->deleteToken();
             return 'Invalid token.';

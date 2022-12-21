@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnused */
 
 declare(strict_types=1);
@@ -30,9 +31,9 @@ final class Version20220828164937 extends AbstractMigration
         foreach ($directorSettings->fetchAllAssociative() as $setting) {
             $number = (int)substr($setting['name'], strrpos($setting['name'], '_') + 1);
             $value = json_decode($setting['variable_value']);
-            if (strpos($setting['name'], 'director_char_') === 0) {
+            if (str_starts_with($setting['name'], 'director_char_')) {
                 $data[$number]['characterId'] = $value->character_id;
-            } elseif (strpos($setting['name'], 'director_token_') === 0) {
+            } elseif (str_starts_with($setting['name'], 'director_token_')) {
                 $data[$number]['access'] = (string)$value->access;
                 $data[$number]['refresh'] = (string)$value->refresh;
                 $data[$number]['expires'] = $value->expires ?? time();

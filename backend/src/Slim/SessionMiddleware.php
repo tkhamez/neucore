@@ -100,7 +100,7 @@ class SessionMiddleware implements MiddlewareInterface
             }
             $routePattern = $route->getPattern();
             foreach ($this->options[self::OPTION_ROUTE_INCLUDE_PATTERN] as $includePattern) {
-                if (strpos($routePattern, $includePattern) === 0) {
+                if (str_starts_with($routePattern, $includePattern)) {
                     $start = true;
                     break;
                 }
@@ -130,10 +130,7 @@ class SessionMiddleware implements MiddlewareInterface
         session_set_save_handler(($this->sessionHandlerFactory)(), true);
     }
 
-    /**
-     * @return void
-     */
-    private function start()
+    private function start(): void
     {
         if (PHP_SAPI !== 'cli') {
             if (isset($this->options[self::OPTION_NAME])) {
@@ -159,7 +156,7 @@ class SessionMiddleware implements MiddlewareInterface
 
     private function isReadOnly(RouteInterface $route = null): bool
     {
-        $routePattern = $route !== null ? $route->getPattern() : null;
+        $routePattern = $route?->getPattern();
         if ($routePattern === null) {
             return true;
         }
@@ -169,7 +166,7 @@ class SessionMiddleware implements MiddlewareInterface
             is_array($this->options[self::OPTION_ROUTE_BLOCKING_PATTERN])
         ) {
             foreach ($this->options[self::OPTION_ROUTE_BLOCKING_PATTERN] as $blockingPattern) {
-                if (strpos($routePattern, $blockingPattern) === 0) {
+                if (str_starts_with($routePattern, $blockingPattern)) {
                     $readOnly = false;
                     break;
                 }

@@ -16,20 +16,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class RevokeToken extends Command
 {
-    /**
-     * @var CharacterRepository
-     */
-    private $charRepo;
+    private CharacterRepository $charRepo;
 
-    /**
-     * @var OAuthToken
-     */
-    private $tokenService;
+    private OAuthToken $tokenService;
 
-    /**
-     * @var AuthenticationProvider
-     */
-    private $authenticationProvider;
+    private AuthenticationProvider $authenticationProvider;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,

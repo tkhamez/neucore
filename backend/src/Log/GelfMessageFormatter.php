@@ -9,10 +9,7 @@ use Monolog\Formatter\FormatterInterface;
 
 class GelfMessageFormatter implements FormatterInterface
 {
-    /**
-     * @var \Monolog\Formatter\GelfMessageFormatter
-     */
-    private $formatter;
+    private \Monolog\Formatter\GelfMessageFormatter $formatter;
 
     public function __construct()
     {

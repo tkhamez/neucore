@@ -15,13 +15,13 @@ class BodyParams implements MiddlewareInterface
     {
         $contentType = $request->getHeaderLine('Content-Type');
 
-        if (strpos($contentType, 'application/json') === 0) {
+        if (str_starts_with($contentType, 'application/json')) {
             $body = $request->getBody()->__toString();
             $contents = json_decode($body);
             if (is_array($contents) || is_object($contents)) {
                 $request = $request->withParsedBody($contents);
             }
-        } elseif (strpos($contentType, 'application/x-www-form-urlencoded') === 0) {
+        } elseif (str_starts_with($contentType, 'application/x-www-form-urlencoded')) {
             if ($request->getMethod() !== 'POST') { // POST data is already handled
                 parse_str($request->getBody()->__toString(), $contents);
                 if (is_array($contents)) {

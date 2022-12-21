@@ -48,20 +48,11 @@ use Neucore\Repository\WatchlistRepository;
 
 class RepositoryFactory
 {
-    /**
-     * @var RepositoryFactory
-     */
-    private static $instance;
+    private static ?self $instance = null;
 
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
+    private ObjectManager $objectManager;
 
-    /**
-     * @var array
-     */
-    private $factories = [];
+    private array $factories = [];
 
     public static function getInstance(ObjectManager $objectManager): self
     {
@@ -177,10 +168,7 @@ class RepositoryFactory
         return $this->getRepository(WatchlistRepository::class, Watchlist::class);
     }
 
-    /**
-     * @return mixed
-     */
-    private function getRepository(string $repositoryClass, string $entityClass)
+    private function getRepository(string $repositoryClass, string $entityClass): mixed
     {
         if (!isset($this->factories[$repositoryClass])) {
             $metadata = $this->objectManager->getClassMetadata($entityClass);

@@ -14,15 +14,9 @@ use Tests\RequestFactory;
 
 class AppAuthTest extends TestCase
 {
-    /**
-     * @var AppAuth
-     */
-    private $service;
+    private AppAuth $service;
 
-    /**
-     * @var AppRepository
-     */
-    private $repo;
+    private AppRepository $repo;
 
     protected function setUp(): void
     {

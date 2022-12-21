@@ -133,8 +133,7 @@ class Corporation implements \JsonSerializable
         }
 
         if ($includeTrackingDate) {
-            $data['trackingLastUpdate'] = $this->trackingLastUpdate !== null ?
-                $this->trackingLastUpdate->format(Api::DATE_FORMAT) : null;
+            $data['trackingLastUpdate'] = $this->trackingLastUpdate?->format(Api::DATE_FORMAT);
         }
 
         if ($includeAutoAllowlist) {

@@ -134,18 +134,17 @@ class RemovedCharacter implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'player' => $this->player ? $this->player->jsonSerialize(true) : null,
+            'player' => $this->player?->jsonSerialize(true),
             'characterId' => $this->getCharacterId(),
             'characterName' => $this->characterName,
-            'removedDate' => $this->getRemovedDate() !== null ?
-                $this->getRemovedDate()->format(Api::DATE_FORMAT) : null,
+            'removedDate' => $this->getRemovedDate()?->format(Api::DATE_FORMAT),
             'reason' => $this->reason,
-            'deletedBy' => $this->deletedBy ? $this->deletedBy->jsonSerialize(true) : null,
+            'deletedBy' => $this->deletedBy?->jsonSerialize(true),
 
             // The JS client used to have problems if the newPLayer (type Player) property was added here
             // (keep it for backwards compatibility)
-            'newPlayerId' => $this->newPlayer ? $this->newPlayer->getId() : null,
-            'newPlayerName' => $this->newPlayer ? $this->newPlayer->getName() : null,
+            'newPlayerId' => $this->newPlayer?->getId(),
+            'newPlayerName' => $this->newPlayer?->getName(),
         ];
     }
 

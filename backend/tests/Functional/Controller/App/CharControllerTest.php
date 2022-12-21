@@ -14,14 +14,11 @@ use Tests\Helper;
 
 class CharControllerTest extends WebTestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    private $app0Id;
+    private int $app0Id;
 
-    private $appId;
+    private int $appId;
 
     protected function setUp(): void
     {
