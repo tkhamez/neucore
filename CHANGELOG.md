@@ -13,6 +13,7 @@ dd mm yyyy
 - Dev: Update to Node.js 18 LTS.
 - Dev: Removed support for `composer.phar` in `install.sh`, now it needs the `composer` command to be available.
 - Dev: Moved "dist" and "install" scripts to the new `setup` subdirectory.
+- Dev: Removed the `.composer` directory. The Composer home directory is now in the Docker container.
 
 ## 1.39.0
 

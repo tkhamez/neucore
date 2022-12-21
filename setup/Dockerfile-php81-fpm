@@ -1,4 +1,5 @@
 FROM php:8.1-fpm-alpine
+
 RUN apk update && \
     apk add --no-cache autoconf gcc g++ make gmp-dev libzip-dev icu-dev
 RUN mkdir -p /usr/src/php/ext/apcu && \
@@ -8,8 +9,11 @@ RUN mkdir -p /usr/src/php/ext/ast && \
 RUN mkdir -p /usr/src/php/ext/xdebug && \
     curl -fsSL https://pecl.php.net/get/xdebug-3.1.1.tgz | tar xvz -C "/usr/src/php/ext/xdebug" --strip 1
 RUN docker-php-ext-install pdo_mysql bcmath gmp zip intl ast apcu xdebug opcache mysqli
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-ENV COMPOSER_HOME /app/.composer
+RUN mkdir -p /home/www-data/.composer && chmod 0777 /home/www-data/.composer
+ENV COMPOSER_HOME /home/www-data/.composer
+
 RUN echo "memory_limit = 256M"                                 > /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
     echo "display_errors = Off"                               >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
     echo "error_log = /app/backend/var/logs/error.log"        >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
