@@ -87,7 +87,7 @@
             "openapi src --output ../web/application-api-3.yml --exclude src/Controller/User"
         ],
         "phan": "PHAN_DISABLE_XDEBUG_WARN=1 phan --color",
-        "phpstan": "phpstan analyse --level 9 --ansi --memory-limit 512M src tests",
+        "phpstan": "phpstan analyse --level 8 --ansi --memory-limit 512M src tests",
         "psalm": "psalm",
         "test": "phpunit --colors=always",
         "test:cov": "phpunit --colors=always --coverage-html var/phpunit",

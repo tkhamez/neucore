@@ -118,7 +118,6 @@ class HttpClientFactory implements HttpClientFactoryInterface
                     $this->config['guzzle']['cache']['dir'] . DIRECTORY_SEPARATOR . $cacheKey
                 )
             )));
-            /* @phan-suppress-next-line PhanTypeMismatchArgument */
             $stack->push($cache, 'cache');
         }
 

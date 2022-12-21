@@ -23,6 +23,12 @@ parameters:
 			message: '#Property (.*) is never written, only read.#'
 			path: %currentWorkingDirectory%/src/Entity/*
 		-
+			message: '#expects class-string<object>, string given#'
+			path: %currentWorkingDirectory%/src/Factory/RepositoryFactory.php
+		-
+			message: '#Unable to resolve the template type T#'
+			path: %currentWorkingDirectory%/src/Factory/RepositoryFactory.php
+		-
 			message: '#Parameter \#1 \$pdoOrDsn (.*) object\|resource given.#'
 			path: %currentWorkingDirectory%/src/Factory/SessionHandlerFactory.php
 		-

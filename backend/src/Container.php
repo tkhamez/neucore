@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore;
 
+use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
@@ -63,8 +64,9 @@ class Container
                         \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => $verify,
                     ];
                 }
+                $connection = DriverManager::getConnection($conf['connection'], $metaConfig);
                 /** @noinspection PhpUnnecessaryLocalVariableInspection */
-                $em = EntityManager::create($conf['connection'], $metaConfig);
+                $em = new EntityManager($connection, $metaConfig);
                 /*$logger = new class() extends \Doctrine\DBAL\Logging\DebugStack {
                     public function startQuery($sql, ?array $params = null, ?array $types = null)
                     {
@@ -102,7 +104,7 @@ class Container
                 $config = $c->get(Config::class)['monolog'];
                 $path = $config['path'];
                 $rotation = $config['rotation'];
-                if (strpos($path, 'php://') === false) {
+                if (!str_contains($path, 'php://')) {
                     if (! is_writable($path)) {
                         throw new RuntimeException("The log directory '$path' must be writable by the web server.");
                     }
