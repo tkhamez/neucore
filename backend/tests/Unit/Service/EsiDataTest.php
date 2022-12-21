@@ -791,12 +791,9 @@ class EsiDataTest extends TestCase
 
     public function testVerifyRoles_Exception()
     {
-        $this->client->setResponse(new Response(200, [], '{"roles": ["Auditor", "Role-X"]}'));
+        $this->client->setResponse(new Response(500));
         $this->assertFalse($this->esiData->verifyRoles(['Auditor'], 100, 'access-token'));
-        $this->assertStringStartsWith(
-            "Invalid value for 'roles'",
-            $this->log->getHandler()->getRecords()[0]['message']
-        );
+        $this->assertStringStartsWith('[500]', $this->log->getHandler()->getRecords()[0]['message']);
     }
 
     public function testVerifyRoles_CharacterNotFound()
