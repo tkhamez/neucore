@@ -11,6 +11,8 @@ use Neucore\Entity\Watchlist;
  * @method Watchlist|null find($id, $lockMode = null, $lockVersion = null)
  * @method Watchlist[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  * @method Watchlist|null findOneBy(array $criteria, array $orderBy = null)
+ *
+ * @psalm-suppress MissingTemplateParam
  */
 class WatchlistRepository extends EntityRepository
 {

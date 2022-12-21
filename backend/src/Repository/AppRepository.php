@@ -16,6 +16,8 @@ use Neucore\Entity\App;
  * @method App|null find($id, $lockMode = null, $lockVersion = null)
  * @method App|null findOneBy(array $criteria, array $orderBy = null)
  * @method App[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ *
+ * @psalm-suppress MissingTemplateParam
  */
 class AppRepository extends EntityRepository
 {

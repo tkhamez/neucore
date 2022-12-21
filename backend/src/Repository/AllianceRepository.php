@@ -16,6 +16,8 @@ use Neucore\Entity\Alliance;
  * @method Alliance|null find($id, $lockMode = null, $lockVersion = null)
  * @method Alliance|null findOneBy(array $criteria, array $orderBy = null)
  * @method Alliance[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ *
+ * @psalm-suppress MissingTemplateParam
  */
 class AllianceRepository extends EntityRepository
 {

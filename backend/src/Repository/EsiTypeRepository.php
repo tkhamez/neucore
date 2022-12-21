@@ -11,6 +11,8 @@ use Neucore\Entity\EsiType;
  * @method EsiType|null find($id, $lockMode = null, $lockVersion = null)
  * @method EsiType|null findOneBy(array $criteria, array $orderBy = null)
  * @method EsiType[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ *
+ * @psalm-suppress MissingTemplateParam
  */
 class EsiTypeRepository extends EntityRepository
 {

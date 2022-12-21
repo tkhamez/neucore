@@ -6,6 +6,8 @@ namespace Neucore\Service;
 
 /**
  * Wraps the config array to make it injectable.
+ *
+ * @psalm-suppress MissingTemplateParam
  */
 class Config implements \ArrayAccess
 {

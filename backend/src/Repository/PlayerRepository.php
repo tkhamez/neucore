@@ -16,6 +16,8 @@ use Neucore\Entity\Player;
  * @method Player|null find($id, $lockMode = null, $lockVersion = null)
  * @method Player|null findOneBy(array $criteria, array $orderBy = null)
  * @method Player[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ *
+ * @psalm-suppress MissingTemplateParam
  */
 class PlayerRepository extends EntityRepository
 {
@@ -282,7 +284,7 @@ class PlayerRepository extends EntityRepository
             });
         }
 
-        return array_map(function ($row) {
+        return array_map(function (array $row) {
             return [
                 'character_id' => (int) $row['character_id'],
                 'character_name' => $row['character_name'],

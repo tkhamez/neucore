@@ -16,6 +16,8 @@ use Neucore\Entity\Role;
  * @method Role|null find($id, $lockMode = null, $lockVersion = null)
  * @method Role|null findOneBy(array $criteria, array $orderBy = null)
  * @method Role[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ *
+ * @psalm-suppress MissingTemplateParam
  */
 class RoleRepository extends EntityRepository
 {

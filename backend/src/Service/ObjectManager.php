@@ -9,6 +9,9 @@ use Exception;
 use Neucore\Log\Context;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @psalm-suppress MissingTemplateParam
+ */
 class ObjectManager extends ObjectManagerDecorator
 {
     private LoggerInterface $log;
