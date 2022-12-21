@@ -29,7 +29,7 @@ services:
   neucore_node:
     container_name: neucore_dev_node
     build:
-      context: doc
+      context: setup
       dockerfile: Dockerfile-node
     volumes: [".:/app"]
     environment:
@@ -42,7 +42,7 @@ services:
   neucore_php:
     container_name: neucore_dev_php
     build:
-      context: doc
+      context: setup
       #dockerfile: Dockerfile-php80-fpm
       #dockerfile: Dockerfile-php81-fpm
       dockerfile: Dockerfile-php82-fpm
@@ -62,7 +62,7 @@ services:
     container_name: neucore_dev_http
     image: nginx:1
     depends_on: [neucore_php]
-    volumes: [".:/app", "./doc/docker-nginx.conf:/etc/nginx/conf.d/default.conf"]
+    volumes: [".:/app", "./setup/docker-nginx.conf:/etc/nginx/conf.d/default.conf"]
     ports: ["8080:80"]
     networks: [neucore]
 

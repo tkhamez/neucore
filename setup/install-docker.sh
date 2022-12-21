@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
+DIR=$(dirname "$(realpath "$0")")
+
 # Install backend, run database migrations and generate OpenAPI files.
+cd "${DIR}"/.. || exit
 if [[ $1 = prod ]]; then
     docker-compose exec neucore_php composer install --no-dev --optimize-autoloader --no-interaction
     docker-compose exec neucore_php composer compile:prod --no-dev --no-interaction
@@ -8,7 +11,6 @@ else
     docker-compose exec neucore_php composer install
     docker-compose exec neucore_php composer compile
 fi
-
 
 # Generate and build OpenAPI JavaScript client
 docker-compose run neucore_java /app/frontend/openapi.sh

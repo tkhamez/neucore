@@ -175,13 +175,13 @@ To run the application:
   * Configure URL rewriting to `app.php`:
     * For Apache there's a [.htaccess](../web/.htaccess) file in the `web` directory (set `AllowOverride All` 
       in your VirtualHost configuration for that directory if you want to use it).
-    * For Nginx there's a sample [configuration](docker-nginx.conf) file in the `doc` directory.
+    * For Nginx there's a sample [configuration](docker-nginx.conf) file in the `setup` directory.
 
 Additionally, for a development environment and to build the application:
 * PHP extensions: ast (optional for phan), pdo_sqlite (optional for unit tests), xdebug (optional for debugging).
 * Composer 2.
 * Node.js, only tested with version 18.12.1 (LTS) with npm 8.19.2.
-* Java runtime >=8 (but only tested with v11, v17) to generate the OpenAPI JavaScript client.
+* Java runtime >=8 (but only tested with v17) to generate the OpenAPI JavaScript client.
 
 #### Install/Update
 
@@ -226,10 +226,10 @@ bin/console doctrine-fixtures-load
 If you have cloned the repository, you must install the dependencies and build the backend and frontend:
 ```
 # for production:
-./install.sh prod
+setup/install.sh prod
 
 # for develeopment:
-./install.sh
+setup/install.sh
 cd frontend && npm run build
 ```
 
@@ -245,7 +245,7 @@ the database host is `neucore_db` and the database name also `neucore`.
 - Start services:  
   `export UID && docker-compose up`
 - Install the app:  
-  `export UID && ./install-docker.sh`  
+  `export UID && setup/install-docker.sh`  
   `docker-compose run neucore_node npm run build`
 - Run tests and other commands in the php and node containers:  
   `export UID && docker-compose exec neucore_php /bin/sh`  
@@ -289,5 +289,5 @@ X-Content-Type-Options "nosniff"
 
 ## Build Distribution
 
-There are scripts that build the distribution package, `dist.sh` or `dist-docker.sh`. They need a 
+There are scripts that build the distribution package, `setup/dist.sh` or `setup/dist-docker.sh`. They need a 
 working development environment.

@@ -11,7 +11,8 @@ dd mm yyyy
 - Added content compression to Docker container (prod).
 - Updated dependencies.
 - Dev: Update to Node.js 18 LTS.
-- Dev: Removed support for `composer.phar` in `install.sh`, it now needs the `composer` command to be available.
+- Dev: Removed support for `composer.phar` in `install.sh`, now it needs the `composer` command to be available.
+- Dev: Moved "dist" and "install" scripts to the new `setup` subdirectory.
 
 ## 1.39.0
 

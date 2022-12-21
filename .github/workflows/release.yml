@@ -55,9 +55,8 @@ jobs:
         run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
       - name: Create archive
         run: |
-          cd dist/build
-          ./dist-collect-files.sh
-          cd ..
+          dist/build/setup/dist-collect-files.sh
+          cd dist
           tar -czf neucore-${{ steps.get_version.outputs.VERSION }}.tar.gz neucore
           sha256sum neucore-${{ steps.get_version.outputs.VERSION }}.tar.gz > neucore-${{ steps.get_version.outputs.VERSION }}.sha256
       - name: GitHub Release
