@@ -114,21 +114,21 @@
             <img v-if="authChar" :src="h.characterPortrait(authChar.id, 32)"
                  class="d-inline-block align-top me-2" alt="portrait">
             <div v-if="authChar" class="dropdown">
-                <button class="btn btn-primary dropdown-toggle me-3" data-bs-toggle="dropdown"
+                <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
                     {{ authChar.name }}
                 </button>
                 <div class="dropdown-menu scrollable-menu">
+                    <a href="#" @click.prevent="logout()" class="dropdown-item">
+                        <span role="img" class="fas fa-sign-out"></span>
+                        Sign out
+                    </a>
                     <h6 class="dropdown-header">Themes</h6>
                     <a v-for="theme in themes" class="dropdown-item" href="#"
                        :class="{ 'active': selectedTheme === theme }"
                        v-on:click.prevent="selectTheme(theme)">{{ theme }}</a>
                 </div>
             </div>
-
-            <button v-if="authChar" @click="logout()" class="btn btn-outline-danger" title="Sign out">
-                <span role="img" class="fas fa-sign-out-alt"></span>
-            </button>
         </div>
     </div>
 </nav>
