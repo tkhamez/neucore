@@ -7,7 +7,7 @@
         </div>
     </div>
 
-    <ul class="nav nav-pills nav-fill">
+    <ul class="nc-nav nav nav-pills nav-fill">
         <li class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'Customization' }"
                :href="'#SystemSettings/Customization'">Customization</a>

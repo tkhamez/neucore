@@ -33,7 +33,7 @@
                 </div>
             </div>
 
-            <ul v-if="groupId" class="nav nav-pills nav-fill">
+            <ul v-if="groupId" class="nc-nav nav nav-pills nav-fill">
                 <li class="nav-item">
                     <a class="nav-link" :class="{ 'active': contentType === 'members' }"
                        :href="`#GroupManagement/${groupId}/members`">

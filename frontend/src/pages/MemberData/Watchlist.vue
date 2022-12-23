@@ -11,7 +11,7 @@
         </div>
     </div>
 
-    <ul v-cloak v-if="currentWatchlist" class="nav nav-pills nav-fill">
+    <ul v-cloak v-if="currentWatchlist" class="nc-nav nav nav-pills nav-fill">
         <li v-if="h.hasRole('watchlist')" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'warnings' }"
                :href="`#Watchlist/${currentWatchlist.id}/warnings`">Warnings</a>

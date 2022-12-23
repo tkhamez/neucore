@@ -62,7 +62,7 @@
                               id="groupDescription" rows="2"></textarea>
                 </div>
             </div>
-            <ul class="nav nav-pills nav-fill">
+            <ul class="nc-nav nav nav-pills nav-fill">
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'managers' }"
@@ -336,8 +336,5 @@ function fetchMembers(vm) {
         top: 1px;
         margin-left: 12px;
         font-size: 1.1rem;
-    }
-    .nav-link {
-        padding: 0.5rem 1rem;
     }
 </style>

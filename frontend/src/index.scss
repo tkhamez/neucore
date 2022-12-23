@@ -154,6 +154,9 @@ body.neucore {
     font-weight: 700;
 }
 
+/**
+ * The menu on the left side on some pages
+ */
 .nc-menu {
     .card-header {
         border-bottom: none;
@@ -170,6 +173,14 @@ body.neucore {
         border-bottom-left-radius: inherit;
         border-bottom-right-radius: inherit;
     }
+}
+
+/**
+ * Border radius of tab navigation
+ */
+.nc-nav .nav-link {
+    border-bottom-left-radius: unset;
+    border-bottom-right-radius: unset;
 }
 
 /**

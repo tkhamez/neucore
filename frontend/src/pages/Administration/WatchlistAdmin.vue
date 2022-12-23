@@ -48,7 +48,7 @@
             <div class="card border-secondary mb-3" >
                 <h4 class="card-header">{{ currentWatchlist ? currentWatchlist.name : '' }}</h4>
             </div>
-            <ul v-cloak v-if="currentWatchlist" class="nav nav-pills nav-fill">
+            <ul v-cloak v-if="currentWatchlist" class="nc-nav nav nav-pills nav-fill">
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'groups' }"

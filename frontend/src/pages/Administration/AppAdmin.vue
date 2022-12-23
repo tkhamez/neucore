@@ -48,7 +48,7 @@
             <div class="card border-secondary mb-3" >
                 <h4 class="card-header">{{appName}}</h4>
             </div>
-            <ul class="nav nav-pills nav-fill">
+            <ul class="nc-nav nav nav-pills nav-fill">
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'managers' }"
