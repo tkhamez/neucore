@@ -17,7 +17,7 @@ class SessionHandlerFactory
     public function __invoke(): \SessionHandlerInterface
     {
         // see https://symfony.com/doc/current/components/http_foundation/session_configuration.html
-        $pdo = $this->entityManager->getConnection()->getNativeConnection(); /* @var \PDO $pdo */
+        $pdo = $this->entityManager->getConnection()->getNativeConnection();
         /** @psalm-suppress InvalidArgument */
         return new PdoSessionHandler($pdo, ['lock_mode' => PdoSessionHandler::LOCK_ADVISORY]);
     }

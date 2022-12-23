@@ -5,12 +5,6 @@ parameters:
 	checkGenericClassInNonGenericObjectType: false
 	ignoreErrors:
 		-
-			message: '#Method (.*) has no return type specified.#'
-			path: %currentWorkingDirectory%/*
-		-
-			message: '#Property (.*) has no type specified.#'
-			path: %currentWorkingDirectory%/*
-		-
 			message: '#Offset (.*) does not exist on array\|string\|null.#'
 			path: %currentWorkingDirectory%/*
 		-
@@ -18,13 +12,7 @@ parameters:
 			path: %currentWorkingDirectory%/src/Application.php
 		-
 			message: '#invalid type(.*)only iterables are supported#'
-			path: %currentWorkingDirectory%/src/Data/ServiceConfiguration.php
-		-
-			message: '#invalid type(.*)only iterables are supported#'
-			path: %currentWorkingDirectory%/src/Data/ServiceConfigurationURL.php
-		-
-			message: '#Property (.*) is never written, only read.#'
-			path: %currentWorkingDirectory%/src/Entity/*
+			path: %currentWorkingDirectory%/src/Data/ServiceConfiguration*.php
 		-
 			message: '#expects class-string<object>, string given#'
 			path: %currentWorkingDirectory%/src/Factory/RepositoryFactory.php
@@ -44,19 +32,13 @@ parameters:
 			message: '#Parameter \#1 \$callback of function array_map expects (.*), (.*) given.#'
 			path: %currentWorkingDirectory%/src/*/Watchlist*.php
 		-
-			message: '#Method (.*) should return (.*) but returns (.*)\|null.#'
-			path: %currentWorkingDirectory%/tests/Functional/Controller/User/PlayerControllerTest.php
+			message: '#Method (.*) has no return type specified.#'
+			path: %currentWorkingDirectory%/tests/*
 		-
 			message: '#(.*)has an unused parameter \$serviceConfiguration#'
 			path: %currentWorkingDirectory%/tests/*
 		-
 			message: '#Cannot call method (.*) on (.*)\|null.#'
-			path: %currentWorkingDirectory%/tests/*
-		-
-			message: '#Method (.*)::test(.*) has no return typehint specified.#'
-			path: %currentWorkingDirectory%/tests/*
-		-
-			message: '#Property (.*) has no typehint specified.#'
 			path: %currentWorkingDirectory%/tests/*
 		-
 			message: '#has an unused parameter \$logger#'
@@ -65,17 +47,17 @@ parameters:
 			message: '#Class Tests\\Client extends @final class GuzzleHttp\\Client.#'
 			path: %currentWorkingDirectory%/tests/Client.php
 		-
-			message: '#should return array(.*)but returns array#'
-			path: %currentWorkingDirectory%/tests/Unit/Service/ServiceRegistrationTest_TestService.php
-		-
-			message: '#Parameter \#2 \$algo of function password_hash expects int, int\|string given.#'
-			path: %currentWorkingDirectory%/tests/Helper.php
-		-
-			message: '#Method (.*) should return (.*) but returns (.*)#'
-			path: %currentWorkingDirectory%/tests/Unit/Service/OAuthTokenTest.php
+			message: '#Method (.*) should return (.*) but returns (.*)\|null.#'
+			path: %currentWorkingDirectory%/tests/Functional/Controller/User/PlayerControllerTest.php
 		-
 			message: '#Cannot call method (.*) on null.#'
 			path: %currentWorkingDirectory%/tests/Unit/*
 		-
 			message: '#Call to an undefined method #'
-			path: %currentWorkingDirectory%/tests/Unit/*
+			path: %currentWorkingDirectory%/tests/Unit/Service/ServiceRegistrationTest.php
+		-
+			message: '#should return array(.*)but returns array#'
+			path: %currentWorkingDirectory%/tests/Unit/Service/ServiceRegistrationTest_TestService.php
+		-
+			message: '#Method (.*) should return (.*) but returns (.*)#'
+			path: %currentWorkingDirectory%/tests/Unit/Service/OAuthTokenTest.php

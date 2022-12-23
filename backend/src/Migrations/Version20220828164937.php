@@ -77,12 +77,12 @@ final class Version20220828164937 extends AbstractMigration
     /**
      * @throws Exception
      */
-    private function getEveLogin()
+    private function getEveLogin(): ?int
     {
         $eveLogin = $this->connection->executeQuery(
             'SELECT id FROM eve_logins WHERE name = ?',
             [EveLogin::NAME_TRACKING]
         )->fetchAssociative();
-        return $eveLogin ? $eveLogin['id'] ?? null : null;
+        return $eveLogin ? (isset($eveLogin['id']) ? intval($eveLogin['id']) : null) : null;
     }
 }
