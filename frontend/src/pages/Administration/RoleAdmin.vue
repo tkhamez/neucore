@@ -9,16 +9,14 @@
 
     <div class="row">
         <div class="col-lg-4 sticky-column">
-            <div class="card border-secondary mb-3">
+            <div class="nc-menu card border-secondary mb-3">
                 <h4 class="card-header">Roles</h4>
                 <div class="list-group">
-                    <span v-for="roleName in availableRoles" class="list-item-wrap">
-                        <a class="list-group-item list-group-item-action"
-                           :class="{ active: currentRoleName === roleName }"
-                           :href="`#RoleAdmin/${roleName}`">
-                            {{ roleName }}
-                        </a>
-                    </span>
+                    <a v-for="roleName in availableRoles" class="list-group-item list-group-item-action"
+                       :class="{ active: currentRoleName === roleName }"
+                       :href="`#RoleAdmin/${roleName}`">
+                        {{ roleName }}
+                    </a>
                 </div>
             </div>
         </div>

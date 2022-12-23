@@ -143,7 +143,7 @@
                     </a>
                 </div>
             </div>
-            <div class="card border-secondary mb-3" >
+            <div class="nc-menu card border-secondary mb-3" >
                 <h4 class="card-header"><label for="accountList">Player accounts ...</label></h4>
                 <div class="card-body">
                     <select class="form-select" id="accountList"
@@ -153,7 +153,7 @@
                         <option value="withoutCharacters">without characters</option>
                     </select>
                 </div>
-                <div class="list-group">
+                <div class="list-group border-top-0">
                     <a v-for="emptyAcc in playersChars"
                        class="list-group-item list-group-item-action"
                        :class="{ active: playerEdit && playerEdit.id === emptyAcc.id }"

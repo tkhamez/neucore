@@ -9,7 +9,7 @@
 
         <div class="row">
             <div class="col-lg-4 sticky-column">
-                <div class="card border-secondary mb-3">
+                <div class="nc-menu card border-secondary mb-3">
                     <h4 class="card-header">Corporations</h4>
                     <div class="list-group">
                         <a v-for="corporation in corporations" class="list-group-item list-group-item-action"

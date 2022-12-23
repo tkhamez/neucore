@@ -14,7 +14,7 @@
 
     <div class="row mt-3">
         <div class="col-lg-4 sticky-column">
-            <div class="card border-secondary mb-3">
+            <div class="nc-menu card border-secondary mb-3">
                 <h4 class="card-header">
                     Services
                     <span class="far fa-plus-square add-service" title="Add group"
@@ -22,7 +22,7 @@
                           v-on:click="showCreateModal()"></span>
                 </h4>
                 <div class="list-group">
-                    <span v-for="service in services" class="list-item-wrap"
+                    <span v-for="service in services" class="nc-list-item-wrap"
                           :class="{ active: activeService && activeService.id === service.id }">
                         <a class="list-group-item list-group-item-action"
                            :class="{ active: activeService && activeService.id === service.id }"

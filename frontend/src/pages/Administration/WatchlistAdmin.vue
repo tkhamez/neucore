@@ -14,7 +14,7 @@
 
     <div class="row">
         <div class="col-lg-4 sticky-column">
-            <div class="card border-secondary mb-3">
+            <div class="nc-menu card border-secondary mb-3">
                 <h4 class="card-header">
                     Watchlists
                     <span class="far fa-plus-square add-watchlist" title="Add watchlist"
@@ -22,7 +22,7 @@
                           v-on:click="showCreateWatchlistModal()"></span>
                 </h4>
                 <div class="list-group">
-                    <span v-for="watchlist in watchlists" class="list-item-wrap"
+                    <span v-for="watchlist in watchlists" class="nc-list-item-wrap"
                           :class="{ active: currentWatchlist && currentWatchlist.id === watchlist.id }">
                         <a class="list-group-item list-group-item-action"
                            :class="{ active: currentWatchlist && currentWatchlist.id === watchlist.id }"

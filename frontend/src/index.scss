@@ -154,10 +154,28 @@ body.neucore {
     font-weight: 700;
 }
 
+.nc-menu {
+    .card-header {
+        border-bottom: none;
+    }
+    .list-group-item:first-child {
+        border-top-left-radius: unset;
+        border-top-right-radius: unset;
+    }
+    .nc-list-item-wrap:last-child {
+        border-bottom-left-radius: inherit;
+        border-bottom-right-radius: inherit;
+    }
+    .nc-list-item-wrap .list-group-item:first-child {
+        border-bottom-left-radius: inherit;
+        border-bottom-right-radius: inherit;
+    }
+}
+
 /**
  * The edit icons for the group, app etc. admin navigation.
  */
-.list-item-wrap {
+.nc-list-item-wrap {
     position: relative;
     a {
         z-index: 1;

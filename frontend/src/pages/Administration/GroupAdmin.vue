@@ -17,7 +17,7 @@
 
     <div class="row">
         <div class="col-lg-4 sticky-column">
-            <div class="card border-secondary mb-3">
+            <div class="nc-menu card border-secondary mb-3">
                 <h4 class="card-header">
                     Groups
                     <span class="far fa-plus-square add-group" title="Add group"
@@ -25,7 +25,7 @@
                        v-on:click="showCreateGroupModal()"></span>
                 </h4>
                 <div class="list-group">
-                    <span v-for="group in groups" class="list-item-wrap" :class="{ active: groupId === group.id }">
+                    <span v-for="group in groups" class="nc-list-item-wrap" :class="{ active: groupId === group.id }">
                         <a class="list-group-item list-group-item-action"
                            :class="{ active: groupId === group.id }"
                            :href="`#GroupAdmin/${group.id}/${contentType}`">

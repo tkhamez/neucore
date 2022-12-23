@@ -13,7 +13,7 @@
 
     <div class="row">
         <div class="col-lg-4 sticky-column">
-            <div class="card border-secondary mb-3">
+            <div class="nc-menu card border-secondary mb-3">
                 <h4 class="card-header">
                     EVE Logins
                     <span class="far fa-plus-square add-login" title="Add group"
@@ -21,7 +21,7 @@
                           v-on:click="showCreateModal()"></span>
                 </h4>
                 <div class="list-group">
-                    <span v-for="login in logins" class="list-item-wrap"
+                    <span v-for="login in logins" class="nc-list-item-wrap"
                           :class="{ active: activeLogin && activeLogin.id === login.id }">
                         <a class="list-group-item list-group-item-action"
                            :class="{ active: activeLogin && activeLogin.id === login.id }"

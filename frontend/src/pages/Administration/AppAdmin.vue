@@ -14,7 +14,7 @@
 
     <div class="row">
         <div class="col-lg-4 sticky-column">
-            <div class="card border-secondary mb-3" >
+            <div class="nc-menu card border-secondary mb-3" >
                 <h4 class="card-header">
                     Apps
                     <span class="far fa-plus-square add-app" title="Add application"
@@ -22,7 +22,7 @@
                        v-on:click="showCreateAppModal()"></span>
                 </h4>
                 <div class="list-group">
-                    <span v-for="app in apps" class="list-item-wrap" :class="{ active: appId === app.id }">
+                    <span v-for="app in apps" class="nc-list-item-wrap" :class="{ active: appId === app.id }">
                         <a class="list-group-item list-group-item-action"
                            :class="{ active: appId === app.id }"
                            :href="`#AppAdmin/${app.id}/${contentType}`">
