@@ -175,7 +175,7 @@ To run the application:
   * Configure URL rewriting to `app.php`:
     * For Apache there's a [.htaccess](../web/.htaccess) file in the `web` directory (set `AllowOverride All` 
       in your VirtualHost configuration for that directory if you want to use it).
-    * For Nginx there's a sample [configuration](docker-nginx.conf) file in the `setup` directory.
+    * For Nginx there's a sample [configuration](../setup/docker-nginx.conf) file in the `setup` directory.
 
 Additionally, for a development environment and to build the application:
 * PHP extensions: ast (optional for phan), pdo_sqlite (optional for unit tests), xdebug (optional for debugging).

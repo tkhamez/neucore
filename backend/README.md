@@ -73,8 +73,8 @@ The `operationId` must be a unique string among all operations described in the 
 
 ### Documentation
 
-The file [doc/API.md](../doc/API.md) is automatically generated from the template file `doc/API.tpl.md`, 
-the route and security configuration from the `config` directory and `web/swagger.json`:
+The file [doc/API.md](../doc/API.md) is automatically generated from the template file `doc/API.md.tpl`, 
+the route and security configuration from the `config` directory and `web/openapi-3.yaml`:
 ```
 bin/doc-api-gen.php
 ```
@@ -133,10 +133,13 @@ composer phan
 composer psalm
 ```
 
-Run the built-in web server:
+Run the built-in web server (the application should work with it, but is rarely tested):
 ```
 composer start
 ```
+
+Then open http://localhost:8080/index.html.
+
 
 ### Doctrine
 

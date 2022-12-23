@@ -50,6 +50,7 @@ class Container
                 } else {
                     $conf = $config['doctrine'] ?? []; // it should always be set
                 }
+                // TODO migrate from annotations to attributes
                 $metaConfig = ORMSetup::createAnnotationMetadataConfiguration(
                     $conf['meta']['entity_paths'],
                     $conf['meta']['dev_mode'],
