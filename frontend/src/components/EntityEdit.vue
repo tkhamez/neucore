@@ -75,8 +75,7 @@ Modal windows to create, delete and edit entities
                         Rename {{ type }}
                     </button>
 
-                    <hr>
-
+                    <hr v-cloak v-if="type === 'Group'">
                     <div v-cloak v-if="type === 'Group'">
                         <label class="form-label" for="entityEditVisibility">Group visibility</label>
                         <select class="form-select" id="entityEditVisibility"
@@ -99,6 +98,7 @@ Modal windows to create, delete and edit entities
                         <input class="form-check-input" type="checkbox" id="entityEditIsDefault"
                                v-model="groupIsDefault" v-on:change="toggleGroupCheckbox('is-default')">
                     </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
