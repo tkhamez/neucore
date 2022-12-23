@@ -6,6 +6,7 @@ dd mm yyyy
 
 - **BC break**: Dropped PHP 7.4 support, minimum required version is now 8.0.
 - **BC break**: Removed files necessary to deploy on Heroku (I can't test it anymore because they removed free plans).
+- Small layout changes.
 - PHP 8.2 compatibility (no change was necessary, but it's tested now).
 - Changed the Content Security Policy (CSP) header (in the documentation and Docker). This also fixes links to Eve Who.
 - Added content compression to Docker container (prod).
@@ -818,7 +819,7 @@ ESI endpoint for apps:
 22 Apr 2019
 
 - New: Membership in one group can now be made dependent on another group membership 
-  (see documentation [Required Groups](doc/Documentation.md#required-groups).
+  (see documentation [Required Groups](doc/Documentation.md#required-and-forbidden-groups).
 - New: error limit for applications (only for esi endpoints).
 - New: `removed-characters` endpoint for apps.
 - BC-Break: DB migrations no longer add data, this is now done with Doctrine data fixtures. If you update 
