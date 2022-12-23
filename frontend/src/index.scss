@@ -176,11 +176,46 @@ body.neucore {
 }
 
 /**
- * Border radius of tab navigation
+ * Border of tab navigation items
  */
-.nc-nav .nav-link {
-    border-bottom-left-radius: unset;
-    border-bottom-right-radius: unset;
+.basic,
+.cerulean,
+.cosmo,
+.cyborg,
+.darkly,
+.flatly,
+.journal,
+.litera,
+.lumen,
+//.lux,
+//.materia,
+//.morph,
+.minty,
+.pulse,
+.quartz,
+.sandstone,
+//.simplex,
+.sketchy,
+//.slate,
+.solar,
+.spacelab,
+.superhero,
+.united,
+.vapor,
+.yeti,
+//.zephyr
+{
+    .nc-nav .nav-link {
+        border-bottom-left-radius: unset;
+        border-bottom-right-radius: unset;
+        border-top: 1px solid;
+        border-left: 1px solid;
+        border-color: rgb(var(--bs-secondary-rgb));
+    }
+    .nc-nav .nav-item:last-child .nav-link {
+        border-right: 1px solid;
+        border-color: rgb(var(--bs-secondary-rgb));
+    }
 }
 
 /**
