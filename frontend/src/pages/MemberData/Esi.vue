@@ -41,13 +41,13 @@
                     <option>POST</option>
                 </select>
                 <input class="form-control" v-model="esiRoute">
-                <span class="form-text">
+                <div class="form-text lh-sm">
                     Placeholder: {character_id}, {corporation_id} and {alliance_id} are automatically
                     replaced with the corresponding IDs of the selected character, other placeholders
                     must be replaced manually.<br>
                     If the result contains an "X-Pages" header, you can request the other pages by
                     adding "?page=2" etc. to the route.
-                </span>
+                </div>
 
                 <br>
                 <br>

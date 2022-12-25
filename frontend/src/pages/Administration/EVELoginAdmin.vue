@@ -96,11 +96,11 @@
                                          placeholder="Select roles">
                             </multiselect>
                         </label>
-                        <p class="text-muted small lh-sm">
+                        <div class="form-text lh-sm">
                             Select required in-game roles. This requires the
                             <strong>esi-characters.read_corporation_roles.v1</strong> ESI scope.<br>
                             This is only for "normal" roles, not roles at base/hq/other.
-                        </p>
+                        </div>
                         <div class="mt-3">
                             <button class="btn btn-success" :disabled="disabled" v-on:click.prevent="update">
                                 Save

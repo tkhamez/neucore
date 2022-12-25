@@ -89,10 +89,10 @@
                          :loading="false" :searchable="true"
                          placeholder="Select corporations">
             </multiselect>
-            <span class="form-text">
+            <div class="form-text lh-sm">
                 Only corporations with member tracking enabled, see
                 <a :href="'#EVELoginAdmin'">EVE Logins</a>, {{ loginNames.tracking }} login.
-            </span>
+            </div>
         </div>
         <div class="mt-3">
             <label class="col-form-label" for="mailMissingCharacterSubject">Subject</label>

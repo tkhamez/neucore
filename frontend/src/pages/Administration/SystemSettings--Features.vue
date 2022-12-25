@@ -46,10 +46,10 @@
                    v-on:input="$emit('changeSettingDelayed', 'account_deactivation_active_days', $event.target.value)">
             Number of days for the "check-tokens" command.
         </label>
-        <span class="form-text">
+        <div class="form-text lh-sm">
             If a character has been added to an account in the last x days, its ESI token is checked by
             the "check-tokens" command with the "characters = active" option.
-        </span>
+        </div>
     </div>
 
     <div class="card-header mt-3"><h6>API Rate Limit for Apps</h6></div>
@@ -129,7 +129,7 @@
             <input type="text" pattern="[0-9]*" class="form-control" name="fetch_structure_name_error_days"
                    v-model="settings.fetch_structure_name_error_days"
                    v-on:input="$emit('changeSettingDelayed', 'fetch_structure_name_error_days', $event.target.value)">
-            <span class="form-text">
+            <span class="form-text lh-sm d-block">
                 Example value "3=7,10=30":<br>
                 Skip if the update has failed 3 times or more and the last update was less than 7 days ago,<br>
                 also skip if the update has failed 10 times or more and the last update was less than 30 days ago.

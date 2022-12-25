@@ -56,19 +56,19 @@
                     <label class="col-form-label w-100">
                         PHP Class
                         <input type="text" class="form-control" v-model="activeService.configuration.phpClass">
-                        <span class="form-text">
+                        <span class="form-text lh-sm d-block">
                             Full class name of class implementing Neucore\Plugin\ServiceInterface.
                         </span>
                     </label>
                     <label class="col-form-label w-100">
                         PSR-4 Prefix
                         <input type="text" class="form-control" v-model="activeService.configuration.psr4Prefix">
-                        <span class="form-text">PHP namespace that should be autoloaded.</span>
+                        <span class="form-text lh-sm d-block">PHP namespace that should be auto loaded.</span>
                     </label>
                     <label class="col-form-label w-100">
                         PSR-4 Path
                         <input type="text" class="form-control" v-model="activeService.configuration.psr4Path">
-                        <span class="form-text">
+                        <span class="form-text lh-sm d-block">
                             Full path to the directory containing the classes of the above namespace.
                         </span>
                     </label>
@@ -76,7 +76,7 @@
                     <div class="form-check">
                         <label class="form-check-label" for="configOneAccount">
                             Limit to one service account<br>
-                            <span class="form-text">
+                            <span class="form-text lh-sm d-block">
                                 Check this if the service allows only  one account per player instead of
                                 one per character.
                             </span>
@@ -90,16 +90,16 @@
                         <multiselect v-model="requiredGroups" :options="allGroups" label="name" track-by="id"
                                      :multiple="true" :loading="false" :searchable="true" placeholder="Select groups">
                         </multiselect>
-                        <span class="form-text">
+                        <div class="form-text lh-sm">
                             Groups that an account must have (one of them) to see this service. This is also passed
                             to the plugin so accounts can be removed if a player loses all groups.
-                        </span>
+                        </div>
                     </div>
 
                     <label class="col-form-label w-100">
                         Account Properties
                         <input type="text" class="form-control" v-model="properties">
-                        <span class="form-text">
+                        <span class="form-text lh-sm d-block">
                             Comma-separated (no spaces) list of properties, possible values: username, password,
                             email, status, name
                         </span>
@@ -108,7 +108,7 @@
                     <div class="form-check">
                         <label class="form-check-label" for="configShowPassword">
                             Show password to user<br>
-                            <span class="form-text">
+                            <span class="form-text lh-sm d-block">
                                 If this is not enabled and the account contains a password (see Account Properties),
                                 the user will be able to see it only once after it is reset (see Account Actions).
                             </span>
@@ -120,7 +120,7 @@
                     <label class="col-form-label w-100">
                         Account Actions
                         <input type="text" class="form-control" v-model="actions">
-                        <span class="form-text">
+                        <span class="form-text lh-sm d-block">
                             Comma-separated (no spaces) list of actions: update-account, reset-password
                         </span>
                     </label>
@@ -151,31 +151,31 @@
                         Text Top
                         <textarea class="form-control" rows="5"
                                   v-model="activeService.configuration.textTop"></textarea>
-                        <span class="form-text">Text above the list of accounts.</span>
+                        <span class="form-text lh-sm d-block">Text above the list of accounts.</span>
                     </label>
                     <label class="col-form-label w-100">
                         Text Account
                         <textarea class="form-control" rows="5"
                                   v-model="activeService.configuration.textAccount"></textarea>
-                        <span class="form-text">Text below account table.</span>
+                        <span class="form-text lh-sm d-block">Text below account table.</span>
                     </label>
                     <label class="col-form-label w-100">
                         Text Register
                         <textarea class="form-control" rows="5"
                                   v-model="activeService.configuration.textRegister"></textarea>
-                        <span class="form-text">Text below the registration form/button.</span>
+                        <span class="form-text lh-sm d-block">Text below the registration form/button.</span>
                     </label>
                     <label class="col-form-label w-100">
                         Text Pending
                         <textarea class="form-control" rows="5"
                                   v-model="activeService.configuration.textPending"></textarea>
-                        <span class="form-text">Text below an account with status "pending"</span>
+                        <span class="form-text lh-sm d-block">Text below an account with status "pending"</span>
                     </label>
                     <label class="col-form-label w-100">
                         Configuration Data
                         <textarea class="form-control" rows="10"
                                   v-model="activeService.configuration.configurationData"></textarea>
-                        <span class="form-text">Additional configuration for the plugin.</span>
+                        <span class="form-text lh-sm d-block">Additional configuration for the plugin.</span>
                     </label>
 
                     <button class="mt-3 btn btn-success" v-on:click.prevent="saveConfiguration">Save</button>
