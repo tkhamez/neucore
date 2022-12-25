@@ -95,6 +95,24 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
+    public function testGet404_NotActive()
+    {
+        $this->setupDb(true, false);
+        $this->loginUser(4);
+
+        $response = $this->runApp('GET', "/api/user/service/$this->s1/get");
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testGet200_NotActiveAdmin()
+    {
+        $this->setupDb(true, false);
+        $this->loginUser(4);
+
+        $response = $this->runApp('GET', "/api/user/service/$this->s1/get?allowAdmin=true");
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testGet200_DeactivatedGroups_Admin()
     {
         $this->setupDb();
@@ -120,6 +138,7 @@ class ServiceControllerTest extends WebTestCase
                     'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',
                     'psr4Prefix' => '',
                     'psr4Path' => '',
+                    'active' => true,
                     'oneAccount' => false,
                     'requiredGroups' => [$this->g2, $this->g7],
                     'properties' => [],
@@ -668,7 +687,7 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(500, $response->getStatusCode());
     }
 
-    private function setupDb(bool $noRequiredGroupsForService1 = false): void
+    private function setupDb(bool $noRequiredGroupsForService1 = false, bool $s1Active = true): void
     {
         $group1 = (new Group())->setName('G1');
         $group2 = (new Group())->setName('G2');
@@ -679,6 +698,7 @@ class ServiceControllerTest extends WebTestCase
         $this->em->flush();
 
         $conf1 = new ServiceConfiguration();
+        $conf1->active = $s1Active;
         $conf1->actions = [ServiceConfiguration::ACTION_RESET_PASSWORD];
         $conf1->phpClass = ServiceControllerTest_TestService::class;
         if (!$noRequiredGroupsForService1) {
@@ -687,10 +707,12 @@ class ServiceControllerTest extends WebTestCase
         $this->service1 = (new Service())->setName('S1')->setConfiguration($conf1);
 
         $conf2 = new ServiceConfiguration();
+        $conf2->active = true;
         $conf2->phpClass = ServiceController::class;
         $service2 = (new Service())->setName('S2')->setConfiguration($conf2);
 
         $conf3 = new ServiceConfiguration();
+        $conf3->active = true;
         $conf3->actions = [ServiceConfiguration::ACTION_UPDATE_ACCOUNT];
         $conf3->phpClass = ServiceControllerTest_TestService::class;
         $conf3->requiredGroups = [$group2->getId(), $group7->getId()];

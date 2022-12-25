@@ -48,11 +48,13 @@ class Service implements \JsonSerializable
             'name' => $this->name,
         ];
         if (!$onlyRequired && !empty($this->configuration)) {
-            $configuration = \json_decode((string)$this->configuration, true);
+            $config = \json_decode((string)$this->configuration, true);
+            $configuration = ServiceConfiguration::fromArray($config)->jsonSerialize();
             if ($onlyRequiredConfiguration) {
                 unset($configuration['phpClass']);
                 unset($configuration['psr4Prefix']);
                 unset($configuration['psr4Path']);
+                unset($configuration['active']);
                 unset($configuration['requiredGroups']);
             }
             $data['configuration'] = $configuration;

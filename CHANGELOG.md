@@ -6,6 +6,7 @@ dd mm yyyy
 
 - **BC break**: Dropped PHP 7.4 support, minimum required version is now 8.0.
 - **BC break**: Removed files necessary to deploy on Heroku (I can't test it anymore because they removed free plans).
+- Added option to disable service plugins.
 - Improved service plugin configuration page.
 - Small layout changes.
 - PHP 8.2 compatibility (no change was necessary, but it's tested now).

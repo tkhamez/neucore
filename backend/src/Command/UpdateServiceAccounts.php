@@ -87,6 +87,9 @@ class UpdateServiceAccounts extends Command
         $this->writeLine('Started "update-service-accounts"', false);
 
         foreach ($this->serviceRepository->findBy([], ['name' => 'ASC']) as $service) {
+            if (!$service->getConfiguration()->active) {
+                continue;
+            }
             if ($serviceId > 0 && $service->getId() !== $serviceId) {
                 continue;
             }

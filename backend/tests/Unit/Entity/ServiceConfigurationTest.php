@@ -17,6 +17,7 @@ class ServiceConfigurationTest extends TestCase
         $configuration->phpClass = 'class';
         $configuration->psr4Prefix = 'prefix';
         $configuration->psr4Path = 'path';
+        $configuration->active = false;
         $configuration->oneAccount = true;
         $configuration->requiredGroups = [1, 2];
         $configuration->properties = ['username', 'status'];
@@ -39,6 +40,7 @@ class ServiceConfigurationTest extends TestCase
             'phpClass' => 'class',
             'psr4Prefix' => 'prefix',
             'psr4Path' => 'path',
+            'active' => false,
             'oneAccount' => true,
             'requiredGroups' => [1, 2],
             'properties' => ['username', 'status'],

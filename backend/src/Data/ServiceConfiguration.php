@@ -36,6 +36,13 @@ class ServiceConfiguration implements \JsonSerializable
     public ?string $psr4Path = '';
 
     /**
+     * Inactive plugins are neither updated by the cron job nor displayed to the user.
+     *
+     * @OA\Property()
+     */
+    public ?bool $active = false;
+
+    /**
      * @OA\Property()
      */
     public ?bool $oneAccount = false;

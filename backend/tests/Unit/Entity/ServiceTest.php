@@ -41,6 +41,7 @@ class ServiceTest extends TestCase
                 'phpClass' => '',
                 'psr4Prefix' => '',
                 'psr4Path' => '',
+                'active' => false,
                 'oneAccount' => false,
                 'requiredGroups' => [],
                 'properties' => [],

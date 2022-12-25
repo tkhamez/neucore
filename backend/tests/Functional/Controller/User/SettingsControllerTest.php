@@ -342,13 +342,24 @@ class SettingsControllerTest extends WebTestCase
         $this->helper->addCharacterMain('User', 5, [Role::USER], ['g1']);
         $admin = $this->helper->addCharacterMain('Admin', 6, [Role::USER, Role::SETTINGS]);
 
-        $this->service1 = (new Service())->setName('s1');
+        $conf1 = new ServiceConfiguration();
+        $conf1->active = true;
+        $this->service1 = (new Service())->setName('s1')->setConfiguration($conf1);
+
         $conf2 = new ServiceConfiguration();
+        $conf2->active = true;
         $conf2->requiredGroups = [$group->getId()];
         $this->service2 = (new Service())->setName('s2')->setConfiguration($conf2);
+
         $conf3 = new ServiceConfiguration();
+        $conf3->active = true;
         $conf3->requiredGroups = [$group->getId()+99];
         $service3 = (new Service())->setName('s3')->setConfiguration($conf3);
+
+        // Inactive service, will be ignored
+        $conf4 = new ServiceConfiguration();
+        $service4 = (new Service())->setName('s4')->setConfiguration($conf4);
+
         $alli = (new Alliance())->setId(456);
         $corp = (new Corporation())->setId(2020)->setAlliance($alli);
         $admin->setCorporation($corp);
@@ -378,6 +389,7 @@ class SettingsControllerTest extends WebTestCase
         $this->em->persist($this->service1);
         $this->em->persist($this->service2);
         $this->em->persist($service3);
+        $this->em->persist($service4);
         $this->em->persist($alli);
         $this->em->persist($corp);
 

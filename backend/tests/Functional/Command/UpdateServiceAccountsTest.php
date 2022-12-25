@@ -48,15 +48,22 @@ class UpdateServiceAccountsTest extends ConsoleTestCase
         UpdateServiceAccountsTest_TestService::$playerId = $player->getId();
 
         $conf1 = new ServiceConfiguration();
+        $conf1->active = true;
         $conf1->phpClass = 'Tests\Functional\Command\UpdateServiceAccountsTest_TestService';
         $service1 = (new Service())->setName('S1')->setConfiguration($conf1);
 
         $conf2 = new ServiceConfiguration();
+        $conf2->active = true;
         $conf2->phpClass = 'TestsService';
         $service2 = (new Service())->setName('S2')->setConfiguration($conf2);
 
+        // Inactive service, will be ignored.
+        $conf3 = new ServiceConfiguration();
+        $service3 = (new Service())->setName('S3')->setConfiguration($conf3);
+
         $em->persist($service1);
         $em->persist($service2);
+        $em->persist($service3);
         $em->flush();
     }
 }

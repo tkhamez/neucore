@@ -74,6 +74,17 @@
                     </label>
 
                     <div class="form-check">
+                        <label class="form-check-label" for="configActive">
+                            Active<br>
+                            <span class="form-text lh-sm d-block">
+                                Uncheck to disable for cron job and hide from users.
+                            </span>
+                        </label>
+                        <input class="form-check-input" type="checkbox" id="configActive"
+                               v-model="activeService.configuration.active">
+                    </div>
+
+                    <div class="form-check">
                         <label class="form-check-label" for="configOneAccount">
                             Limit to one service account<br>
                             <span class="form-text lh-sm d-block">

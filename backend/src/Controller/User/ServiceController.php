@@ -96,7 +96,7 @@ class ServiceController extends BaseController
      *     @OA\Parameter(
      *         name="allowAdmin",
      *         in="query",
-     *         description="Do not check required groups if player is a service admin.",
+     *         description="Do not check requirements if player is a service admin.",
      *         @OA\Schema(type="string", enum={"true", "false"})
      *     ),
      *     @OA\Response(
@@ -485,13 +485,20 @@ class ServiceController extends BaseController
             return null;
         }
 
-        // check service permission
         $isAdmin = false;
         if ($allowAdmin) {
             $isAdmin = $this->getUser($this->userAuth)->getPlayer()->hasRole(Role::SERVICE_ADMIN);
         }
+
+        // check service permission
         if (!$isAdmin && !$this->userAuth->hasRequiredGroups($service)) {
             $this->responseErrorCode = 403;
+            return null;
+        }
+
+        // check active
+        if (!$isAdmin && !$service->getConfiguration()->active) {
+            $this->responseErrorCode = 404;
             return null;
         }
 
