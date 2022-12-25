@@ -95,4 +95,8 @@ class ServiceControllerTest_TestService implements ServiceInterface
     ): ResponseInterface {
         throw new Exception();
     }
+
+    public function onConfigurationChange(): void
+    {
+    }
 }

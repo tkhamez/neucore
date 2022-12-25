@@ -75,4 +75,8 @@ class PluginControllerTest_TestService implements ServiceInterface
         $response->getBody()->write('Response from plugin.');
         return $response;
     }
+
+    public function onConfigurationChange(): void
+    {
+    }
 }

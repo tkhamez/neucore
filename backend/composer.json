@@ -41,7 +41,7 @@
         "symfony/http-foundation": "^5.1",
         "symfony/yaml": "^5.1",
         "tkhamez/eve-sso": "^3.0",
-        "tkhamez/neucore-plugin": "^0.8.0",
+        "tkhamez/neucore-plugin": "^0.9.0",
         "tkhamez/slim-role-auth": "^4.0",
         "tkhamez/swagger-eve-php": "~8.1.0",
         "zircote/swagger-php": "^4.4"
