@@ -122,9 +122,8 @@ class ServiceController extends BaseController
             return $this->response->withStatus($this->responseErrorCode);
         }
 
-        $isAdmin = $this->getUser($userAuth)->getPlayer()->hasRole(Role::SERVICE_ADMIN);
-
-        return $this->withJson($service->jsonSerialize(false, !$isAdmin));
+        $fullConfig = $allowAdmin && $this->getUser($userAuth)->getPlayer()->hasRole(Role::SERVICE_ADMIN);
+        return $this->withJson($service->jsonSerialize(false, !$fullConfig));
     }
 
     /**
