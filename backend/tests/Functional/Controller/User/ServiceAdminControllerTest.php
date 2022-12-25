@@ -8,8 +8,10 @@ use Neucore\Entity\Role;
 use Neucore\Entity\Service;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\ServiceRepository;
+use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
+use Tests\Logger;
 
 class ServiceAdminControllerTest extends WebTestCase
 {
@@ -19,10 +21,13 @@ class ServiceAdminControllerTest extends WebTestCase
 
     private int $serviceId;
 
+    private LoggerInterface $log;
+
     protected function setUp(): void
     {
         $this->helper = new Helper();
         $this->repository = RepositoryFactory::getInstance($this->helper->getObjectManager())->getServiceRepository();
+        $this->log = new Logger('test');
 
         $_SESSION = null;
         $this->setupDb();
@@ -200,14 +205,16 @@ class ServiceAdminControllerTest extends WebTestCase
         $response = $this->runApp(
             'PUT',
             "/api/user/service-admin/$this->serviceId/save-configuration",
-            ['configuration' => \json_encode(['phpClass' => 'class'])],
-            ['Content-Type' => 'application/x-www-form-urlencoded']
+            ['configuration' => \json_encode(['phpClass' => ServiceAdminControllerTest_TestService::class])],
+            ['Content-Type' => 'application/x-www-form-urlencoded'],
+            [LoggerInterface::class => $this->log],
         );
 
         $this->assertEquals(204, $response->getStatusCode());
 
         $service = $this->repository->find($this->serviceId);
-        $this->assertSame('class', $service->getConfiguration()->phpClass);
+        $this->assertSame(ServiceAdminControllerTest_TestService::class, $service->getConfiguration()->phpClass);
+        $this->assertSame(['called onConfigurationChange'], $this->log->getMessages());
     }
 
     public function testSaveConfiguration400()

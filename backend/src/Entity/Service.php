@@ -89,11 +89,11 @@ class Service implements \JsonSerializable
         $data = \json_decode((string)$this->configuration, true);
 
         if (is_array($data)) {
-            $class = ServiceConfiguration::fromArray($data);
+            $config = ServiceConfiguration::fromArray($data);
         } else {
-            $class = new ServiceConfiguration();
+            $config = new ServiceConfiguration();
         }
 
-        return $class;
+        return $config;
     }
 }

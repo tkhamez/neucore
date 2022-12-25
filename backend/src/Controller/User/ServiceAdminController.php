@@ -7,10 +7,14 @@ namespace Neucore\Controller\User;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Service;
 use Neucore\Data\ServiceConfiguration;
+use Neucore\Log\Context;
+use Neucore\Plugin\Exception;
+use Neucore\Service\ServiceRegistration;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * @OA\Tag(
@@ -248,8 +252,12 @@ class ServiceAdminController extends BaseController
      *     )
      * )
      */
-    public function saveConfiguration(string $id, ServerRequestInterface $request): ResponseInterface
-    {
+    public function saveConfiguration(
+        string $id,
+        ServerRequestInterface $request,
+        ServiceRegistration $serviceRegistration,
+        LoggerInterface $logger,
+    ): ResponseInterface {
         $service = $this->repositoryFactory->getServiceRepository()->find((int)$id);
         if ($service === null) {
             return $this->response->withStatus(404);
@@ -267,6 +275,17 @@ class ServiceAdminController extends BaseController
             return $this->response->withStatus(400);
         }
 
-        return $this->flushAndReturn(204);
+        $response = $this->flushAndReturn(204);
+
+        if ($response->getStatusCode() !== 500) {
+            $implementation = $serviceRegistration->getServiceImplementation($service);
+            try {
+                $implementation?->onConfigurationChange();
+            } catch (Exception $e) {
+                $logger->error($e->getMessage(), [Context::EXCEPTION => $e]);
+            }
+        }
+
+        return $response;
     }
 }
