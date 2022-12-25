@@ -375,7 +375,7 @@ function getService(vm) {
 function findSelectedGroups(vm, selectedIds) {
     const groups = [];
     for (const group of vm.allGroups) {
-        if (selectedIds.indexOf(group.id) !== -1) {
+        if (selectedIds && selectedIds.indexOf(group.id) !== -1) {
             groups.push(group);
         }
     }
