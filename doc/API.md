@@ -228,6 +228,9 @@ Group API
 
 Allows players to create and edit services.
 
+Group API
+- List all groups. `GET /user/group/all`
+
 ServiceAdmin API
 - List all services. `GET /user/service-admin/list`
 - Create a service. `POST /user/service-admin/create`

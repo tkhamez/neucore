@@ -74,9 +74,9 @@ return [
 
     '/api/user/group/public'                  => [Role::USER],
     '/api/user/group/all'                     => [
-                                                    Role::APP_ADMIN, Role::GROUP_ADMIN,
-                                                    Role::USER_MANAGER, Role::WATCHLIST_ADMIN
-                                                ],
+                                                    Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER_MANAGER,
+                                                    Role::SERVICE_ADMIN, Role::WATCHLIST_ADMIN
+                                                 ],
     '/api/user/group/{id}/applications'       => [Role::GROUP_MANAGER],
     '/api/user/group/accept-application/{id}' => [Role::GROUP_MANAGER],
     '/api/user/group/deny-application/{id}'   => [Role::GROUP_MANAGER],

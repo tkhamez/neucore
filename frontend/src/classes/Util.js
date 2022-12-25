@@ -96,14 +96,27 @@ export default class Util {
     }
 
     /**
-     * Helper function for alliance and corporation form selects in settings.
+     * Builds a list from the "id" property of an object.
+     *
+     * @param {object} model With a property "id".
+     * @returns {array}
+     */
+    static buildIdList(model) {
+        const ids = [];
+        for (const item of model) {
+            ids.push(item.id);
+        }
+        return ids;
+    }
+
+    /**
+     * Builds a comma separated string from the "id" property of an object.
+     *
+     * @param {object} model With a property "id".
+     * @returns {string}
      */
     static buildIdString(model) {
-        const newIds = [];
-        for (const item of model) {
-            newIds.push(item.id);
-        }
-        return newIds.join(',');
+        return this.buildIdList(model).join(',');
     }
 
     static findCorporationsOrAlliancesDelayed = _.debounce((query, type, callback) => {

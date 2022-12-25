@@ -85,20 +85,23 @@
                                v-model="activeService.configuration.oneAccount">
                     </div>
 
-                    <label class="col-form-label w-100">
+                    <div class="col-form-label w-100">
                         Required Groups
-                        <input type="text" class="form-control" v-model="requiredGroups">
+                        <multiselect v-model="requiredGroups" :options="allGroups" label="name" track-by="id"
+                                     :multiple="true" :loading="false" :searchable="true" placeholder="Select groups">
+                        </multiselect>
                         <span class="form-text">
-                            Comma-separated list of group IDs that an account must have (one of them)
-                            to see this service and not be kicked off the server (if kicks are enabled).
+                            Groups that an account must have (one of them) to see this service. This is also passed
+                            to the plugin so accounts can be removed if a player loses all groups.
                         </span>
-                    </label>
+                    </div>
+
                     <label class="col-form-label w-100">
                         Account Properties
                         <input type="text" class="form-control" v-model="properties">
                         <span class="form-text">
-                            Comma separated list of properties, possible values: username, password, email, status,
-                            name
+                            Comma-separated (no spaces) list of properties, possible values: username, password,
+                            email, status, name
                         </span>
                     </label>
 
@@ -118,7 +121,7 @@
                         Account Actions
                         <input type="text" class="form-control" v-model="actions">
                         <span class="form-text">
-                            Comma separated list of actions: update-account, reset-password
+                            Comma-separated (no spaces) list of actions: update-account, reset-password
                         </span>
                     </label>
 
@@ -184,7 +187,8 @@
 </template>
 
 <script>
-import {ServiceApi, ServiceAdminApi} from "neucore-js-client";
+import Multiselect from '@suadelabs/vue3-multiselect';
+import {ServiceApi, ServiceAdminApi, GroupApi} from "neucore-js-client";
 import Helper from "../../classes/Helper";
 import Util from "../../classes/Util";
 import Edit from '../../components/EntityEdit.vue';
@@ -192,6 +196,7 @@ import Edit from '../../components/EntityEdit.vue';
 export default {
     components: {
         Edit,
+        Multiselect,
     },
 
     props: {
@@ -203,6 +208,7 @@ export default {
             h: new Helper(this),
             U: Util,
             services: [],
+            allGroups: [],
             activeService: null,
             requiredGroups: '',
             properties: '',
@@ -214,7 +220,7 @@ export default {
     mounted() {
         window.scrollTo(0, 0);
         getList(this);
-        getService(this);
+        getGroups(this, () => getService(this));
     },
 
     watch: {
@@ -270,7 +276,7 @@ export default {
         saveConfiguration() {
             const configuration = this.activeService.configuration;
             configuration.URLs = this.URLs.filter(url => url.url || url.title || url.target);
-            configuration.requiredGroups = this.requiredGroups ? this.requiredGroups.split(',') : [];
+            configuration.requiredGroups = Util.buildIdList(this.requiredGroups);
             configuration.properties = this.properties ? this.properties.split(',') : [];
             configuration.actions = this.actions ? this.actions.split(',') : [];
             new ServiceAdminApi().serviceAdminSaveConfiguration(
@@ -316,6 +322,16 @@ function getList(vm) {
     });
 }
 
+function getGroups(vm, callback) {
+    new GroupApi().userGroupAll((error, data) => {
+        if (error) { // 403 usually
+            return;
+        }
+        vm.allGroups = data;
+        callback();
+    });
+}
+
 function getService(vm) {
     vm.activeService = null;
     vm.requiredGroups = '';
@@ -329,7 +345,7 @@ function getService(vm) {
         if (!error) {
             vm.activeService = data;
             if (vm.activeService.configuration) {
-                vm.requiredGroups = vm.activeService.configuration.requiredGroups.join(',');
+                vm.requiredGroups = findSelectedGroups(vm, vm.activeService.configuration.requiredGroups);
                 vm.properties = vm.activeService.configuration.properties.join(',');
                 vm.actions = vm.activeService.configuration.actions.join(',');
                 vm.URLs = vm.activeService.configuration.URLs;
@@ -338,6 +354,21 @@ function getService(vm) {
             }
         }
     });
+}
+
+/**
+ * @param vm
+ * @param {array} selectedIds
+ * @return {array}
+ */
+function findSelectedGroups(vm, selectedIds) {
+    const groups = [];
+    for (const group of vm.allGroups) {
+        if (selectedIds.indexOf(group.id) !== -1) {
+            groups.push(group);
+        }
+    }
+    return groups;
 }
 </script>
 
