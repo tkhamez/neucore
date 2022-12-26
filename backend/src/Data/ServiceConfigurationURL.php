@@ -13,7 +13,7 @@ use OpenApi\Annotations as OA;
 class ServiceConfigurationURL implements \JsonSerializable
 {
     /**
-     * @OA\Property(description="placeholders: {username}, {password}, {email}")
+     * @OA\Property(description="placeholders: {plugin_id}, {username}, {password}, {email}")
      */
     public string $url = '';
 

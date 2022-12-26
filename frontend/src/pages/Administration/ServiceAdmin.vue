@@ -63,7 +63,9 @@
                     <label class="col-form-label w-100">
                         PSR-4 Prefix
                         <input type="text" class="form-control" v-model="activeService.configuration.psr4Prefix">
-                        <span class="form-text lh-sm d-block">PHP namespace that should be auto loaded.</span>
+                        <span class="form-text lh-sm d-block">
+                            PHP namespace that should be loaded by the PSR-4 autoloader.
+                        </span>
                     </label>
                     <label class="col-form-label w-100">
                         PSR-4 Path
@@ -137,7 +139,10 @@
                     </label>
 
                     <p class="mb-0">Link Buttons</p>
-                    <small class="text-muted">Placeholders for URL: {username}, {password}, {email}</small><br>
+                    <small class="text-muted">
+                        Placeholders for URL: {plugin_id}, {username}, {password}, {email}
+                    </small>
+                    <br>
                     <div class="row mb-2" v-for="(url, idx) in URLs">
                         <label class="text-muted col-sm-2 col-form-label" :for="`configUrl${idx}`">URL</label>
                         <div class="col-sm-10">

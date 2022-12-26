@@ -192,6 +192,7 @@ export default {
             return this.service.configuration.actions.indexOf(name) !== -1;
         },
         urlReplace(url, account) {
+            url = url.replace('{plugin_id}', getServiceId(this));
             url = url.replace('{username}', encodeURIComponent(account.username));
             url = url.replace('{password}', encodeURIComponent(account.password));
             url = url.replace('{email}', encodeURIComponent(account.email));
