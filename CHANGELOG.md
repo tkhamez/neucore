@@ -10,7 +10,7 @@ dd mm yyyy
 - New: The new plugin method `ServiceInterface::onConfigurationChange` is called when a service configuration is saved.
 - New: Added option to disable service plugins.
 - Improved service plugin configuration page.
-- Small layout changes.
+- Small layout improvements and fixes.
 - PHP 8.2 compatibility (no change was necessary, but it's tested now).
 - Changed the Content Security Policy (CSP) header (in the documentation and Docker). This also fixes links to Eve Who.
 - Added content compression to Docker container (prod).
@@ -396,7 +396,7 @@ ESI endpoint for apps:
 
 30 Jan 2021
 
-- **BC break**: Service registration plugins must implemented [v0.2.0](https://github.com/tkhamez/neucore-plugin) 
+- **BC break**: Service registration plugins must implement [v0.2.0](https://github.com/tkhamez/neucore-plugin) 
   now, updated from 0.1.0.
 - Services: Added "update-service-accounts" command and added it to `bin/run-jobs.sh`.
 - Services: Service accounts are now reloaded after a manual update (frontend).
@@ -822,7 +822,7 @@ ESI endpoint for apps:
 22 Apr 2019
 
 - New: Membership in one group can now be made dependent on another group membership 
-  (see documentation [Required Groups](doc/Documentation.md#required-and-forbidden-groups).
+  (see documentation [Required Groups](doc/Documentation.md#required-and-forbidden-groups)).
 - New: error limit for applications (only for esi endpoints).
 - New: `removed-characters` endpoint for apps.
 - BC-Break: DB migrations no longer add data, this is now done with Doctrine data fixtures. If you update 
@@ -845,7 +845,7 @@ ESI endpoint for apps:
 - Added cache for ESI data.
 - Added app endpoint that combines the player groups, corp groups and alliance groups endpoints.
 - Added application-api.json interface file that contains only the API for applications.
-- Implemented more fine grained permissions for apps (new roles app-groups and app-chars).
+- Implemented more fine-grained permissions for apps (new roles app-groups and app-chars).
 - Added themes.
 - Several UI improvements.
 - Added script that creates a build for distribution.

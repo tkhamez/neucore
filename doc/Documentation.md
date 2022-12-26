@@ -31,33 +31,35 @@
 
 ## Features
 
-* EVE SSO login with configurable permission scopes.
-* Player accounts with multiple characters.
-* Multiple ESI tokens per character with different configurable scopes.
+This application focuses on providing core functionality related to player identities and an
+API that other applications can build upon.
+
+Main features:
+
+* **EVE SSO** login with configurable permission scopes.
+* **Player accounts** with multiple characters.
+* **Groups** and **apps** with managers.
+* **Automatic group assignment** for players based on corporations and alliances from all of their characters.
+* An **API for applications** to query group membership of characters, ESI data and more.
+* **Service registration** via [plugins](https://github.com/tkhamez/neucore-plugin).
+* Configurable **watchlists** with accounts that have characters in other alliances or corporations.
+* Corporation **member tracking**.
+
+and more:
+
 * Customization of texts, links and images specific to your organization, including themes.
 * Role based permission system.
-* Creation of groups and apps with managers.
-* Automatic group assignment for players based on corporations and alliances from all of their characters.
+* Optional alternative login that does not require any ESI scopes (e.g. for guest account).
+* Ability to add additional ESI tokens per character with configurable OAuth scopes.
 * Advanced group configuration: private, public, default, required and forbidden groups.
 * Member applications for groups, optionally automatically acceptable.
 * Optional automatic temporary removal of groups if an ESI token is invalid.
-* Optional alternative login that does not require any ESI scopes (e.g. for guest account).
-* Corporation member tracking.
 * Optional EVE mail notifications for invalid ESI tokens and missing characters (via member tracking).
-* Configurable watchlists with accounts that have characters in other alliances or corporations.
-* An API for applications to query group membership of characters, ESI data and more.
 * An [ESI](http://esi.evetech.net) proxy for all characters and their tokens, optionally available for apps, 
   compatible with the ESI OpenAPI definition file. See also [api-examples](api-examples).
-* Service registration via [plugins](https://github.com/tkhamez/neucore-plugin).
-* Configurable rate limits for apps or IP-based for request to the backend.
+* Configurable rate limits for apps or IP-based for all requests to the backend.
 * CLI commands for data updates from ESI.
 * Usable on small touch screens.
-
-All API functions are documented with OpenAPI and can be found at 
-[https://your.domain/api.html](https://neucore.tian-space.net/api). Most of these endpoints are for the frontend, 
-only the routes listed in the `Application` groups are for Neucore applications. For these there is also a 
-separate OpenAPI definition file at 
-[https://your.domain/application-api-3.yml](https://neucore.tian-space.net/application-api-3.yml).
 
 ## Installation and Configuration
 
@@ -66,6 +68,12 @@ See [Install.md](Install.md).
 Read `backend/.env.dist` for some optional configuration that is not (yet) described here.
 
 ## Application API
+
+All API functions are documented with [OpenAPI](https://www.openapis.org/) and can be found at
+[https://your.domain/api.html](https://neucore.tian-space.net/api). Most of these endpoints are for the frontend,
+only the routes listed in the `Application` groups are for Neucore applications. For these there is also a
+separate OpenAPI definition file at
+[https://your.domain/application-api-3.yml](https://neucore.tian-space.net/application-api-3.yml).
 
 ### Authentication
 
@@ -112,14 +120,7 @@ shared between all applications that use the ESI API endpoint. The `X-Esi-Error-
 
 ## Service Registration Plugins
 
-- Create a new PHP application with composer and install tkhamez/neucore-plugin:
-  ```shell script
-  composer init
-  composer require tkhamez/neucore-plugin
-  ```
-- Create a new class and implement `Neucore\Plugin\ServiceInterface`.
-- In Neucore, go to Administration -> Services and add a new service.
-- Configure the service, at the very least set "PHP Class", "PSR-4 Prefix" and "PSR-4 Path".
+See [Plugins](Plugins.md).
 
 ## Player Accounts
 
@@ -194,7 +195,7 @@ on the settings page, feature "Deactivate Groups". A character without a token (
 during login) counts as invalid.
 
 Deactivation means that the API for apps no longer returns groups for that account. The deactivation of the 
-account can be delayed, e. g. by 24 hours after a token became invalid.
+account can be delayed, e.g. by 24 hours after a token became invalid.
 
 As soon as the token was updated by logging in with the appropriate character, the account will be reactivated.
 
