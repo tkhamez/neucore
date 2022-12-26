@@ -21,7 +21,7 @@ class ServiceAdminControllerTest extends WebTestCase
 
     private int $serviceId;
 
-    private LoggerInterface $log;
+    private Logger $log;
 
     protected function setUp(): void
     {

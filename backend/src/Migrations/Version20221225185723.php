@@ -26,7 +26,7 @@ class Version20221225185723 extends AbstractMigration
     /**
      * @throws Exception
      */
-    private function updateActive(bool $active)
+    private function updateActive(bool $active): void
     {
         $serviceConfigurations = $this->connection->executeQuery('SELECT id, configuration FROM services');
         foreach ($serviceConfigurations->fetchAllAssociative() as $data) {
