@@ -14,12 +14,13 @@ class ServiceConfigurationTest extends TestCase
     public function testJsonSerialize_FromArray()
     {
         $configuration = new ServiceConfiguration();
+        $configuration->pluginYml = 'plugin.yml';
+        $configuration->active = false;
+        $configuration->requiredGroups = [1, 2];
         $configuration->phpClass = 'class';
         $configuration->psr4Prefix = 'prefix';
         $configuration->psr4Path = 'path';
-        $configuration->active = false;
         $configuration->oneAccount = true;
-        $configuration->requiredGroups = [1, 2];
         $configuration->properties = ['username', 'status'];
         $configuration->showPassword = true;
         $configuration->actions = [ServiceConfiguration::ACTION_UPDATE_ACCOUNT];
@@ -28,8 +29,8 @@ class ServiceConfigurationTest extends TestCase
         $url->title = 'title';
         $url->target = '_blank';
         $configuration->URLs = [$url];
-        $configuration->textAccount = 'text a';
         $configuration->textTop = 'text t';
+        $configuration->textAccount = 'text a';
         $configuration->textRegister = 'text r';
         $configuration->textPending = 'text p';
         $configuration->configurationData = 'other: data';
@@ -37,18 +38,19 @@ class ServiceConfigurationTest extends TestCase
         $array = $configuration->jsonSerialize();
 
         $this->assertSame([
+            'pluginYml' => 'plugin.yml',
+            'active' => false,
+            'requiredGroups' => [1, 2],
             'phpClass' => 'class',
             'psr4Prefix' => 'prefix',
             'psr4Path' => 'path',
-            'active' => false,
             'oneAccount' => true,
-            'requiredGroups' => [1, 2],
             'properties' => ['username', 'status'],
             'showPassword' => true,
             'actions' => [ServiceConfiguration::ACTION_UPDATE_ACCOUNT],
             'URLs' => [['url' => 'http', 'title' => 'title', 'target' => '_blank']],
-            'textAccount' => 'text a',
             'textTop' => 'text t',
+            'textAccount' => 'text a',
             'textRegister' => 'text r',
             'textPending' => 'text p',
             'configurationData' => 'other: data',

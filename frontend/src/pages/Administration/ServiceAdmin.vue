@@ -53,29 +53,13 @@
                 <div v-cloak class="card-body">
                     <h5>Configuration</h5>
 
-                    <label class="col-form-label w-100">
-                        PHP Class
-                        <input type="text" class="form-control" v-model="activeService.configuration.phpClass">
-                        <span class="form-text lh-sm d-block">
-                            Full class name of class implementing Neucore\Plugin\ServiceInterface.
-                        </span>
-                    </label>
-                    <label class="col-form-label w-100">
-                        PSR-4 Prefix
-                        <input type="text" class="form-control" v-model="activeService.configuration.psr4Prefix">
-                        <span class="form-text lh-sm d-block">
-                            PHP namespace that should be loaded by the PSR-4 autoloader.
-                        </span>
-                    </label>
-                    <label class="col-form-label w-100">
-                        PSR-4 Path
-                        <input type="text" class="form-control" v-model="activeService.configuration.psr4Path">
-                        <span class="form-text lh-sm d-block">
-                            Full path to the directory containing the classes of the above namespace.
-                        </span>
+                    <label class="col-form-label w-100 mb-2">
+                        Plugin configuration file
+                        <input type="text" class="form-control" v-model="activeService.configuration.pluginYml">
+                        <span class="form-text lh-sm d-block">Choose a plugin.yml file.</span>
                     </label>
 
-                    <div class="form-check">
+                    <div class="form-check mb-2">
                         <label class="form-check-label" for="configActive">
                             Active<br>
                             <span class="form-text lh-sm d-block">
@@ -86,19 +70,7 @@
                                v-model="activeService.configuration.active">
                     </div>
 
-                    <div class="form-check">
-                        <label class="form-check-label" for="configOneAccount">
-                            Limit to one service account<br>
-                            <span class="form-text lh-sm d-block">
-                                Check this if the service allows only  one account per player instead of
-                                one per character.
-                            </span>
-                        </label>
-                        <input class="form-check-input" type="checkbox" id="configOneAccount"
-                               v-model="activeService.configuration.oneAccount">
-                    </div>
-
-                    <div class="col-form-label w-100">
+                    <div class="col-form-label w-100 mb-2">
                         Required Groups
                         <multiselect v-model="requiredGroups" :options="allGroups" label="name" track-by="id"
                                      :multiple="true" :loading="false" :searchable="true" placeholder="Select groups">
@@ -109,90 +81,141 @@
                         </div>
                     </div>
 
-                    <label class="col-form-label w-100">
-                        Account Properties
-                        <input type="text" class="form-control" v-model="properties">
-                        <span class="form-text lh-sm d-block">
-                            Comma-separated (no spaces) list of properties, possible values: username, password,
-                            email, status, name
-                        </span>
-                    </label>
+                    <fieldset class="border p-2 mb-3">
+                        <legend class="float-none w-auto p-2 mb-0 fs-6">DEPRECATED</legend>
+                        <p class="text-warning small">
+                            The following configuration values are deprecated and replaced by the plugin.xml file.
+                            They will be removed with the next release of Neucore.<br>
+                            If you choose a plugin.yml file above they will not be used.
+                        </p>
 
-                    <div class="form-check">
-                        <label class="form-check-label" for="configShowPassword">
-                            Show password to user<br>
+                        <label class="col-form-label w-100">
+                            PHP Class
+                            <input type="text" class="form-control" v-model="activeService.configuration.phpClass">
                             <span class="form-text lh-sm d-block">
-                                If this is not enabled and the account contains a password (see Account Properties),
-                                the user will be able to see it only once after it is reset (see Account Actions).
+                                Full class name of class implementing Neucore\Plugin\ServiceInterface.
                             </span>
                         </label>
-                        <input class="form-check-input" type="checkbox" id="configShowPassword"
-                               v-model="activeService.configuration.showPassword">
-                    </div>
+                        <label class="col-form-label w-100">
+                            PSR-4 Prefix
+                            <input type="text" class="form-control" v-model="activeService.configuration.psr4Prefix">
+                            <span class="form-text lh-sm d-block">
+                                PHP namespace that should be loaded by the PSR-4 autoloader.
+                            </span>
+                        </label>
+                        <label class="col-form-label w-100">
+                            PSR-4 Path
+                            <input type="text" class="form-control" v-model="activeService.configuration.psr4Path">
+                            <span class="form-text lh-sm d-block">
+                                Full path to the directory containing the classes of the above namespace.
+                            </span>
+                        </label>
 
-                    <label class="col-form-label w-100">
-                        Account Actions
-                        <input type="text" class="form-control" v-model="actions">
-                        <span class="form-text lh-sm d-block">
-                            Comma-separated (no spaces) list of actions: update-account, reset-password
-                        </span>
-                    </label>
+                        <div class="form-check">
+                            <label class="form-check-label" for="configOneAccount">
+                                Limit to one service account<br>
+                                <span class="form-text lh-sm d-block">
+                                Check this if the service allows only  one account per player instead of
+                                one per character.
+                            </span>
+                            </label>
+                            <input class="form-check-input" type="checkbox" id="configOneAccount"
+                                   v-model="activeService.configuration.oneAccount">
+                        </div>
 
-                    <p class="mb-0">Link Buttons</p>
-                    <small class="text-muted">
-                        Placeholders for URL: {plugin_id}, {username}, {password}, {email}
-                    </small>
-                    <br>
-                    <div class="row mb-2" v-for="(url, idx) in URLs">
-                        <label class="text-muted col-sm-2 col-form-label" :for="`configUrl${idx}`">URL</label>
-                        <div class="col-sm-10">
-                            <!--suppress HtmlFormInputWithoutLabel -->
-                            <input type="text" class="form-control" :id="`configUrl${idx}`" v-model="url.url">
-                        </div>
-                        <label class="text-muted col-sm-2 col-form-label" :for="`configTitle${idx}`">Title</label>
-                        <div class="col-sm-10">
-                            <!--suppress HtmlFormInputWithoutLabel -->
-                            <input type="text" class="form-control" :id="`configTitle${idx}`" v-model="url.title">
-                        </div>
-                        <label class="text-muted col-sm-2 col-form-label" :for="`configTarget${idx}`">Target</label>
-                        <div class="col-sm-10">
-                            <!--suppress HtmlFormInputWithoutLabel -->
-                            <input type="text" class="form-control" :id="`configTarget${idx}`" v-model="url.target">
-                        </div>
-                    </div>
-                    <button class="btn btn-sm btn-primary mb-2" v-on:click.prevent="addUrl()">Add link</button><br>
-                    <small class="text-muted">Note: To remove a link button clear all fields and save </small>
+                        <label class="col-form-label w-100">
+                            Account Properties
+                            <input type="text" class="form-control" v-model="properties">
+                            <span class="form-text lh-sm d-block">
+                                Comma-separated (no spaces) list of properties, possible values: username, password,
+                                email, status, name
+                            </span>
+                        </label>
 
-                    <label class="col-form-label w-100">
-                        Text Top
-                        <textarea class="form-control" rows="5"
-                                  v-model="activeService.configuration.textTop"></textarea>
-                        <span class="form-text lh-sm d-block">Text above the list of accounts.</span>
-                    </label>
-                    <label class="col-form-label w-100">
-                        Text Account
-                        <textarea class="form-control" rows="5"
-                                  v-model="activeService.configuration.textAccount"></textarea>
-                        <span class="form-text lh-sm d-block">Text below account table.</span>
-                    </label>
-                    <label class="col-form-label w-100">
-                        Text Register
-                        <textarea class="form-control" rows="5"
-                                  v-model="activeService.configuration.textRegister"></textarea>
-                        <span class="form-text lh-sm d-block">Text below the registration form/button.</span>
-                    </label>
-                    <label class="col-form-label w-100">
-                        Text Pending
-                        <textarea class="form-control" rows="5"
-                                  v-model="activeService.configuration.textPending"></textarea>
-                        <span class="form-text lh-sm d-block">Text below an account with status "pending"</span>
-                    </label>
-                    <label class="col-form-label w-100">
-                        Configuration Data
-                        <textarea class="form-control" rows="10"
-                                  v-model="activeService.configuration.configurationData"></textarea>
-                        <span class="form-text lh-sm d-block">Additional configuration for the plugin.</span>
-                    </label>
+                        <div class="form-check">
+                            <label class="form-check-label" for="configShowPassword">
+                                Show password to user<br>
+                                <span class="form-text lh-sm d-block">
+                                    If this is not enabled and the account contains a password (see Account Properties),
+                                    the user will be able to see it only once after it is reset (see Account Actions).
+                                </span>
+                            </label>
+                            <input class="form-check-input" type="checkbox" id="configShowPassword"
+                                   v-model="activeService.configuration.showPassword">
+                        </div>
+
+                        <label class="col-form-label w-100">
+                            Account Actions
+                            <input type="text" class="form-control" v-model="actions">
+                            <span class="form-text lh-sm d-block">
+                                Comma-separated (no spaces) list of actions: update-account, reset-password
+                            </span>
+                        </label>
+                    </fieldset>
+
+                    <fieldset class="border p-2 mb-3">
+                        <legend class="float-none w-auto p-2 mb-0 fs-6">Optional</legend>
+                        <p class="small">
+                            The following configuration values can optionally be specified in the plugin.yml
+                            file and overwritten here.
+                        </p>
+
+                        <p class="mb-0">Link Buttons</p>
+                        <small class="text-muted">
+                            Placeholders for URL: {plugin_id}, {username}, {password}, {email}
+                        </small>
+                        <br>
+                        <div class="row mb-2" v-for="(url, idx) in URLs">
+                            <label class="text-muted col-sm-2 col-form-label" :for="`configUrl${idx}`">URL</label>
+                            <div class="col-sm-10">
+                                <!--suppress HtmlFormInputWithoutLabel -->
+                                <input type="text" class="form-control" :id="`configUrl${idx}`" v-model="url.url">
+                            </div>
+                            <label class="text-muted col-sm-2 col-form-label" :for="`configTitle${idx}`">Title</label>
+                            <div class="col-sm-10">
+                                <!--suppress HtmlFormInputWithoutLabel -->
+                                <input type="text" class="form-control" :id="`configTitle${idx}`" v-model="url.title">
+                            </div>
+                            <label class="text-muted col-sm-2 col-form-label" :for="`configTarget${idx}`">Target</label>
+                            <div class="col-sm-10">
+                                <!--suppress HtmlFormInputWithoutLabel -->
+                                <input type="text" class="form-control" :id="`configTarget${idx}`" v-model="url.target">
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-primary mb-2" v-on:click.prevent="addUrl()">Add link</button><br>
+                        <small class="text-muted">Note: To remove a link button clear all fields and save.</small>
+
+                        <label class="col-form-label w-100 mt-2">
+                            Text Top
+                            <textarea class="form-control" rows="5"
+                                      v-model="activeService.configuration.textTop"></textarea>
+                            <span class="form-text lh-sm d-block">Text above the list of accounts.</span>
+                        </label>
+                        <label class="col-form-label w-100">
+                            Text Account
+                            <textarea class="form-control" rows="5"
+                                      v-model="activeService.configuration.textAccount"></textarea>
+                            <span class="form-text lh-sm d-block">Text below account table.</span>
+                        </label>
+                        <label class="col-form-label w-100">
+                            Text Register
+                            <textarea class="form-control" rows="5"
+                                      v-model="activeService.configuration.textRegister"></textarea>
+                            <span class="form-text lh-sm d-block">Text below the registration form/button.</span>
+                        </label>
+                        <label class="col-form-label w-100">
+                            Text Pending
+                            <textarea class="form-control" rows="5"
+                                      v-model="activeService.configuration.textPending"></textarea>
+                            <span class="form-text lh-sm d-block">Text below an account with status "pending".</span>
+                        </label>
+                        <label class="col-form-label w-100">
+                            Configuration Data
+                            <textarea class="form-control" rows="15"
+                                      v-model="activeService.configuration.configurationData"></textarea>
+                            <span class="form-text lh-sm d-block">Additional configuration for the plugin.</span>
+                        </label>
+                    </fieldset>
 
                     <button class="mt-3 btn btn-success" v-on:click.prevent="saveConfiguration">Save</button>
                 </div> <!-- card-body -->

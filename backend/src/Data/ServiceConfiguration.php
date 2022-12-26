@@ -21,82 +21,119 @@ class ServiceConfiguration implements \JsonSerializable
     public const ACTION_RESET_PASSWORD = 'reset-password';
 
     /**
+     * From admin UI.
+     *
      * @OA\Property()
      */
-    public ?string $phpClass = '';
-
-    /**
-     * @OA\Property()
-     */
-    public ?string $psr4Prefix = '';
-
-    /**
-     * @OA\Property()
-     */
-    public ?string $psr4Path = '';
+    public ?string $pluginYml = '';
 
     /**
      * Inactive plugins are neither updated by the cron job nor displayed to the user.
+     *
+     * From admin UI.
      *
      * @OA\Property()
      */
     public ?bool $active = false;
 
     /**
-     * @OA\Property()
-     */
-    public ?bool $oneAccount = false;
-
-    /**
+     * From admin UI.
+     *
      * @OA\Property()
      * @var int[]
      */
     public ?array $requiredGroups = [];
 
     /**
+     * From plugin.yml
+     *
+     * @OA\Property()
+     */
+    public ?string $phpClass = '';
+
+    /**
+     * From plugin.yml
+     *
+     * @OA\Property()
+     */
+    public ?string $psr4Prefix = '';
+
+    /**
+     * From plugin.yml
+     *
+     * @OA\Property()
+     */
+    public ?string $psr4Path = '';
+
+    /**
+     * From plugin.yml
+     *
+     * @OA\Property()
+     */
+    public ?bool $oneAccount = false;
+
+    /**
+     * From plugin.yml
+     *
      * @OA\Property(enum={"username", "password", "email", "status", "name"})
      * @var string[]
      */
     public ?array $properties = [];
 
     /**
+     * From plugin.yml
+     *
      * @OA\Property()
      */
     public ?bool $showPassword = false;
 
     /**
+     * From plugin.yml
+     *
      * @OA\Property(enum={"update-account", "reset-password"})
      * @var string[]
      */
     public ?array $actions = [];
 
     /**
+     * Optionally from plugin.yml, overwritten in admin UI.
+     *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/ServiceConfigurationURL"))
      * @var ServiceConfigurationURL[]
      */
     public ?array $URLs = [];
 
     /**
-     * @OA\Property()
-     */
-    public ?string $textAccount = '';
-
-    /**
+     * Optionally from plugin.yml, overwritten in admin UI.
+     *
      * @OA\Property()
      */
     public ?string $textTop = '';
 
     /**
+     * Optionally from plugin.yml, overwritten in admin UI.
+     *
+     * @OA\Property()
+     */
+    public ?string $textAccount = '';
+
+    /**
+     * Optionally from plugin.yml, overwritten in admin UI.
+     *
      * @OA\Property()
      */
     public ?string $textRegister = '';
 
     /**
+     * Optionally from plugin.yml, overwritten in admin UI.
+     *
      * @OA\Property()
      */
     public ?string $textPending = '';
 
     /**
+     * Optionally from plugin.yml, overwritten in admin UI.
+     *
      * @OA\Property()
      */
     public string $configurationData = '';

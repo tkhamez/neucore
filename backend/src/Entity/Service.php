@@ -51,11 +51,12 @@ class Service implements \JsonSerializable
             $config = \json_decode((string)$this->configuration, true);
             $configuration = ServiceConfiguration::fromArray($config)->jsonSerialize();
             if ($onlyRequiredConfiguration) {
+                unset($configuration['pluginYml']);
+                unset($configuration['active']);
+                unset($configuration['requiredGroups']);
                 unset($configuration['phpClass']);
                 unset($configuration['psr4Prefix']);
                 unset($configuration['psr4Path']);
-                unset($configuration['active']);
-                unset($configuration['requiredGroups']);
             }
             $data['configuration'] = $configuration;
         }
