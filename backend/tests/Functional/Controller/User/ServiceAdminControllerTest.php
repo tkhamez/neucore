@@ -52,6 +52,16 @@ class ServiceAdminControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testConfigurations403()
+    {
+        # TODO
+    }
+
+    public function testConfigurations200()
+    {
+        # TODO
+    }
+
     public function testCreate403()
     {
         $response = $this->runApp('POST', '/api/user/service-admin/create');

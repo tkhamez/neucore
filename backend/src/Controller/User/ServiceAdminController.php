@@ -9,12 +9,14 @@ use Neucore\Entity\Service;
 use Neucore\Data\ServiceConfiguration;
 use Neucore\Log\Context;
 use Neucore\Plugin\Exception;
+use Neucore\Service\Config;
 use Neucore\Service\ServiceRegistration;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 /**
  * @OA\Tag(
@@ -28,7 +30,7 @@ class ServiceAdminController extends BaseController
      * @OA\Get(
      *     path="/user/service-admin/list",
      *     operationId="serviceAdminList",
-     *     summary="List all services.",
+     *     summary="Lists all services.",
      *     description="Needs role: service-admin",
      *     tags={"ServiceAdmin"},
      *     security={{"Session"={}}},
@@ -49,10 +51,57 @@ class ServiceAdminController extends BaseController
     }
 
     /**
+     * @OA\Get(
+     *     path="/user/service-admin/configurations",
+     *     operationId="serviceAdminConfigurations",
+     *     summary="Returns data from plugin.yml files.",
+     *     description="Needs role: service-admin",
+     *     tags={"ServiceAdmin"},
+     *     security={{"Session"={}}},
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of files.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/ServiceConfiguration"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function configurations(Config $config): ResponseInterface
+    {
+        $basePath = $config['plugins_install_dir'];
+
+        if (empty($basePath) || !is_dir($basePath)) {
+            return $this->withJson([]);
+        }
+
+        $configurations = [];
+        foreach (new \DirectoryIterator($basePath) as $fileInfo) {
+            /* @var $fileInfo \DirectoryIterator */
+            if ($fileInfo->isDir() && !$fileInfo->isDot()) {
+                $configFile = $fileInfo->getFilename() . '/plugin.yml';
+                if (file_exists($basePath . DIRECTORY_SEPARATOR . $configFile)) {
+
+                    # TODO load data from file
+
+                    $serviceConfig = new ServiceConfiguration();
+                    $serviceConfig->pluginYml = $configFile;
+
+                    $configurations[] = $serviceConfig;
+                }
+            }
+        }
+
+        return $this->withJson($configurations);
+    }
+
+    /**
      * @OA\Post(
      *     path="/user/service-admin/create",
      *     operationId="serviceAdminCreate",
-     *     summary="Create a service.",
+     *     summary="Creates a service.",
      *     description="Needs role: service-admin",
      *     tags={"ServiceAdmin"},
      *     security={{"Session"={}, "CSRF"={}}},
@@ -103,7 +152,7 @@ class ServiceAdminController extends BaseController
      * @OA\Put(
      *     path="/user/service-admin/{id}/rename",
      *     operationId="serviceAdminRename",
-     *     summary="Rename a service.",
+     *     summary="Renames a service.",
      *     description="Needs role: service-admin",
      *     tags={"ServiceAdmin"},
      *     security={{"Session"={}, "CSRF"={}}},
@@ -169,7 +218,7 @@ class ServiceAdminController extends BaseController
      * @OA\Delete(
      *     path="/user/service-admin/{id}/delete",
      *     operationId="serviceAdminDelete",
-     *     summary="Delete a service.",
+     *     summary="Deletes a service.",
      *     description="Needs role: service-admin",
      *     tags={"ServiceAdmin"},
      *     security={{"Session"={}, "CSRF"={}}},
@@ -211,7 +260,7 @@ class ServiceAdminController extends BaseController
      * @OA\Put(
      *     path="/user/service-admin/{id}/save-configuration",
      *     operationId="serviceAdminSaveConfiguration",
-     *     summary="Save the service configuration.",
+     *     summary="Saves the service configuration.",
      *     description="Needs role: service-admin",
      *     tags={"ServiceAdmin"},
      *     security={{"Session"={}, "CSRF"={}}},

@@ -226,6 +226,7 @@ return [
     '/api/user/service/update-all-accounts/{playerId}'      => ['PUT',  [ServiceController::class, 'updateAllAccounts']],
 
     '/api/user/service-admin/list'                      => ['GET',    [ServiceAdminController::class, 'list']],
+    '/api/user/service-admin/configurations'            => ['GET',    [ServiceAdminController::class, 'configurations']],
     '/api/user/service-admin/create'                    => ['POST',   [ServiceAdminController::class, 'create']],
     '/api/user/service-admin/{id}/rename'               => ['PUT',    [ServiceAdminController::class, 'rename']],
     '/api/user/service-admin/{id}/delete'               => ['DELETE', [ServiceAdminController::class, 'delete']],

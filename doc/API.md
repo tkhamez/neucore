@@ -232,11 +232,12 @@ Group API
 - List all groups. `GET /user/group/all`
 
 ServiceAdmin API
-- List all services. `GET /user/service-admin/list`
-- Create a service. `POST /user/service-admin/create`
-- Rename a service. `PUT /user/service-admin/{id}/rename`
-- Delete a service. `DELETE /user/service-admin/{id}/delete`
-- Save the service configuration. `PUT /user/service-admin/{id}/save-configuration`
+- Lists all services. `GET /user/service-admin/list`
+- Returns data from plugin.yml files. `GET /user/service-admin/configurations`
+- Creates a service. `POST /user/service-admin/create`
+- Renames a service. `PUT /user/service-admin/{id}/rename`
+- Deletes a service. `DELETE /user/service-admin/{id}/delete`
+- Saves the service configuration. `PUT /user/service-admin/{id}/save-configuration`
 
 #### statistics
 

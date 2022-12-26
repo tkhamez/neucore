@@ -93,4 +93,6 @@ return [
         'max' => '${NEUCORE_RATE_LIMIT_MAX}',
         'time' => '${NEUCORE_RATE_LIMIT_TIME}',
     ],
+
+    'plugins_install_dir' => '${NEUCORE_PLUGINS_INSTALL_DIR}',
 ];

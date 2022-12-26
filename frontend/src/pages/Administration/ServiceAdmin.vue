@@ -55,8 +55,15 @@
 
                     <label class="col-form-label w-100 mb-2">
                         Plugin configuration file
-                        <input type="text" class="form-control" v-model="activeService.configuration.pluginYml">
-                        <span class="form-text lh-sm d-block">Choose a plugin.yml file.</span>
+                        <select class="form-select" v-model="activeService.configuration.pluginYml">
+                            <option value=""></option>
+                            <option v-for="option in configurations" v-bind:value="option.pluginYml">
+                                {{ option.pluginYml }}
+                            </option>
+                        </select>
+                        <span class="form-text lh-sm d-block">
+                            Select the plugin by selecting the appropriate configuration file.
+                        </span>
                     </label>
 
                     <div class="form-check mb-2">
@@ -247,7 +254,8 @@ export default {
             h: new Helper(this),
             U: Util,
             services: [],
-            allGroups: [],
+            allGroups: null,
+            configurations: null,
             activeService: null,
             requiredGroups: '',
             properties: '',
@@ -260,6 +268,7 @@ export default {
         window.scrollTo(0, 0);
         getList(this);
         getGroups(this, () => getService(this));
+        getConfigurations(this, () => getService(this));
     },
 
     watch: {
@@ -371,15 +380,31 @@ function getGroups(vm, callback) {
     });
 }
 
+function getConfigurations(vm, callback) {
+    new ServiceAdminApi().serviceAdminConfigurations((error, data) => {
+        if (error) { // 403 usually
+            return;
+        }
+        vm.configurations = data;
+        callback();
+    });
+}
+
 function getService(vm) {
+    if (vm.allGroups === null || vm.configurations === null) {
+        return; // wait for both
+    }
+
     vm.activeService = null;
     vm.requiredGroups = '';
     vm.properties = '';
     vm.actions = '';
     vm.URLs = [];
+
     if (!vm.route[1] || !vm.h.hasRole('service-admin')) { // configuration object is incomplete without this role
         return;
     }
+
     new ServiceApi().serviceGet(vm.route[1], {allowAdmin: 'true'}, (error, data) => {
         if (!error) {
             vm.activeService = data;
