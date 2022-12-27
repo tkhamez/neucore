@@ -125,6 +125,18 @@ class ServiceRegistrationTest extends TestCase
         $this->assertSame('config data', $actual->configurationData);
     }
 
+    public function testGetConfiguration()
+    {
+        $conf = new ServiceConfiguration();
+        $conf->pluginYml = 'plugin-name/plugin.yml';
+        $conf->psr4Path = '/plugins/discord/src';
+        $service = (new Service())->setName('S1')->setConfiguration($conf);
+
+        $actual = $this->serviceRegistration->getConfiguration($service);
+
+        $this->assertSame('src', $actual->psr4Path);
+    }
+
     public function testGetServiceImplementation_MissingPhpClass()
     {
         $service = new Service();

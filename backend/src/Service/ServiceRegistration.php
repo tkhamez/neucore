@@ -73,6 +73,30 @@ class ServiceRegistration
         return $serviceConfig;
     }
 
+    public function getConfiguration(Service $service): ServiceConfiguration
+    {
+        $serviceConfig = $service->getConfiguration();
+
+        // Read plugin.yml
+        $basePath = is_string($this->config['plugins_install_dir']) ? $this->config['plugins_install_dir'] : '';
+        if (!empty($basePath) && !empty($serviceConfig->pluginYml)) {
+            // New since v1.40.0
+            $yamlConfig = $this->getConfigurationFromConfigFile($serviceConfig->pluginYml);
+            if ($yamlConfig) {
+                // Copy values that cannot be changed in the admin UI.
+                $serviceConfig->phpClass = $yamlConfig->phpClass;
+                $serviceConfig->psr4Prefix = $yamlConfig->psr4Prefix;
+                $serviceConfig->psr4Path = $yamlConfig->psr4Path;
+                $serviceConfig->oneAccount = $yamlConfig->oneAccount;
+                $serviceConfig->properties = $yamlConfig->properties;
+                $serviceConfig->showPassword = $yamlConfig->showPassword;
+                $serviceConfig->actions = $yamlConfig->actions;
+            }
+        }
+
+        return $serviceConfig;
+    }
+
     public function getServiceImplementation(Service $service): ?ServiceInterface
     {
         $serviceConfig = $service->getConfiguration();
