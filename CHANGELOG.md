@@ -1,6 +1,6 @@
 # Changelog
 
-## next
+## 1.40.0
 
 dd mm yyyy
 

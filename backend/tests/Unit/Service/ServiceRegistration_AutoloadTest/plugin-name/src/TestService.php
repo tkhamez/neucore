@@ -1,8 +1,9 @@
 <?php
+/** @noinspection PhpIllegalPsrClassPathInspection */
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Service\ServiceRegistration_AutoloadTest;
+namespace Tests\Unit\Service\ServiceRegistration_AutoloadTest\plugin\src;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;

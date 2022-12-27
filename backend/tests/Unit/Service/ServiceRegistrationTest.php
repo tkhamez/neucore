@@ -1,4 +1,5 @@
 <?php
+/** @noinspection DuplicatedCode */
 /** @noinspection PhpUnhandledExceptionInspection */
 
 declare(strict_types=1);
@@ -18,16 +19,17 @@ use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\AccountGroup;
+use Neucore\Service\Config;
 use Neucore\Service\ServiceRegistration;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Tests\Logger;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use Tests\Unit\Service\ServiceRegistration_AutoloadTest\TestService;
+use Tests\Unit\Service\ServiceRegistration_AutoloadTest\plugin\src\TestService;
 
 class ServiceRegistrationTest extends TestCase
 {
-    private const PSR_PREFIX = 'Tests\Unit\Service\ServiceRegistration_AutoloadTest';
+    private const PSR_PREFIX = 'Tests\Unit\Service\ServiceRegistration_AutoloadTest\plugin\src';
 
     private static ClassLoader $loader;
 
@@ -54,7 +56,8 @@ class ServiceRegistrationTest extends TestCase
         $this->om = $this->helper->getObjectManager();
         $repoFactory = RepositoryFactory::getInstance($this->om);
         $accountGroup = new AccountGroup($repoFactory, $this->om);
-        $this->serviceRegistration = new ServiceRegistration($this->log, $repoFactory, $accountGroup);
+        $config = new Config(['plugins_install_dir' => __DIR__ . '/ServiceRegistration_AutoloadTest']);
+        $this->serviceRegistration = new ServiceRegistration($this->log, $repoFactory, $accountGroup, $config);
         $this->serviceImplementation = new ServiceRegistrationTest_TestService(
             $this->log,
             new \Neucore\Plugin\ServiceConfiguration(0, [], '')
@@ -88,16 +91,16 @@ class ServiceRegistrationTest extends TestCase
         $this->assertNull($this->serviceRegistration->getServiceImplementation($service));
     }
 
-    public function testGetServiceImplementation()
+    public function testGetServiceImplementation_Deprecated()
     {
-        // add same prefix to test that the new path is added, not replaced
+        // add same prefix to test, so that the new path is added, not replaced
         self::$loader->setPsr4(self::PSR_PREFIX.'\\', ['/some/path']);
 
         $service = new Service();
         $conf = new ServiceConfiguration();
         $conf->phpClass = self::PSR_PREFIX.'\TestService';
         $conf->psr4Prefix = self::PSR_PREFIX;
-        $conf->psr4Path = __DIR__ .  '/ServiceRegistration_AutoloadTest';
+        $conf->psr4Path = __DIR__ .  '/ServiceRegistration_AutoloadTest/plugin-name/src';
         $conf->requiredGroups = [1, 2];
         $conf->configurationData = 'other: data';
         $service->setConfiguration($conf);
@@ -113,7 +116,38 @@ class ServiceRegistrationTest extends TestCase
         $this->assertSame('other: data', $configuration->configurationData);
 
         $this->assertSame(
-            ['/some/path', __DIR__ .  '/ServiceRegistration_AutoloadTest'],
+            ['/some/path', __DIR__ .  '/ServiceRegistration_AutoloadTest/plugin-name/src'],
+            self::$loader->getPrefixesPsr4()[self::PSR_PREFIX.'\\']
+        );
+    }
+
+    public function testGetServiceImplementation()
+    {
+        // add same prefix to test, so that the new path is added, not replaced
+        self::$loader->setPsr4(self::PSR_PREFIX.'\\', ['/some/path']);
+
+        $service = new Service();
+        $conf = new ServiceConfiguration();
+        $conf->pluginYml = 'plugin-name/plugin.yml';
+        $conf->phpClass = self::PSR_PREFIX.'\TestService';
+        $conf->psr4Prefix = self::PSR_PREFIX;
+        $conf->psr4Path = 'src';
+        $conf->requiredGroups = [1, 2];
+        $conf->configurationData = 'other: data';
+        $service->setConfiguration($conf);
+
+        /* @var TestService $implementation */
+        $implementation = $this->serviceRegistration->getServiceImplementation($service);
+
+        $this->assertInstanceOf(ServiceInterface::class, $implementation);
+        /* @phan-suppress-next-line PhanUndeclaredMethod */
+        $configuration = $implementation->getServiceConfiguration();
+        $this->assertSame(0, $configuration->id);
+        $this->assertSame([1, 2], $configuration->requiredGroups);
+        $this->assertSame('other: data', $configuration->configurationData);
+
+        $this->assertSame(
+            ['/some/path', __DIR__ .  '/ServiceRegistration_AutoloadTest/plugin-name/src'],
             self::$loader->getPrefixesPsr4()[self::PSR_PREFIX.'\\']
         );
     }

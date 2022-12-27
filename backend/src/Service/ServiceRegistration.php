@@ -24,11 +24,18 @@ class ServiceRegistration
 
     private AccountGroup $accountGroup;
 
-    public function __construct(LoggerInterface $log, RepositoryFactory $repositoryFactory, AccountGroup $accountGroup)
-    {
+    private Config $config;
+
+    public function __construct(
+        LoggerInterface $log,
+        RepositoryFactory $repositoryFactory,
+        AccountGroup $accountGroup,
+        Config $config,
+    ) {
         $this->log = $log;
         $this->accountGroup = $accountGroup;
         $this->repositoryFactory = $repositoryFactory;
+        $this->config = $config;
     }
 
     public function getServiceImplementation(Service $service): ?ServiceInterface
@@ -36,9 +43,21 @@ class ServiceRegistration
         $serviceConfig = $service->getConfiguration();
 
         // configure autoloader
-        $psr4Paths = (array) $serviceConfig->psr4Path;
-        if (!empty($serviceConfig->psr4Prefix) && $psr4Paths !== []) {
-            if (!str_ends_with((string)$serviceConfig->psr4Prefix, '\\')) {
+        if (
+            is_string($this->config['plugins_install_dir']) &&
+            !empty($this->config['plugins_install_dir']) &&
+            !empty($serviceConfig->pluginYml)
+        ) {
+            // New since v1.40.0
+            $pluginConfig = $this->config['plugins_install_dir'] . DIRECTORY_SEPARATOR . $serviceConfig->pluginYml;
+            $psr4Path = dirname($pluginConfig) . DIRECTORY_SEPARATOR . $serviceConfig->psr4Path;
+        } else {
+            // Deprecated since v1.40.0
+            $psr4Path = $serviceConfig->psr4Path;
+        }
+        if (!empty($serviceConfig->psr4Prefix) && is_dir($psr4Path)) {
+            $psr4Paths = [$psr4Path];
+            if (!str_ends_with($serviceConfig->psr4Prefix, '\\')) {
                 $serviceConfig->psr4Prefix .= '\\';
             }
             /** @noinspection PhpFullyQualifiedNameUsageInspection */
@@ -53,7 +72,7 @@ class ServiceRegistration
             $loader->setPsr4($serviceConfig->psr4Prefix, $psr4Paths);
         }
 
-        $phpClass = (string)$serviceConfig->phpClass;
+        $phpClass = $serviceConfig->phpClass;
 
         if (!class_exists($phpClass)) {
             return null;
@@ -125,7 +144,7 @@ class ServiceRegistration
         $services = $this->repositoryFactory->getServiceRepository()->findBy([]);
         foreach ($services as $service) {
             // Check if service has the "update-account" action
-            if (!in_array(ServiceConfiguration::ACTION_UPDATE_ACCOUNT, (array)$service->getConfiguration()->actions)) {
+            if (!in_array(ServiceConfiguration::ACTION_UPDATE_ACCOUNT, $service->getConfiguration()->actions)) {
                 continue;
             }
 

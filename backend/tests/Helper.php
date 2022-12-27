@@ -167,7 +167,7 @@ class Helper
         $accountGroup = new AccountGroup($repoFactory, $this->getObjectManager());
         $autoGroups = new AutoGroupAssignment($repoFactory, $accountGroup);
         $token = new OAuthToken($this->getAuthenticationProvider($client), $objectManager, $logger);
-        $serviceRegistration = new ServiceRegistration($logger, $repoFactory, $accountGroup);
+        $serviceRegistration = new ServiceRegistration($logger, $repoFactory, $accountGroup, $config);
         return new Account($logger, $objectManager, $repoFactory, $esiData, $autoGroups, $token, $serviceRegistration);
     }
 
