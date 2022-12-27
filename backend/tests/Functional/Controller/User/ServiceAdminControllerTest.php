@@ -64,42 +64,22 @@ class ServiceAdminControllerTest extends WebTestCase
         $this->assertEquals(403, $response2->getStatusCode());
     }
 
-    public function testConfigurations500_NotArray()
+    public function testConfigurations500()
     {
         $this->loginUser(1);
 
-        $pluginBaseDir = __DIR__ . '/ServiceAdminController/Error1';
+        $pluginBaseDir = __DIR__ . '/ServiceAdminController/Error';
 
         $response = $this->runApp(
             'GET',
             '/api/user/service-admin/configurations',
             null,
             null,
-            [LoggerInterface::class => $this->log],
+            [LoggerInterface::class => $this->log], // ignore log
             [['NEUCORE_PLUGINS_INSTALL_DIR',  $pluginBaseDir]],
         );
 
         $this->assertEquals(500, $response->getStatusCode());
-        $this->assertSame(["Invalid YAML file $pluginBaseDir/plugin-name/plugin.yml"], $this->log->getMessages());
-    }
-
-    public function testConfigurations500_ParseError()
-    {
-        $this->loginUser(1);
-
-        $pluginBaseDir = __DIR__ . '/ServiceAdminController/Error2';
-
-        $response = $this->runApp(
-            'GET',
-            '/api/user/service-admin/configurations',
-            null,
-            null,
-            [LoggerInterface::class => $this->log],
-            [['NEUCORE_PLUGINS_INSTALL_DIR',  $pluginBaseDir]],
-        );
-
-        $this->assertEquals(500, $response->getStatusCode());
-        $this->assertSame(['Malformed inline YAML string at line 2.'], $this->log->getMessages());
     }
 
     public function testConfigurations200_EmptyBasePath()
@@ -144,12 +124,12 @@ class ServiceAdminControllerTest extends WebTestCase
             'properties' => ['username'],
             'showPassword' => true,
             'actions' => ['update-account'],
-            'URLs' => [['url' => '/plugin/{plugin_id}/action', 'title' => 'Example', 'target' => '_self']],
-            'textTop' => 'text top',
-            'textAccount' => 'text account',
-            'textRegister' => 'text register',
-            'textPending' => 'text pending',
-            'configurationData' => 'config data',
+            'URLs' => [],
+            'textTop' => '',
+            'textAccount' => '',
+            'textRegister' => '',
+            'textPending' => '',
+            'configurationData' => '',
         ]], $this->parseJsonBody($response));
     }
 

@@ -16,8 +16,6 @@ use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Parser;
 
 /**
  * @OA\Tag(
@@ -74,7 +72,7 @@ class ServiceAdminController extends BaseController
      *     )
      * )
      */
-    public function configurations(Config $config, Parser $parser, LoggerInterface $logger): ResponseInterface
+    public function configurations(Config $config, ServiceRegistration $serviceRegistration): ResponseInterface
     {
         $basePath = is_string($config['plugins_install_dir']) ? $config['plugins_install_dir'] : '';
 
@@ -91,25 +89,14 @@ class ServiceAdminController extends BaseController
             }
 
             $configFile = $fileInfo->getFilename() . '/plugin.yml';
-            $fullPathToFile = $basePath . DIRECTORY_SEPARATOR . $configFile;
-            if (!file_exists($fullPathToFile)) {
+            if (!file_exists("$basePath/$configFile")) {
                 continue;
             }
 
-            try {
-                $yaml = $parser->parseFile($fullPathToFile);
-            } catch (ParseException $e) {
-                $logger->error($e->getMessage(), [Context::EXCEPTION => $e]);
+            $serviceConfig = $serviceRegistration->getConfigurationFromConfigFile($configFile);
+            if (!$serviceConfig) {
                 return $this->response->withStatus(500);
             }
-
-            if (!is_array($yaml)) {
-                $logger->error("Invalid YAML file $fullPathToFile");
-                return $this->response->withStatus(500);
-            }
-
-            $serviceConfig = ServiceConfiguration::fromArray($yaml);
-            $serviceConfig->pluginYml = $configFile;
 
             $configurations[] = $serviceConfig;
         }

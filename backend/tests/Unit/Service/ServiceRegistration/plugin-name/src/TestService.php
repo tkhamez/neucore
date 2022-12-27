@@ -3,7 +3,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Service\ServiceRegistration_AutoloadTest\plugin\src;
+namespace Tests\Unit\Service\ServiceRegistration\plugin\src;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;

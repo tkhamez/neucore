@@ -10,11 +10,14 @@ use Neucore\Entity\Player;
 use Neucore\Entity\Service;
 use Neucore\Data\ServiceConfiguration;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Log\Context;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceConfiguration as PluginServiceConfiguration;
 use Neucore\Plugin\ServiceInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Parser;
 
 class ServiceRegistration
 {
@@ -26,16 +29,48 @@ class ServiceRegistration
 
     private Config $config;
 
+    private Parser $parser;
+
     public function __construct(
         LoggerInterface $log,
         RepositoryFactory $repositoryFactory,
         AccountGroup $accountGroup,
         Config $config,
+        Parser $parser,
     ) {
         $this->log = $log;
         $this->accountGroup = $accountGroup;
         $this->repositoryFactory = $repositoryFactory;
         $this->config = $config;
+        $this->parser = $parser;
+    }
+
+    public function getConfigurationFromConfigFile(string $configFile): ?ServiceConfiguration
+    {
+        $basePath = is_string($this->config['plugins_install_dir']) ? $this->config['plugins_install_dir'] : '';
+        $fullPathToFile = $basePath . DIRECTORY_SEPARATOR . $configFile;
+
+        if (!file_exists($fullPathToFile)) {
+            $this->log->error("File does not exist $fullPathToFile");
+            return null;
+        }
+
+        try {
+            $yaml = $this->parser->parseFile($fullPathToFile);
+        } catch (ParseException $e) {
+            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
+            return null;
+        }
+
+        if (!is_array($yaml)) {
+            $this->log->error("Invalid file content in $fullPathToFile");
+            return null;
+        }
+
+        $serviceConfig = ServiceConfiguration::fromArray($yaml);
+        $serviceConfig->pluginYml = $configFile;
+
+        return $serviceConfig;
     }
 
     public function getServiceImplementation(Service $service): ?ServiceInterface
@@ -88,7 +123,7 @@ class ServiceRegistration
             $this->log,
             new PluginServiceConfiguration(
                 $service->getId(),
-                array_map('intval', (array)$serviceConfig->requiredGroups),
+                array_map('intval', $serviceConfig->requiredGroups),
                 $serviceConfig->configurationData
             )
         );

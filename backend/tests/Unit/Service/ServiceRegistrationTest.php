@@ -22,14 +22,15 @@ use Neucore\Service\AccountGroup;
 use Neucore\Service\Config;
 use Neucore\Service\ServiceRegistration;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Yaml\Parser;
 use Tests\Helper;
 use Tests\Logger;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use Tests\Unit\Service\ServiceRegistration_AutoloadTest\plugin\src\TestService;
+use Tests\Unit\Service\ServiceRegistration\plugin\src\TestService;
 
 class ServiceRegistrationTest extends TestCase
 {
-    private const PSR_PREFIX = 'Tests\Unit\Service\ServiceRegistration_AutoloadTest\plugin\src';
+    private const PSR_PREFIX = 'Tests\Unit\Service\ServiceRegistration\plugin\src';
 
     private static ClassLoader $loader;
 
@@ -56,8 +57,14 @@ class ServiceRegistrationTest extends TestCase
         $this->om = $this->helper->getObjectManager();
         $repoFactory = RepositoryFactory::getInstance($this->om);
         $accountGroup = new AccountGroup($repoFactory, $this->om);
-        $config = new Config(['plugins_install_dir' => __DIR__ . '/ServiceRegistration_AutoloadTest']);
-        $this->serviceRegistration = new ServiceRegistration($this->log, $repoFactory, $accountGroup, $config);
+        $config = new Config(['plugins_install_dir' => __DIR__ . '/ServiceRegistration']);
+        $this->serviceRegistration = new ServiceRegistration(
+            $this->log,
+            $repoFactory,
+            $accountGroup,
+            $config,
+            new Parser()
+        );
         $this->serviceImplementation = new ServiceRegistrationTest_TestService(
             $this->log,
             new \Neucore\Plugin\ServiceConfiguration(0, [], '')
@@ -69,6 +76,53 @@ class ServiceRegistrationTest extends TestCase
     protected function tearDown(): void
     {
         self::$loader->setPsr4(self::PSR_PREFIX.'\\', []);
+    }
+
+    public function testGetConfigurationFromConfigFile_Errors()
+    {
+        $actual1 = $this->serviceRegistration->getConfigurationFromConfigFile('does-not-exist/plugin.yml');
+        $this->assertNull($actual1);
+
+        $actual2 = $this->serviceRegistration->getConfigurationFromConfigFile('plugin-name/parse-error.yml');
+        $this->assertNull($actual2);
+
+        $actual3 = $this->serviceRegistration->getConfigurationFromConfigFile('plugin-name/error-str.yml');
+        $this->assertNull($actual3);
+
+        $baseDir = __DIR__ . '/ServiceRegistration';
+        $this->assertSame(
+            [
+                "File does not exist $baseDir/does-not-exist/plugin.yml",
+                "Malformed inline YAML string at line 2.",
+                "Invalid file content in $baseDir/plugin-name/error-str.yml",
+            ],
+            $this->log->getMessages()
+        );
+    }
+
+    public function testGetConfigurationFromConfigFile()
+    {
+        $actual = $this->serviceRegistration->getConfigurationFromConfigFile('plugin-name/plugin.yml');
+
+        $this->assertSame('plugin-name/plugin.yml', $actual->pluginYml);
+        $this->assertSame(false, $actual->active);
+        $this->assertSame([], $actual->requiredGroups);
+        $this->assertSame('Vendor\Neucore\Plugin\Name\Service', $actual->phpClass);
+        $this->assertSame('Vendor\Neucore\Plugin\Name', $actual->psr4Prefix);
+        $this->assertSame('src', $actual->psr4Path);
+        $this->assertSame(true, $actual->oneAccount);
+        $this->assertSame(['username'], $actual->properties);
+        $this->assertSame(true, $actual->showPassword);
+        $this->assertSame(['update-account'], $actual->actions);
+        $this->assertSame(1, count($actual->URLs));
+        $this->assertSame('/plugin/{plugin_id}/action', $actual->URLs[0]->url);
+        $this->assertSame('Example', $actual->URLs[0]->title);
+        $this->assertSame('_self', $actual->URLs[0]->target);
+        $this->assertSame('text top', $actual->textTop);
+        $this->assertSame('text account', $actual->textAccount);
+        $this->assertSame('text register', $actual->textRegister);
+        $this->assertSame('text pending', $actual->textPending);
+        $this->assertSame('config data', $actual->configurationData);
     }
 
     public function testGetServiceImplementation_MissingPhpClass()
@@ -100,7 +154,7 @@ class ServiceRegistrationTest extends TestCase
         $conf = new ServiceConfiguration();
         $conf->phpClass = self::PSR_PREFIX.'\TestService';
         $conf->psr4Prefix = self::PSR_PREFIX;
-        $conf->psr4Path = __DIR__ .  '/ServiceRegistration_AutoloadTest/plugin-name/src';
+        $conf->psr4Path = __DIR__ .  '/ServiceRegistration/plugin-name/src';
         $conf->requiredGroups = [1, 2];
         $conf->configurationData = 'other: data';
         $service->setConfiguration($conf);
@@ -116,7 +170,7 @@ class ServiceRegistrationTest extends TestCase
         $this->assertSame('other: data', $configuration->configurationData);
 
         $this->assertSame(
-            ['/some/path', __DIR__ .  '/ServiceRegistration_AutoloadTest/plugin-name/src'],
+            ['/some/path', __DIR__ .  '/ServiceRegistration/plugin-name/src'],
             self::$loader->getPrefixesPsr4()[self::PSR_PREFIX.'\\']
         );
     }
@@ -147,7 +201,7 @@ class ServiceRegistrationTest extends TestCase
         $this->assertSame('other: data', $configuration->configurationData);
 
         $this->assertSame(
-            ['/some/path', __DIR__ .  '/ServiceRegistration_AutoloadTest/plugin-name/src'],
+            ['/some/path', __DIR__ .  '/ServiceRegistration/plugin-name/src'],
             self::$loader->getPrefixesPsr4()[self::PSR_PREFIX.'\\']
         );
     }

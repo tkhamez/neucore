@@ -178,7 +178,7 @@ class UserAuth implements RoleProviderInterface
         }
 
         $hasOneGroup = empty($serviceConfig->requiredGroups);
-        foreach ((array)$serviceConfig->requiredGroups as $group) {
+        foreach ($serviceConfig->requiredGroups as $group) {
             $group = (int)$group;
             if ($group > 0 && $character->getPlayer()->hasGroup($group)) {
                 $hasOneGroup = true;

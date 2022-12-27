@@ -7,14 +7,3 @@ properties:
 showPassword: true
 actions:
   - update-account
-URLs:
-  -
-    url: /plugin/{plugin_id}/action
-    title: Example
-    target: _self
-textTop: text top
-textAccount: text account
-textRegister: text register
-textPending: text pending
-configurationData: config data
-invalid: data
