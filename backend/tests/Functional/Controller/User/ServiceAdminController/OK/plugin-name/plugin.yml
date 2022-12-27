@@ -1,0 +1,20 @@
+phpClass: Vendor\Neucore\Plugin\Name\Service
+psr4Prefix: Vendor\Neucore\Plugin\Name
+psr4Path: src
+oneAccount: true
+properties:
+  - username
+showPassword: true
+actions:
+  - update-account
+URLs:
+  -
+    url: /plugin/{plugin_id}/action
+    title: Example
+    target: _self
+textTop: text top
+textAccount: text account
+textRegister: text register
+textPending: text pending
+configurationData: config data
+invalid: data

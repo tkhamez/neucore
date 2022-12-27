@@ -35,13 +35,13 @@ class ServiceAdminControllerTest extends WebTestCase
 
     public function testList403()
     {
-        $response = $this->runApp('GET', '/api/user/service-admin/list');
-        $this->assertEquals(403, $response->getStatusCode());
+        $response1 = $this->runApp('GET', '/api/user/service-admin/list');
+        $this->assertEquals(403, $response1->getStatusCode());
 
         $this->loginUser(2);
 
-        $response = $this->runApp('GET', '/api/user/service-admin/list');
-        $this->assertEquals(403, $response->getStatusCode());
+        $response2 = $this->runApp('GET', '/api/user/service-admin/list');
+        $this->assertEquals(403, $response2->getStatusCode());
     }
 
     public function testList200()
@@ -50,16 +50,107 @@ class ServiceAdminControllerTest extends WebTestCase
 
         $response = $this->runApp('GET', '/api/user/service-admin/list');
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals([['id' => $this->serviceId, 'name' => 'S1']], $this->parseJsonBody($response));
     }
 
     public function testConfigurations403()
     {
-        # TODO
+        $response1 = $this->runApp('GET', '/api/user/service-admin/configurations');
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->loginUser(2);
+
+        $response2 = $this->runApp('GET', '/api/user/service-admin/configurations');
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testConfigurations500_NotArray()
+    {
+        $this->loginUser(1);
+
+        $pluginBaseDir = __DIR__ . '/ServiceAdminController/Error1';
+
+        $response = $this->runApp(
+            'GET',
+            '/api/user/service-admin/configurations',
+            null,
+            null,
+            [LoggerInterface::class => $this->log],
+            [['NEUCORE_PLUGINS_INSTALL_DIR',  $pluginBaseDir]],
+        );
+
+        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertSame(["Invalid YAML file $pluginBaseDir/plugin-name/plugin.yml"], $this->log->getMessages());
+    }
+
+    public function testConfigurations500_ParseError()
+    {
+        $this->loginUser(1);
+
+        $pluginBaseDir = __DIR__ . '/ServiceAdminController/Error2';
+
+        $response = $this->runApp(
+            'GET',
+            '/api/user/service-admin/configurations',
+            null,
+            null,
+            [LoggerInterface::class => $this->log],
+            [['NEUCORE_PLUGINS_INSTALL_DIR',  $pluginBaseDir]],
+        );
+
+        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertSame(['Malformed inline YAML string at line 2.'], $this->log->getMessages());
+    }
+
+    public function testConfigurations200_EmptyBasePath()
+    {
+        $this->loginUser(1);
+
+        $response = $this->runApp(
+            'GET',
+            '/api/user/service-admin/configurations',
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', '']],
+        );
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals([], $this->parseJsonBody($response));
     }
 
     public function testConfigurations200()
     {
-        # TODO
+        $this->loginUser(1);
+
+        $response = $this->runApp(
+            'GET',
+            '/api/user/service-admin/configurations',
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceAdminController/OK']],
+        );
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals([[
+            'pluginYml' => 'plugin-name/plugin.yml',
+            'active' => false,
+            'requiredGroups' => [],
+            'phpClass' => 'Vendor\Neucore\Plugin\Name\Service',
+            'psr4Prefix' => 'Vendor\Neucore\Plugin\Name',
+            'psr4Path' => 'src',
+            'oneAccount' => true,
+            'properties' => ['username'],
+            'showPassword' => true,
+            'actions' => ['update-account'],
+            'URLs' => [['url' => '/plugin/{plugin_id}/action', 'title' => 'Example', 'target' => '_self']],
+            'textTop' => 'text top',
+            'textAccount' => 'text account',
+            'textRegister' => 'text register',
+            'textPending' => 'text pending',
+            'configurationData' => 'config data',
+        ]], $this->parseJsonBody($response));
     }
 
     public function testCreate403()

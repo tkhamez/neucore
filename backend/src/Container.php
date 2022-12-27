@@ -33,6 +33,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Psr7\Factory\ResponseFactory;
+use Symfony\Component\Yaml\Parser;
 
 class Container
 {
@@ -181,7 +182,11 @@ class Container
                     );
                 }
                 return $storage;
-            }
+            },
+
+            Parser::class => function () {
+                return new Parser();
+            },
         ];
     }
 }

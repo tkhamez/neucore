@@ -10,6 +10,11 @@ namespace Neucore\Data;
 use OpenApi\Annotations as OA;
 
 /**
+ * Service configuration.
+ *
+ * Note: The property names of this class and the names of the YAML keys from the plugin.yml file of
+ * plugins need to be the same.
+ *
  * @OA\Schema(required={
  *     "properties", "actions", "URLs", "textAccount", "textTop", "textRegister", "textPending", "configurationData"
  * })
@@ -25,7 +30,7 @@ class ServiceConfiguration implements \JsonSerializable
      *
      * @OA\Property()
      */
-    public ?string $pluginYml = '';
+    public string $pluginYml = '';
 
     /**
      * Inactive plugins are neither updated by the cron job nor displayed to the user.
@@ -34,7 +39,7 @@ class ServiceConfiguration implements \JsonSerializable
      *
      * @OA\Property()
      */
-    public ?bool $active = false;
+    public bool $active = false;
 
     /**
      * From admin UI.
@@ -42,35 +47,35 @@ class ServiceConfiguration implements \JsonSerializable
      * @OA\Property()
      * @var int[]
      */
-    public ?array $requiredGroups = [];
+    public array $requiredGroups = [];
 
     /**
      * From plugin.yml
      *
      * @OA\Property()
      */
-    public ?string $phpClass = '';
+    public string $phpClass = '';
 
     /**
      * From plugin.yml
      *
      * @OA\Property()
      */
-    public ?string $psr4Prefix = '';
+    public string $psr4Prefix = '';
 
     /**
      * From plugin.yml
      *
      * @OA\Property()
      */
-    public ?string $psr4Path = '';
+    public string $psr4Path = '';
 
     /**
      * From plugin.yml
      *
      * @OA\Property()
      */
-    public ?bool $oneAccount = false;
+    public bool $oneAccount = false;
 
     /**
      * From plugin.yml
@@ -78,14 +83,14 @@ class ServiceConfiguration implements \JsonSerializable
      * @OA\Property(enum={"username", "password", "email", "status", "name"})
      * @var string[]
      */
-    public ?array $properties = [];
+    public array $properties = [];
 
     /**
      * From plugin.yml
      *
      * @OA\Property()
      */
-    public ?bool $showPassword = false;
+    public bool $showPassword = false;
 
     /**
      * From plugin.yml
@@ -93,7 +98,7 @@ class ServiceConfiguration implements \JsonSerializable
      * @OA\Property(enum={"update-account", "reset-password"})
      * @var string[]
      */
-    public ?array $actions = [];
+    public array $actions = [];
 
     /**
      * Optionally from plugin.yml, overwritten in admin UI.
@@ -101,35 +106,35 @@ class ServiceConfiguration implements \JsonSerializable
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/ServiceConfigurationURL"))
      * @var ServiceConfigurationURL[]
      */
-    public ?array $URLs = [];
+    public array $URLs = [];
 
     /**
      * Optionally from plugin.yml, overwritten in admin UI.
      *
      * @OA\Property()
      */
-    public ?string $textTop = '';
+    public string $textTop = '';
 
     /**
      * Optionally from plugin.yml, overwritten in admin UI.
      *
      * @OA\Property()
      */
-    public ?string $textAccount = '';
+    public string $textAccount = '';
 
     /**
      * Optionally from plugin.yml, overwritten in admin UI.
      *
      * @OA\Property()
      */
-    public ?string $textRegister = '';
+    public string $textRegister = '';
 
     /**
      * Optionally from plugin.yml, overwritten in admin UI.
      *
      * @OA\Property()
      */
-    public ?string $textPending = '';
+    public string $textPending = '';
 
     /**
      * Optionally from plugin.yml, overwritten in admin UI.
@@ -138,23 +143,38 @@ class ServiceConfiguration implements \JsonSerializable
      */
     public string $configurationData = '';
 
+    /**
+     * @param array $data Array created from jsonSerialize().
+     */
     public static function fromArray(array $data): self
     {
         $obj = new self();
-        foreach ($data as $name => $value) {
-            if ($name === 'URLs') {
-                $urlValues = [];
-                foreach ($value as $url) {
-                    $valueObject = new ServiceConfigurationURL();
-                    $valueObject->url = $url['url'];
-                    $valueObject->title = $url['title'];
-                    $valueObject->target = $url['target'];
-                    $urlValues[] = $valueObject;
-                }
-                $value = $urlValues;
-            }
-            $obj->{$name} = $value;
+
+        $obj->pluginYml = $data['pluginYml'] ?? '';
+        $obj->active = $data['active'] ?? false;
+        $obj->requiredGroups = $data['requiredGroups'] ?? [];
+
+        $obj->phpClass = $data['phpClass'] ?? '';
+        $obj->psr4Prefix = $data['psr4Prefix'] ?? '';
+        $obj->psr4Path = $data['psr4Path'] ?? '';
+        $obj->oneAccount = $data['oneAccount'] ?? false;
+        $obj->properties = $data['properties'] ?? [];
+        $obj->showPassword = $data['showPassword'] ?? false;
+        $obj->actions = $data['actions'] ?? [];
+        $obj->URLs = [];
+        foreach ($data['URLs'] ?? [] as $urlData) {
+            $urlObj = new ServiceConfigurationURL();
+            $urlObj->url = $urlData['url'] ?? '';
+            $urlObj->title = $urlData['title'] ?? '';
+            $urlObj->target = $urlData['target'] ?? '';
+            $obj->URLs[] = $urlObj;
         }
+        $obj->textTop = $data['textTop'] ?? '';
+        $obj->textAccount = $data['textAccount'] ?? '';
+        $obj->textRegister = $data['textRegister'] ?? '';
+        $obj->textPending = $data['textPending'] ?? '';
+        $obj->configurationData = $data['configurationData'] ?? '';
+
         return $obj;
     }
 

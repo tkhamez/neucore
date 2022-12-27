@@ -16,7 +16,8 @@ use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Parser;
 
 /**
  * @OA\Tag(
@@ -66,12 +67,16 @@ class ServiceAdminController extends BaseController
      *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="When a YAML file could not be parsed."
      *     )
      * )
      */
-    public function configurations(Config $config): ResponseInterface
+    public function configurations(Config $config, Parser $parser, LoggerInterface $logger): ResponseInterface
     {
-        $basePath = $config['plugins_install_dir'];
+        $basePath = is_string($config['plugins_install_dir']) ? $config['plugins_install_dir'] : '';
 
         if (empty($basePath) || !is_dir($basePath)) {
             return $this->withJson([]);
@@ -80,18 +85,33 @@ class ServiceAdminController extends BaseController
         $configurations = [];
         foreach (new \DirectoryIterator($basePath) as $fileInfo) {
             /* @var $fileInfo \DirectoryIterator */
-            if ($fileInfo->isDir() && !$fileInfo->isDot()) {
-                $configFile = $fileInfo->getFilename() . '/plugin.yml';
-                if (file_exists($basePath . DIRECTORY_SEPARATOR . $configFile)) {
 
-                    # TODO load data from file
-
-                    $serviceConfig = new ServiceConfiguration();
-                    $serviceConfig->pluginYml = $configFile;
-
-                    $configurations[] = $serviceConfig;
-                }
+            if (!$fileInfo->isDir() || $fileInfo->isDot()) {
+                continue;
             }
+
+            $configFile = $fileInfo->getFilename() . '/plugin.yml';
+            $fullPathToFile = $basePath . DIRECTORY_SEPARATOR . $configFile;
+            if (!file_exists($fullPathToFile)) {
+                continue;
+            }
+
+            try {
+                $yaml = $parser->parseFile($fullPathToFile);
+            } catch (ParseException $e) {
+                $logger->error($e->getMessage(), [Context::EXCEPTION => $e]);
+                return $this->response->withStatus(500);
+            }
+
+            if (!is_array($yaml)) {
+                $logger->error("Invalid YAML file $fullPathToFile");
+                return $this->response->withStatus(500);
+            }
+
+            $serviceConfig = ServiceConfiguration::fromArray($yaml);
+            $serviceConfig->pluginYml = $configFile;
+
+            $configurations[] = $serviceConfig;
         }
 
         return $this->withJson($configurations);
