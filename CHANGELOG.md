@@ -17,7 +17,7 @@ To update a service plugin configuration:
 Changes:
 
 - **BC break**: Dropped PHP 7.4 support, minimum required version is now 8.0.
-- **BC Break**: Updated [Neucore plugin](https://github.com/tkhamez/neucore-plugin) to 0.9.0.
+- **BC Break**: Updated [Neucore plugin](https://github.com/tkhamez/neucore-plugin) to 0.9.2 (from 0.8.0 ).
 - **BC break**: Removed files necessary to deploy on Heroku (I can't test it anymore because they removed free plans).
 - **Deprecated**: Plugins without a plugin.yml file are deprecated and will stop working with the next release.
 - New: The new plugin method `ServiceInterface::onConfigurationChange` is called when a service configuration is saved.
