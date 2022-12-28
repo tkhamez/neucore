@@ -127,20 +127,24 @@ class ServiceRegistrationTest extends TestCase
         $this->assertSame('config data', $actual->configurationData);
     }
 
-    public function testGetConfiguration()
+    public function testGetService()
     {
         $conf = new ServiceConfiguration();
         $conf->directoryName = 'plugin-name';
-        $conf->name = 'a name';
-        $conf->type = 'invalid type';
-        $conf->psr4Path = '/plugins/discord/src'; // not used from plugin.yml for now
+        $conf->phpClass = 'Test\Service';
         $service = (new Service())->setName('S1')->setConfiguration($conf);
+        $this->om->persist($service);
+        $this->om->flush();
+        $this->om->clear();
 
-        $actual = $this->serviceRegistration->getConfiguration($service);
+        $actual = $this->serviceRegistration->getService($service->getId());
 
-        $this->assertSame('Test', $actual->name);
-        $this->assertSame('service', $actual->type);
-        $this->assertSame('/plugins/discord/src', $actual->psr4Path);
+        // from plugin.yml
+        $this->assertSame('Test', $actual->getConfiguration()->name);
+        $this->assertSame('service', $actual->getConfiguration()->type);
+
+        // from database
+        $this->assertSame('Test\Service', $actual->getConfiguration()->phpClass);
     }
 
     public function testGetServiceImplementation_MissingPhpClass()

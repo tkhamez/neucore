@@ -479,7 +479,12 @@ class ServiceController extends BaseController
     private function getService(int $id, bool $allowAdmin): ?Service
     {
         // get service
-        $service = $this->repositoryFactory->getServiceRepository()->find($id);
+        if ($allowAdmin) {
+            // Load with configuration values from plugin.yml
+            $service = $this->serviceRegistration->getService($id);
+        } else {
+            $service = $this->repositoryFactory->getServiceRepository()->find($id);
+        }
         if ($service === null) {
             $this->responseErrorCode = 404;
             return null;

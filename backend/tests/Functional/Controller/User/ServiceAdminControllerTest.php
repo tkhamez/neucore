@@ -34,6 +34,11 @@ class ServiceAdminControllerTest extends WebTestCase
         $this->setupDb();
     }
 
+    protected function tearDown(): void
+    {
+        unset($_ENV['NEUCORE_PLUGINS_INSTALL_DIR']);
+    }
+
     public function testList403()
     {
         $response1 = $this->runApp('GET', '/api/user/service-admin/list');

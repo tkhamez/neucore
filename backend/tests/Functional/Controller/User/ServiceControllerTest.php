@@ -58,6 +58,7 @@ class ServiceControllerTest extends WebTestCase
     protected function tearDown(): void
     {
         ServiceControllerTest_TestService::$throw = false;
+        unset($_ENV['NEUCORE_PLUGINS_INSTALL_DIR']);
     }
 
     public function testGet403()
@@ -128,16 +129,23 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(4);
 
-        $response = $this->runApp('GET', "/api/user/service/$this->s3/get?allowAdmin=true");
+        $response = $this->runApp(
+            'GET',
+            "/api/user/service/$this->s3/get?allowAdmin=true",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceAdminController/OK']],
+        );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [
                 'id' => $this->s3,
                 'name' => 'S3',
                 'configuration' => [
-                    'name' => '',
-                    'type' => '',
-                    'directoryName' => '',
+                    'name' => 'Test',
+                    'type' => 'service',
+                    'directoryName' => 'plugin-name',
                     'active' => true,
                     'requiredGroups' => [$this->g2, $this->g7],
                     'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',
@@ -715,6 +723,7 @@ class ServiceControllerTest extends WebTestCase
         $service2 = (new Service())->setName('S2')->setConfiguration($conf2);
 
         $conf3 = new ServiceConfiguration();
+        $conf3->directoryName = 'plugin-name';
         $conf3->active = true;
         $conf3->actions = [ServiceConfiguration::ACTION_UPDATE_ACCOUNT];
         $conf3->phpClass = ServiceControllerTest_TestService::class;

@@ -73,11 +73,12 @@ class ServiceRegistration
         return $serviceConfig;
     }
 
-    public function getConfiguration(Service $service): ServiceConfiguration
+    public function getService(int $id): ?Service
     {
-        $serviceConfig = $service->getConfiguration();
+        $service = $this->repositoryFactory->getServiceRepository()->find($id);
 
-        // Read plugin.yml
+        // load configuration from plugin.yml
+        $serviceConfig = $service->getConfiguration();
         $basePath = is_string($this->config['plugins_install_dir']) ? $this->config['plugins_install_dir'] : '';
         if (!empty($basePath) && !empty($serviceConfig->directoryName)) {
             // New since v1.40.0
@@ -88,8 +89,9 @@ class ServiceRegistration
                 $serviceConfig->type = $yamlConfig->type;
             }
         }
+        $service->setConfiguration($serviceConfig);
 
-        return $serviceConfig;
+        return $service;
     }
 
     public function getServiceImplementation(Service $service): ?ServiceInterface
