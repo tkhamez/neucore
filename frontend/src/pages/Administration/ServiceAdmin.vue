@@ -53,17 +53,19 @@
                 <div v-cloak class="card-body">
                     <h5>Configuration</h5>
 
-                    <label class="col-form-label w-100 mb-2">
+                    <label class="col-form-label w-100 mb-3">
                         Plugin
-                        <select class="form-select" v-model="activeService.configuration.directoryName">
+                        <select class="form-select" v-model="activeService.configuration.directoryName"
+                                v-on:change="updateConfiguration()">
                             <option value=""></option>
                             <option v-for="option in configurations" v-bind:value="option.directoryName">
                                 {{ option.name }}
                                 ({{ option.directoryName }})
                             </option>
                         </select>
-                        <span class="form-text lh-sm d-block">
-                            Select the plugin by selecting the appropriate configuration file.
+                        <span class="form-text lh-sm d-block text-warning">
+                            Attention: changing this will update the "Optional" values below
+                            with the default values from the plugin.yml file!
                         </span>
                     </label>
 
@@ -93,8 +95,12 @@
                         <legend class="float-none w-auto p-2 mb-0 fs-6">DEPRECATED</legend>
                         <p class="text-warning small">
                             The following configuration values are deprecated and replaced by the plugin.xml file.
-                            They will be removed with the next release of Neucore.<br>
-                            If you choose a plugin.yml file above they will not be used.
+                            They will be removed from the UI with the next release of Neucore. See also
+                            <a class="external" target="_blank" rel="noopener noreferrer"
+                               :href="settings.repository + '/blob/main/CHANGELOG.md#1400'">changelog</a> and
+                            <a class="external" target="_blank" rel="noopener noreferrer"
+                               :href="settings.repository + '/blob/main/doc/Plugins.md'">plugin documentation</a>.<br>
+                            Ignore them if you've chosen a plugin above from the dropdown list.
                         </p>
 
                         <label class="col-form-label w-100">
@@ -226,6 +232,10 @@
                     </fieldset>
 
                     <button class="mt-3 btn btn-success" v-on:click.prevent="saveConfiguration">Save</button>
+                    <span class="form-text text-warning lh-sm d-block">
+                        If you have changed the plugin, make sure that this does not delete any configuration
+                        values that you still need.
+                    </span>
                 </div> <!-- card-body -->
             </div> <!-- card -->
         </div> <!-- col -->
@@ -234,6 +244,7 @@
 </template>
 
 <script>
+import {toRef} from "vue";
 import Multiselect from '@suadelabs/vue3-multiselect';
 import {ServiceApi, ServiceAdminApi, GroupApi} from "neucore-js-client";
 import Helper from "../../classes/Helper";
@@ -250,10 +261,13 @@ export default {
         route: Array,
     },
 
+    inject: ['store'],
+
     data() {
         return {
             h: new Helper(this),
             U: Util,
+            settings: toRef(this.store.state, 'settings'),
             services: [],
             allGroups: null,
             configurations: null,
@@ -294,6 +308,7 @@ export default {
                 }
             });
         },
+
         deleteIt(id) {
             new ServiceAdminApi().serviceAdminDelete(id, error => {
                 if (error) {
@@ -307,6 +322,7 @@ export default {
                 }
             });
         },
+
         rename(id, name) {
             new ServiceAdminApi().serviceAdminRename(id, name, (error, data, response) => {
                 if (response.status === 400) {
@@ -322,6 +338,59 @@ export default {
                 }
             });
         },
+
+        updateConfiguration() {
+            if (this.activeService.configuration.directoryName === '') {
+                this.activeService.configuration.phpClass = '';
+                this.activeService.configuration.psr4Prefix = '';
+                this.activeService.configuration.psr4Path = '';
+                this.activeService.configuration.oneAccount = '';
+                this.activeService.configuration.properties = '';
+                this.activeService.configuration.showPassword = '';
+                this.activeService.configuration.actions = '';
+
+                this.activeService.configuration.URLs = '';
+                this.activeService.configuration.textTop = '';
+                this.activeService.configuration.textAccount = '';
+                this.activeService.configuration.textRegister = '';
+                this.activeService.configuration.textPending = '';
+                this.activeService.configuration.configurationData = '';
+
+                this.properties = '';
+                this.actions = '';
+                this.URLs = [];
+
+                return;
+            }
+
+            for (const config of this.configurations) {
+                if (config.directoryName !== this.activeService.configuration.directoryName) {
+                    continue;
+                }
+
+                this.activeService.configuration.phpClass = config.phpClass;
+                this.activeService.configuration.psr4Prefix = config.psr4Prefix;
+                this.activeService.configuration.psr4Path = config.psr4Path;
+                this.activeService.configuration.oneAccount = config.oneAccount;
+                this.activeService.configuration.properties = config.properties;
+                this.activeService.configuration.showPassword = config.showPassword;
+                this.activeService.configuration.actions = config.actions;
+
+                this.activeService.configuration.URLs = config.URLs;
+                this.activeService.configuration.textTop = config.textTop;
+                this.activeService.configuration.textAccount = config.textAccount;
+                this.activeService.configuration.textRegister = config.textRegister;
+                this.activeService.configuration.textPending = config.textPending;
+                this.activeService.configuration.configurationData = config.configurationData;
+
+                this.properties = this.activeService.configuration.properties.join(',');
+                this.actions = this.activeService.configuration.actions.join(',');
+                this.URLs = this.activeService.configuration.URLs;
+
+                return;
+            }
+        },
+
         saveConfiguration() {
             const configuration = this.activeService.configuration;
             configuration.URLs = this.URLs.filter(url => url.url || url.title || url.target);
@@ -354,9 +423,11 @@ export default {
         showCreateModal() {
             this.$refs.editModal.showCreateModal();
         },
+
         showEditModal() {
             this.$refs.editModal.showEditModal(this.activeService);
         },
+
         showDeleteModal() {
             this.$refs.editModal.showDeleteModal(this.activeService);
         },

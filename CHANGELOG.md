@@ -2,18 +2,31 @@
 
 ## 1.40.0
 
-dd mm yyyy
+28 Dec 2022
+
+This release introduces changes to the configuration of plugins and will be the only release that is compatible 
+with the old and the new configuration.
+
+To update a service plugin configuration:
+- Open its service admin page twice in 2 different browser tabs.
+- Chose the appropriate plugin from the dropdown list at the top. *Attention*: this will load the default 
+  configuration values from the plugin.yml file!
+- Copy any configuration values from the "Optional" block from the second tab that you wat to keep (probably all).
+- Click save.
+
+Changes:
 
 - **BC break**: Dropped PHP 7.4 support, minimum required version is now 8.0.
 - **BC Break**: Updated [Neucore plugin](https://github.com/tkhamez/neucore-plugin) to 0.9.0.
 - **BC break**: Removed files necessary to deploy on Heroku (I can't test it anymore because they removed free plans).
+- **Deprecated**: Plugins without a plugin.yml file are deprecated and will stop working with the next release.
 - New: The new plugin method `ServiceInterface::onConfigurationChange` is called when a service configuration is saved.
 - New: Added option to disable service plugins.
 - Improved service plugin configuration page.
 - Small layout improvements and fixes.
 - PHP 8.2 compatibility (no change was necessary, but it's tested now).
 - Changed the Content Security Policy (CSP) header (in the documentation and Docker). This also fixes links to Eve Who.
-- Added content compression to Docker container (prod).
+- Added HTTP content compression to Docker container (prod).
 - Updated dependencies.
 - Dev: Update to Node.js 18 LTS.
 - Dev: Removed support for `composer.phar` in `install.sh`, now it needs the `composer` command to be available.
