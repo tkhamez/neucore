@@ -65,6 +65,12 @@ Controller classes.
 
 Any new code should be covered by unit tests.
 
+### Libraries and Plugins
+
+If you update libraries that are also included in the 
+[tkhamez/neucore-plugin](https://github.com/tkhamez/neucore-plugin), update them there as well and create a 
+new release together with the Neucore release.
+
 ## API
 
 ### operationId
