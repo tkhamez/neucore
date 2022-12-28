@@ -135,7 +135,9 @@ class ServiceControllerTest extends WebTestCase
                 'id' => $this->s3,
                 'name' => 'S3',
                 'configuration' => [
-                    'pluginYml' => '',
+                    'name' => '',
+                    'type' => '',
+                    'directoryName' => '',
                     'active' => true,
                     'requiredGroups' => [$this->g2, $this->g7],
                     'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',

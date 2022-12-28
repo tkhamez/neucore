@@ -54,11 +54,12 @@
                     <h5>Configuration</h5>
 
                     <label class="col-form-label w-100 mb-2">
-                        Plugin configuration file
-                        <select class="form-select" v-model="activeService.configuration.pluginYml">
+                        Plugin
+                        <select class="form-select" v-model="activeService.configuration.directoryName">
                             <option value=""></option>
-                            <option v-for="option in configurations" v-bind:value="option.pluginYml">
-                                {{ option.pluginYml }}
+                            <option v-for="option in configurations" v-bind:value="option.directoryName">
+                                {{ option.name }}
+                                ({{ option.directoryName }})
                             </option>
                         </select>
                         <span class="form-text lh-sm d-block">

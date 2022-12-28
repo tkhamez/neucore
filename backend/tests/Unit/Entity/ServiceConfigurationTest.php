@@ -14,7 +14,9 @@ class ServiceConfigurationTest extends TestCase
     public function testJsonSerialize_FromArray()
     {
         $configuration = new ServiceConfiguration();
-        $configuration->pluginYml = 'plugin.yml';
+        $configuration->name = 'Test';
+        $configuration->type = ServiceConfiguration::TYPE_SERVICE;
+        $configuration->directoryName = 'plugin-dir';
         $configuration->active = false;
         $configuration->requiredGroups = [1, 2];
         $configuration->phpClass = 'class';
@@ -38,7 +40,9 @@ class ServiceConfigurationTest extends TestCase
         $array = $configuration->jsonSerialize();
 
         $this->assertSame([
-            'pluginYml' => 'plugin.yml',
+            'name' => 'Test',
+            'type' => ServiceConfiguration::TYPE_SERVICE,
+            'directoryName' => 'plugin-dir',
             'active' => false,
             'requiredGroups' => [1, 2],
             'phpClass' => 'class',

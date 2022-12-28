@@ -80,13 +80,13 @@ class ServiceRegistrationTest extends TestCase
 
     public function testGetConfigurationFromConfigFile_Errors()
     {
-        $actual1 = $this->serviceRegistration->getConfigurationFromConfigFile('does-not-exist/plugin.yml');
+        $actual1 = $this->serviceRegistration->getConfigurationFromConfigFile('does-not-exist');
         $this->assertNull($actual1);
 
-        $actual2 = $this->serviceRegistration->getConfigurationFromConfigFile('plugin-name/parse-error.yml');
+        $actual2 = $this->serviceRegistration->getConfigurationFromConfigFile('parse-error');
         $this->assertNull($actual2);
 
-        $actual3 = $this->serviceRegistration->getConfigurationFromConfigFile('plugin-name/error-str.yml');
+        $actual3 = $this->serviceRegistration->getConfigurationFromConfigFile('error-string');
         $this->assertNull($actual3);
 
         $baseDir = __DIR__ . '/ServiceRegistration';
@@ -94,7 +94,7 @@ class ServiceRegistrationTest extends TestCase
             [
                 "File does not exist $baseDir/does-not-exist/plugin.yml",
                 "Malformed inline YAML string at line 2.",
-                "Invalid file content in $baseDir/plugin-name/error-str.yml",
+                "Invalid file content in $baseDir/error-string/plugin.yml",
             ],
             $this->log->getMessages()
         );
@@ -102,9 +102,11 @@ class ServiceRegistrationTest extends TestCase
 
     public function testGetConfigurationFromConfigFile()
     {
-        $actual = $this->serviceRegistration->getConfigurationFromConfigFile('plugin-name/plugin.yml');
+        $actual = $this->serviceRegistration->getConfigurationFromConfigFile('plugin-name');
 
-        $this->assertSame('plugin-name/plugin.yml', $actual->pluginYml);
+        $this->assertSame('Test', $actual->name);
+        $this->assertSame('service', $actual->type);
+        $this->assertSame('plugin-name', $actual->directoryName);
         $this->assertSame(false, $actual->active);
         $this->assertSame([], $actual->requiredGroups);
         $this->assertSame('Vendor\Neucore\Plugin\Name\Service', $actual->phpClass);
@@ -128,13 +130,17 @@ class ServiceRegistrationTest extends TestCase
     public function testGetConfiguration()
     {
         $conf = new ServiceConfiguration();
-        $conf->pluginYml = 'plugin-name/plugin.yml';
-        $conf->psr4Path = '/plugins/discord/src';
+        $conf->directoryName = 'plugin-name';
+        $conf->name = 'a name';
+        $conf->type = 'invalid type';
+        $conf->psr4Path = '/plugins/discord/src'; // not used from plugin.yml for now
         $service = (new Service())->setName('S1')->setConfiguration($conf);
 
         $actual = $this->serviceRegistration->getConfiguration($service);
 
-        $this->assertSame('src', $actual->psr4Path);
+        $this->assertSame('Test', $actual->name);
+        $this->assertSame('service', $actual->type);
+        $this->assertSame('/plugins/discord/src', $actual->psr4Path);
     }
 
     public function testGetServiceImplementation_MissingPhpClass()
@@ -194,7 +200,8 @@ class ServiceRegistrationTest extends TestCase
 
         $service = new Service();
         $conf = new ServiceConfiguration();
-        $conf->pluginYml = 'plugin-name/plugin.yml';
+        $conf->type = ServiceConfiguration::TYPE_SERVICE;
+        $conf->directoryName = 'plugin-name';
         $conf->phpClass = self::PSR_PREFIX.'\TestService';
         $conf->psr4Prefix = self::PSR_PREFIX;
         $conf->psr4Path = 'src';

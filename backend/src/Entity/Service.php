@@ -41,7 +41,7 @@ class Service implements \JsonSerializable
      */
     private ?string $configuration = null;
 
-    public function jsonSerialize(bool $onlyRequired = true, bool $onlyRequiredConfiguration = true): array
+    public function jsonSerialize(bool $onlyRequired = true, bool $fullConfig = false): array
     {
         $data = [
             'id' => (int) $this->id,
@@ -50,8 +50,10 @@ class Service implements \JsonSerializable
         if (!$onlyRequired && !empty($this->configuration)) {
             $config = \json_decode((string)$this->configuration, true);
             $configuration = ServiceConfiguration::fromArray($config)->jsonSerialize();
-            if ($onlyRequiredConfiguration) {
-                unset($configuration['pluginYml']);
+            if (!$fullConfig) {
+                unset($configuration['name']);
+                unset($configuration['type']);
+                unset($configuration['directoryName']);
                 unset($configuration['active']);
                 unset($configuration['requiredGroups']);
                 unset($configuration['phpClass']);

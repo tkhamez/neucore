@@ -25,12 +25,30 @@ class ServiceConfiguration implements \JsonSerializable
 
     public const ACTION_RESET_PASSWORD = 'reset-password';
 
+    public const TYPE_SERVICE = 'service';
+
+    /**
+     * From plugin.yml
+     *
+     * @OA\Property()
+     */
+    public string $name = '';
+
+    /**
+     * From plugin.yml
+     *
+     * The only possible value for now is "service".
+     *
+     * @OA\Property()
+     */
+    public string $type = '';
+
     /**
      * From admin UI.
      *
      * @OA\Property()
      */
-    public string $pluginYml = '';
+    public string $directoryName = '';
 
     /**
      * Inactive plugins are neither updated by the cron job nor displayed to the user.
@@ -150,10 +168,11 @@ class ServiceConfiguration implements \JsonSerializable
     {
         $obj = new self();
 
-        $obj->pluginYml = $data['pluginYml'] ?? '';
+        $obj->name = $data['name'] ?? '';
+        $obj->type = $data['type'] ?? '';
+        $obj->directoryName = $data['directoryName'] ?? '';
         $obj->active = $data['active'] ?? false;
         $obj->requiredGroups = $data['requiredGroups'] ?? [];
-
         $obj->phpClass = $data['phpClass'] ?? '';
         $obj->psr4Prefix = $data['psr4Prefix'] ?? '';
         $obj->psr4Path = $data['psr4Path'] ?? '';

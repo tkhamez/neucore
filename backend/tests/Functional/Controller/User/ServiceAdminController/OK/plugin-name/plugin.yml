@@ -1,3 +1,5 @@
+name: Test
+type: service
 phpClass: Vendor\Neucore\Plugin\Name\Service
 psr4Prefix: Vendor\Neucore\Plugin\Name
 psr4Path: src

@@ -123,7 +123,7 @@ class ServiceController extends BaseController
         }
 
         $fullConfig = $allowAdmin && $this->getUser($userAuth)->getPlayer()->hasRole(Role::SERVICE_ADMIN);
-        return $this->withJson($service->jsonSerialize(false, !$fullConfig));
+        return $this->withJson($service->jsonSerialize(false, $fullConfig));
     }
 
     /**

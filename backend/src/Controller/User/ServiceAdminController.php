@@ -88,12 +88,11 @@ class ServiceAdminController extends BaseController
                 continue;
             }
 
-            $configFile = $fileInfo->getFilename() . '/plugin.yml';
-            if (!file_exists("$basePath/$configFile")) {
+            if (!file_exists("$basePath/" . $fileInfo->getFilename() . '/plugin.yml')) {
                 continue;
             }
 
-            $serviceConfig = $serviceRegistration->getConfigurationFromConfigFile($configFile);
+            $serviceConfig = $serviceRegistration->getConfigurationFromConfigFile($fileInfo->getFilename());
             if (!$serviceConfig) {
                 return $this->response->withStatus(500);
             }

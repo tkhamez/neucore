@@ -45,10 +45,10 @@ class ServiceRegistration
         $this->parser = $parser;
     }
 
-    public function getConfigurationFromConfigFile(string $configFile): ?ServiceConfiguration
+    public function getConfigurationFromConfigFile(string $pluginDirectory): ?ServiceConfiguration
     {
         $basePath = is_string($this->config['plugins_install_dir']) ? $this->config['plugins_install_dir'] : '';
-        $fullPathToFile = $basePath . DIRECTORY_SEPARATOR . $configFile;
+        $fullPathToFile = $basePath . DIRECTORY_SEPARATOR . $pluginDirectory . '/plugin.yml';
 
         if (!file_exists($fullPathToFile)) {
             $this->log->error("File does not exist $fullPathToFile");
@@ -68,7 +68,7 @@ class ServiceRegistration
         }
 
         $serviceConfig = ServiceConfiguration::fromArray($yaml);
-        $serviceConfig->pluginYml = $configFile;
+        $serviceConfig->directoryName = $pluginDirectory;
 
         return $serviceConfig;
     }
@@ -79,18 +79,13 @@ class ServiceRegistration
 
         // Read plugin.yml
         $basePath = is_string($this->config['plugins_install_dir']) ? $this->config['plugins_install_dir'] : '';
-        if (!empty($basePath) && !empty($serviceConfig->pluginYml)) {
+        if (!empty($basePath) && !empty($serviceConfig->directoryName)) {
             // New since v1.40.0
-            $yamlConfig = $this->getConfigurationFromConfigFile($serviceConfig->pluginYml);
+            $yamlConfig = $this->getConfigurationFromConfigFile($serviceConfig->directoryName);
             if ($yamlConfig) {
                 // Copy values that cannot be changed in the admin UI.
-                $serviceConfig->phpClass = $yamlConfig->phpClass;
-                $serviceConfig->psr4Prefix = $yamlConfig->psr4Prefix;
-                $serviceConfig->psr4Path = $yamlConfig->psr4Path;
-                $serviceConfig->oneAccount = $yamlConfig->oneAccount;
-                $serviceConfig->properties = $yamlConfig->properties;
-                $serviceConfig->showPassword = $yamlConfig->showPassword;
-                $serviceConfig->actions = $yamlConfig->actions;
+                $serviceConfig->name = $yamlConfig->name;
+                $serviceConfig->type = $yamlConfig->type;
             }
         }
 
@@ -105,11 +100,11 @@ class ServiceRegistration
         if (
             is_string($this->config['plugins_install_dir']) &&
             !empty($this->config['plugins_install_dir']) &&
-            !empty($serviceConfig->pluginYml)
+            !empty($serviceConfig->directoryName)
         ) {
             // New since v1.40.0
-            $pluginConfig = $this->config['plugins_install_dir'] . DIRECTORY_SEPARATOR . $serviceConfig->pluginYml;
-            $psr4Path = dirname($pluginConfig) . DIRECTORY_SEPARATOR . $serviceConfig->psr4Path;
+            $psr4Path = $this->config['plugins_install_dir'] . DIRECTORY_SEPARATOR . $serviceConfig->directoryName .
+                DIRECTORY_SEPARATOR . $serviceConfig->psr4Path;
         } else {
             // Deprecated since v1.40.0
             $psr4Path = $serviceConfig->psr4Path;

@@ -38,7 +38,9 @@ class ServiceTest extends TestCase
         );
         $this->assertSame(
             ['id' => 0, 'name' => 's1', 'configuration' => [
-                'pluginYml' => '',
+                'name' => '',
+                'type' => '',
+                'directoryName' => '',
                 'active' => false,
                 'requiredGroups' => [],
                 'phpClass' => '',
@@ -55,7 +57,7 @@ class ServiceTest extends TestCase
                 'textPending' => '',
                 'configurationData' => '',
             ]],
-            $service->jsonSerialize(false, false)
+            $service->jsonSerialize(false, true)
         );
     }
 
@@ -79,6 +81,8 @@ class ServiceTest extends TestCase
         $this->assertNotSame($data, $service->getConfiguration());
         $this->assertEquals($data, $service->getConfiguration());
 
+        $data->name = 'name';
+        $data->type = 'service';
         $data->phpClass = 'class';
         $data->psr4Prefix = 'prefix';
         $data->psr4Path = 'path';
@@ -95,5 +99,9 @@ class ServiceTest extends TestCase
         $data->configurationData = 'other: data';
         $this->assertNotSame($data, $service->setConfiguration($data)->getConfiguration());
         $this->assertEquals($data, $service->setConfiguration($data)->getConfiguration());
+        $this->assertSame(
+            $data->jsonSerialize(),
+            $service->setConfiguration($data)->getConfiguration()->jsonSerialize()
+        );
     }
 }

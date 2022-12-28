@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
+use Neucore\Data\ServiceConfiguration;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
 use Neucore\Factory\RepositoryFactory;
@@ -114,7 +115,9 @@ class ServiceAdminControllerTest extends WebTestCase
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([[
-            'pluginYml' => 'plugin-name/plugin.yml',
+            'name' => 'Test',
+            'type' => ServiceConfiguration::TYPE_SERVICE,
+            'directoryName' => 'plugin-name',
             'active' => false,
             'requiredGroups' => [],
             'phpClass' => 'Vendor\Neucore\Plugin\Name\Service',
