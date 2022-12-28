@@ -32,7 +32,7 @@ class AppAuth implements RoleProviderInterface
     /**
      *
      * {@inheritDoc}
-     * @see \Tkhamez\Slim\RoleAuth\RoleProviderInterface::getRoles()
+     * @see RoleProviderInterface::getRoles
      */
     public function getRoles(ServerRequestInterface $request): array
     {

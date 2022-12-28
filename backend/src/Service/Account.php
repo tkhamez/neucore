@@ -689,7 +689,7 @@ class Account
         $removedCharacter->setCharacterName($character->getName());
         try {
             $removedCharacter->setRemovedDate(new \DateTime());
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // ignore
         }
         if ($newPlayer) {

@@ -76,6 +76,9 @@ class ServiceRegistration
     public function getService(int $id): ?Service
     {
         $service = $this->repositoryFactory->getServiceRepository()->find($id);
+        if (!$service) {
+            return null;
+        }
 
         // load configuration from plugin.yml
         $serviceConfig = $service->getConfiguration();

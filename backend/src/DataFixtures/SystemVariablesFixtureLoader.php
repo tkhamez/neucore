@@ -74,6 +74,7 @@ class SystemVariablesFixtureLoader
         foreach ($vars as $name => $data) {
             $var = $repository->find($name);
             if ($var === null) {
+                /** @noinspection PhpStrictTypeCheckingInspection */
                 $var = new SystemVariable($name);
                 $var->setValue($data[0]);
                 $manager->persist($var);

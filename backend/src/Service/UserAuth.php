@@ -22,8 +22,8 @@ use Tkhamez\Slim\RoleAuth\RoleProviderInterface;
 /**
  * Provides methods to authenticate and get a user.
  *
- * A user is identified by it's Eve character ID and is
- * created in the database if it does not already exist already.
+ * A user is identified by its Eve character ID and is
+ * created in the database if it does not already exist.
  *
  * After that, the session variable "character_id" identifies the user.
  */
@@ -73,7 +73,7 @@ class UserAuth implements RoleProviderInterface
 
     /**
      * {@inheritdoc}
-     * @see \Tkhamez\Slim\RoleAuth\RoleProviderInterface::getRoles()
+     * @see RoleProviderInterface::getRoles
      */
     public function getRoles(ServerRequestInterface $request = null): array
     {
@@ -179,6 +179,7 @@ class UserAuth implements RoleProviderInterface
 
         $hasOneGroup = empty($serviceConfig->requiredGroups);
         foreach ($serviceConfig->requiredGroups as $group) {
+            /** @noinspection PhpCastIsUnnecessaryInspection */
             $group = (int)$group;
             if ($group > 0 && $character->getPlayer()->hasGroup($group)) {
                 $hasOneGroup = true;

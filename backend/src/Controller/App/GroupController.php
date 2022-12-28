@@ -653,7 +653,7 @@ class GroupController extends BaseController
      * @return null|array Returns NULL if corporation was not found.
      * @see \Neucore\Entity\Corporation::jsonSerialize()
      * @see \Neucore\Entity\Alliance::jsonSerialize()
-     * @see \Neucore\Entity\Group::jsonSerialize()
+     * @see Group::jsonSerialize
      */
     private function getGroupsFor(string $entityName, int $entityId, array $appGroups): ?array
     {

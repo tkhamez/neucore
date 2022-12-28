@@ -103,6 +103,9 @@ class ServiceRegistrationTest extends TestCase
     public function testGetConfigurationFromConfigFile()
     {
         $actual = $this->serviceRegistration->getConfigurationFromConfigFile('plugin-name');
+        if (!$actual) {
+            $this->fail();
+        }
 
         $this->assertSame('Test', $actual->name);
         $this->assertSame('service', $actual->type);
@@ -125,6 +128,11 @@ class ServiceRegistrationTest extends TestCase
         $this->assertSame('text register', $actual->textRegister);
         $this->assertSame('text pending', $actual->textPending);
         $this->assertSame('config data', $actual->configurationData);
+    }
+
+    public function testGetService_InvalidId()
+    {
+        $this->assertNull($this->serviceRegistration->getService(1));
     }
 
     public function testGetService()

@@ -87,7 +87,7 @@ class EsiDataTest extends TestCase
     public function testFetchCharacterWithCorporationAndAlliance_CorpError()
     {
         $this->testHelper->emptyDb();
-        $this->testHelper->addCharacterMain('newChar', 10, []);
+        $this->testHelper->addCharacterMain('newChar', 10);
 
         $this->client->setResponse(
             new Response(200, [], '{
@@ -108,7 +108,7 @@ class EsiDataTest extends TestCase
     public function testFetchCharacterWithCorporationAndAlliance_AlliError()
     {
         $this->testHelper->emptyDb();
-        $this->testHelper->addCharacterMain('newChar', 10, []);
+        $this->testHelper->addCharacterMain('newChar', 10);
 
         $this->client->setResponse(
             new Response(200, [], '{
@@ -135,7 +135,7 @@ class EsiDataTest extends TestCase
     public function testFetchCharacterWithCorporationAndAlliance_Ok()
     {
         $this->testHelper->emptyDb();
-        $this->testHelper->addCharacterMain('newChar', 10, []);
+        $this->testHelper->addCharacterMain('newChar', 10);
 
         $this->client->setResponse(
             new Response(200, [], '{
@@ -182,7 +182,7 @@ class EsiDataTest extends TestCase
     public function testFetchCharacter_404NotFound()
     {
         $this->testHelper->emptyDb();
-        $this->testHelper->addCharacterMain('newChar', 123, []);
+        $this->testHelper->addCharacterMain('newChar', 123);
 
         $this->client->setResponse(new Response(404));
         $char = $this->esiData->fetchCharacter(123);
@@ -195,7 +195,7 @@ class EsiDataTest extends TestCase
     public function testFetchCharacter_404Deleted()
     {
         $this->testHelper->emptyDb();
-        $char = $this->testHelper->addCharacterMain('old char name', 123, []);
+        $char = $this->testHelper->addCharacterMain('old char name', 123);
         $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
         $this->em->flush();
 
@@ -222,7 +222,7 @@ class EsiDataTest extends TestCase
     public function testFetchCharacter_AffiliationDeleted()
     {
         $this->testHelper->emptyDb();
-        $char = $this->testHelper->addCharacterMain('old char name', 123, []);
+        $char = $this->testHelper->addCharacterMain('old char name', 123);
         $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
         $this->em->flush();
 
@@ -252,7 +252,7 @@ class EsiDataTest extends TestCase
     public function testFetchCharacter_NoFlush()
     {
         $this->testHelper->emptyDb();
-        $char = $this->testHelper->addCharacterMain('newChar', 123, []);
+        $char = $this->testHelper->addCharacterMain('newChar', 123);
         $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
         $this->em->flush();
 
@@ -284,7 +284,7 @@ class EsiDataTest extends TestCase
     public function testFetchCharacter_Ok()
     {
         $this->testHelper->emptyDb();
-        $char = $this->testHelper->addCharacterMain('old char name', 123, []);
+        $char = $this->testHelper->addCharacterMain('old char name', 123);
         $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
         $this->em->flush();
 

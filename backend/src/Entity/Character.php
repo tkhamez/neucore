@@ -152,7 +152,7 @@ class Character implements \JsonSerializable
             'name' => $this->name,
             'main' => $this->main,
             'created' => $this->created?->format(Api::DATE_FORMAT),
-            'lastUpdate' => $this->getLastUpdate() !== null ? $this->getLastUpdate()->format(Api::DATE_FORMAT) : null,
+            'lastUpdate' => $this->getLastUpdate()?->format(Api::DATE_FORMAT),
             'validToken' => $this->getDefaultTokenValid(),
             'validTokenTime' => $this->getDefaultTokenValidTime() !== null ?
                 $this->getDefaultTokenValidTime()->format(Api::DATE_FORMAT) : null,
@@ -354,9 +354,9 @@ class Character implements \JsonSerializable
             $this->getMain(),
             $this->getName() !== '' ? $this->getName() : null,
             $this->getCharacterOwnerHash(),
-            $this->getCorporation() !== null ? $this->getCorporation()->getId() : null,
-            $this->getCorporation() !== null ? $this->getCorporation()->getName() : null,
-            $this->getCorporation() !== null ? $this->getCorporation()->getTicker() : null,
+            $this->getCorporation()?->getId(),
+            $this->getCorporation()?->getName(),
+            $this->getCorporation()?->getTicker(),
             $alliance?->getId(),
             $alliance?->getName(),
             $alliance?->getTicker()

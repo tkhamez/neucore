@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnused */
 
 declare(strict_types=1);
 
@@ -19,28 +20,24 @@ use Doctrine\ORM\Mapping as ORM;
 class Session
 {
     /**
-     * @var string
      * @ORM\Column(name="sess_id", type="binary", length=128, nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
      */
-    public $sessId;
+    public string $sessId;
 
     /**
-     * @var string
      * @ORM\Column(name="sess_data", type="blob", length=65535, nullable=false)
      */
-    public $sessData;
+    public string $sessData;
 
     /**
-     * @var int
      * @ORM\Column(name="sess_lifetime", type="integer", nullable=false)
      */
-    public $sessLifetime;
+    public int $sessLifetime;
 
     /**
-     * @var int
      * @ORM\Column(name="sess_time", type="integer", nullable=false, options={"unsigned"=true})
      */
-    public $sessTime;
+    public int $sessTime;
 }

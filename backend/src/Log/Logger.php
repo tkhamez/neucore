@@ -14,6 +14,9 @@ class Logger extends \Monolog\Logger
         array $context = [],
         DateTimeImmutable $datetime = null
     ): bool {
+
+        // Ignore a message here (return true) if necessary (e.g. to temporarily ignore deprecated warnings).
+
         return parent::addRecord($level, $message, $context, $datetime);
     }
 }

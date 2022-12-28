@@ -41,7 +41,7 @@ class MakeAdmin extends Command
             ->addArgument('id', InputArgument::REQUIRED, 'Player ID.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $playerId = intval($input->getArgument('id'));
 
