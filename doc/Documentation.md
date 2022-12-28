@@ -165,7 +165,7 @@ There a two account status: standard and managed.
 Any number of EVE logins with different ESI scopes can be configured. Players can add ESI tokens to their 
 characters for each of these logins.
 
-EVE logins can be added to apps so that they can use their tokens. Apps can always use the token of 
+EVE logins can be added to apps so that they can use their tokens. This also applied to the token of 
 the default login (core.default).
 
 ## Groups

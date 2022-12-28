@@ -7,9 +7,12 @@
 This release introduces changes to the configuration of plugins and will be the only release that is compatible 
 with the old and the new configuration.
 
+See [doc/Plugins.md](doc/Plugins.md#install-a-plugin) for details on installing plugins.
+
 To update a service plugin configuration:
+
 - Open its service admin page twice in 2 different browser tabs.
-- Chose the appropriate plugin from the dropdown list at the top. *Attention*: this will load the default 
+- Choose the appropriate plugin from the dropdown list at the top. *Attention*: this will load the default 
   configuration values from the plugin.yml file!
 - Copy any configuration values from the "Optional" block from the second tab that you wat to keep (probably all).
 - Click save.
@@ -17,7 +20,7 @@ To update a service plugin configuration:
 Changes:
 
 - **BC break**: Dropped PHP 7.4 support, minimum required version is now 8.0.
-- **BC Break**: Updated [Neucore plugin](https://github.com/tkhamez/neucore-plugin) to 0.9.2 (from 0.8.0 ).
+- **BC Break**: Updated [Neucore plugin](https://github.com/tkhamez/neucore-plugin) to 0.9.2 (from 0.8.0).
 - **BC break**: Removed files necessary to deploy on Heroku (I can't test it anymore because they removed free plans).
 - **Deprecated**: Plugins without a plugin.yml file are deprecated and will stop working with the next release.
 - New: The new plugin method `ServiceInterface::onConfigurationChange` is called when a service configuration is saved.
