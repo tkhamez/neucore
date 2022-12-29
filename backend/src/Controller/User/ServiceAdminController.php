@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
+use Neucore\Data\PluginConfigurationFile;
 use Neucore\Entity\Service;
-use Neucore\Data\ServiceConfiguration;
+use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Log\Context;
 use Neucore\Plugin\Exception;
 use Neucore\Service\Config;
@@ -53,14 +54,14 @@ class ServiceAdminController extends BaseController
      * @OA\Get(
      *     path="/user/service-admin/configurations",
      *     operationId="serviceAdminConfigurations",
-     *     summary="Returns data from plugin.yml files.",
+     *     summary="Returns data from plugin.yml files and their directory.",
      *     description="Needs role: service-admin",
      *     tags={"ServiceAdmin"},
      *     security={{"Session"={}}},
      *     @OA\Response(
      *         response="200",
      *         description="List of files.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/ServiceConfiguration"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/PluginConfigurationFile"))
      *     ),
      *     @OA\Response(
      *         response="403",
@@ -100,7 +101,9 @@ class ServiceAdminController extends BaseController
             $configurations[] = $serviceConfig;
         }
 
-        return $this->withJson($configurations);
+        return $this->withJson(array_map(function (PluginConfigurationFile $configuration) {
+            return $configuration->jsonSerialize(true, false);
+        }, $configurations));
     }
 
     /**
@@ -284,7 +287,7 @@ class ServiceAdminController extends BaseController
      *                 type="object",
      *                 @OA\Property(
      *                     property="configuration",
-     *                     ref="#/components/schemas/ServiceConfiguration"
+     *                     ref="#/components/schemas/PluginConfigurationDatabase"
      *                 )
      *             )
      *         )
@@ -325,7 +328,8 @@ class ServiceAdminController extends BaseController
         }
         $data = \json_decode($configuration, true);
         if (is_array($data)) {
-            $service->setConfiguration(ServiceConfiguration::fromArray($data));
+            $configRequest = PluginConfigurationDatabase::fromArray($data);
+            $service->setConfigurationDatabase($configRequest);
         } else {
             return $this->response->withStatus(400);
         }

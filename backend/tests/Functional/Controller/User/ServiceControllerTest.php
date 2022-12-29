@@ -5,19 +5,22 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
+require_once __DIR__ . '/ServiceController/plugin1/src/TestService1.php';
+
 use Doctrine\ORM\EntityManagerInterface;
-use Neucore\Controller\User\ServiceController;
+use Neucore\Data\PluginConfigurationFile;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
-use Neucore\Data\ServiceConfiguration;
+use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\SystemVariable;
 use Neucore\Plugin\CoreGroup;
 use Neucore\Plugin\ServiceAccountData;
 use Psr\Log\LoggerInterface;
+use Tests\Functional\Controller\User\ServiceController\TestService1;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\Logger;
@@ -36,8 +39,6 @@ class ServiceControllerTest extends WebTestCase
 
     private Player $player;
 
-    private Service $service1;
-
     // entity IDs
     private int $g1;
     private int $g2;
@@ -45,6 +46,7 @@ class ServiceControllerTest extends WebTestCase
     private int $s1;
     private int $s2;
     private int $s3;
+    private int $s4;
 
     protected function setUp(): void
     {
@@ -57,7 +59,7 @@ class ServiceControllerTest extends WebTestCase
 
     protected function tearDown(): void
     {
-        ServiceControllerTest_TestService::$throw = false;
+        TestService1::$throw = false;
         unset($_ENV['NEUCORE_PLUGINS_INSTALL_DIR']);
     }
 
@@ -73,7 +75,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(4);
 
-        $response = $this->runApp('GET', "/api/user/service/$this->s3/get");
+        $response = $this->runApp(
+            'GET',
+            "/api/user/service/$this->s3/get",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -83,7 +92,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(4);
 
-        $response1 = $this->runApp('GET', "/api/user/service/$this->s1/get");
+        $response1 = $this->runApp(
+            'GET',
+            "/api/user/service/$this->s1/get",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(403, $response1->getStatusCode());
     }
 
@@ -101,7 +117,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb(true, false);
         $this->loginUser(4);
 
-        $response = $this->runApp('GET', "/api/user/service/$this->s1/get");
+        $response = $this->runApp(
+            'GET',
+            "/api/user/service/$this->s1/get",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -110,7 +133,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb(true, false);
         $this->loginUser(4);
 
-        $response = $this->runApp('GET', "/api/user/service/$this->s1/get?allowAdmin=true");
+        $response = $this->runApp(
+            'GET',
+            "/api/user/service/$this->s1/get?allowAdmin=true",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -120,7 +150,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(4);
 
-        $response2 = $this->runApp('GET', "/api/user/service/$this->s1/get?allowAdmin=true");
+        $response2 = $this->runApp(
+            'GET',
+            "/api/user/service/$this->s1/get?allowAdmin=true",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(200, $response2->getStatusCode());
     }
 
@@ -135,26 +172,32 @@ class ServiceControllerTest extends WebTestCase
             null,
             null,
             [],
-            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceAdminController/OK']],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']]
         );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [
                 'id' => $this->s3,
                 'name' => 'S3',
-                'configuration' => [
-                    'name' => 'Test',
-                    'type' => 'service',
-                    'directoryName' => 'plugin-name',
+                'configurationDatabase' => [
                     'active' => true,
                     'requiredGroups' => [$this->g2, $this->g7],
-                    'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',
-                    'psr4Prefix' => '',
-                    'psr4Path' => '',
+                    'directoryName' => 'plugin3',
+                    'URLs' => [],
+                    'textTop' => '',
+                    'textAccount' => '',
+                    'textRegister' => '',
+                    'textPending' => '',
+                    'configurationData' => '',
+                ],
+                'configurationFile' => [
+                    'name' => 'Test',
+                    'type' => 'service',
                     'oneAccount' => false,
                     'properties' => [],
                     'showPassword' => false,
-                    'actions' => [ServiceConfiguration::ACTION_UPDATE_ACCOUNT],
+                    'actions' => [PluginConfigurationFile::ACTION_UPDATE_ACCOUNT],
+                    'directoryName' => 'plugin3',
                     'URLs' => [],
                     'textTop' => '',
                     'textAccount' => '',
@@ -167,22 +210,96 @@ class ServiceControllerTest extends WebTestCase
         );
     }
 
+    public function testGet200_WithoutYamlConfig()
+    {
+        $this->setupDb();
+
+        $service5 = (new Service())->setName('S5');
+        $this->em->persist($service5);
+        $this->em->flush();
+        $this->em->clear();
+
+        // no admin
+        $this->loginUser(1);
+
+        $response1a = $this->runApp(
+            'GET',
+            "/api/user/service/{$service5->getId()}/get",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
+        $this->assertEquals(404, $response1a->getStatusCode());
+
+        $response1b = $this->runApp(
+            'GET',
+            "/api/user/service/{$service5->getId()}/get?allowAdmin=true",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
+        $this->assertEquals(404, $response1b->getStatusCode());
+
+        // login admin
+        $this->loginUser(4);
+
+        $response2a = $this->runApp(
+            'GET',
+            "/api/user/service/{$service5->getId()}/get",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
+        $this->assertEquals(404, $response2a->getStatusCode());
+
+        $response2b = $this->runApp(
+            'GET',
+            "/api/user/service/{$service5->getId()}/get?allowAdmin=true",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
+        $this->assertEquals(200, $response2b->getStatusCode());
+        $this->assertSame(['id' => $service5->getId(), 'name' => 'S5'], $this->parseJsonBody($response2b));
+    }
+
     public function testGet200()
     {
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/$this->s1/get");
+        $response = $this->runApp(
+            'GET',
+            "/api/user/service/$this->s1/get",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [
                 'id' => $this->s1,
                 'name' => 'S1',
-                'configuration' => [
+                'configurationDatabase' => [
+                    'URLs' => [],
+                    'textTop' => '',
+                    'textAccount' => '',
+                    'textRegister' => '',
+                    'textPending' => '',
+                    'configurationData' => '',
+                ],
+                'configurationFile' => [
+                    'name' => '',
+                    'type' => '',
                     'oneAccount' => false,
                     'properties' => [],
                     'showPassword' => false,
-                    'actions' => [ServiceConfiguration::ACTION_RESET_PASSWORD],
+                    'actions' => [PluginConfigurationFile::ACTION_RESET_PASSWORD],
                     'URLs' => [],
                     'textTop' => '',
                     'textAccount' => '',
@@ -206,7 +323,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/$this->s3/accounts");
+        $response = $this->runApp(
+            'GET',
+            "/api/user/service/$this->s3/accounts",
+            null,
+            null,
+            [LoggerInterface::class => $this->log],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -216,7 +340,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/$this->s1/accounts");
+        $response = $this->runApp(
+            'GET',
+            "/api/user/service/$this->s1/accounts",
+            null,
+            null,
+            [LoggerInterface::class => $this->log],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -234,7 +365,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/$this->s1/accounts");
+        $response = $this->runApp(
+            'GET',
+            "/api/user/service/$this->s1/accounts",
+            null,
+            null,
+            [LoggerInterface::class => $this->log],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['characterId' => 1, 'username' => 'u', 'password' => 'p', 'email' => 'e',
@@ -250,7 +388,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/$this->s1/accounts");
+        $response = $this->runApp(
+            'GET',
+            "/api/user/service/$this->s1/accounts",
+            null,
+            null,
+            [LoggerInterface::class => $this->log],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -259,9 +404,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/$this->s2/accounts", null, null, [
-            LoggerInterface::class => $this->log
-        ]);
+        $response = $this->runApp(
+            'GET',
+            "/api/user/service/$this->s2/accounts",
+            null,
+            null,
+            [LoggerInterface::class => $this->log],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(500, $response->getStatusCode());
         $this->assertSame(self::ERROR_NO_SERVICE_OBJECT, $this->log->getHandler()->getRecords()[0]['message']);
     }
@@ -271,9 +421,16 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        ServiceControllerTest_TestService::$throw = true;
+        TestService1::$throw = true;
 
-        $response = $this->runApp('GET', "/api/user/service/$this->s1/accounts");
+        $response = $this->runApp(
+            'GET',
+            "/api/user/service/$this->s1/accounts",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(500, $response->getStatusCode());
     }
 
@@ -288,7 +445,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('POST', "/api/user/service/$this->s3/register");
+        $response = $this->runApp(
+            'POST',
+            "/api/user/service/$this->s3/register",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -298,7 +462,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(1);
 
-        $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
+        $response = $this->runApp(
+            'POST',
+            "/api/user/service/$this->s1/register",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -321,7 +492,14 @@ class ServiceControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
+        $response = $this->runApp(
+            'POST',
+            "/api/user/service/$this->s1/register",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             'characterId' => 2,
@@ -331,7 +509,7 @@ class ServiceControllerTest extends WebTestCase
             'status' => ServiceAccountData::STATUS_ACTIVE,
             'name' => 'dn',
         ], $this->parseJsonBody($response));
-        $this->assertEquals([new CoreGroup($this->g1, 'G1')], ServiceControllerTest_TestService::$lastGroups);
+        $this->assertEquals([new CoreGroup($this->g1, 'G1')], TestService1::$lastGroups);
     }
 
     public function testRegister200_DeactivatedGroups()
@@ -345,9 +523,16 @@ class ServiceControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
+        $response = $this->runApp(
+            'POST',
+            "/api/user/service/$this->s1/register",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals([], ServiceControllerTest_TestService::$lastGroups);
+        $this->assertEquals([], TestService1::$lastGroups);
     }
 
     public function testRegister409_noMain()
@@ -369,7 +554,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
+        $response = $this->runApp(
+            'POST',
+            "/api/user/service/$this->s1/register",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(409, $response->getStatusCode());
         $this->assertEquals('"already_registered"', $response->getBody()->__toString());
     }
@@ -383,13 +575,17 @@ class ServiceControllerTest extends WebTestCase
         // and change service configuration to "oneAccount"
         $this->player->getCharacters()[0]->setMain(false);
         $this->player->getCharacters()[1]->setMain(true);
-        $configuration = $this->service1->getConfiguration();
-        $configuration->oneAccount = true;
-        $this->service1->setConfiguration($configuration);
         $this->em->flush();
         $this->em->clear();
 
-        $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
+        $response = $this->runApp(
+            'POST',
+            "/api/user/service/$this->s4/register",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(409, $response->getStatusCode());
         $this->assertEquals('"second_account"', $response->getBody()->__toString());
     }
@@ -400,7 +596,7 @@ class ServiceControllerTest extends WebTestCase
         $this->loginUser(1);
 
         // change main, so that a new account can be added
-        // and add a group, so that ServiceControllerTest_TestService will throw an exception
+        // and add a group, so that TestService1 will throw an exception
         $this->player->getCharacters()[0]->setMain(false);
         $this->player->getCharacters()[1]->setMain(true);
         $group5 = (new Group())->setName('G5');
@@ -409,7 +605,14 @@ class ServiceControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
+        $response = $this->runApp(
+            'POST',
+            "/api/user/service/$this->s1/register",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(409, $response->getStatusCode());
         $this->assertEquals('"test"', $response->getBody()->__toString());
     }
@@ -420,7 +623,7 @@ class ServiceControllerTest extends WebTestCase
         $this->loginUser(1);
 
         // change main, so that a new account can be added
-        // and add a group, so that ServiceControllerTest_TestService will throw an exception
+        // and add a group, so that TestService1 will throw an exception
         $this->player->getCharacters()[0]->setMain(false);
         $this->player->getCharacters()[1]->setMain(true);
         $group3 = (new Group())->setName('G3');
@@ -429,7 +632,14 @@ class ServiceControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
+        $response = $this->runApp(
+            'POST',
+            "/api/user/service/$this->s1/register",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(500, $response->getStatusCode());
     }
 
@@ -438,9 +648,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('POST', "/api/user/service/$this->s2/register", null, null, [
-            LoggerInterface::class => $this->log
-        ]);
+        $response = $this->runApp(
+            'POST',
+            "/api/user/service/$this->s2/register",
+            null,
+            null,
+            [LoggerInterface::class => $this->log],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(500, $response->getStatusCode());
         $this->assertSame(self::ERROR_NO_SERVICE_OBJECT, $this->log->getHandler()->getRecords()[0]['message']);
     }
@@ -451,13 +666,20 @@ class ServiceControllerTest extends WebTestCase
         $this->loginUser(1);
 
         // change main, so that a new account can be added
-        ServiceControllerTest_TestService::$throw = true;
+        TestService1::$throw = true;
         $this->player->getCharacters()[0]->setMain(false);
         $this->player->getCharacters()[1]->setMain(true);
         $this->em->flush();
         $this->em->clear();
 
-        $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
+        $response = $this->runApp(
+            'POST',
+            "/api/user/service/$this->s1/register",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(500, $response->getStatusCode());
     }
 
@@ -472,7 +694,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/$this->s3/update-account/1");
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/service/$this->s3/update-account/1",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -482,7 +711,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/$this->s1/update-account/1");
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/service/$this->s1/update-account/1",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -500,7 +736,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/$this->s1/update-account/7");
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/service/$this->s1/update-account/7",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -509,7 +752,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/$this->s1/update-account/2");
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/service/$this->s1/update-account/2",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -518,9 +768,16 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/$this->s1/update-account/1");
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/service/$this->s1/update-account/1",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(204, $response->getStatusCode());
-        $this->assertEquals([new CoreGroup($this->g1, 'G1')], ServiceControllerTest_TestService::$lastGroups);
+        $this->assertEquals([new CoreGroup($this->g1, 'G1')], TestService1::$lastGroups);
     }
 
     public function testUpdateAccount204_DeactivatedGroups()
@@ -529,9 +786,67 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/$this->s1/update-account/1");
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/service/$this->s1/update-account/1",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(204, $response->getStatusCode());
-        $this->assertEquals([], ServiceControllerTest_TestService::$lastGroups);
+        $this->assertEquals([], TestService1::$lastGroups);
+    }
+
+    public function testUpdateAccount500_NoServiceImplementation()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/service/$this->s2/update-account/1",
+            null,
+            null,
+            [LoggerInterface::class => $this->log],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
+        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertSame(self::ERROR_NO_SERVICE_OBJECT, $this->log->getHandler()->getRecords()[0]['message']);
+    }
+
+    public function testUpdateAccount500_GetAccountsFailed()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        TestService1::$throw = true;
+
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/service/$this->s1/update-account/1",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
+        $this->assertEquals(500, $response->getStatusCode());
+    }
+
+    public function testUpdateAccount500_ChangePasswordFailed()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/service/$this->s1/update-account/3",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
+        $this->assertEquals(500, $response->getStatusCode());
     }
 
     public function testUpdateAllAccounts_403()
@@ -560,9 +875,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(4);
 
-        $response = $this->runApp('PUT', '/api/user/service/update-all-accounts/'.$this->player->getId(), null, null, [
-            LoggerInterface::class => $this->log
-        ]);
+        $response = $this->runApp(
+            'PUT',
+            '/api/user/service/update-all-accounts/'.$this->player->getId(),
+            null,
+            null,
+            [LoggerInterface::class => $this->log],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(1, $this->parseJsonBody($response));
@@ -570,38 +890,6 @@ class ServiceControllerTest extends WebTestCase
             ['ServiceController::updateAllAccounts: S3: '],
             $this->log->getMessages()
         );
-    }
-
-    public function testUpdateAccount500_NoServiceImplementation()
-    {
-        $this->setupDb();
-        $this->loginUser(1);
-
-        $response = $this->runApp('PUT', "/api/user/service/$this->s2/update-account/1", null, null, [
-            LoggerInterface::class => $this->log
-        ]);
-        $this->assertEquals(500, $response->getStatusCode());
-        $this->assertSame(self::ERROR_NO_SERVICE_OBJECT, $this->log->getHandler()->getRecords()[0]['message']);
-    }
-
-    public function testUpdateAccount500_GetAccountsFailed()
-    {
-        $this->setupDb();
-        $this->loginUser(1);
-
-        ServiceControllerTest_TestService::$throw = true;
-
-        $response = $this->runApp('PUT', "/api/user/service/$this->s1/update-account/1");
-        $this->assertEquals(500, $response->getStatusCode());
-    }
-
-    public function testUpdateAccount500_ChangePasswordFailed()
-    {
-        $this->setupDb();
-        $this->loginUser(1);
-
-        $response = $this->runApp('PUT', "/api/user/service/$this->s1/update-account/3");
-        $this->assertEquals(500, $response->getStatusCode());
     }
 
     public function testResetPassword403_NotLoggedIn()
@@ -615,7 +903,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/$this->s3/reset-password/1");
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/service/$this->s3/reset-password/1",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -625,7 +920,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/$this->s1/reset-password/1");
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/service/$this->s1/reset-password/1",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -643,7 +945,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/$this->s1/reset-password/7");
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/service/$this->s1/reset-password/7",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -652,7 +961,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/$this->s1/reset-password/2");
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/service/$this->s1/reset-password/2",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -661,7 +977,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/$this->s1/reset-password/1");
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/service/$this->s1/reset-password/1",
+            null,
+            null,
+            [LoggerInterface::class => $this->log],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame('new-pass', $this->parseJsonBody($response));
     }
@@ -671,9 +994,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/$this->s2/reset-password/1", null, null, [
-            LoggerInterface::class => $this->log
-        ]);
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/service/$this->s2/reset-password/1",
+            null,
+            null,
+            [LoggerInterface::class => $this->log],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(500, $response->getStatusCode());
         $this->assertSame(self::ERROR_NO_SERVICE_OBJECT, $this->log->getHandler()->getRecords()[0]['message']);
     }
@@ -683,9 +1011,16 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        ServiceControllerTest_TestService::$throw = true;
+        TestService1::$throw = true;
 
-        $response = $this->runApp('PUT', "/api/user/service/$this->s1/reset-password/1");
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/service/$this->s1/reset-password/1",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
         $this->assertEquals(500, $response->getStatusCode());
     }
 
@@ -694,7 +1029,14 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/$this->s1/reset-password/3");
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/service/$this->s1/reset-password/3",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']]
+        );
         $this->assertEquals(500, $response->getStatusCode());
     }
 
@@ -708,31 +1050,34 @@ class ServiceControllerTest extends WebTestCase
         $this->em->persist($group7);
         $this->em->flush();
 
-        $conf1 = new ServiceConfiguration();
+        $conf1 = new PluginConfigurationDatabase();
+        $conf1->directoryName = 'plugin1'; // action: reset-password
         $conf1->active = $s1Active;
-        $conf1->actions = [ServiceConfiguration::ACTION_RESET_PASSWORD];
-        $conf1->phpClass = ServiceControllerTest_TestService::class;
         if (!$noRequiredGroupsForService1) {
             $conf1->requiredGroups = [$group1->getId()];
         }
-        $this->service1 = (new Service())->setName('S1')->setConfiguration($conf1);
+        $service1 = (new Service())->setName('S1')->setConfigurationDatabase($conf1);
 
-        $conf2 = new ServiceConfiguration();
+        $conf2 = new PluginConfigurationDatabase();
+        $conf2->directoryName = 'plugin2';
         $conf2->active = true;
-        $conf2->phpClass = ServiceController::class;
-        $service2 = (new Service())->setName('S2')->setConfiguration($conf2);
+        $service2 = (new Service())->setName('S2')->setConfigurationDatabase($conf2);
 
-        $conf3 = new ServiceConfiguration();
-        $conf3->directoryName = 'plugin-name';
+        $conf3 = new PluginConfigurationDatabase();
+        $conf3->directoryName = 'plugin3'; // action: update-account
         $conf3->active = true;
-        $conf3->actions = [ServiceConfiguration::ACTION_UPDATE_ACCOUNT];
-        $conf3->phpClass = ServiceControllerTest_TestService::class;
         $conf3->requiredGroups = [$group2->getId(), $group7->getId()];
-        $service3 = (new Service())->setName('S3')->setConfiguration($conf3);
+        $service3 = (new Service())->setName('S3')->setConfigurationDatabase($conf3);
 
-        $this->em->persist($this->service1);
+        $conf4 = new PluginConfigurationDatabase();
+        $conf4->directoryName = 'plugin4'; // action: reset-password
+        $conf4->active = true;
+        $service4 = (new Service())->setName('S4')->setConfigurationDatabase($conf4);
+
+        $this->em->persist($service1);
         $this->em->persist($service2);
         $this->em->persist($service3);
+        $this->em->persist($service4);
         $this->em->flush();
 
         $this->player = $this->helper->addCharacterMain('Char1', 1, [Role::USER], [$group1->getName()])
@@ -744,9 +1089,10 @@ class ServiceControllerTest extends WebTestCase
         $this->g1 = $group1->getId();
         $this->g2 = $group2->getId();
         $this->g7 = $group7->getId();
-        $this->s1 = $this->service1->getId();
+        $this->s1 = $service1->getId();
         $this->s2 = $service2->getId();
         $this->s3 = $service3->getId();
+        $this->s4 = $service4->getId();
     }
 
     private function setupDeactivateAccount(): void

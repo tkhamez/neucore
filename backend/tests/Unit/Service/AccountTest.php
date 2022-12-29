@@ -5,12 +5,15 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
+require_once __DIR__ . '/Account/plugin/src/TestService.php';
+
 use Doctrine\Persistence\ObjectManager;
 use Eve\Sso\EveAuthentication;
 use Eve\Sso\JsonWebToken;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\TestHandler;
+use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\App;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
@@ -22,7 +25,6 @@ use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
-use Neucore\Data\ServiceConfiguration;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterNameChangeRepository;
@@ -31,11 +33,13 @@ use Neucore\Repository\PlayerLoginsRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\Account;
+use Neucore\Service\Config;
 use Neucore\Service\EsiData;
 use PHPUnit\Framework\TestCase;
 use Tests\Client;
 use Tests\Helper;
 use Tests\Logger;
+use Tests\Unit\Service\Account\TestService;
 
 class AccountTest extends TestCase
 {
@@ -122,14 +126,18 @@ class AccountTest extends TestCase
         $this->client = new Client();
         $repoFactory = new RepositoryFactory($this->om);
 
-        $this->service = $this->helper->getAccountService($this->log, $this->client);
+        $config = new Config([
+            'eve' => ['datasource' => '', 'esi_host' => ''],
+            'plugins_install_dir' => __DIR__ . '/Account'
+        ]);
+        $this->service = $this->helper->getAccountService($this->log, $this->client, $config);
         $this->charRepo = $repoFactory->getCharacterRepository();
         $this->playerRepo = $repoFactory->getPlayerRepository();
         $this->removedCharRepo = $repoFactory->getRemovedCharacterRepository();
         $this->playerLoginsRepo = $repoFactory->getPlayerLoginsRepository();
         $this->characterNameChangeRepo = $repoFactory->getCharacterNameChangeRepository();
 
-        AccountTest_TestService::$updateAccount = [];
+        TestService::$updateAccount = [];
     }
 
     public function testCreateNewPlayerWithMain()
@@ -685,10 +693,9 @@ class AccountTest extends TestCase
 
     public function testMergeAccounts_UpdatesServices()
     {
-        $conf1 = new ServiceConfiguration();
-        $conf1->actions = [ServiceConfiguration::ACTION_UPDATE_ACCOUNT];
-        $conf1->phpClass = AccountTest_TestService::class;
-        $service1 = (new Service())->setName('S1')->setConfiguration($conf1);
+        $conf1 = new PluginConfigurationDatabase();
+        $conf1->directoryName = 'plugin';
+        $service1 = (new Service())->setName('S1')->setConfigurationDatabase($conf1);
 
         $player1 = (new Player())->setName('player 1');
         $player2 = (new Player())->setName('player 2');
@@ -711,7 +718,7 @@ class AccountTest extends TestCase
         $this->assertSame($players[0]->getId(), $mergedPlayer->getId());
         $this->assertSame('player 1', $players[0]->getName());
         $this->assertSame('player 2', $players[1]->getName());
-        $this->assertSame([10, 11], AccountTest_TestService::$updateAccount);
+        $this->assertSame([10, 11], TestService::$updateAccount);
     }
 
     public function testDeleteCharacter()

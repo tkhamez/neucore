@@ -1,9 +1,0 @@
-<?php
-
-declare(strict_types=1);
-
-namespace Tests\Unit\Service;
-
-class ServiceRegistrationTest_TestServiceInvalid
-{
-}

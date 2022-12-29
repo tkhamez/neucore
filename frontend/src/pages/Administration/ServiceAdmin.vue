@@ -45,6 +45,7 @@
                 </div>
             </div>
         </div>
+
         <div v-if="activeService" v-cloak class="col-lg-8">
             <div class="card border-secondary mb-3" >
                 <h4 class="card-header">{{ activeService.name }}</h4>
@@ -55,7 +56,7 @@
 
                     <label class="col-form-label w-100 mb-3">
                         Plugin
-                        <select class="form-select" v-model="activeService.configuration.directoryName"
+                        <select class="form-select" v-model="activeService.configurationDatabase.directoryName"
                                 v-on:change="updateConfiguration()">
                             <option value=""></option>
                             <option v-for="option in configurations" v-bind:value="option.directoryName">
@@ -64,8 +65,8 @@
                             </option>
                         </select>
                         <span class="form-text lh-sm d-block text-warning">
-                            Attention: changing this will update the "Optional" values below
-                            with the default values from the plugin.yml file!
+                            Attention: changing this will update the "Presets" values below
+                            with the default values from the plugin.
                         </span>
                     </label>
 
@@ -76,13 +77,14 @@
                                 Uncheck to disable for cron job and hide from users.
                             </span>
                         </label>
-                        <input class="form-check-input" type="checkbox" id="configActive"
-                               v-model="activeService.configuration.active">
+                        <input class="form-check-input" type="checkbox" id="configActive" :disabled="!formEnabled"
+                               v-model="activeService.configurationDatabase.active">
                     </div>
 
                     <div class="col-form-label w-100 mb-2">
                         Required Groups
                         <multiselect v-model="requiredGroups" :options="allGroups" label="name" track-by="id"
+                                     :disabled="!formEnabled"
                                      :multiple="true" :loading="false" :searchable="true" placeholder="Select groups">
                         </multiselect>
                         <div class="form-text lh-sm">
@@ -92,86 +94,10 @@
                     </div>
 
                     <fieldset class="border p-2 mb-3">
-                        <legend class="float-none w-auto p-2 mb-0 fs-6">DEPRECATED</legend>
-                        <p class="text-warning small">
-                            The following configuration values are deprecated and replaced by the plugin.xml file.
-                            They will be removed from the UI with the next release of Neucore. See also
-                            <a class="external" target="_blank" rel="noopener noreferrer"
-                               :href="settings.repository + '/blob/main/CHANGELOG.md#1400'">changelog</a> and
-                            <a class="external" target="_blank" rel="noopener noreferrer"
-                               :href="settings.repository + '/blob/main/doc/Plugins.md'">plugin documentation</a>.<br>
-                            Ignore them if you've chosen a plugin above from the dropdown list.
-                        </p>
-
-                        <label class="col-form-label w-100">
-                            PHP Class
-                            <input type="text" class="form-control" v-model="activeService.configuration.phpClass">
-                            <span class="form-text lh-sm d-block">
-                                Full class name of class implementing Neucore\Plugin\ServiceInterface.
-                            </span>
-                        </label>
-                        <label class="col-form-label w-100">
-                            PSR-4 Prefix
-                            <input type="text" class="form-control" v-model="activeService.configuration.psr4Prefix">
-                            <span class="form-text lh-sm d-block">
-                                PHP namespace that should be loaded by the PSR-4 autoloader.
-                            </span>
-                        </label>
-                        <label class="col-form-label w-100">
-                            PSR-4 Path
-                            <input type="text" class="form-control" v-model="activeService.configuration.psr4Path">
-                            <span class="form-text lh-sm d-block">
-                                Full path to the directory containing the classes of the above namespace.
-                            </span>
-                        </label>
-
-                        <div class="form-check">
-                            <label class="form-check-label" for="configOneAccount">
-                                Limit to one service account<br>
-                                <span class="form-text lh-sm d-block">
-                                Check this if the service allows only  one account per player instead of
-                                one per character.
-                            </span>
-                            </label>
-                            <input class="form-check-input" type="checkbox" id="configOneAccount"
-                                   v-model="activeService.configuration.oneAccount">
-                        </div>
-
-                        <label class="col-form-label w-100">
-                            Account Properties
-                            <input type="text" class="form-control" v-model="properties">
-                            <span class="form-text lh-sm d-block">
-                                Comma-separated (no spaces) list of properties, possible values: username, password,
-                                email, status, name
-                            </span>
-                        </label>
-
-                        <div class="form-check">
-                            <label class="form-check-label" for="configShowPassword">
-                                Show password to user<br>
-                                <span class="form-text lh-sm d-block">
-                                    If this is not enabled and the account contains a password (see Account Properties),
-                                    the user will be able to see it only once after it is reset (see Account Actions).
-                                </span>
-                            </label>
-                            <input class="form-check-input" type="checkbox" id="configShowPassword"
-                                   v-model="activeService.configuration.showPassword">
-                        </div>
-
-                        <label class="col-form-label w-100">
-                            Account Actions
-                            <input type="text" class="form-control" v-model="actions">
-                            <span class="form-text lh-sm d-block">
-                                Comma-separated (no spaces) list of actions: update-account, reset-password
-                            </span>
-                        </label>
-                    </fieldset>
-
-                    <fieldset class="border p-2 mb-3">
-                        <legend class="float-none w-auto p-2 mb-0 fs-6">Optional</legend>
+                        <legend class="float-none w-auto p-2 mb-0 fs-6">Presets</legend>
                         <p class="small">
-                            The following configuration values can optionally be specified in the plugin.yml
-                            file and overwritten here.
+                            The following configuration values can optionally be preset by the plugin and
+                            overwritten here.
                         </p>
 
                         <p class="mb-0">Link Buttons</p>
@@ -196,43 +122,46 @@
                                 <input type="text" class="form-control" :id="`configTarget${idx}`" v-model="url.target">
                             </div>
                         </div>
-                        <button class="btn btn-sm btn-primary mb-2" v-on:click.prevent="addUrl()">Add link</button><br>
+                        <button class="btn btn-sm btn-primary mb-2" v-on:click.prevent="addUrl()"
+                                :disabled="!formEnabled">Add link</button><br>
                         <small class="text-muted">Note: To remove a link button clear all fields and save.</small>
 
                         <label class="col-form-label w-100 mt-2">
                             Text Top
                             <textarea class="form-control" rows="5"
-                                      v-model="activeService.configuration.textTop"></textarea>
+                                      v-model="activeService.configurationDatabase.textTop"></textarea>
                             <span class="form-text lh-sm d-block">Text above the list of accounts.</span>
                         </label>
                         <label class="col-form-label w-100">
                             Text Account
                             <textarea class="form-control" rows="5"
-                                      v-model="activeService.configuration.textAccount"></textarea>
+                                      v-model="activeService.configurationDatabase.textAccount"></textarea>
                             <span class="form-text lh-sm d-block">Text below account table.</span>
                         </label>
                         <label class="col-form-label w-100">
                             Text Register
                             <textarea class="form-control" rows="5"
-                                      v-model="activeService.configuration.textRegister"></textarea>
+                                      v-model="activeService.configurationDatabase.textRegister"></textarea>
                             <span class="form-text lh-sm d-block">Text below the registration form/button.</span>
                         </label>
                         <label class="col-form-label w-100">
                             Text Pending
                             <textarea class="form-control" rows="5"
-                                      v-model="activeService.configuration.textPending"></textarea>
+                                      v-model="activeService.configurationDatabase.textPending"></textarea>
                             <span class="form-text lh-sm d-block">Text below an account with status "pending".</span>
                         </label>
                         <label class="col-form-label w-100">
                             Configuration Data
                             <textarea class="form-control" rows="15"
-                                      v-model="activeService.configuration.configurationData"></textarea>
+                                      v-model="activeService.configurationDatabase.configurationData"></textarea>
                             <span class="form-text lh-sm d-block">Additional configuration for the plugin.</span>
                         </label>
                     </fieldset>
 
-                    <button class="mt-3 btn btn-success" v-on:click.prevent="saveConfiguration">Save</button>
-                    <span class="form-text text-warning lh-sm d-block">
+                    <button class="mt-3 btn btn-success" :disabled="!formEnabled"
+                            v-on:click.prevent="saveConfiguration">Save</button>
+                    <span v-if="!formEnabled" class="small align-bottom"> Choose a plugin first</span>
+                    <span class="form-text text-warning lh-sm d-block mt-1">
                         If you have changed the plugin, make sure that this does not delete any configuration
                         values that you still need.
                     </span>
@@ -273,9 +202,16 @@ export default {
             configurations: null,
             activeService: null,
             requiredGroups: '',
-            properties: '',
-            actions: '',
             URLs: [],
+        }
+    },
+
+    computed: {
+        formEnabled() {
+            return (
+                this.activeService.configurationDatabase.directoryName &&
+                this.activeService.configurationDatabase.directoryName.length > 0
+            );
         }
     },
 
@@ -340,66 +276,42 @@ export default {
         },
 
         updateConfiguration() {
-            if (this.activeService.configuration.directoryName === '') {
-                this.activeService.configuration.phpClass = '';
-                this.activeService.configuration.psr4Prefix = '';
-                this.activeService.configuration.psr4Path = '';
-                this.activeService.configuration.oneAccount = '';
-                this.activeService.configuration.properties = '';
-                this.activeService.configuration.showPassword = '';
-                this.activeService.configuration.actions = '';
-
-                this.activeService.configuration.URLs = '';
-                this.activeService.configuration.textTop = '';
-                this.activeService.configuration.textAccount = '';
-                this.activeService.configuration.textRegister = '';
-                this.activeService.configuration.textPending = '';
-                this.activeService.configuration.configurationData = '';
-
-                this.properties = '';
-                this.actions = '';
+            if (this.activeService.configurationDatabase.directoryName === '') {
+                this.activeService.configurationDatabase.URLs = [];
+                this.activeService.configurationDatabase.textTop = '';
+                this.activeService.configurationDatabase.textAccount = '';
+                this.activeService.configurationDatabase.textRegister = '';
+                this.activeService.configurationDatabase.textPending = '';
+                this.activeService.configurationDatabase.configurationData = '';
                 this.URLs = [];
 
                 return;
             }
 
             for (const config of this.configurations) {
-                if (config.directoryName !== this.activeService.configuration.directoryName) {
+                if (config.directoryName !== this.activeService.configurationDatabase.directoryName) {
                     continue;
                 }
 
-                this.activeService.configuration.phpClass = config.phpClass;
-                this.activeService.configuration.psr4Prefix = config.psr4Prefix;
-                this.activeService.configuration.psr4Path = config.psr4Path;
-                this.activeService.configuration.oneAccount = config.oneAccount;
-                this.activeService.configuration.properties = config.properties;
-                this.activeService.configuration.showPassword = config.showPassword;
-                this.activeService.configuration.actions = config.actions;
-
-                this.activeService.configuration.URLs = config.URLs;
-                this.activeService.configuration.textTop = config.textTop;
-                this.activeService.configuration.textAccount = config.textAccount;
-                this.activeService.configuration.textRegister = config.textRegister;
-                this.activeService.configuration.textPending = config.textPending;
-                this.activeService.configuration.configurationData = config.configurationData;
-
-                this.properties = this.activeService.configuration.properties.join(',');
-                this.actions = this.activeService.configuration.actions.join(',');
-                this.URLs = this.activeService.configuration.URLs;
+                this.activeService.configurationDatabase.URLs = config.URLs;
+                this.activeService.configurationDatabase.textTop = config.textTop;
+                this.activeService.configurationDatabase.textAccount = config.textAccount;
+                this.activeService.configurationDatabase.textRegister = config.textRegister;
+                this.activeService.configurationDatabase.textPending = config.textPending;
+                this.activeService.configurationDatabase.configurationData = config.configurationData;
+                this.URLs = this.activeService.configurationDatabase.URLs;
 
                 return;
             }
         },
 
         saveConfiguration() {
-            const configuration = this.activeService.configuration;
-            configuration.URLs = this.URLs.filter(url => url.url || url.title || url.target);
-            configuration.requiredGroups = Util.buildIdList(this.requiredGroups);
-            configuration.properties = this.properties ? this.properties.split(',') : [];
-            configuration.actions = this.actions ? this.actions.split(',') : [];
+            const config = this.activeService.configurationDatabase;
+            config.URLs = this.URLs.filter(url => url.url || url.title || url.target);
+            config.requiredGroups = Util.buildIdList(this.requiredGroups);
             new ServiceAdminApi().serviceAdminSaveConfiguration(
                 this.activeService.id,
-                {configuration: JSON.stringify(configuration)},
+                {configuration: JSON.stringify(config)},
                 (error, data, response) => {
                     if (response.status === 400) {
                         this.h.message('Missing name.', 'error');
@@ -469,8 +381,6 @@ function getService(vm) {
 
     vm.activeService = null;
     vm.requiredGroups = '';
-    vm.properties = '';
-    vm.actions = '';
     vm.URLs = [];
 
     if (!vm.route[1] || !vm.h.hasRole('service-admin')) { // configuration object is incomplete without this role
@@ -480,13 +390,11 @@ function getService(vm) {
     new ServiceApi().serviceGet(vm.route[1], {allowAdmin: 'true'}, (error, data) => {
         if (!error) {
             vm.activeService = data;
-            if (vm.activeService.configuration) {
-                vm.requiredGroups = findSelectedGroups(vm, vm.activeService.configuration.requiredGroups);
-                vm.properties = vm.activeService.configuration.properties.join(',');
-                vm.actions = vm.activeService.configuration.actions.join(',');
-                vm.URLs = vm.activeService.configuration.URLs;
+            if (vm.activeService.configurationDatabase) {
+                vm.requiredGroups = findSelectedGroups(vm, vm.activeService.configurationDatabase.requiredGroups);
+                vm.URLs = vm.activeService.configurationDatabase.URLs;
             } else {
-                vm.activeService.configuration = {};
+                vm.activeService.configurationDatabase = {};
             }
         }
     });

@@ -9,7 +9,7 @@ namespace Neucore\Migrations;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
-use Neucore\Data\ServiceConfiguration;
+use Neucore\Data\PluginConfigurationDatabase;
 
 class Version20221225185723 extends AbstractMigration
 {
@@ -35,7 +35,7 @@ class Version20221225185723 extends AbstractMigration
                 continue;
             }
 
-            $sc = ServiceConfiguration::fromArray($configuration);
+            $sc = PluginConfigurationDatabase::fromArray($configuration);
             $configData = $sc->jsonSerialize();
             if ($active) {
                 $configData['active'] = true;

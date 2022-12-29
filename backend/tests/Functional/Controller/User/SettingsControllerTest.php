@@ -13,7 +13,7 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
-use Neucore\Data\ServiceConfiguration;
+use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\SystemVariableRepository;
@@ -342,23 +342,23 @@ class SettingsControllerTest extends WebTestCase
         $this->helper->addCharacterMain('User', 5, [Role::USER], ['g1']);
         $admin = $this->helper->addCharacterMain('Admin', 6, [Role::USER, Role::SETTINGS]);
 
-        $conf1 = new ServiceConfiguration();
+        $conf1 = new PluginConfigurationDatabase();
         $conf1->active = true;
-        $this->service1 = (new Service())->setName('s1')->setConfiguration($conf1);
+        $this->service1 = (new Service())->setName('s1')->setConfigurationDatabase($conf1);
 
-        $conf2 = new ServiceConfiguration();
+        $conf2 = new PluginConfigurationDatabase();
         $conf2->active = true;
         $conf2->requiredGroups = [$group->getId()];
-        $this->service2 = (new Service())->setName('s2')->setConfiguration($conf2);
+        $this->service2 = (new Service())->setName('s2')->setConfigurationDatabase($conf2);
 
-        $conf3 = new ServiceConfiguration();
+        $conf3 = new PluginConfigurationDatabase();
         $conf3->active = true;
         $conf3->requiredGroups = [$group->getId()+99];
-        $service3 = (new Service())->setName('s3')->setConfiguration($conf3);
+        $service3 = (new Service())->setName('s3')->setConfigurationDatabase($conf3);
 
         // Inactive service, will be ignored
-        $conf4 = new ServiceConfiguration();
-        $service4 = (new Service())->setName('s4')->setConfiguration($conf4);
+        $conf4 = new PluginConfigurationDatabase();
+        $service4 = (new Service())->setName('s4')->setConfigurationDatabase($conf4);
 
         $alli = (new Alliance())->setId(456);
         $corp = (new Corporation())->setId(2020)->setAlliance($alli);

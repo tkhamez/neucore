@@ -17,7 +17,7 @@ use Neucore\Entity\Group;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
-use Neucore\Data\ServiceConfiguration;
+use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterRepository;
@@ -74,7 +74,7 @@ class UserAuthTest extends TestCase
         $this->om = $this->helper->getObjectManager();
         $repoFactory = new RepositoryFactory($this->om);
         $this->client = new Client();
-        $this->service = $this->helper->getUserAuthService($this->log, $this->client);
+        $this->service = $this->helper->getUserAuthService($this->log, $this->client, null);
 
         $this->removedCharRepo = $repoFactory->getRemovedCharacterRepository();
         $this->characterRepo = $repoFactory->getCharacterRepository();
@@ -568,9 +568,9 @@ class UserAuthTest extends TestCase
         $this->assertTrue($this->service->hasRequiredGroups($service));
 
         // add require group
-        $conf = new ServiceConfiguration();
+        $conf = new PluginConfigurationDatabase();
         $conf->requiredGroups = [$group->getId()];
-        $service->setConfiguration($conf);
+        $service->setConfigurationDatabase($conf);
         $this->assertFalse($this->service->hasRequiredGroups($service));
 
         // add group to player
@@ -579,7 +579,7 @@ class UserAuthTest extends TestCase
 
         // add another require group
         $conf->requiredGroups[] = 2;
-        $service->setConfiguration($conf);
+        $service->setConfigurationDatabase($conf);
         $this->assertTrue($this->service->hasRequiredGroups($service));
 
         // "deactivate" account

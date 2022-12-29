@@ -10,7 +10,7 @@ use OpenApi\Annotations as OA;
 /**
  * @OA\Schema(required={"url", "title", "target"})
  */
-class ServiceConfigurationURL implements \JsonSerializable
+class PluginConfigurationURL implements \JsonSerializable
 {
     /**
      * @OA\Property(description="placeholders: {plugin_id}, {username}, {password}, {email}")

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Functional\Controller;
 
 use Doctrine\Persistence\ObjectManager;
+use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\Service;
-use Neucore\Data\ServiceConfiguration;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
@@ -52,14 +52,21 @@ class PluginControllerTest extends WebTestCase
     {
         $this->helper->addCharacterMain('User 100', 100);
         $this->loginUser(100);
-        $configuration = new ServiceConfiguration();
-        $configuration->phpClass = PluginControllerTest_TestService::class;
+        $configuration = new PluginConfigurationDatabase();
+        $configuration->directoryName = 'plugin1';
         $configuration->requiredGroups = [1];
-        $service = (new Service())->setName('Service 1')->setConfiguration($configuration);
+        $service = (new Service())->setName('Service 1')->setConfigurationDatabase($configuration);
         $this->om->persist($service);
         $this->om->flush();
 
-        $response = $this->runApp('GET', '/plugin/'.$service->getId().'/auth');
+        $response = $this->runApp(
+            'GET',
+            '/plugin/'.$service->getId().'/auth',
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginController']],
+        );
         $this->assertStringStartsWith('Not allowed to use this service.', $response->getBody()->__toString());
         $this->assertSame(403, $response->getStatusCode());
     }
@@ -68,11 +75,20 @@ class PluginControllerTest extends WebTestCase
     {
         $this->helper->addCharacterMain('User 100', 100);
         $this->loginUser(100);
-        $service = (new Service())->setName('Service 1');
+        $configuration = new PluginConfigurationDatabase();
+        $configuration->directoryName = 'plugin2';
+        $service = (new Service())->setName('Service 2')->setConfigurationDatabase($configuration);
         $this->om->persist($service);
         $this->om->flush();
 
-        $response = $this->runApp('GET', '/plugin/'.$service->getId().'/auth');
+        $response = $this->runApp(
+            'GET',
+            '/plugin/'.$service->getId().'/auth',
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginController']],
+        );
         $this->assertStringStartsWith('Service implementation not found.', $response->getBody()->__toString());
         $this->assertSame(404, $response->getStatusCode());
     }
@@ -82,14 +98,21 @@ class PluginControllerTest extends WebTestCase
         $character = $this->helper->addCharacterMain('User 100', 100);
         $character->setMain(false);
         $this->loginUser(100);
-        $configuration = new ServiceConfiguration();
-        $configuration->phpClass = PluginControllerTest_TestService::class;
-        $service = (new Service())->setName('Service 1')->setConfiguration($configuration);
+        $configuration = new PluginConfigurationDatabase();
+        $configuration->directoryName = 'plugin1';
+        $service = (new Service())->setName('Service 1')->setConfigurationDatabase($configuration);
         $this->om->persist($character);
         $this->om->persist($service);
         $this->om->flush();
 
-        $response = $this->runApp('GET', '/plugin/'.$service->getId().'/auth');
+        $response = $this->runApp(
+            'GET',
+            '/plugin/'.$service->getId().'/auth',
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginController']],
+        );
         $this->assertStringStartsWith(
             'Player or main character account not found.',
             $response->getBody()->__toString()
@@ -101,14 +124,21 @@ class PluginControllerTest extends WebTestCase
     {
         $character = $this->helper->addCharacterMain('User 100', 100, [], ['Group 1']);
         $this->loginUser(100);
-        $configuration = new ServiceConfiguration();
-        $configuration->phpClass = PluginControllerTest_TestService::class;
+        $configuration = new PluginConfigurationDatabase();
+        $configuration->directoryName = 'plugin1';
         $configuration->requiredGroups = [$character->getPlayer()->getGroups()[0]->getId()];
-        $service = (new Service())->setName('Service 1')->setConfiguration($configuration);
+        $service = (new Service())->setName('Service 1')->setConfigurationDatabase($configuration);
         $this->om->persist($service);
         $this->om->flush();
 
-        $response = $this->runApp('GET', '/plugin/'.$service->getId().'/auth');
+        $response = $this->runApp(
+            'GET',
+            '/plugin/'.$service->getId().'/auth',
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginController']],
+        );
         $this->assertSame('Response from plugin.', $response->getBody()->__toString());
         $this->assertSame(200, $response->getStatusCode());
     }
@@ -117,16 +147,21 @@ class PluginControllerTest extends WebTestCase
     {
         $this->helper->addCharacterMain('User 100', 100);
         $this->loginUser(100);
-        $configuration = new ServiceConfiguration();
-        $configuration->phpClass = PluginControllerTest_TestService::class;
-        $service = (new Service())->setName('Service 1')->setConfiguration($configuration);
+        $configuration = new PluginConfigurationDatabase();
+        $configuration->directoryName = 'plugin1';
+        $service = (new Service())->setName('Service 1')->setConfigurationDatabase($configuration);
         $this->om->persist($service);
         $this->om->flush();
 
         $logger = new Logger('Test');
-        $response = $this->runApp('GET', '/plugin/'.$service->getId().'/auth?error=1', null, null, [
-            LoggerInterface::class => $logger
-        ]);
+        $response = $this->runApp(
+            'GET',
+            '/plugin/'.$service->getId().'/auth?error=1',
+            null,
+            null,
+            [LoggerInterface::class => $logger],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginController']],
+        );
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(

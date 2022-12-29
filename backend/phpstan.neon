@@ -12,7 +12,7 @@ parameters:
 			path: %currentWorkingDirectory%/src/Application.php
 		-
 			message: '#invalid type(.*)only iterables are supported#'
-			path: %currentWorkingDirectory%/src/Data/ServiceConfiguration*.php
+			path: %currentWorkingDirectory%/src/Data/PluginConfigurationURL.php
 		-
 			message: '#expects class-string<object>, string given#'
 			path: %currentWorkingDirectory%/src/Factory/RepositoryFactory.php
@@ -42,7 +42,7 @@ parameters:
 			path: %currentWorkingDirectory%/tests/*
 		-
 			message: '#has an unused parameter \$logger#'
-			path: %currentWorkingDirectory%/tests/*/*TestService.php
+			path: %currentWorkingDirectory%/tests/*/*TestService*.php
 		-
 			message: '#Class Tests\\Client extends @final class GuzzleHttp\\Client.#'
 			path: %currentWorkingDirectory%/tests/Client.php
@@ -57,7 +57,7 @@ parameters:
 			path: %currentWorkingDirectory%/tests/Unit/Service/ServiceRegistrationTest.php
 		-
 			message: '#should return array(.*)but returns array#'
-			path: %currentWorkingDirectory%/tests/Unit/Service/ServiceRegistrationTest_TestService.php
+			path: %currentWorkingDirectory%/tests/Unit/Service/ServiceRegistration/plugin-acc1/src/TestService1.php
 		-
 			message: '#Method (.*) should return (.*) but returns (.*)#'
 			path: %currentWorkingDirectory%/tests/Unit/Service/OAuthTokenTest.php

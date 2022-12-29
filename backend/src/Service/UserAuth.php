@@ -61,7 +61,7 @@ class UserAuth implements RoleProviderInterface
         AccountGroup $accountGroupService,
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
-        LoggerInterface $log
+        LoggerInterface $log,
     ) {
         $this->session = $session;
         $this->accountService = $accountService;
@@ -168,18 +168,19 @@ class UserAuth implements RoleProviderInterface
             return false;
         }
 
-        $serviceConfig = $service->getConfiguration();
+        $requiredGroups = $service->getConfigurationDatabase() ?
+            $service->getConfigurationDatabase()->requiredGroups :
+            [];
 
         if (
-            !empty($serviceConfig->requiredGroups) &&
+            !empty($requiredGroups) &&
             $this->accountGroupService->groupsDeactivated($character->getPlayer(), true) // true = ignore delay
         ) {
             return false;
         }
 
-        $hasOneGroup = empty($serviceConfig->requiredGroups);
-        foreach ($serviceConfig->requiredGroups as $group) {
-            /** @noinspection PhpCastIsUnnecessaryInspection */
+        $hasOneGroup = empty($requiredGroups);
+        foreach ($requiredGroups as $group) {
             $group = (int)$group;
             if ($group > 0 && $character->getPlayer()->hasGroup($group)) {
                 $hasOneGroup = true;

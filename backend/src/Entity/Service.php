@@ -6,7 +6,8 @@ namespace Neucore\Entity;
 
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
-use Neucore\Data\ServiceConfiguration;
+use Neucore\Data\PluginConfigurationFile;
+use Neucore\Data\PluginConfigurationDatabase;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 
@@ -33,34 +34,35 @@ class Service implements \JsonSerializable
     private string $name = '';
 
     /**
-     * JSON serialized ServiceConfiguration class.
+     * JSON serialized PluginConfigurationDatabase class.
      *
-     * @OA\Property(ref="#/components/schemas/ServiceConfiguration")
+     * @OA\Property(property="configurationDatabase", ref="#/components/schemas/PluginConfigurationDatabase")
      * @ORM\Column(type="text", length=16777215, nullable=true)
-     * @see ServiceConfiguration
+     * @see PluginConfigurationDatabase
      */
     private ?string $configuration = null;
 
-    public function jsonSerialize(bool $onlyRequired = true, bool $fullConfig = false): array
-    {
+    /**
+     * @OA\Property(ref="#/components/schemas/PluginConfigurationFile")
+     * @var ?PluginConfigurationFile
+     */
+    private ?PluginConfigurationFile $configurationFile = null;
+
+    public function jsonSerialize(
+        bool $onlyRequired = true,
+        bool $fullConfig = false,
+        bool $includeBackendOnly = true
+    ): array {
         $data = [
             'id' => (int) $this->id,
             'name' => $this->name,
         ];
         if (!$onlyRequired && !empty($this->configuration)) {
             $config = \json_decode((string)$this->configuration, true);
-            $configuration = ServiceConfiguration::fromArray($config)->jsonSerialize();
-            if (!$fullConfig) {
-                unset($configuration['name']);
-                unset($configuration['type']);
-                unset($configuration['directoryName']);
-                unset($configuration['active']);
-                unset($configuration['requiredGroups']);
-                unset($configuration['phpClass']);
-                unset($configuration['psr4Prefix']);
-                unset($configuration['psr4Path']);
-            }
-            $data['configuration'] = $configuration;
+            $configurationDatabase = PluginConfigurationDatabase::fromArray($config);
+            $data['configurationDatabase'] = $configurationDatabase->jsonSerialize($fullConfig, $includeBackendOnly);
+
+            $data['configurationFile'] = $this->configurationFile?->jsonSerialize($fullConfig, $includeBackendOnly);
         }
         return $data;
     }
@@ -81,22 +83,31 @@ class Service implements \JsonSerializable
         return $this->name;
     }
 
-    public function setConfiguration(ServiceConfiguration $configuration): self
+    public function setConfigurationDatabase(PluginConfigurationDatabase $configuration): self
     {
         $this->configuration = (string)\json_encode($configuration);
         return $this;
     }
 
-    public function getConfiguration(): ServiceConfiguration
+    public function getConfigurationDatabase(): ?PluginConfigurationDatabase
     {
         $data = \json_decode((string)$this->configuration, true);
 
-        if (is_array($data)) {
-            $config = ServiceConfiguration::fromArray($data);
-        } else {
-            $config = new ServiceConfiguration();
+        if (!is_array($data)) {
+            return null;
         }
 
-        return $config;
+        return PluginConfigurationDatabase::fromArray($data);
+    }
+
+    public function getConfigurationFile(): ?PluginConfigurationFile
+    {
+        return $this->configurationFile;
+    }
+
+    public function setConfigurationFile(?PluginConfigurationFile $configurationFile): self
+    {
+        $this->configurationFile = $configurationFile;
+        return $this;
     }
 }

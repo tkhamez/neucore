@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Command;
 
+require_once __DIR__ . '/UpdateServiceAccounts/plugin1/src/TestService1.php';
+
+use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\Service;
-use Neucore\Data\ServiceConfiguration;
 use Psr\Log\LoggerInterface;
+use Tests\Functional\Command\UpdateServiceAccounts\TestService1;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
 use Tests\Logger;
@@ -17,9 +20,12 @@ class UpdateServiceAccountsTest extends ConsoleTestCase
     {
         $this->setUpDb();
 
-        $output = $this->runConsoleApp('update-service-accounts', ['--sleep' => 0], [
-            LoggerInterface::class => new Logger('test')
-        ]);
+        $output = $this->runConsoleApp(
+            'update-service-accounts',
+            ['--sleep' => 0],
+            [LoggerInterface::class => new Logger('test')],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/UpdateServiceAccounts']],
+        );
 
         $actual = explode("\n", $output);
         $this->assertSame(9, count($actual));
@@ -45,21 +51,21 @@ class UpdateServiceAccountsTest extends ConsoleTestCase
 
         $player = $helper->addCharacterMain('C1', 101)->getPlayer();
 
-        UpdateServiceAccountsTest_TestService::$playerId = $player->getId();
+        TestService1::$playerId = $player->getId();
 
-        $conf1 = new ServiceConfiguration();
+        $conf1 = new PluginConfigurationDatabase();
+        $conf1->directoryName = 'plugin1';
         $conf1->active = true;
-        $conf1->phpClass = 'Tests\Functional\Command\UpdateServiceAccountsTest_TestService';
-        $service1 = (new Service())->setName('S1')->setConfiguration($conf1);
+        $service1 = (new Service())->setName('S1')->setConfigurationDatabase($conf1);
 
-        $conf2 = new ServiceConfiguration();
+        $conf2 = new PluginConfigurationDatabase();
+        $conf2->directoryName = 'plugin2';
         $conf2->active = true;
-        $conf2->phpClass = 'TestsService';
-        $service2 = (new Service())->setName('S2')->setConfiguration($conf2);
+        $service2 = (new Service())->setName('S2')->setConfigurationDatabase($conf2);
 
         // Inactive service, will be ignored.
-        $conf3 = new ServiceConfiguration();
-        $service3 = (new Service())->setName('S3')->setConfiguration($conf3);
+        $conf3 = new PluginConfigurationDatabase();
+        $service3 = (new Service())->setName('S3')->setConfigurationDatabase($conf3);
 
         $em->persist($service1);
         $em->persist($service2);

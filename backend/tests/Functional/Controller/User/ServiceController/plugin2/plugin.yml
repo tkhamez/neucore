@@ -1,0 +1,3 @@
+phpClass: Tests\Service
+psr4Prefix: Tests
+psr4Path: src

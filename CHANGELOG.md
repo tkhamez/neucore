@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- **BC break**: Removed compatibility with plugins without a plugin.yml file.
+
 ## 1.40.0
 
 28 Dec 2022
@@ -14,7 +20,7 @@ To update a service plugin configuration:
 - Open its service admin page twice in 2 different browser tabs.
 - Choose the appropriate plugin from the dropdown list at the top. *Attention*: this will load the default 
   configuration values from the plugin.yml file!
-- Copy any configuration values from the "Optional" block from the second tab that you wat to keep (probably all).
+- Copy any configuration values from the "Optional" block from the second tab that you want to keep (probably all).
 - Click save.
 
 Changes:

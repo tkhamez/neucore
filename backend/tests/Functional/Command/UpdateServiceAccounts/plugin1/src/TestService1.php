@@ -1,9 +1,10 @@
 <?php
-/* @phan-file-suppress PhanTypeMismatchReturn */
+/** @noinspection PhpIllegalPsrClassPathInspection */
+/** @noinspection PhpUnused */
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Service;
+namespace Tests\Functional\Command\UpdateServiceAccounts;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
@@ -14,9 +15,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class AccountTest_TestService implements ServiceInterface
+class TestService1 implements ServiceInterface
 {
-    public static array $updateAccount = [];
+    public static ?int $playerId = null;
 
     public function __construct(LoggerInterface $logger, ServiceConfiguration $serviceConfiguration)
     {
@@ -24,9 +25,7 @@ class AccountTest_TestService implements ServiceInterface
 
     public function getAccounts(array $characters): array
     {
-        return array_map(function (CoreCharacter $character) {
-            return new ServiceAccountData($character->id);
-        }, $characters);
+        throw new Exception();
     }
 
     public function register(
@@ -40,11 +39,16 @@ class AccountTest_TestService implements ServiceInterface
 
     public function updateAccount(CoreCharacter $character, array $groups, ?CoreCharacter $mainCharacter): void
     {
-        self::$updateAccount[] = $character->id;
+        if ($character->id === 102) {
+            throw new Exception('Test exception.');
+        }
     }
 
     public function updatePlayerAccount(CoreCharacter $mainCharacter, array $groups): void
     {
+        if ($mainCharacter->playerId === self::$playerId) {
+            throw new Exception('updatePlayerAccount exception');
+        }
     }
 
     public function moveServiceAccount(int $toPlayerId, int $fromPlayerId): bool
@@ -59,12 +63,12 @@ class AccountTest_TestService implements ServiceInterface
 
     public function getAllAccounts(): array
     {
-        throw new Exception();
+        return [101, 102];
     }
 
     public function getAllPlayerAccounts(): array
     {
-        throw new Exception();
+        return [(int)self::$playerId, self::$playerId + 100];
     }
 
     public function request(

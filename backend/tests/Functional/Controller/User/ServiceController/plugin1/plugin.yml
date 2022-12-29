@@ -1,0 +1,6 @@
+phpClass: Tests\Functional\Controller\User\ServiceController\TestService1
+psr4Prefix: Tests\Functional\Controller\User\ServiceController
+psr4Path: src
+oneAccount: false
+actions:
+  - reset-password

@@ -1,9 +1,11 @@
 <?php
+/** @noinspection PhpUnused */
+/** @noinspection PhpIllegalPsrClassPathInspection */
 /* @phan-file-suppress PhanTypeMismatchReturn */
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Service;
+namespace Tests\Unit\Service\Account;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
@@ -14,11 +16,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class ServiceRegistrationTest_TestService implements ServiceInterface
+class TestService implements ServiceInterface
 {
-    public static bool $getAccountException = false;
-
-    public static ?string $moved = null;
+    public static array $updateAccount = [];
 
     public function __construct(LoggerInterface $logger, ServiceConfiguration $serviceConfiguration)
     {
@@ -26,21 +26,9 @@ class ServiceRegistrationTest_TestService implements ServiceInterface
 
     public function getAccounts(array $characters): array
     {
-        if ($characters[0]->id === 202) {
-            self::$getAccountException = true;
-            throw new Exception();
-        }
-        if ($characters[0]->id === 101) {
-            return [
-                new ServiceAccountData(101),
-                new ServiceAccountData(102),
-            ];
-        }
-        return [
-            new ServiceAccountData($characters[0]->id, 'u', 'p', 'e'),
-            [],
-            new ServiceAccountData(123456),
-        ];
+        return array_map(function (CoreCharacter $character) {
+            return new ServiceAccountData($character->id);
+        }, $characters);
     }
 
     public function register(
@@ -54,9 +42,7 @@ class ServiceRegistrationTest_TestService implements ServiceInterface
 
     public function updateAccount(CoreCharacter $character, array $groups, ?CoreCharacter $mainCharacter): void
     {
-        if ($character->id === 102) {
-            throw new Exception('Test error');
-        }
+        self::$updateAccount[] = $character->id;
     }
 
     public function updatePlayerAccount(CoreCharacter $mainCharacter, array $groups): void
@@ -65,7 +51,6 @@ class ServiceRegistrationTest_TestService implements ServiceInterface
 
     public function moveServiceAccount(int $toPlayerId, int $fromPlayerId): bool
     {
-        self::$moved = "$fromPlayerId -> $toPlayerId";
         return true;
     }
 

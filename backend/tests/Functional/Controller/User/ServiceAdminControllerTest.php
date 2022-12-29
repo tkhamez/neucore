@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
-use Neucore\Data\ServiceConfiguration;
+use Neucore\Data\PluginConfigurationFile;
+use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
 use Neucore\Factory\RepositoryFactory;
@@ -121,13 +122,8 @@ class ServiceAdminControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([[
             'name' => 'Test',
-            'type' => ServiceConfiguration::TYPE_SERVICE,
+            'type' => PluginConfigurationFile::TYPE_SERVICE,
             'directoryName' => 'plugin-name',
-            'active' => false,
-            'requiredGroups' => [],
-            'phpClass' => 'Vendor\Neucore\Plugin\Name\Service',
-            'psr4Prefix' => 'Vendor\Neucore\Plugin\Name',
-            'psr4Path' => 'src',
             'oneAccount' => true,
             'properties' => ['username'],
             'showPassword' => true,
@@ -294,15 +290,41 @@ class ServiceAdminControllerTest extends WebTestCase
         $response = $this->runApp(
             'PUT',
             "/api/user/service-admin/$this->serviceId/save-configuration",
-            ['configuration' => \json_encode(['phpClass' => ServiceAdminControllerTest_TestService::class])],
+            ['configuration' => \json_encode([
+                'directoryName' => 'plugin3', // did not change
+                'active' => true,
+                'requiredGroups' => [1, 2],
+                'URLs' => [['url' => 'http://example', 'title' => 'Ex', 'target' => '_blank']],
+                'textTop' => 'top',
+                'textAccount' => 'acc',
+                'textRegister' => 'reg',
+                'textPending' => 'pending',
+                'configurationData' => 'config',
+            ])],
             ['Content-Type' => 'application/x-www-form-urlencoded'],
             [LoggerInterface::class => $this->log],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceAdminController']]
         );
 
         $this->assertEquals(204, $response->getStatusCode());
 
         $service = $this->repository->find($this->serviceId);
-        $this->assertSame(ServiceAdminControllerTest_TestService::class, $service->getConfiguration()->phpClass);
+        $configDb = $service->getConfigurationDatabase();
+        if (!$configDb) {
+            $this->fail();
+        }
+        $this->assertSame('plugin3', $configDb->directoryName);
+        $this->assertSame(true, $configDb->active);
+        $this->assertSame([1, 2], $configDb->requiredGroups);
+        $this->assertSame(1, count($configDb->URLs));
+        $this->assertSame('http://example', $configDb->URLs[0]->url);
+        $this->assertSame('Ex', $configDb->URLs[0]->title);
+        $this->assertSame('_blank', $configDb->URLs[0]->target);
+        $this->assertSame('top', $configDb->textTop);
+        $this->assertSame('acc', $configDb->textAccount);
+        $this->assertSame('reg', $configDb->textRegister);
+        $this->assertSame('pending', $configDb->textPending);
+        $this->assertSame('config', $configDb->configurationData);
         $this->assertSame(['called onConfigurationChange'], $this->log->getMessages());
     }
 
@@ -335,7 +357,9 @@ class ServiceAdminControllerTest extends WebTestCase
         $this->helper->addCharacterMain('User', 1, [Role::SERVICE_ADMIN]);
         $this->helper->addCharacterMain('Admin', 2, [Role::USER]);
 
-        $service = (new Service())->setName('S1');
+        $conf = new PluginConfigurationDatabase();
+        $conf->directoryName = 'plugin3';
+        $service = (new Service())->setName('S1')->setConfigurationDatabase($conf);
 
         $em->persist($service);
         $em->flush();

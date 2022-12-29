@@ -1,8 +1,10 @@
 <?php
+/** @noinspection PhpUnused */
+/** @noinspection PhpIllegalPsrClassPathInspection */
 
 declare(strict_types=1);
 
-namespace Tests\Functional\Controller\User;
+namespace Tests\Functional\Controller\User\ServiceController;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
@@ -13,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class ServiceAdminControllerTest_TestService implements ServiceInterface
+class TestService4 implements ServiceInterface
 {
     public function __construct(LoggerInterface $logger, ServiceConfiguration $serviceConfiguration)
     {
@@ -21,7 +23,9 @@ class ServiceAdminControllerTest_TestService implements ServiceInterface
 
     public function getAccounts(array $characters): array
     {
-        throw new Exception();
+        return [
+            new ServiceAccountData(1),
+        ];
     }
 
     public function register(
@@ -65,13 +69,13 @@ class ServiceAdminControllerTest_TestService implements ServiceInterface
         CoreCharacter $coreCharacter,
         string $name,
         ServerRequestInterface $request,
-        ResponseInterface $response, array $groups
+        ResponseInterface $response,
+        array $groups
     ): ResponseInterface {
         throw new Exception();
     }
 
     public function onConfigurationChange(): void
     {
-        throw new Exception('called onConfigurationChange');
     }
 }

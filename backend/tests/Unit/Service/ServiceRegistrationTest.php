@@ -6,17 +6,20 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
+require_once __DIR__ . '/ServiceRegistration/plugin-acc1/src/TestService1.php';
+
 use Composer\Autoload\ClassLoader;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Application;
+use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\Character;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Service;
-use Neucore\Data\ServiceConfiguration;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
+use Neucore\Plugin\ServiceConfiguration;
 use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\Config;
@@ -27,7 +30,9 @@ use Tests\Helper;
 use Tests\Logger;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Tests\Unit\Service\ServiceRegistration\plugin\src\TestService;
+use Tests\Unit\Service\ServiceRegistration\plugin\src\TestService1;
 
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 class ServiceRegistrationTest extends TestCase
 {
     private const PSR_PREFIX = 'Tests\Unit\Service\ServiceRegistration\plugin\src';
@@ -42,7 +47,7 @@ class ServiceRegistrationTest extends TestCase
 
     private ServiceRegistration $serviceRegistration;
 
-    private ServiceInterface $serviceImplementation;
+    private ServiceInterface $testService1Impl;
 
     public static function setUpBeforeClass(): void
     {
@@ -65,12 +70,12 @@ class ServiceRegistrationTest extends TestCase
             $config,
             new Parser()
         );
-        $this->serviceImplementation = new ServiceRegistrationTest_TestService(
+        $this->testService1Impl = new TestService1(
             $this->log,
-            new \Neucore\Plugin\ServiceConfiguration(0, [], '')
+            new ServiceConfiguration(0, [], '')
         );
-        ServiceRegistrationTest_TestService::$getAccountException = false;
-        ServiceRegistrationTest_TestService::$moved = null;
+        TestService1::$getAccountException = false;
+        TestService1::$moved = null;
     }
 
     protected function tearDown(): void
@@ -83,10 +88,10 @@ class ServiceRegistrationTest extends TestCase
         $actual1 = $this->serviceRegistration->getConfigurationFromConfigFile('does-not-exist');
         $this->assertNull($actual1);
 
-        $actual2 = $this->serviceRegistration->getConfigurationFromConfigFile('parse-error');
+        $actual2 = $this->serviceRegistration->getConfigurationFromConfigFile('plugin-parse-error');
         $this->assertNull($actual2);
 
-        $actual3 = $this->serviceRegistration->getConfigurationFromConfigFile('error-string');
+        $actual3 = $this->serviceRegistration->getConfigurationFromConfigFile('plugin-error-string');
         $this->assertNull($actual3);
 
         $baseDir = __DIR__ . '/ServiceRegistration';
@@ -94,7 +99,7 @@ class ServiceRegistrationTest extends TestCase
             [
                 "File does not exist $baseDir/does-not-exist/plugin.yml",
                 "Malformed inline YAML string at line 2.",
-                "Invalid file content in $baseDir/error-string/plugin.yml",
+                "Invalid file content in $baseDir/plugin-error-string/plugin.yml",
             ],
             $this->log->getMessages()
         );
@@ -110,10 +115,8 @@ class ServiceRegistrationTest extends TestCase
         $this->assertSame('Test', $actual->name);
         $this->assertSame('service', $actual->type);
         $this->assertSame('plugin-name', $actual->directoryName);
-        $this->assertSame(false, $actual->active);
-        $this->assertSame([], $actual->requiredGroups);
-        $this->assertSame('Vendor\Neucore\Plugin\Name\Service', $actual->phpClass);
-        $this->assertSame('Vendor\Neucore\Plugin\Name', $actual->psr4Prefix);
+        $this->assertSame(self::PSR_PREFIX.'\TestService', $actual->phpClass);
+        $this->assertSame(self::PSR_PREFIX, $actual->psr4Prefix);
         $this->assertSame('src', $actual->psr4Path);
         $this->assertSame(true, $actual->oneAccount);
         $this->assertSame(['username'], $actual->properties);
@@ -135,12 +138,35 @@ class ServiceRegistrationTest extends TestCase
         $this->assertNull($this->serviceRegistration->getService(1));
     }
 
-    public function testGetService()
+    public function testGetService_InvalidYamlFile()
     {
-        $conf = new ServiceConfiguration();
+        $conf = new PluginConfigurationDatabase();
+        $conf->directoryName = 'plugin-parse-error';
+        $service = (new Service())->setName('S1')->setConfigurationDatabase($conf);
+        $this->om->persist($service);
+        $this->om->flush();
+
+        $this->assertNull($this->serviceRegistration->getService(1));
+    }
+
+    public function testGetService_WithoutConfigurations()
+    {
+        $service = (new Service())->setName('S1');
+        $this->om->persist($service);
+        $this->om->flush();
+
+        $actual = $this->serviceRegistration->getService($service->getId());
+
+        $this->assertNull($actual->getConfigurationFile());
+        $this->assertNull($actual->getConfigurationDatabase());
+    }
+
+    public function testGetService_Ok()
+    {
+        $conf = new PluginConfigurationDatabase();
         $conf->directoryName = 'plugin-name';
-        $conf->phpClass = 'Test\Service';
-        $service = (new Service())->setName('S1')->setConfiguration($conf);
+        $conf->textTop = 'top text';
+        $service = (new Service())->setName('S1')->setConfigurationDatabase($conf);
         $this->om->persist($service);
         $this->om->flush();
         $this->om->clear();
@@ -148,19 +174,29 @@ class ServiceRegistrationTest extends TestCase
         $actual = $this->serviceRegistration->getService($service->getId());
 
         // from plugin.yml
-        $this->assertSame('Test', $actual->getConfiguration()->name);
-        $this->assertSame('service', $actual->getConfiguration()->type);
+        $this->assertSame('Test', $actual->getConfigurationFile()?->name);
+        $this->assertSame('service', $actual->getConfigurationFile()->type);
 
         // from database
-        $this->assertSame('Test\Service', $actual->getConfiguration()->phpClass);
+        $this->assertSame('top text', $actual->getConfigurationDatabase()?->textTop);
+    }
+
+    public function testGetServiceImplementation_InvalidConfiguration()
+    {
+        $service = new Service();
+        $conf = new PluginConfigurationDatabase();
+        $conf->directoryName = 'plugin-parse-error';
+        $service->setConfigurationDatabase($conf);
+
+        $this->assertNull($this->serviceRegistration->getServiceImplementation($service));
     }
 
     public function testGetServiceImplementation_MissingPhpClass()
     {
         $service = new Service();
-        $conf = new ServiceConfiguration();
-        $conf->phpClass = 'Test\TestService';
-        $service->setConfiguration($conf);
+        $conf = new PluginConfigurationDatabase();
+        $conf->directoryName = 'plugin-missing-class-with-action';
+        $service->setConfigurationDatabase($conf);
 
         $this->assertNull($this->serviceRegistration->getServiceImplementation($service));
     }
@@ -168,41 +204,11 @@ class ServiceRegistrationTest extends TestCase
     public function testGetServiceImplementation_PhpClassMissingImplementation()
     {
         $service = new Service();
-        $conf = new ServiceConfiguration();
-        $conf->phpClass = ServiceRegistrationTest_TestServiceInvalid::class;
-        $service->setConfiguration($conf);
+        $conf = new PluginConfigurationDatabase();
+        $conf->directoryName = 'plugin-class-missing-impl';
+        $service->setConfigurationDatabase($conf);
 
         $this->assertNull($this->serviceRegistration->getServiceImplementation($service));
-    }
-
-    public function testGetServiceImplementation_Deprecated()
-    {
-        // add same prefix to test, so that the new path is added, not replaced
-        self::$loader->setPsr4(self::PSR_PREFIX.'\\', ['/some/path']);
-
-        $service = new Service();
-        $conf = new ServiceConfiguration();
-        $conf->phpClass = self::PSR_PREFIX.'\TestService';
-        $conf->psr4Prefix = self::PSR_PREFIX;
-        $conf->psr4Path = __DIR__ .  '/ServiceRegistration/plugin-name/src';
-        $conf->requiredGroups = [1, 2];
-        $conf->configurationData = 'other: data';
-        $service->setConfiguration($conf);
-
-        /* @var TestService $implementation */
-        $implementation = $this->serviceRegistration->getServiceImplementation($service);
-
-        $this->assertInstanceOf(ServiceInterface::class, $implementation);
-        /* @phan-suppress-next-line PhanUndeclaredMethod */
-        $configuration = $implementation->getServiceConfiguration();
-        $this->assertSame(0, $configuration->id);
-        $this->assertSame([1, 2], $configuration->requiredGroups);
-        $this->assertSame('other: data', $configuration->configurationData);
-
-        $this->assertSame(
-            ['/some/path', __DIR__ .  '/ServiceRegistration/plugin-name/src'],
-            self::$loader->getPrefixesPsr4()[self::PSR_PREFIX.'\\']
-        );
     }
 
     public function testGetServiceImplementation()
@@ -211,15 +217,11 @@ class ServiceRegistrationTest extends TestCase
         self::$loader->setPsr4(self::PSR_PREFIX.'\\', ['/some/path']);
 
         $service = new Service();
-        $conf = new ServiceConfiguration();
-        $conf->type = ServiceConfiguration::TYPE_SERVICE;
+        $conf = new PluginConfigurationDatabase();
         $conf->directoryName = 'plugin-name';
-        $conf->phpClass = self::PSR_PREFIX.'\TestService';
-        $conf->psr4Prefix = self::PSR_PREFIX;
-        $conf->psr4Path = 'src';
         $conf->requiredGroups = [1, 2];
         $conf->configurationData = 'other: data';
-        $service->setConfiguration($conf);
+        $service->setConfigurationDatabase($conf);
 
         /* @var TestService $implementation */
         $implementation = $this->serviceRegistration->getServiceImplementation($service);
@@ -241,7 +243,7 @@ class ServiceRegistrationTest extends TestCase
     {
         $this->assertSame(
             [],
-            $this->serviceRegistration->getAccounts($this->serviceImplementation, [])
+            $this->serviceRegistration->getAccounts($this->testService1Impl, [])
         );
     }
 
@@ -249,7 +251,7 @@ class ServiceRegistrationTest extends TestCase
     {
         $player = (new Player())->addGroup(new Group());
         $actual = $this->serviceRegistration->getAccounts(
-            $this->serviceImplementation,
+            $this->testService1Impl,
             [(new Character())->setId(123)->setPlayer($player)]
         );
 
@@ -273,7 +275,7 @@ class ServiceRegistrationTest extends TestCase
 
         $player = (new Player())->addGroup(new Group())->addCharacter($character);
         $actual = $this->serviceRegistration->getAccounts(
-            $this->serviceImplementation,
+            $this->testService1Impl,
             [(new Character())->setId(123)->setPlayer($player)]
         );
 
@@ -284,28 +286,26 @@ class ServiceRegistrationTest extends TestCase
     {
         $this->expectException(Exception::class);
         $this->serviceRegistration->getAccounts(
-            $this->serviceImplementation,
+            $this->testService1Impl,
             [(new Character())->setId(202)->setPlayer(new Player())]
         );
     }
 
-    public function testUpdatePlayerAccounts()
+    public function testUpdatePlayerAccounts_Ok()
     {
         $this->helper->emptyDb();
 
-        $conf1 = new ServiceConfiguration();
-        $conf1->actions = [ServiceConfiguration::ACTION_UPDATE_ACCOUNT];
-        $conf1->phpClass = ServiceRegistrationTest_TestService::class;
-        $service1 = (new Service())->setName('S1')->setConfiguration($conf1);
+        $conf1 = new PluginConfigurationDatabase();
+        $conf1->directoryName = 'plugin-acc1'; // with action
+        $service1 = (new Service())->setName('S1')->setConfigurationDatabase($conf1);
 
-        $conf2 = new ServiceConfiguration();
-        $conf2->phpClass = ServiceRegistrationTest_TestService::class;
-        $service2 = (new Service())->setName('S2')->setConfiguration($conf2);
+        $conf2 = new PluginConfigurationDatabase();
+        $conf2->directoryName = 'plugin-acc2'; // no action
+        $service2 = (new Service())->setName('S2')->setConfigurationDatabase($conf2);
 
-        $conf3 = (new ServiceConfiguration());
-        $conf3->phpClass = 'Does\Bot\Exist';
-        $conf3->actions = [ServiceConfiguration::ACTION_UPDATE_ACCOUNT];
-        $service3 = (new Service())->setName('S3')->setConfiguration($conf3);
+        $conf3 = (new PluginConfigurationDatabase());
+        $conf3->directoryName = 'plugin-missing-class-with-action'; // with action
+        $service3 = (new Service())->setName('S3')->setConfigurationDatabase($conf3);
 
         $player1 = (new Player())->setName('P1');
         $player2 = (new Player())->setName('P2');
@@ -327,17 +327,39 @@ class ServiceRegistrationTest extends TestCase
 
         $this->assertSame([['serviceName' => 'S1', 'characterId' => 101]], $result);
         $this->assertSame(['ServiceController::updateAllAccounts: S1: Test error'], $this->log->getMessages());
-        $this->assertSame($player2->getId() . ' -> ' . $player1->getId(), ServiceRegistrationTest_TestService::$moved);
+        $this->assertSame($player2->getId() . ' -> ' . $player1->getId(), TestService1::$moved);
+    }
+
+    public function testUpdatePlayerAccounts_YamlException()
+    {
+        $this->helper->emptyDb();
+
+        $conf = new PluginConfigurationDatabase();
+        $conf->directoryName = 'plugin-error-string';
+        $service = (new Service())->setName('S1')->setConfigurationDatabase($conf);
+
+        $player = (new Player())->setName('P1');
+
+        $this->om->persist($service);
+        $this->om->persist($player);
+        $this->om->flush();
+
+        $result = $this->serviceRegistration->updatePlayerAccounts($player);
+
+        $this->assertSame([], $result);
+        $this->assertSame(
+            ['Invalid file content in '.__DIR__.'/ServiceRegistration/plugin-error-string/plugin.yml'],
+            $this->log->getMessages()
+        );
     }
 
     public function testUpdatePlayerAccounts_GetAccountException()
     {
         $this->helper->emptyDb();
 
-        $conf1 = new ServiceConfiguration();
-        $conf1->actions = [ServiceConfiguration::ACTION_UPDATE_ACCOUNT];
-        $conf1->phpClass = ServiceRegistrationTest_TestService::class;
-        $service1 = (new Service())->setName('S1')->setConfiguration($conf1);
+        $conf1 = new PluginConfigurationDatabase();
+        $conf1->directoryName = 'plugin-acc1'; // with action
+        $service1 = (new Service())->setName('S1')->setConfigurationDatabase($conf1);
 
         $player2 = (new Player())->setName('P2');
         $char22 = (new Character())->setId(202)->setName('C22')->setPlayer($player2);
@@ -351,7 +373,7 @@ class ServiceRegistrationTest extends TestCase
         $result = $this->serviceRegistration->updatePlayerAccounts($player2);
 
         $this->assertSame([], $result);
-        $this->assertTrue(ServiceRegistrationTest_TestService::$getAccountException);
+        $this->assertTrue(TestService1::$getAccountException);
     }
 
     public function testUpdateServiceAccount()
@@ -361,14 +383,14 @@ class ServiceRegistrationTest extends TestCase
         $char->setPlayer($player);
         $player->addCharacter($char);
 
-        $result0 = $this->serviceRegistration->updateServiceAccount(null, $this->serviceImplementation);
+        $result0 = $this->serviceRegistration->updateServiceAccount(null, $this->testService1Impl);
         $this->assertSame('No character provided.', $result0);
 
-        $result1 = $this->serviceRegistration->updateServiceAccount($char, $this->serviceImplementation);
+        $result1 = $this->serviceRegistration->updateServiceAccount($char, $this->testService1Impl);
         $this->assertNull($result1);
 
         $char->setId(102);
-        $result2 = $this->serviceRegistration->updateServiceAccount($char, $this->serviceImplementation);
+        $result2 = $this->serviceRegistration->updateServiceAccount($char, $this->testService1Impl);
         $this->assertSame('Test error', $result2);
     }
 }

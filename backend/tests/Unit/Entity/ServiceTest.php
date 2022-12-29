@@ -5,8 +5,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Entity;
 
+use Neucore\Data\PluginConfigurationFile;
+use Neucore\Data\PluginConfigurationURL;
 use Neucore\Entity\Service;
-use Neucore\Data\ServiceConfiguration;
+use Neucore\Data\PluginConfigurationDatabase;
 use PHPUnit\Framework\TestCase;
 
 class ServiceTest extends TestCase
@@ -15,49 +17,113 @@ class ServiceTest extends TestCase
     {
         $service = new Service();
         $service->setName('s1');
-        $service->setConfiguration(new ServiceConfiguration());
+        $service->setConfigurationDatabase(new PluginConfigurationDatabase());
+        $service->setConfigurationFile(new PluginConfigurationFile());
 
         $this->assertSame(
             ['id' => 0, 'name' => 's1'],
             json_decode((string) json_encode($service), true)
         );
+
         $this->assertSame(
-            ['id' => 0, 'name' => 's1', 'configuration' => [
-                'oneAccount' => false,
-                'properties' => [],
-                'showPassword' => false,
-                'actions' => [],
-                'URLs' => [],
-                'textTop' => '',
-                'textAccount' => '',
-                'textRegister' => '',
-                'textPending' => '',
-                'configurationData' => '',
-            ]],
+            [
+                'id' => 0,
+                'name' => 's1',
+                'configurationDatabase' => [
+                    'URLs' => [],
+                    'textTop' => '',
+                    'textAccount' => '',
+                    'textRegister' => '',
+                    'textPending' => '',
+                    'configurationData' => '',
+                ],
+                'configurationFile' => [
+                    'name' => '',
+                    'type' => '',
+                    'oneAccount' => false,
+                    'properties' => [],
+                    'showPassword' => false,
+                    'actions' => [],
+                    'URLs' => [],
+                    'textTop' => '',
+                    'textAccount' => '',
+                    'textRegister' => '',
+                    'textPending' => '',
+                    'configurationData' => '',
+                ],
+            ],
             $service->jsonSerialize(false)
         );
+
         $this->assertSame(
-            ['id' => 0, 'name' => 's1', 'configuration' => [
-                'name' => '',
-                'type' => '',
-                'directoryName' => '',
-                'active' => false,
-                'requiredGroups' => [],
-                'phpClass' => '',
-                'psr4Prefix' => '',
-                'psr4Path' => '',
-                'oneAccount' => false,
-                'properties' => [],
-                'showPassword' => false,
-                'actions' => [],
-                'URLs' => [],
-                'textTop' => '',
-                'textAccount' => '',
-                'textRegister' => '',
-                'textPending' => '',
-                'configurationData' => '',
-            ]],
+            [
+                'id' => 0,
+                'name' => 's1',
+                'configurationDatabase' => [
+                    'active' => false,
+                    'requiredGroups' => [],
+                    'directoryName' => '',
+                    'URLs' => [],
+                    'textTop' => '',
+                    'textAccount' => '',
+                    'textRegister' => '',
+                    'textPending' => '',
+                    'configurationData' => '',
+                ],
+                'configurationFile' => [
+                    'name' => '',
+                    'type' => '',
+                    'phpClass' => '',
+                    'psr4Prefix' => '',
+                    'psr4Path' => '',
+                    'oneAccount' => false,
+                    'properties' => [],
+                    'showPassword' => false,
+                    'actions' => [],
+                    'directoryName' => '',
+                    'URLs' => [],
+                    'textTop' => '',
+                    'textAccount' => '',
+                    'textRegister' => '',
+                    'textPending' => '',
+                    'configurationData' => '',
+                ],
+            ],
             $service->jsonSerialize(false, true)
+        );
+
+        $this->assertSame(
+            [
+                'id' => 0,
+                'name' => 's1',
+                'configurationDatabase' => [
+                    'active' => false,
+                    'requiredGroups' => [],
+                    'directoryName' => '',
+                    'URLs' => [],
+                    'textTop' => '',
+                    'textAccount' => '',
+                    'textRegister' => '',
+                    'textPending' => '',
+                    'configurationData' => '',
+                ],
+                'configurationFile' => [
+                    'name' => '',
+                    'type' => '',
+                    'oneAccount' => false,
+                    'properties' => [],
+                    'showPassword' => false,
+                    'actions' => [],
+                    'directoryName' => '',
+                    'URLs' => [],
+                    'textTop' => '',
+                    'textAccount' => '',
+                    'textRegister' => '',
+                    'textPending' => '',
+                    'configurationData' => '',
+                ],
+            ],
+            $service->jsonSerialize(false, true, false)
         );
     }
 
@@ -73,35 +139,46 @@ class ServiceTest extends TestCase
         $this->assertSame('name',  $service->setName('name')->getName());
     }
 
-    public function testSetGetConfiguration()
+    public function testSetGetConfigurationDatabase()
     {
-        $service = new Service();
-        $data = new ServiceConfiguration();
-
-        $this->assertNotSame($data, $service->getConfiguration());
-        $this->assertEquals($data, $service->getConfiguration());
-
-        $data->name = 'name';
-        $data->type = 'service';
-        $data->phpClass = 'class';
-        $data->psr4Prefix = 'prefix';
-        $data->psr4Path = 'path';
-        $data->oneAccount = true;
+        $data = new PluginConfigurationDatabase();
+        $data->active = true;
         $data->requiredGroups = [1, 2];
-        $data->properties = ['username', 'status'];
-        $data->showPassword = true;
-        $data->actions = [ServiceConfiguration::ACTION_UPDATE_ACCOUNT];
+        $data->directoryName = 'plugin';
         $data->URLs = [];
-        $data->textAccount = 'text a';
         $data->textTop = 'text t';
+        $data->textAccount = 'text a';
         $data->textRegister = 'text r';
         $data->textPending = 'text p';
         $data->configurationData = 'other: data';
-        $this->assertNotSame($data, $service->setConfiguration($data)->getConfiguration());
-        $this->assertEquals($data, $service->setConfiguration($data)->getConfiguration());
+
+        $expected = [
+            'active' => $data->active,
+            'requiredGroups' => $data->requiredGroups,
+            'directoryName' => $data->directoryName,
+            'URLs' => array_map(function (PluginConfigurationURL $item) {
+                return $item->jsonSerialize();
+            }, $data->URLs),
+            'textTop' => $data->textTop,
+            'textAccount' => $data->textAccount,
+            'textRegister' => $data->textRegister,
+            'textPending' => $data->textPending,
+            'configurationData' => $data->configurationData,
+        ];
+
         $this->assertSame(
-            $data->jsonSerialize(),
-            $service->setConfiguration($data)->getConfiguration()->jsonSerialize()
+            $expected,
+            (new Service())->setConfigurationDatabase($data)->getConfigurationDatabase()?->jsonSerialize()
         );
+    }
+
+    public function testSetGetConfigurationFile()
+    {
+        $data = new PluginConfigurationFile();
+        $data->name = 'name';
+
+        $actual = (new Service())->setConfigurationFile($data)->getConfigurationFile();
+
+        $this->assertSame($data, $actual);
     }
 }

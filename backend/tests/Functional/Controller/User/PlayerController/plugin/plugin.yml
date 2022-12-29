@@ -1,0 +1,3 @@
+phpClass: Tests\Functional\Controller\User\PlayerController\TestService
+psr4Prefix: Tests\Functional\Controller\User\PlayerController
+psr4Path: src

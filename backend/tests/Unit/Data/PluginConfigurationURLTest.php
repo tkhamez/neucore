@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Entity;
+namespace Tests\Unit\Data;
 
-use Neucore\Data\ServiceConfigurationURL;
+use Neucore\Data\PluginConfigurationURL;
 use PHPUnit\Framework\TestCase;
 
-class ServiceConfigurationURLTest extends TestCase
+class PluginConfigurationURLTest extends TestCase
 {
     public function testJsonSerialize()
     {
-        $url = new ServiceConfigurationURL();
+        $url = new PluginConfigurationURL();
         $url->url = 'http';
         $url->title = 'title';
         $url->target = '_blank';

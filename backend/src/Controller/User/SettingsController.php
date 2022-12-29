@@ -61,7 +61,7 @@ class SettingsController extends BaseController
 
         $services = [];
         foreach ($this->repositoryFactory->getServiceRepository()->findBy([], ['name' => 'asc']) as $service) {
-            if ($userAuth->hasRequiredGroups($service) && $service->getConfiguration()->active) {
+            if ($userAuth->hasRequiredGroups($service) && $service->getConfigurationDatabase()?->active) {
                 $services[] = $service;
             }
         }

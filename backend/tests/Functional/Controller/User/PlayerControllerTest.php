@@ -6,7 +6,9 @@ declare(strict_types=1);
 namespace Tests\Functional\Controller\User;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Events;
 use Doctrine\Persistence\ObjectManager;
+use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
@@ -17,18 +19,16 @@ use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
-use Neucore\Data\ServiceConfiguration;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
+use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationRepository;
 use Neucore\Repository\GroupApplicationRepository;
 use Neucore\Repository\GroupRepository;
 use Neucore\Repository\PlayerRepository;
-use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\RemovedCharacterRepository;
-use Doctrine\ORM\Events;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
@@ -849,13 +849,20 @@ class PlayerControllerTest extends WebTestCase
         $this->loginUser(12);
 
         // add service with account
-        $conf = new ServiceConfiguration();
-        $conf->phpClass = 'Tests\Functional\Controller\User\PlayerControllerTest_TestService';
-        $service = (new Service())->setName('A Service')->setConfiguration($conf);
+        $conf = new PluginConfigurationDatabase();
+        $conf->directoryName = 'plugin';
+        $service = (new Service())->setName('A Service')->setConfigurationDatabase($conf);
         $this->em->persist($service);
         $this->em->flush();
 
-        $response = $this->runApp('GET', '/api/user/player/'.$this->player3Id.'/show');
+        $response = $this->runApp(
+            'GET',
+            '/api/user/player/'.$this->player3Id.'/show',
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PlayerController']],
+        );
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([

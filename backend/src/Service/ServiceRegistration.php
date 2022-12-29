@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Neucore\Service;
 
 use Neucore\Application;
+use Neucore\Data\PluginConfigurationFile;
 use Neucore\Entity\Character;
 use Neucore\Entity\Player;
 use Neucore\Entity\Service;
-use Neucore\Data\ServiceConfiguration;
+use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
-use Neucore\Plugin\ServiceConfiguration as PluginServiceConfiguration;
+use Neucore\Plugin\ServiceConfiguration;
 use Neucore\Plugin\ServiceInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Yaml\Exception\ParseException;
@@ -45,7 +46,7 @@ class ServiceRegistration
         $this->parser = $parser;
     }
 
-    public function getConfigurationFromConfigFile(string $pluginDirectory): ?ServiceConfiguration
+    public function getConfigurationFromConfigFile(string $pluginDirectory): ?PluginConfigurationFile
     {
         $basePath = is_string($this->config['plugins_install_dir']) ? $this->config['plugins_install_dir'] : '';
         $fullPathToFile = $basePath . DIRECTORY_SEPARATOR . $pluginDirectory . '/plugin.yml';
@@ -67,10 +68,10 @@ class ServiceRegistration
             return null;
         }
 
-        $serviceConfig = ServiceConfiguration::fromArray($yaml);
-        $serviceConfig->directoryName = $pluginDirectory;
+        $pluginConfigFile = PluginConfigurationFile::fromArray($yaml);
+        $pluginConfigFile->directoryName = $pluginDirectory;
 
-        return $serviceConfig;
+        return $pluginConfigFile;
     }
 
     public function getService(int $id): ?Service
@@ -80,58 +81,59 @@ class ServiceRegistration
             return null;
         }
 
-        // load configuration from plugin.yml
-        $serviceConfig = $service->getConfiguration();
-        $basePath = is_string($this->config['plugins_install_dir']) ? $this->config['plugins_install_dir'] : '';
-        if (!empty($basePath) && !empty($serviceConfig->directoryName)) {
-            // New since v1.40.0
-            $yamlConfig = $this->getConfigurationFromConfigFile($serviceConfig->directoryName);
-            if ($yamlConfig) {
-                // Copy values that cannot be changed in the admin UI.
-                $serviceConfig->name = $yamlConfig->name;
-                $serviceConfig->type = $yamlConfig->type;
-            }
+        try {
+            $this->addConfigurationFromFile($service);
+        } catch (RuntimeException) {
+            return null;
         }
-        $service->setConfiguration($serviceConfig);
 
         return $service;
     }
 
     public function getServiceImplementation(Service $service): ?ServiceInterface
     {
-        $serviceConfig = $service->getConfiguration();
+        if (!$service->getConfigurationFile()) {
+            try {
+                $this->addConfigurationFromFile($service);
+            } catch (RuntimeException) {
+                return null;
+            }
+        }
+
+        $serviceConfig = $service->getConfigurationDatabase();
+        $pluginConfigYaml = $service->getConfigurationFile();
+        if (!$serviceConfig || !$pluginConfigYaml) {
+            return null;
+        }
 
         // configure autoloader
-        if (
-            is_string($this->config['plugins_install_dir']) &&
-            !empty($this->config['plugins_install_dir']) &&
-            !empty($serviceConfig->directoryName)
-        ) {
-            // New since v1.40.0
+        $psr4Path = '';
+        if (is_string($this->config['plugins_install_dir'])) {
             $psr4Path = $this->config['plugins_install_dir'] . DIRECTORY_SEPARATOR . $serviceConfig->directoryName .
-                DIRECTORY_SEPARATOR . $serviceConfig->psr4Path;
-        } else {
-            // Deprecated since v1.40.0
-            $psr4Path = $serviceConfig->psr4Path;
+                DIRECTORY_SEPARATOR . $pluginConfigYaml->psr4Path;
         }
-        if (!empty($serviceConfig->psr4Prefix) && is_dir($psr4Path)) {
+        if (!empty($pluginConfigYaml->psr4Prefix) && !empty($psr4Path) && is_dir($psr4Path)) {
             $psr4Paths = [$psr4Path];
-            if (!str_ends_with($serviceConfig->psr4Prefix, '\\')) {
-                $serviceConfig->psr4Prefix .= '\\';
+            if (!str_ends_with($pluginConfigYaml->psr4Prefix, '\\')) {
+                $pluginConfigYaml->psr4Prefix .= '\\';
             }
             /** @noinspection PhpFullyQualifiedNameUsageInspection */
             /* @var \Composer\Autoload\ClassLoader $loader */
             /** @noinspection PhpIncludeInspection */
             $loader = require Application::ROOT_DIR . '/vendor/autoload.php';
             foreach ($loader->getPrefixesPsr4() as $existingPrefix => $paths) {
-                if ($existingPrefix === $serviceConfig->psr4Prefix) {
+                if ($existingPrefix === $pluginConfigYaml->psr4Prefix) {
                     $psr4Paths = array_merge($paths, $psr4Paths);
                 }
             }
-            $loader->setPsr4($serviceConfig->psr4Prefix, $psr4Paths);
+            try {
+                $loader->setPsr4($pluginConfigYaml->psr4Prefix, $psr4Paths);
+            } catch (\InvalidArgumentException) {
+                // psr4 prefix ends this \ is checked above
+            }
         }
 
-        $phpClass = $serviceConfig->phpClass;
+        $phpClass = $pluginConfigYaml->phpClass;
 
         if (!class_exists($phpClass)) {
             return null;
@@ -145,7 +147,7 @@ class ServiceRegistration
         // ServiceInterface::__construct
         return new $phpClass(
             $this->log,
-            new PluginServiceConfiguration(
+            new ServiceConfiguration(
                 $service->getId(),
                 array_map('intval', $serviceConfig->requiredGroups),
                 $serviceConfig->configurationData
@@ -202,8 +204,15 @@ class ServiceRegistration
 
         $services = $this->repositoryFactory->getServiceRepository()->findBy([]);
         foreach ($services as $service) {
+            try {
+                $this->addConfigurationFromFile($service);
+            } catch (RuntimeException) {
+                continue;
+            }
+
             // Check if service has the "update-account" action
-            if (!in_array(ServiceConfiguration::ACTION_UPDATE_ACCOUNT, $service->getConfiguration()->actions)) {
+            $actions = $service->getConfigurationFile() ? $service->getConfigurationFile()->actions : [];
+            if (!in_array(PluginConfigurationFile::ACTION_UPDATE_ACCOUNT, $actions)) {
                 continue;
             }
 
@@ -271,5 +280,23 @@ class ServiceRegistration
         }
 
         return null;
+    }
+
+    /**
+     * @throws RuntimeException
+     */
+    private function addConfigurationFromFile(Service $service): void
+    {
+        $dirName = $service->getConfigurationDatabase()?->directoryName;
+        if (empty($dirName)) {
+            return;
+        }
+
+        $yamlConfig = $this->getConfigurationFromConfigFile($dirName);
+        if (!$yamlConfig) {
+            throw new RuntimeException('Cannot read YAML file.');
+        }
+
+        $service->setConfigurationFile($yamlConfig);
     }
 }

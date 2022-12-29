@@ -1,8 +1,10 @@
 <?php
+/** @noinspection PhpUnused */
+/** @noinspection PhpIllegalPsrClassPathInspection */
 
 declare(strict_types=1);
 
-namespace Tests\Functional\Controller;
+namespace Tests\Functional\Controller\User\PlayerController;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
@@ -13,16 +15,17 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class PluginControllerTest_TestService implements ServiceInterface
+class TestService implements ServiceInterface
 {
-
     public function __construct(LoggerInterface $logger, ServiceConfiguration $serviceConfiguration)
     {
     }
 
     public function getAccounts(array $characters): array
     {
-        throw new Exception();
+        return [
+            new ServiceAccountData(12, 'user_name', null, null, ServiceAccountData::STATUS_ACTIVE, 'A Name'),
+        ];
     }
 
     public function register(
@@ -36,10 +39,12 @@ class PluginControllerTest_TestService implements ServiceInterface
 
     public function updateAccount(CoreCharacter $character, array $groups, ?CoreCharacter $mainCharacter): void
     {
+        throw new Exception();
     }
 
     public function updatePlayerAccount(CoreCharacter $mainCharacter, array $groups): void
     {
+        throw new Exception();
     }
 
     public function moveServiceAccount(int $toPlayerId, int $fromPlayerId): bool
@@ -52,12 +57,12 @@ class PluginControllerTest_TestService implements ServiceInterface
         throw new Exception();
     }
 
-    public function getAllAccounts(): array
+    public function getAllPlayerAccounts(): array
     {
         throw new Exception();
     }
 
-    public function getAllPlayerAccounts(): array
+    public function getAllAccounts(): array
     {
         throw new Exception();
     }
@@ -69,11 +74,7 @@ class PluginControllerTest_TestService implements ServiceInterface
         ResponseInterface $response,
         array $groups
     ): ResponseInterface {
-        if (($request->getQueryParams()['error'] ?? '') === '1') {
-            throw new Exception('Exception from plugin.');
-        }
-        $response->getBody()->write('Response from plugin.');
-        return $response;
+        throw new Exception();
     }
 
     public function onConfigurationChange(): void

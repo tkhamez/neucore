@@ -123,7 +123,7 @@ class ServiceController extends BaseController
         }
 
         $fullConfig = $allowAdmin && $this->getUser($userAuth)->getPlayer()->hasRole(Role::SERVICE_ADMIN);
-        return $this->withJson($service->jsonSerialize(false, $fullConfig));
+        return $this->withJson($service->jsonSerialize(false, $fullConfig, false));
     }
 
     /**
@@ -254,7 +254,7 @@ class ServiceController extends BaseController
         }
 
         // check if a new account may be created
-        $oneAccountOnly = $service->getConfiguration()->oneAccount;
+        $oneAccountOnly = $service->getConfigurationFile()?->oneAccount;
         if ($oneAccountOnly) {
             $characters = $player->getCharacters();
         } else {
@@ -478,21 +478,16 @@ class ServiceController extends BaseController
 
     private function getService(int $id, bool $allowAdmin): ?Service
     {
-        // get service
-        if ($allowAdmin) {
-            // Load with configuration values from plugin.yml
-            $service = $this->serviceRegistration->getService($id);
-        } else {
-            $service = $this->repositoryFactory->getServiceRepository()->find($id);
-        }
-        if ($service === null) {
-            $this->responseErrorCode = 404;
-            return null;
-        }
-
         $isAdmin = false;
         if ($allowAdmin) {
             $isAdmin = $this->getUser($this->userAuth)->getPlayer()->hasRole(Role::SERVICE_ADMIN);
+        }
+
+        // get service with data from plugin.yml
+        $service = $this->serviceRegistration->getService($id);
+        if ($service === null) {
+            $this->responseErrorCode = 404;
+            return null;
         }
 
         // check service permission
@@ -502,7 +497,7 @@ class ServiceController extends BaseController
         }
 
         // check active
-        if (!$isAdmin && !$service->getConfiguration()->active) {
+        if (!$isAdmin && !$service->getConfigurationDatabase()?->active) {
             $this->responseErrorCode = 404;
             return null;
         }

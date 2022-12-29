@@ -1,8 +1,11 @@
 <?php
+/** @noinspection PhpIllegalPsrClassPathInspection */
+/** @noinspection PhpUnused */
+/* @phan-file-suppress PhanTypeMismatchReturn */
 
 declare(strict_types=1);
 
-namespace Tests\Functional\Command;
+namespace Tests\Unit\Service\ServiceRegistration\plugin\src;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
@@ -13,10 +16,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class UpdateServiceAccountsTest_TestService implements ServiceInterface
+class TestService2 implements ServiceInterface
 {
-    public static ?int $playerId = null;
-
     public function __construct(LoggerInterface $logger, ServiceConfiguration $serviceConfiguration)
     {
     }
@@ -37,21 +38,15 @@ class UpdateServiceAccountsTest_TestService implements ServiceInterface
 
     public function updateAccount(CoreCharacter $character, array $groups, ?CoreCharacter $mainCharacter): void
     {
-        if ($character->id === 102) {
-            throw new Exception('Test exception.');
-        }
     }
 
     public function updatePlayerAccount(CoreCharacter $mainCharacter, array $groups): void
     {
-        if ($mainCharacter->playerId === self::$playerId) {
-            throw new Exception('updatePlayerAccount exception');
-        }
     }
 
     public function moveServiceAccount(int $toPlayerId, int $fromPlayerId): bool
     {
-        return true;
+        throw new Exception();
     }
 
     public function resetPassword(int $characterId): string
@@ -61,12 +56,12 @@ class UpdateServiceAccountsTest_TestService implements ServiceInterface
 
     public function getAllAccounts(): array
     {
-        return [101, 102];
+        throw new Exception();
     }
 
     public function getAllPlayerAccounts(): array
     {
-        return [(int)self::$playerId, self::$playerId + 100];
+        throw new Exception();
     }
 
     public function request(

@@ -1,8 +1,11 @@
 <?php
+/** @noinspection DuplicatedCode */
+/** @noinspection PhpUnused */
+/** @noinspection PhpIllegalPsrClassPathInspection */
 
 declare(strict_types=1);
 
-namespace Tests\Functional\Controller\User;
+namespace Tests\Functional\Controller\User\ServiceController;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
@@ -13,7 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class ServiceControllerTest_TestService implements ServiceInterface
+class TestService1 implements ServiceInterface
 {
     public static ?array $lastGroups = null;
 

@@ -1,0 +1,5 @@
+phpClass: Tests\Unit\Service\Account\TestService
+psr4Prefix: Tests\Unit\Service\Account
+psr4Path: src
+actions:
+  - update-account

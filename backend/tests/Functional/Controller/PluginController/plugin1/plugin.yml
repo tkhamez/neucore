@@ -1,0 +1,3 @@
+phpClass: Tests\Functional\Controller\PluginController\TestService1
+psr4Prefix: Tests\Functional\Controller\PluginController
+psr4Path: src

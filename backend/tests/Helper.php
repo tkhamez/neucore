@@ -157,11 +157,11 @@ class Helper
         return $authProvider;
     }
 
-    public function getAccountService(Logger $logger, Client $client): Account
+    public function getAccountService(Logger $logger, Client $client, ?Config $config): Account
     {
+        $config = $config ?: $this->getConfig();
         $repoFactory = RepositoryFactory::getInstance($this->getObjectManager());
         $objectManager = new \Neucore\Service\ObjectManager($this->getObjectManager(), $logger);
-        $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
         $characterService = new \Neucore\Service\Character($objectManager, $repoFactory);
         $esiApiFactory = new EsiApiFactory($client, $config);
         $esiData = new EsiData($logger, $esiApiFactory, $objectManager, $repoFactory, $characterService, $config);
@@ -172,11 +172,12 @@ class Helper
         return new Account($logger, $objectManager, $repoFactory, $esiData, $autoGroups, $token, $serviceRegistration);
     }
 
-    public function getUserAuthService(Logger $logger, Client $client): UserAuth
+    public function getUserAuthService(Logger $logger, Client $client, ?Config $config): UserAuth
     {
+        $config = $config ?: $this->getConfig();
         $repoFactory = RepositoryFactory::getInstance($this->getObjectManager());
         $objectManager = new \Neucore\Service\ObjectManager($this->getObjectManager(), $logger);
-        $accountService = $this->getAccountService($logger, $client);
+        $accountService = $this->getAccountService($logger, $client, $config);
         $accountGroupService = new AccountGroup($repoFactory, $this->getObjectManager());
         return new UserAuth(
             new SessionData(),
@@ -184,7 +185,7 @@ class Helper
             $accountGroupService,
             $objectManager,
             $repoFactory,
-            $logger
+            $logger,
         );
     }
 
@@ -499,5 +500,10 @@ class Helper
         }
 
         return $eveLogin;
+    }
+
+    private function getConfig(): config
+    {
+        return new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
     }
 }
