@@ -71,7 +71,8 @@ Modal windows to create, delete and edit entities
                         Please note, that renaming a group may break third party apps that rely on
                         the name instead of the ID.
                     </p>
-                    <button type="button" class="mt-3 btn btn-warning" v-on:click="functionRename(item.id, item.name)">
+                    <button v-cloak v-if="type === 'Group'" type="button" class="btn btn-warning"
+                            v-on:click="functionRename(item.id, item.name)">
                         Rename {{ type }}
                     </button>
 
@@ -102,6 +103,10 @@ Modal windows to create, delete and edit entities
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button v-cloak v-if="type !== 'Group'" type="button" class="btn btn-warning"
+                            v-on:click="functionRename(item.id, item.name)">
+                        Rename {{ type }}
+                    </button>
                 </div>
 
             </div>
