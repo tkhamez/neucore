@@ -150,15 +150,13 @@ All character removals are recorded and are visible to user admins.
 
 ### Account status
 
-There a two account status: standard and managed.
+There a two account status: "standard" and "manually managed".
 
 - The status can be changed at any time by a user admin.
 - If the status is changed, all groups are removed. New groups can be added manually in the same way as for normal 
   accounts.
-- Automatic group assignment is disabled for managed accounts, "Required Groups" are still checked, see below.
-- Groups are never deactivated for managed accounts.
-- There is a separate login URL for managed accounts that does not require ESI scopes 
-  (must be allowed in the settings).
+- Automatic group assignment is disabled for manually managed accounts, "Required Groups" are still checked, see below.
+- Groups are never deactivated for manually managed accounts.
 
 ## Multiple EVE Logins
 
@@ -167,6 +165,8 @@ characters for each of these logins.
 
 EVE logins can be added to apps so that they can use their tokens. This also applied to the token of 
 the default login (core.default).
+
+There is also a separate build in login URL that does not require any ESI scopes (must be allowed in settings).
 
 ## Groups
 
@@ -191,7 +191,7 @@ who can then manually remove all members.
 ### Group Deactivation
 
 If the ESI token of one or more characters on an account is invalid, the account can be disabled. This is done 
-on the settings page, feature "Deactivate Groups". A character without a token (no ESI scopes were requested 
+on the settings page, feature "Groups Deactivation". A character without a token (no ESI scopes were requested 
 during login) counts as invalid.
 
 Deactivation means that the API for apps no longer returns groups for that account. The deactivation of the 
@@ -206,7 +206,7 @@ these other groups, otherwise they will be automatically removed from the group.
 
 It is also possible to configure groups that an account cannot be a member of to be a member of that group.
 
-Those check is also done for "managed" Player accounts (see "Account status" above).
+Those check is also done for "manually managed" Player accounts (see "Account status" above).
 
 ### Group Applications
 
@@ -227,7 +227,7 @@ Corporations can be automatically added to the allowlist (and removed accordingl
 are on the same account using the `auto-allowlist` command. This only works if at least one character in
 that corporation has authorized the `esi-corporations.read_corporation_membership.v1` ESI scope.
 
-The permissions are managed via groups, one for viewing and one for administration separately for each watch list.
+The permissions are managed via groups, one for viewing and one for administration, separately for each watch list.
 
 ## Mail Notifications
 

@@ -19,7 +19,7 @@
     <div class="card-body">
         <p>
             This EVE mail is sent when an account contains a character with an invalid or no ESI token.<br>
-            Accounts with the "managed" status are excluded from this.
+            Accounts with the "manually managed" status are excluded from this.
         </p>
         <button class="btn btn-success btn-sm" v-on:click="sendInvalidTokenTestMail()">Send test mail</button>
         <small>The mail is sent to the logged-in user.</small>

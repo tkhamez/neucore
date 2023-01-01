@@ -52,7 +52,7 @@ import Groups  from './pages/Groups.vue';
 import Service from './pages/Service.vue';
 import GroupManagement       from './pages/Management/GroupManagement.vue';
 import AppManagement         from './pages/Management/AppManagement.vue';
-import PlayerGroupManagement from './pages/Management/PlayerGroupManagement.vue';
+import PlayerManagement from './pages/Management/PlayerManagement.vue';
 import GroupAdmin     from './pages/Administration/GroupAdmin.vue';
 import AppAdmin       from './pages/Administration/AppAdmin.vue';
 import ServiceAdmin   from './pages/Administration/ServiceAdmin.vue';
@@ -80,7 +80,7 @@ export default {
         Service,
         GroupManagement,
         AppManagement,
-        PlayerGroupManagement,
+        PlayerManagement,
         GroupAdmin,
         AppAdmin,
         ServiceAdmin,
@@ -123,7 +123,7 @@ export default {
                 'Service',
                 'GroupManagement',
                 'AppManagement',
-                'PlayerGroupManagement',
+                'PlayerManagement',
                 'GroupAdmin',
                 'AppAdmin',
                 'ServiceAdmin',

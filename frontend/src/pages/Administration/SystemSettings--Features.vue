@@ -6,7 +6,7 @@
             <label class="form-check-label" for="groups_require_valid_token">
                 Check this if the API for applications should not return groups
                 for a player account if one or more of its characters have an invalid ESI token
-                (no token or tokens without any scopes count as invalid), "managed" accounts
+                (no token or tokens without any scopes count as invalid), "manually managed" accounts
                 are excluded from this.<br>
                 This also affects groups passed to Neucore plugins.
             </label>
@@ -82,19 +82,29 @@
 
     <div class="card-header mt-3"><h6>Login</h6></div>
     <div class="card-body">
-        <p>"Managed" Logins</p>
+        <p class="fw-bold">"No-Scopes" Login</p>
         <div class="form-check">
             <label class="form-check-label" for="allow_login_managed">
-                Enables the login URL for managed accounts that do not require ESI scopes.
+                Enables the login URL that do not require any ESI scopes.
             </label>
             <input class="form-check-input" type="checkbox" value="1"
                    id="allow_login_managed" name="allow_login_managed"
                    :checked="settings.allow_login_managed === '1'"
                    @change="$emit('changeSetting', 'allow_login_managed', $event.target.checked ? '1' : '0')">
         </div>
+        <p class="mt-2 small text-muted">
+            Login URL:
+            <a :href="`${backendHost}/login/${loginNames.managed}`">{{ backendHost }}/login/{{ loginNames.managed }}</a>
+            <br>
+            This login URL does not require any ESI scopes. If used it will disable groups for the player account
+            if the "Groups Deactivation" feature above is enabled, unless the
+            <!--suppress HtmlUnknownAnchorTarget --> <a href="#PlayerManagement">account status</a>
+            is "manually managed".
+        </p>
 
         <hr>
-        <p>Alt Logins</p>
+
+        <p class="fw-bold">Alt Logins</p>
         <div class="form-check">
             <label class="form-check-label" for="disable_alt_login">
                 Disables login with characters that are not the main character of an account.
@@ -108,7 +118,7 @@
 
     <div class="card-header mt-3"><h6>Miscellaneous</h6></div>
     <div class="card-body">
-        <p>Character Deletion</p>
+        <p class="fw-bold">Character Deletion</p>
         <div class="form-check">
             <label class="form-check-label" for="allow_character_deletion">
                 Check to allow users to delete their characters.
@@ -120,7 +130,8 @@
         </div>
 
         <hr>
-        <p>Structure Name Updates</p>
+
+        <p class="fw-bold">Structure Name Updates</p>
         <p>
             This is to reduce 403 errors from ESI. No API request is made to update the name for a structure
             if this has previously failed multiple times for a specified number of days.
@@ -157,6 +168,7 @@ export default {
         return {
             settings: { ...this.store.state.settings },
             messages: Data.messages,
+            loginNames: Data.loginNames,
             isLoading: false,
             allAlliancesChanged: 0,
             allCorporationsChanged: 0,
@@ -164,11 +176,13 @@ export default {
             allCorporations: [],
             accountDeactivationAlliances: [],
             accountDeactivationCorporations: [],
+            backendHost: null,
         }
     },
 
     mounted() {
         readSettings(this);
+        this.backendHost = Data.envVars.backendHost;
     },
 
     watch: {

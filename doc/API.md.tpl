@@ -36,7 +36,7 @@ Allows a player to add and remove roles from players.
 
 #### user-manager
 
-Allows a player to add and remove groups from players with "managed" status.
+Allows a player to add and remove groups from any player and change the account status.
 
 {user-manager}
 

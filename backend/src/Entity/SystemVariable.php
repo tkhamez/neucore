@@ -51,7 +51,7 @@ class SystemVariable implements \JsonSerializable
     /**
      * System settings variable, "0" or "1".
      *
-     * Activates the login URL for managed accounts.
+     * Activates the login URL without ESI scopes.
      *
      * Scope = settings
      */

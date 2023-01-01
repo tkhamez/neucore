@@ -184,13 +184,15 @@
                 </div>
             </div>
             <div class="col-lg-4">
-                <div class="player-hdl">
-                    <h2>Account</h2>
+                <div class="player-headline">
+                    <h2 class="me-2">Account</h2>
                     <span class="text-muted">{{ player.name }} #{{ player.id }}</span>
-                    <span v-if="player.status === 'managed'" class="text-muted"> (manually managed)</span>
                 </div>
                 <div class="card border-secondary mb-3">
-                    <h3 class="card-header">Groups</h3>
+                    <div class="card-header groups-headline">
+                        <h3 class="me-2 mb-0">Groups</h3>
+                        <span v-if="player.status === 'managed'" class="text-muted"> (manually managed)</span>
+                    </div>
                     <ul class="list-group list-group-flush" :class="{ 'groups-disabled': deactivated }">
                         <li v-for="group in player.groups" class="list-group-item">
                             {{ group.name }}
@@ -399,12 +401,13 @@ function getEveLogins(vm) {
 </script>
 
 <style lang="scss" scoped>
-    .player-hdl {
+    .player-headline,
+    .groups-headline {
         position: relative;
 
-        h2 {
+        h2,
+        h3 {
             display: inline-block;
-            margin-right: 10px;
         }
     }
 

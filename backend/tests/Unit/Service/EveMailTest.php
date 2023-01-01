@@ -194,7 +194,7 @@ class EveMailTest extends TestCase
         $this->om->clear();
 
         $result = $this->eveMail->invalidTokenMaySend(100100);
-        $this->assertSame('Player account status is managed.', $result);
+        $this->assertSame('Player account status is manually managed.', $result);
     }
 
     public function testInvalidTokenMaySendAllianceAndCorporationDoesNotMatch()

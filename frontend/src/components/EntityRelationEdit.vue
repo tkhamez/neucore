@@ -3,7 +3,7 @@ Select and table to add and remove objects from other objects.
 -->
 
 <template>
-    <div class="card border-secondary mb-3">
+    <div class="card border-secondary mb-3" :class="cardClass">
 
         <div v-cloak v-if="showGroupsEntity" class="modal fade" id="showGroupsModal">
             <div class="modal-dialog">
@@ -27,7 +27,7 @@ Select and table to add and remove objects from other objects.
             </div>
         </div>
 
-        <div v-cloak class="card-body">
+        <div v-cloak class="card-body" :class="cardBodyClass">
             <p v-cloak v-if="type === 'Group' && contentType === 'managers'">
                 Managers can add and remove players to a group.
             </p>
@@ -254,6 +254,10 @@ export default {
         sticky: Number,
 
         searchCurrentOnly: Boolean,
+
+        cardClass: String,
+
+        cardBodyClass: String,
     },
 
     data() {

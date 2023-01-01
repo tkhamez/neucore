@@ -144,7 +144,7 @@ class EveMail
         $player = $char->getPlayer();
 
         if (! $ignoreAlreadySentAndStatus && $player->getStatus() === Player::STATUS_MANAGED) {
-            return 'Player account status is managed.';
+            return 'Player account status is manually managed.';
         }
 
         // check if player account has at least one character in one of the configured alliances or corporations

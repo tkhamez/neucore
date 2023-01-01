@@ -121,7 +121,7 @@ Service API
 
 #### user-manager
 
-Allows a player to add and remove groups from players with "managed" status.
+Allows a player to add and remove groups from any player and change the account status.
 
 Character API
 - Returns a list of characters (together with the name of the player account/main character)

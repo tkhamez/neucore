@@ -44,8 +44,8 @@
                            class="dropdown-item" :class="{ active: page === 'AppManagement' }"
                            href="#AppManagement">Apps</a>
                         <a v-if="h.hasRole('user-manager')"
-                           class="dropdown-item" :class="{ active: page === 'PlayerGroupManagement' }"
-                           href="#PlayerGroupManagement">Player Groups</a>
+                           class="dropdown-item" :class="{ active: page === 'PlayerManagement' }"
+                           href="#PlayerManagement">Player</a>
                     </div>
                 </li>
                 <li v-if="h.hasAnyRole([
@@ -154,7 +154,7 @@ export default {
         return {
             h: new Helper(this),
             settings: toRef(this.store.state, 'settings'),
-            managePages: ['GroupManagement', 'AppManagement', 'PlayerGroupManagement'],
+            managePages: ['GroupManagement', 'AppManagement', 'PlayerManagement'],
             adminPages: [
                 'GroupAdmin', 'ServiceAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings',
                 'EVELoginAdmin', 'Statistics'

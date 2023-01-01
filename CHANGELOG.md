@@ -5,7 +5,8 @@
 dd mm yyyy
 
 - **BC break**: Removed compatibility with plugins without a plugin.yml file.
-- Small layout fix.
+- The user interface and documentation regarding the account status have been improved.
+- Small layout improvements and fixes.
 
 ## 1.40.0
 

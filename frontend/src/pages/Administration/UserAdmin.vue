@@ -225,7 +225,7 @@
                         {{ playerEdit.status }}
                         <span v-if="h.hasRole('user-manager')" class="text-muted">
                             (change here:
-                            <a :href="`#PlayerGroupManagement/${playerEdit.id}`">Player Groups Management</a>)
+                            <a :href="`#PlayerManagement/${playerEdit.id}`">Player Management</a>)
                         </span>
                     </p>
 
