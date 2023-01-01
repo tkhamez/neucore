@@ -834,6 +834,8 @@ ESI endpoint for apps:
 
 ## 1.0.0
 
+With this release, the user interface is complete.
+
 5 May 2019
 
 - New: Customization for some texts, links and images and the default theme.
@@ -919,7 +921,6 @@ Other things:
 
 24 Aug 2018
 
-- User interface completed.
 - Fully functional frontend for all API endpoints except for group membership requests.
 
 ## 0.3.0
