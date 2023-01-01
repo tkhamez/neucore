@@ -62,15 +62,15 @@
                         <a v-if="h.hasRole('app-admin')"
                             class="dropdown-item" :class="{ active: page === 'AppAdmin' }"
                             href="#AppAdmin">Apps</a>
-                        <a v-if="h.hasRole('service-admin')"
-                            class="dropdown-item" :class="{ active: page === 'ServiceAdmin' }"
-                            href="#ServiceAdmin">Services</a>
                         <a v-if="h.hasRole('user-admin')"
                            class="dropdown-item" :class="{ active: page === 'UserAdmin' }"
                            href="#UserAdmin">Users</a>
                         <a v-if="h.hasRole('user-admin')"
                            class="dropdown-item" :class="{ active: page === 'RoleAdmin' }"
                            href="#RoleAdmin">Roles</a>
+                        <a v-if="h.hasRole('service-admin')"
+                           class="dropdown-item" :class="{ active: page === 'ServiceAdmin' }"
+                           href="#ServiceAdmin">Services</a>
                         <a v-if="h.hasRole('tracking-admin')"
                            class="dropdown-item" :class="{ active: page === 'TrackingAdmin' }"
                            href="#TrackingAdmin">Tracking</a>
@@ -118,7 +118,7 @@
                         aria-haspopup="true" aria-expanded="false">
                     {{ authChar.name }}
                 </button>
-                <div class="dropdown-menu scrollable-menu">
+                <div class="dropdown-menu dropdown-menu-end scrollable-menu">
                     <a href="#" @click.prevent="logout()" class="dropdown-item">
                         <span role="img" class="fas fa-sign-out"></span>
                         Sign out

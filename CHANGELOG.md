@@ -5,6 +5,7 @@
 dd mm yyyy
 
 - **BC break**: Removed compatibility with plugins without a plugin.yml file.
+- Small layout fix.
 
 ## 1.40.0
 
