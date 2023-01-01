@@ -8,13 +8,6 @@
 
 # Neucore - Alliance Core Services
 
-A web application for [EVE Online](https://www.eveonline.com) communities to organise their members into groups, 
-monitor them and provide access to external services.
-
-Demo: https://neucore.tian-space.net.
-
-## Table of Contents
-
 <!-- toc -->
 
 - [Overview](#overview)
@@ -29,12 +22,21 @@ Demo: https://neucore.tian-space.net.
 
 ## Overview
 
+A web application for [EVE Online](https://www.eveonline.com) communities to organise their members into groups,
+monitor them and provide access to external services.
+
+This application focuses on providing core functionality related to player identities and an API that other
+applications can build upon.
+
+Demo: https://neucore.tian-space.net.
+
 Main features:
 
 - Management of group memberships, manually and with various ways to automate membership.
 - API for various data including an [ESI](http://esi.evetech.net) proxy for all characters.
 - Service registration via [plugins](https://github.com/tkhamez/neucore-plugin) (e.g. Discord, Mumble).
 - Corporation member tracking and character watchlists.
+- ... [and much more](doc/Documentation.md#features)
 
 For more information, see the [doc](doc/README.md) directory, which also contains some 
 [screenshots](doc/screenshots/README.md).
