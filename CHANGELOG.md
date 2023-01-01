@@ -1,10 +1,10 @@
 # Changelog
 
-## next
+## 1.41.0
 
-dd mm yyyy
+1 Jan 2023
 
-- **BC break**: Removed compatibility with plugins without a plugin.yml file.
+- **BC break**: Removed compatibility with plugins without a plugin.yml file (see 1.40.0 below for details).
 - **BC Break**: Renamed the URL `/login/core.managed` to `/login/core.no-scopes`.
 - The user interface and documentation regarding the account status have been improved.
 - Small layout improvements and fixes.
