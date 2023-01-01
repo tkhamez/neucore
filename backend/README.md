@@ -173,8 +173,8 @@ vendor/bin/doctrine-migrations migrations:diff
 
 Execute a single migration, e.g.:
 ```
-vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20210123141218 --up
-vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20210123141218 --down
+vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20230101183432 --up
+vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20230101183432 --down
 ```
 
 Create/sync the database schema - **This can delete data - backup your database first!** (For example, there are

@@ -84,17 +84,17 @@
     <div class="card-body">
         <p class="fw-bold">"No-Scopes" Login</p>
         <div class="form-check">
-            <label class="form-check-label" for="allow_login_managed">
+            <label class="form-check-label" for="allow_login_no_scopes">
                 Enables the login URL that do not require any ESI scopes.
             </label>
             <input class="form-check-input" type="checkbox" value="1"
-                   id="allow_login_managed" name="allow_login_managed"
-                   :checked="settings.allow_login_managed === '1'"
-                   @change="$emit('changeSetting', 'allow_login_managed', $event.target.checked ? '1' : '0')">
+                   id="allow_login_no_scopes" name="allow_login_no_scopes"
+                   :checked="settings.allow_login_no_scopes === '1'"
+                   @change="$emit('changeSetting', 'allow_login_no_scopes', $event.target.checked ? '1' : '0')">
         </div>
         <p class="mt-2 small text-muted">
             Login URL:
-            <a :href="`${backendHost}/login/${loginNames.managed}`">{{ backendHost }}/login/{{ loginNames.managed }}</a>
+            <a :href="`${backendHost}/login/${loginNames.noScopes}`">{{ backendHost }}/login/{{ loginNames.noScopes }}</a>
             <br>
             This login URL does not require any ESI scopes. If used it will disable groups for the player account
             if the "Groups Deactivation" feature above is enabled, unless the

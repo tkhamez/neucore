@@ -91,29 +91,29 @@ class AuthControllerTest extends WebTestCase
         $this->assertStringStartsWith($this->getStatePrefix(EveLogin::NAME_DEFAULT), $sess->get('auth_state'));
     }
 
-    public function testLogin_ManagedForbidden()
+    public function testLogin_NoScopesForbidden()
     {
-        $response = $this->runApp('GET', '/login/'.EveLogin::NAME_MANAGED);
+        $response = $this->runApp('GET', '/login/'.EveLogin::NAME_NO_SCOPES);
 
         $this->assertSame(403, $response->getStatusCode());
         $this->assertSame('Forbidden.', $response->getBody()->__toString());
     }
 
-    public function testLogin_ManagedOrManagedAlt()
+    public function testLogin_NoScopesOrNoScopesAlt()
     {
-        // activate login "managed"
-        $setting = new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED);
+        // activate "no-scopes" login
+        $setting = new SystemVariable(SystemVariable::ALLOW_LOGIN_NO_SCOPES);
         $setting->setValue('1');
         $this->helper->getObjectManager()->persist($setting);
         $this->helper->getObjectManager()->flush();
 
-        $response = $this->runApp('GET', '/login/'.EveLogin::NAME_MANAGED);
+        $response = $this->runApp('GET', '/login/'.EveLogin::NAME_NO_SCOPES);
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
-        $this->assertStringStartsWith($this->getStatePrefix(EveLogin::NAME_MANAGED), $sess->get('auth_state'));
+        $this->assertStringStartsWith($this->getStatePrefix(EveLogin::NAME_NO_SCOPES), $sess->get('auth_state'));
     }
 
     public function testLogin_Mail()

@@ -54,7 +54,7 @@ export default class Data {
     static loginNames = {
         default:    'core.default',
         tracking:   'core.tracking',
-        managed:    'core.managed',
+        noScopes:    'core.no-scopes',
         mail:       'core.mail',
     }
 

@@ -115,7 +115,7 @@ class SettingsControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
-            ['name' => SystemVariable::ALLOW_LOGIN_MANAGED, 'value' => '0'],
+            ['name' => SystemVariable::ALLOW_LOGIN_NO_SCOPES, 'value' => '0'],
             ['name' => SystemVariable::DISABLE_ALT_LOGIN, 'value' => '0'],
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
             ['name' => SystemVariable::MAIL_CHARACTER, 'value' => 'The char'],
@@ -375,7 +375,7 @@ class SettingsControllerTest extends WebTestCase
             'refresh' => 'refresh-token',
             'expires' => time() + 10000,
         ]))->setScope(SystemVariable::SCOPE_BACKEND);
-        $var8 = (new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED))->setValue("0")
+        $var8 = (new SystemVariable(SystemVariable::ALLOW_LOGIN_NO_SCOPES))->setValue("0")
             ->setScope(SystemVariable::SCOPE_SETTINGS);
         $var9 = (new SystemVariable(SystemVariable::DISABLE_ALT_LOGIN))->setValue('0')
             ->setScope(SystemVariable::SCOPE_SETTINGS);

@@ -55,7 +55,7 @@ class SystemVariable implements \JsonSerializable
      *
      * Scope = settings
      */
-    public const ALLOW_LOGIN_MANAGED = 'allow_login_managed';
+    public const ALLOW_LOGIN_NO_SCOPES = 'allow_login_no_scopes';
 
     /**
      * System settings variable, "0" or "1".
@@ -339,7 +339,7 @@ class SystemVariable implements \JsonSerializable
     {
         switch ($this->name) {
             case self::ALLOW_CHARACTER_DELETION:
-            case self::ALLOW_LOGIN_MANAGED:
+            case self::ALLOW_LOGIN_NO_SCOPES:
             case self::DISABLE_ALT_LOGIN:
             case self::GROUPS_REQUIRE_VALID_TOKEN:
             case self::MAIL_INVALID_TOKEN_ACTIVE:

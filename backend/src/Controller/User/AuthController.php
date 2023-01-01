@@ -116,11 +116,11 @@ class AuthController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        // check "allow managed login" settings
-        if ($loginName === EveLogin::NAME_MANAGED) {
-            $allowLoginManaged = $this->repositoryFactory->getSystemVariableRepository()
-                ->findOneBy(['name' => SystemVariable::ALLOW_LOGIN_MANAGED]);
-            if (!$allowLoginManaged || $allowLoginManaged->getValue() !== '1') {
+        // check "allow no-scopes login" settings
+        if ($loginName === EveLogin::NAME_NO_SCOPES) {
+            $allowLoginNoScopes = $this->repositoryFactory->getSystemVariableRepository()
+                ->findOneBy(['name' => SystemVariable::ALLOW_LOGIN_NO_SCOPES]);
+            if (!$allowLoginNoScopes || $allowLoginNoScopes->getValue() !== '1') {
                 $this->response->getBody()->write('Forbidden.');
                 return $this->response->withStatus(403);
             }
@@ -175,7 +175,7 @@ class AuthController extends BaseController
         $errorMessage = '';
         switch ($loginName) {
             case EveLogin::NAME_DEFAULT:
-            case EveLogin::NAME_MANAGED:
+            case EveLogin::NAME_NO_SCOPES:
                 $result = $userAuth->login($eveAuth);
                 if ($result === UserAuth::LOGIN_AUTHENTICATED_SUCCESS) {
                     $success = true;
@@ -327,7 +327,7 @@ class AuthController extends BaseController
     {
         if (empty($loginId)) {
             return '/#login-unknown';
-        } elseif (in_array($loginId, [EveLogin::NAME_DEFAULT, EveLogin::NAME_MANAGED])) {
+        } elseif (in_array($loginId, [EveLogin::NAME_DEFAULT, EveLogin::NAME_NO_SCOPES])) {
             return $alt ? '/#login-alt' : '/#login';
         } elseif ($loginId === EveLogin::NAME_MAIL) {
             return '/#login-mail';
@@ -355,7 +355,7 @@ class AuthController extends BaseController
     private function getLoginScopes(string $state): array
     {
         $loginName = $this->getLoginNameFromState($state);
-        if ($loginName === EveLogin::NAME_MANAGED) {
+        if ($loginName === EveLogin::NAME_NO_SCOPES) {
             return [];
         } elseif ($loginName === EveLogin::NAME_MAIL) {
             return [EveLogin::SCOPE_MAIL];

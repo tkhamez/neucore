@@ -5,6 +5,7 @@
 dd mm yyyy
 
 - **BC break**: Removed compatibility with plugins without a plugin.yml file.
+- **BC Break**: Renamed the URL `/login/core.managed` to `/login/core.no-scopes`.
 - The user interface and documentation regarding the account status have been improved.
 - Small layout improvements and fixes.
 

@@ -65,7 +65,7 @@
             <div v-cloak v-if="contentType === 'login'" class="card border-secondary mb-3">
                 <div class="card-body">
                     <p v-cloak v-if="activeLogin">
-                        Login URL <a :href="loginUrl">{{ loginUrl }}</a>.
+                        Login URL <a :href="loginUrl">{{ loginUrl }}</a>
                     </p>
                     <div v-cloak v-if="activeLogin">
                         <label class="col-form-label w-100 pb-1">

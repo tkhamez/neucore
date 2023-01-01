@@ -36,9 +36,9 @@ class EveLogin implements \JsonSerializable
     public const NAME_TRACKING = self::INTERNAL_LOGIN_PREFIX . 'tracking';
 
     /**
-     * Login for "managed" accounts.
+     * Login without any ESI scopes.
      */
-    public const NAME_MANAGED = self::INTERNAL_LOGIN_PREFIX . 'managed';
+    public const NAME_NO_SCOPES = self::INTERNAL_LOGIN_PREFIX . 'no-scopes';
 
     /**
      * Login of the character that is used to send mails.
@@ -51,7 +51,7 @@ class EveLogin implements \JsonSerializable
     public const INTERNAL_LOGIN_NAMES = [
         self::NAME_DEFAULT,
         self::NAME_TRACKING,
-        self::NAME_MANAGED,
+        self::NAME_NO_SCOPES,
         self::NAME_MAIL,
     ];
 

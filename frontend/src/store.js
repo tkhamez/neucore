@@ -55,7 +55,7 @@ const state = reactive({
         rate_limit_app_max_requests: '',
         rate_limit_app_reset_time: '',
         rate_limit_app_active: '',
-        allow_login_managed: '',
+        allow_login_no_scopes: '',
         disable_alt_login: '',
         allow_character_deletion: '',
         fetch_structure_name_error_days: '',

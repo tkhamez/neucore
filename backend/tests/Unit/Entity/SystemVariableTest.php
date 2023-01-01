@@ -41,7 +41,7 @@ class SystemVariableTest extends TestCase
         $this->assertSame('1', $var->setValue('some text')->getValue());
         $this->assertSame('0', $var->setValue('')->getValue());
 
-        $var2 = new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED);
+        $var2 = new SystemVariable(SystemVariable::ALLOW_LOGIN_NO_SCOPES);
         $this->assertSame('1', $var2->setValue('some text')->getValue());
 
         $var3 = new SystemVariable(SystemVariable::DISABLE_ALT_LOGIN);
