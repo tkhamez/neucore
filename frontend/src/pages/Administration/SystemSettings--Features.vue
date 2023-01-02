@@ -85,7 +85,7 @@
         <p class="fw-bold">"No-Scopes" Login</p>
         <div class="form-check">
             <label class="form-check-label" for="allow_login_no_scopes">
-                Enables the login URL that do not require any ESI scopes.
+                Enables the login URL that does not require any ESI scopes.
             </label>
             <input class="form-check-input" type="checkbox" value="1"
                    id="allow_login_no_scopes" name="allow_login_no_scopes"
@@ -104,7 +104,7 @@
 
         <hr>
 
-        <p class="fw-bold">Alt Logins</p>
+        <p class="fw-bold">No Alt Logins</p>
         <div class="form-check">
             <label class="form-check-label" for="disable_alt_login">
                 Disables login with characters that are not the main character of an account.
