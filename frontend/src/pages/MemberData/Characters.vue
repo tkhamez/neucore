@@ -34,7 +34,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="group in result">
+                    <tr v-for="group in listResult">
                         <td class="text-nowrap">
                             <span v-if="group.player_id">
                                 <a href="#" v-on:click.prevent="h.showCharacters(group.player_id)">
@@ -73,16 +73,16 @@ export default {
         return {
             h: new Helper(this),
             input: '',
-            result: [],
+            listResult: [],
             searchResult: [],
         }
     },
     methods: {
         find() {
-            this.result = [];
+            this.listResult = [];
             new PlayerApi().playerGroupCharactersByAccount(this.input, (error, data) => {
                 if (! error) {
-                    this.result = data;
+                    this.listResult = data;
                 }
             })
         }

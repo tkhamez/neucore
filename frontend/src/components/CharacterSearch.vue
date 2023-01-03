@@ -28,6 +28,8 @@ export default {
         currentOnly: Boolean, // false = include renamed and moved characters or not (only for admin=true)
     },
 
+    emits: ['result'],
+
     data() {
         return {
             searchTerm: '',
