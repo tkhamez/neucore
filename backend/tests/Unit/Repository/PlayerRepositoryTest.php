@@ -258,53 +258,53 @@ class PlayerRepositoryTest extends TestCase
 
         $this->assertSame(8, count($actual));
         $this->assertSame([ // existing char
-            'character_id' => 1,
-            'character_name' => 'c1',
-            'player_id' => self::$player1->getId(),
-            'player_name' => 'c1',
-        ], $actual[0]);
+            'characterId' => 1,
+            'characterName' => 'c1',
+            'playerId' => self::$player1->getId(),
+            'playerName' => 'c1',
+        ], $actual[0]->jsonSerialize());
         $this->assertSame([ // existing char
-            'character_id' => 12,
-            'character_name' => 'c1b',
-            'player_id' => self::$player1->getId(),
-            'player_name' => 'c1',
-        ], $actual[1]);
+            'characterId' => 12,
+            'characterName' => 'c1b',
+            'playerId' => self::$player1->getId(),
+            'playerName' => 'c1',
+        ], $actual[1]->jsonSerialize());
         $this->assertSame([ // existing char
-            'character_id' => 1313,
-            'character_name' => 'c1c',
-            'player_id' => self::$player1->getId(),
-            'player_name' => 'c1',
-        ], $actual[2]);
+            'characterId' => 1313,
+            'characterName' => 'c1c',
+            'playerId' => self::$player1->getId(),
+            'playerName' => 'c1',
+        ], $actual[2]->jsonSerialize());
         $this->assertSame([ // renamed character
-            'character_id' => 6,
-            'character_name' => 'c6-41',
-            'player_id' => self::$player6->getId(),
-            'player_name' => 'c6',
-        ], $actual[3]);
+            'characterId' => 6,
+            'characterName' => 'c6-41',
+            'playerId' => self::$player6->getId(),
+            'playerName' => 'c6',
+        ], $actual[3]->jsonSerialize());
         $this->assertSame([ // renamed character
-            'character_id' => 6,
-            'character_name' => 'c6-51',
-            'player_id' => self::$player6->getId(),
-            'player_name' => 'c6',
-        ], $actual[4]);
+            'characterId' => 6,
+            'characterName' => 'c6-51',
+            'playerId' => self::$player6->getId(),
+            'playerName' => 'c6',
+        ], $actual[4]->jsonSerialize());
         $this->assertSame([ // moved out/deleted character - there are two entries, filtered by "distinct"
-            'character_id' => 21,
-            'character_name' => 'removed-21',
-            'player_id' => self::$player4->getId(),
-            'player_name' => 'c4',
-        ], $actual[5]);
+            'characterId' => 21,
+            'characterName' => 'removed-21',
+            'playerId' => self::$player4->getId(),
+            'playerName' => 'c4',
+        ], $actual[5]->jsonSerialize());
         $this->assertSame([ // moved back character
-            'character_id' => 21,
-            'character_name' => 'removed-21',
-            'player_id' => self::$player6->getId(),
-            'player_name' => 'c6',
-        ], $actual[6]);
+            'characterId' => 21,
+            'characterName' => 'removed-21',
+            'playerId' => self::$player6->getId(),
+            'playerName' => 'c6',
+        ], $actual[6]->jsonSerialize());
         $this->assertSame([ // removed character
-            'character_id' => 31,
-            'character_name' => 'removed-31',
-            'player_id' => self::$player4->getId(),
-            'player_name' => 'c4',
-        ], $actual[7]);
+            'characterId' => 31,
+            'characterName' => 'removed-31',
+            'playerId' => self::$player4->getId(),
+            'playerName' => 'c4',
+        ], $actual[7]->jsonSerialize());
     }
 
     public function testFindCharacters_CurrentOnly()
@@ -313,35 +313,35 @@ class PlayerRepositoryTest extends TestCase
 
         $this->assertSame(3, count($actual));
         $this->assertSame([ // existing char
-            'character_id' => 1,
-            'character_name' => 'c1',
-            'player_id' => self::$player1->getId(),
-            'player_name' => 'c1',
-        ], $actual[0]);
+            'characterId' => 1,
+            'characterName' => 'c1',
+            'playerId' => self::$player1->getId(),
+            'playerName' => 'c1',
+        ], $actual[0]->jsonSerialize());
         $this->assertSame([ // existing char
-            'character_id' => 12,
-            'character_name' => 'c1b',
-            'player_id' => self::$player1->getId(),
-            'player_name' => 'c1',
-        ], $actual[1]);
+            'characterId' => 12,
+            'characterName' => 'c1b',
+            'playerId' => self::$player1->getId(),
+            'playerName' => 'c1',
+        ], $actual[1]->jsonSerialize());
         $this->assertSame([ // existing char
-            'character_id' => 1313,
-            'character_name' => 'c1c',
-            'player_id' => self::$player1->getId(),
-            'player_name' => 'c1',
-        ], $actual[2]);
+            'characterId' => 1313,
+            'characterName' => 'c1c',
+            'playerId' => self::$player1->getId(),
+            'playerName' => 'c1',
+        ], $actual[2]->jsonSerialize());
     }
 
     public function testFindCharacters_byId()
     {
         $this->assertSame([], $this->repo->findCharacters('13', false));
 
-        $this->assertSame([[
-            'character_id' => 1313,
-            'character_name' => 'c1c',
-            'player_id' => self::$player1->getId(),
-            'player_name' => 'c1',
-        ]], $this->repo->findCharacters('1313', false));
+        $result = $this->repo->findCharacters('1313', false);
+        $this->assertSame(1, count($result));
+        $this->assertSame(1313, $result[0]->characterId);
+        $this->assertSame('c1c', $result[0]->characterName);
+        $this->assertSame(self::$player1->getId(), $result[0]->playerId);
+        $this->assertSame('c1', $result[0]->playerName);
     }
 
     public function testFindPlayersOfCharacters()

@@ -16,18 +16,18 @@ Result table for the character search
                 <tbody>
                     <tr v-for="char in searchResult">
                         <td>
-                            <img :src="h.characterPortrait(char.character_id, 32)" alt="portrait">
-                            {{ char.character_name }}
+                            <img :src="h.characterPortrait(char.characterId, 32)" alt="portrait">
+                            {{ char.characterName }}
                         </td>
                         <td v-if="h.hasRole('user-chars')">
-                            <a href="#" v-on:click.prevent="h.showCharacters(char.player_id)">
-                                {{ char.player_name }}</a> #{{ char.player_id }}
+                            <a href="#" v-on:click.prevent="h.showCharacters(char.playerId)">
+                                {{ char.playerName }}</a> #{{ char.playerId }}
                         </td>
                         <td v-if="selectedPlayers">
-                            <button v-if="!isSelected(char.player_id)" class="btn btn-success btn-sm"
-                                    @click="$emit('add', char.player_id)">Add</button>
-                            <button v-if="isSelected(char.player_id)" class="btn btn-danger btn-sm"
-                                    @click="$emit('remove', char.player_id)">Remove</button>
+                            <button v-if="!isSelected(char.playerId)" class="btn btn-success btn-sm"
+                                    @click="$emit('add', char.playerId)">Add</button>
+                            <button v-if="isSelected(char.playerId)" class="btn btn-danger btn-sm"
+                                    @click="$emit('remove', char.playerId)">Remove</button>
                         </td>
                     </tr>
                 </tbody>

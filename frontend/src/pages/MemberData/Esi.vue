@@ -8,7 +8,7 @@
                 <label for="selectedCharacter">EVE Character</label>
                 <multiselect v-model="selectedCharacter" :options="charSearchResult"
                              id="selectedCharacter"
-                             label="character_name" track-by="character_id"
+                             label="characterName" track-by="characterId"
                              :placeholder="messages.typeToSearch1"
                              :searchable="true"
                              :loading="charSearchIsLoading"
@@ -165,7 +165,7 @@ export default {
 
             const api = new ESIApi();
             const params = {
-                'character': this.selectedCharacter.character_id,
+                'character': this.selectedCharacter.characterId,
                 'login': this.selectedLoginName,
                 'route': this.esiRoute,
                 'debug': this.debug ? 'true' : 'false',

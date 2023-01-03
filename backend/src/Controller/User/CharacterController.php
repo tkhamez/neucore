@@ -7,13 +7,17 @@ declare(strict_types=1);
 namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
+use Neucore\Data\SearchResult;
+use Neucore\Entity\Character;
 use Neucore\Entity\Role;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Plugin\Exception;
 use Neucore\Service\Account;
 use Neucore\Service\Config;
 use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
+use Neucore\Service\ServiceRegistration;
 use Neucore\Service\UserAuth;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -27,27 +31,6 @@ use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
  * @OA\Tag(
  *     name="Character",
  *     description="Character related functions."
- * )
- * @OA\Schema(
- *     schema="SearchResult",
- *     required={"character_id", "character_name", "player_id", "player_name"},
- *     @OA\Property(
- *         property="character_id",
- *         type="integer",
- *         format="int64"
- *     ),
- *     @OA\Property(
- *         property="character_name",
- *         type="string"
- *     ),
- *     @OA\Property(
- *         property="player_id",
- *         type="integer"
- *     ),
- *     @OA\Property(
- *         property="player_name",
- *         type="string"
- *     )
  * )
  */
 class CharacterController extends BaseController
@@ -115,6 +98,12 @@ class CharacterController extends BaseController
      *         description="Do not include old character names or moved characters. Defaults to false.",
      *         @OA\Schema(type="string", enum={"true", "false"})
      *     ),
+     *     @OA\Parameter(
+     *         name="plugin",
+     *         in="query",
+     *         description="Include results from active service plugins. Defaults to false",
+     *         @OA\Schema(type="string", enum={"true", "false"})
+     *     ),
      *     @OA\Response(
      *         response="200",
      *         description="List of characters.",
@@ -127,17 +116,24 @@ class CharacterController extends BaseController
      * )
      * @noinspection PhpUnused
      */
-    public function findCharacter(string $name, ServerRequestInterface $request): ResponseInterface
-    {
+    public function findCharacter(
+        string $name,
+        ServerRequestInterface $request,
+        ServiceRegistration $serviceRegistration,
+    ): ResponseInterface {
         $name = trim($name);
         if (mb_strlen($name) < 3) {
             return $this->withJson([]);
         }
 
         $currentOnly = $this->getQueryParam($request, 'currentOnly') === 'true';
-        $retVal = $this->repositoryFactory->getPlayerRepository()->findCharacters($name, $currentOnly);
+        $result = $this->repositoryFactory->getPlayerRepository()->findCharacters($name, $currentOnly);
 
-        return $this->withJson($retVal);
+        if ($this->getQueryParam($request, 'plugin') === 'true') {
+            $result = $this->searchPlugins($name, $result, $serviceRegistration);
+        }
+
+        return $this->withJson($result);
     }
 
     /**
@@ -177,12 +173,12 @@ class CharacterController extends BaseController
         $retVal = [];
         $result = $this->repositoryFactory->getCharacterRepository()->findMainByNamePartialMatch($name);
         foreach ($result as $char) {
-            $retVal[] = [
-                'character_id' => $char->getId(),
-                'character_name' => $char->getName(),
-                'player_id' => $char->getPlayer()->getId(),
-                'player_name' => $char->getPlayer()->getName(),
-            ];
+            $retVal[] = new SearchResult(
+                $char->getId(),
+                $char->getName(),
+                $char->getPlayer()->getId(),
+                $char->getPlayer()->getName(),
+            );
         }
 
         return $this->withJson($retVal);
@@ -375,5 +371,55 @@ class CharacterController extends BaseController
         }
 
         return $this->flushAndReturn(201);
+    }
+
+    /**
+     * @param SearchResult[] $result
+     * @return SearchResult[]
+     */
+    private function searchPlugins(string $name, array $result, ServiceRegistration $serviceRegistration): array
+    {
+        foreach ($serviceRegistration->getServicesWithImplementation() as $service) {
+            if (!$service->getImplementation()) {
+                continue;
+            }
+
+            try {
+                $pluginResults = $service->getImplementation()->search($name);
+            } catch(Exception) {
+                continue;
+            }
+
+            foreach ($pluginResults as $pluginResult) {
+                $char = $this->repositoryFactory->getCharacterRepository()->find($pluginResult->getCharacterId());
+                if ($char && !$this->hasResult($result, $char)) {
+                    $result[] = new SearchResult(
+                        $char->getId(),
+                        $char->getName(),
+                        $char->getPlayer()->getId(),
+                        $char->getPlayer()->getName(),
+                    );
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param SearchResult[] $result
+     */
+    private function hasResult(array $result, Character $char): bool
+    {
+        foreach ($result as $item) {
+            if (
+                $item->characterId === $char->getId() &&
+                $item->characterName === $char->getName() &&
+                $item->playerId === $char->getPlayer()->getId()
+            ) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -8,6 +8,7 @@ namespace Neucore\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Data\PluginConfigurationFile;
 use Neucore\Data\PluginConfigurationDatabase;
+use Neucore\Plugin\ServiceInterface;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 
@@ -47,6 +48,8 @@ class Service implements \JsonSerializable
      * @var ?PluginConfigurationFile
      */
     private ?PluginConfigurationFile $configurationFile = null;
+
+    private ?ServiceInterface $implementation = null;
 
     public function jsonSerialize(
         bool $onlyRequired = true,
@@ -108,6 +111,17 @@ class Service implements \JsonSerializable
     public function setConfigurationFile(?PluginConfigurationFile $configurationFile): self
     {
         $this->configurationFile = $configurationFile;
+        return $this;
+    }
+
+    public function getImplementation(): ?ServiceInterface
+    {
+        return $this->implementation;
+    }
+
+    public function setImplementation(?ServiceInterface $implementation): self
+    {
+        $this->implementation = $implementation;
         return $this;
     }
 }

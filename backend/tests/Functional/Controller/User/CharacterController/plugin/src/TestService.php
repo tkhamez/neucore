@@ -4,7 +4,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Functional\Controller\PluginController;
+namespace Tests\Functional\Controller\User\CharacterController;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
@@ -15,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class TestService1 implements ServiceInterface
+class TestService implements ServiceInterface
 {
     public function __construct(LoggerInterface $logger, ServiceConfiguration $serviceConfiguration)
     {
@@ -23,7 +23,7 @@ class TestService1 implements ServiceInterface
 
     public function getAccounts(array $characters): array
     {
-        throw new Exception();
+        return [];
     }
 
     public function register(
@@ -37,10 +37,12 @@ class TestService1 implements ServiceInterface
 
     public function updateAccount(CoreCharacter $character, array $groups, ?CoreCharacter $mainCharacter): void
     {
+        throw new Exception();
     }
 
     public function updatePlayerAccount(CoreCharacter $mainCharacter, array $groups): void
     {
+        throw new Exception();
     }
 
     public function moveServiceAccount(int $toPlayerId, int $fromPlayerId): bool
@@ -53,12 +55,12 @@ class TestService1 implements ServiceInterface
         throw new Exception();
     }
 
-    public function getAllAccounts(): array
+    public function getAllPlayerAccounts(): array
     {
         throw new Exception();
     }
 
-    public function getAllPlayerAccounts(): array
+    public function getAllAccounts(): array
     {
         throw new Exception();
     }
@@ -70,11 +72,7 @@ class TestService1 implements ServiceInterface
         ResponseInterface $response,
         array $groups
     ): ResponseInterface {
-        if (($request->getQueryParams()['error'] ?? '') === '1') {
-            throw new Exception('Exception from plugin.');
-        }
-        $response->getBody()->write('Response from plugin.');
-        return $response;
+        throw new Exception();
     }
 
     public function onConfigurationChange(): void
@@ -83,6 +81,8 @@ class TestService1 implements ServiceInterface
 
     public function search(string $query): array
     {
-        throw new Exception();
+        return [
+            new ServiceAccountData(456, 'username', null, null, null, 'Plugin Name')
+        ];
     }
 }

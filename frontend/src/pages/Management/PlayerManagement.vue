@@ -17,9 +17,9 @@
                     <div class="list-group">
                         <a v-for="char in searchResult"
                            class="list-group-item list-group-item-action"
-                           :class="{ active: playerId === char.player_id }"
-                           :href="`#PlayerManagement/${char.player_id}`">
-                            {{ char.character_name }}
+                           :class="{ active: playerId === char.playerId }"
+                           :href="`#PlayerManagement/${char.playerId}`">
+                            {{ char.characterName }}
                         </a>
                     </div>
                 </div>

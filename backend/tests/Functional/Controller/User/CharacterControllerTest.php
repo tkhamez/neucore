@@ -5,11 +5,13 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
+use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
+use Neucore\Entity\Service;
 use Neucore\Factory\RepositoryFactory;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
@@ -96,39 +98,62 @@ class CharacterControllerTest extends WebTestCase
         $response1 = $this->runApp('GET', '/api/user/character/find-character/ser');
         $this->assertSame(200, $response1->getStatusCode());
         $this->assertSame([[
-            'character_id' => 456,
-            'character_name' => 'Another USER',
-            'player_id' => $this->playerId,
-            'player_name' => 'User',
+            'characterId' => 456,
+            'characterName' => 'Another USER',
+            'playerId' => $this->playerId,
+            'playerName' => 'User',
         ], [
-            'character_id' => 615,
-            'character_name' => 'Removed from User',
-            'player_id' => $this->playerId,
-            'player_name' => 'User',
+            'characterId' => 615,
+            'characterName' => 'Removed from User',
+            'playerId' => $this->playerId,
+            'playerName' => 'User',
         ], [
-            'character_id' => 96061222,
-            'character_name' => 'User',
-            'player_id' => $this->playerId,
-            'player_name' => 'User',
+            'characterId' => 96061222,
+            'characterName' => 'User',
+            'playerId' => $this->playerId,
+            'playerName' => 'User',
         ], [
-            'character_id' => 96061222,
-            'character_name' => "User's previous name",
-            'player_id' => $this->playerId,
-            'player_name' => 'User',
+            'characterId' => 96061222,
+            'characterName' => "User's previous name",
+            'playerId' => $this->playerId,
+            'playerName' => 'User',
         ]], $this->parseJsonBody($response1));
 
         $response2 = $this->runApp('GET', '/api/user/character/find-character/ser?currentOnly=true');
         $this->assertSame([[
-            'character_id' => 456,
-            'character_name' => 'Another USER',
-            'player_id' => $this->playerId,
-            'player_name' => 'User',
+            'characterId' => 456,
+            'characterName' => 'Another USER',
+            'playerId' => $this->playerId,
+            'playerName' => 'User',
         ], [
-            'character_id' => 96061222,
-            'character_name' => 'User',
-            'player_id' => $this->playerId,
-            'player_name' => 'User',
+            'characterId' => 96061222,
+            'characterName' => 'User',
+            'playerId' => $this->playerId,
+            'playerName' => 'User',
         ]], $this->parseJsonBody($response2));
+    }
+
+    public function testFindCharacter200_Plugins()
+    {
+        $this->setupDb();
+        $this->loginUser(9); // admin
+
+        $response = $this->runApp(
+            'GET',
+            '/api/user/character/find-character/lug?plugin=true',
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/CharacterController']],
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame([[
+            'characterId' => 456,
+            'characterName' => 'Another USER',
+            'playerId' => $this->playerId,
+            'playerName' => 'User'
+        ]], $this->parseJsonBody($response));
     }
 
     public function testFindPlayer403()
@@ -152,10 +177,10 @@ class CharacterControllerTest extends WebTestCase
         $this->assertSame(200, $response->getStatusCode());
 
         $this->assertSame([[
-            'character_id' => 96061222,
-            'character_name' => 'User',
-            'player_id' => $this->playerId,
-            'player_name' => 'User'
+            'characterId' => 96061222,
+            'characterName' => 'User',
+            'playerId' => $this->playerId,
+            'playerName' => 'User'
         ]], $this->parseJsonBody($response));
     }
 
@@ -457,9 +482,15 @@ class CharacterControllerTest extends WebTestCase
             ->setOldName("User's previous name")
             ->setChangeDate(new \DateTime('2021-04-07 15:07:00'));
 
+        $conf = new PluginConfigurationDatabase();
+        $conf->directoryName = 'plugin';
+        $conf->active = true;
+        $service = (new Service())->setName('S1')->setConfigurationDatabase($conf);
+
         $this->helper->getObjectManager()->persist($corp);
         $this->helper->getObjectManager()->persist($removedChar);
         $this->helper->getObjectManager()->persist($renamed);
+        $this->helper->getObjectManager()->persist($service);
         $this->helper->getObjectManager()->flush();
     }
 }

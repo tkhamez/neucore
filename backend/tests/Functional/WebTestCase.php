@@ -23,7 +23,7 @@ class WebTestCase extends TestCase
      * @param string $requestUri the request URI
      * @param string|array|object|null $requestData the request data
      * @param array|null $headers
-     * @param array $mocks key/value paris for the dependency injection container
+     * @param array $mocks key/value pairs for the dependency injection container
      * @param string[][] $envVars [[var, value]]
      * @return ResponseInterface|null
      */

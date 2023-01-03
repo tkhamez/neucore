@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-lg-6">
             <character-search v-if="h.hasRole('user-chars')" v-on:result="searchResult = $event"
-                              :admin="true"></character-search>
+                              :admin="true" :optionPlugin="true"></character-search>
             <character-result v-if="h.hasRole('user-chars')" :searchResult="searchResult"
                               :admin="true"></character-result>
         </div>

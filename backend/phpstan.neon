@@ -42,7 +42,7 @@ parameters:
 			path: %currentWorkingDirectory%/tests/*
 		-
 			message: '#has an unused parameter \$logger#'
-			path: %currentWorkingDirectory%/tests/*/*TestService*.php
+			path: %currentWorkingDirectory%/tests/*
 		-
 			message: '#Class Tests\\Client extends @final class GuzzleHttp\\Client.#'
 			path: %currentWorkingDirectory%/tests/Client.php

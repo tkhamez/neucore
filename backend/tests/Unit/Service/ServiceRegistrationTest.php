@@ -211,6 +211,36 @@ class ServiceRegistrationTest extends TestCase
         $this->assertNull($this->serviceRegistration->getServiceImplementation($service));
     }
 
+    public function testGetServicesWithImplementation()
+    {
+        $conf1 = new PluginConfigurationDatabase();
+        $conf1->directoryName = 'plugin-name';
+        $conf1->active = true;
+        $service1 = (new Service())->setName('S1')->setConfigurationDatabase($conf1);
+
+        $conf2 = new PluginConfigurationDatabase();
+        $conf2->directoryName = 'plugin-name';
+        $conf2->active = false;
+        $service2 = (new Service())->setName('S2')->setConfigurationDatabase($conf2);
+
+        $conf3 = new PluginConfigurationDatabase();
+        $conf3->directoryName = 'plugin-name';
+        $conf3->active = true;
+        $service3 = (new Service())->setName('S3')->setConfigurationDatabase($conf3);
+
+        $this->om->persist($service1);
+        $this->om->persist($service2);
+        $this->om->persist($service3);
+        $this->om->flush();
+        $this->om->clear();
+
+        $actual = $this->serviceRegistration->getServicesWithImplementation([$service1->getId(), $service2->getId()]);
+
+        $this->assertSame(1, count($actual));
+        $this->assertSame($service1->getId(), $actual[0]->getId());
+        $this->assertInstanceOf(ServiceInterface::class, $actual[0]->getImplementation());
+    }
+
     public function testGetServiceImplementation()
     {
         // add same prefix to test, so that the new path is added, not replaced

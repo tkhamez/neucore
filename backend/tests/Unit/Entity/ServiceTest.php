@@ -9,7 +9,9 @@ use Neucore\Data\PluginConfigurationFile;
 use Neucore\Data\PluginConfigurationURL;
 use Neucore\Entity\Service;
 use Neucore\Data\PluginConfigurationDatabase;
+use Neucore\Plugin\ServiceConfiguration;
 use PHPUnit\Framework\TestCase;
+use Tests\Logger;
 
 class ServiceTest extends TestCase
 {
@@ -180,5 +182,12 @@ class ServiceTest extends TestCase
         $actual = (new Service())->setConfigurationFile($data)->getConfigurationFile();
 
         $this->assertSame($data, $actual);
+    }
+
+    public function testSetGetImplementation()
+    {
+        $impl = new ServiceTest_ServiceImplementation(new Logger(''), new ServiceConfiguration(1, [], ''));
+        $actual = (new Service())->setImplementation($impl)->getImplementation();
+        $this->assertSame($impl, $actual);
     }
 }

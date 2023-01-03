@@ -1,10 +1,6 @@
 <?php
-/** @noinspection PhpUnused */
-/** @noinspection PhpIllegalPsrClassPathInspection */
 
-declare(strict_types=1);
-
-namespace Tests\Functional\Controller\PluginController;
+namespace Tests\Unit\Entity;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
@@ -15,7 +11,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class TestService1 implements ServiceInterface
+class ServiceTest_ServiceImplementation implements ServiceInterface
 {
     public function __construct(LoggerInterface $logger, ServiceConfiguration $serviceConfiguration)
     {
@@ -23,7 +19,7 @@ class TestService1 implements ServiceInterface
 
     public function getAccounts(array $characters): array
     {
-        throw new Exception();
+        return [];
     }
 
     public function register(
@@ -45,22 +41,22 @@ class TestService1 implements ServiceInterface
 
     public function moveServiceAccount(int $toPlayerId, int $fromPlayerId): bool
     {
-        return true;
+        return false;
     }
 
     public function resetPassword(int $characterId): string
     {
-        throw new Exception();
+        return '';
     }
 
     public function getAllAccounts(): array
     {
-        throw new Exception();
+        return [];
     }
 
     public function getAllPlayerAccounts(): array
     {
-        throw new Exception();
+        return [];
     }
 
     public function request(
@@ -70,11 +66,7 @@ class TestService1 implements ServiceInterface
         ResponseInterface $response,
         array $groups
     ): ResponseInterface {
-        if (($request->getQueryParams()['error'] ?? '') === '1') {
-            throw new Exception('Exception from plugin.');
-        }
-        $response->getBody()->write('Response from plugin.');
-        return $response;
+        throw new Exception();
     }
 
     public function onConfigurationChange(): void
@@ -83,6 +75,6 @@ class TestService1 implements ServiceInterface
 
     public function search(string $query): array
     {
-        throw new Exception();
+        return [];
     }
 }

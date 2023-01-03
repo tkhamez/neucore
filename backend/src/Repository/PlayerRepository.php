@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Neucore\Data\SearchResult;
 use Neucore\Entity\Player;
 
 /**
@@ -208,6 +209,9 @@ class PlayerRepository extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * @return SearchResult[]
+     */
     public function findCharacters(string $nameOrId, bool $currentOnly): array
     {
         // current characters
@@ -285,12 +289,12 @@ class PlayerRepository extends EntityRepository
         }
 
         return array_map(function (array $row) {
-            return [
-                'character_id' => (int) $row['character_id'],
-                'character_name' => $row['character_name'],
-                'player_id' => $row['player_id'],
-                'player_name' => $row['player_name'],
-            ];
+            return new SearchResult(
+                (int) $row['character_id'],
+                (string) $row['character_name'],
+                (int) $row['player_id'],
+                (string) $row['player_name'],
+            );
         }, array_values($result));
     }
 

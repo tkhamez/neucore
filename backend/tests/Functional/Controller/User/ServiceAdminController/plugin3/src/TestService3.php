@@ -76,4 +76,9 @@ class TestService3 implements ServiceInterface
     {
         throw new Exception('called onConfigurationChange');
     }
+
+    public function search(string $query): array
+    {
+        throw new Exception();
+    }
 }

@@ -78,4 +78,9 @@ class TestService4 implements ServiceInterface
     public function onConfigurationChange(): void
     {
     }
+
+    public function search(string $query): array
+    {
+        throw new Exception();
+    }
 }

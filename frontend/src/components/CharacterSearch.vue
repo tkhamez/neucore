@@ -3,15 +3,18 @@ Input element to search for characters
  -->
 
 <template>
-<div class="input-group input-group-sm mb-1">
-    <label class="input-group-text" for="characterSearchInput">
-        Search {{ admin ? 'Character' : 'Player' }}
+    <div class="input-group input-group-sm mb-1">
+        <label class="input-group-text" for="characterSearchInput">
+            Search {{ admin ? 'Character' : 'Player' }}
+        </label>
+        <input type="text" class="form-control" id="characterSearchInput" ref="searchInput"
+               placeholder="Name (min. 3 characters)" title="Name (min. 3 characters)"
+               v-model="searchTerm" v-on:click="findCharacter" v-on:input="findCharacter($event.target.value)">
+        <button class="btn" type="button" v-on:click="findCharacter('')" title="Clear input">&times;</button>
+    </div>
+    <label v-cloak v-if="optionPlugin" class="mb-2">
+        <input type="checkbox" v-model="plugin"> Include results from service plugins.
     </label>
-    <input type="text" class="form-control" id="characterSearchInput" ref="searchInput"
-           placeholder="Name (min. 3 characters)" title="Name (min. 3 characters)"
-           v-model="searchTerm" v-on:click="findCharacter" v-on:input="findCharacter($event.target.value)">
-    <button class="btn" type="button" v-on:click="findCharacter('')" title="Clear input">&times;</button>
-</div>
 </template>
 
 <script>
@@ -21,12 +24,20 @@ import {CharacterApi} from 'neucore-js-client';
 export default {
     props: {
         admin: Boolean, // false = search only for mains, otherwise all characters
+        optionPlugin: Boolean, // Include results from plugins or not. (needs admin = true)
         currentOnly: Boolean, // false = include renamed and moved characters or not (only for admin=true)
     },
 
     data() {
         return {
             searchTerm: '',
+            plugin: false,
+        }
+    },
+
+    watch: {
+        plugin() {
+            this.findCharacter(this.searchTerm)
         }
     },
 
@@ -59,7 +70,10 @@ const findCharacter = _.debounce(vm => {
         vm.$emit('result', data);
     };
     if (vm.admin) {
-        api.findCharacter(vm.searchTerm, { currentOnly: vm.currentOnly ? 'true' : 'false' }, callback);
+        api.findCharacter(vm.searchTerm, {
+            currentOnly: vm.currentOnly ? 'true' : 'false',
+            plugin: vm.plugin ? 'true' : 'false',
+        }, callback);
     } else {
         api.findPlayer(vm.searchTerm, callback);
     }

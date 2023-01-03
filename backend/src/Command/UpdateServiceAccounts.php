@@ -6,14 +6,12 @@ namespace Neucore\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Command\Traits\LogOutput;
-use Neucore\Entity\Service;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceInterface;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\PlayerRepository;
-use Neucore\Repository\ServiceRepository;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\ServiceRegistration;
 use Psr\Log\LoggerInterface;
@@ -28,8 +26,6 @@ class UpdateServiceAccounts extends Command
     use LogOutput;
 
     private EntityManagerInterface $entityManager;
-
-    private ServiceRepository $serviceRepository;
 
     private CharacterRepository $characterRepository;
 
@@ -56,7 +52,6 @@ class UpdateServiceAccounts extends Command
         $this->logOutput($logger);
 
         $this->entityManager = $entityManager;
-        $this->serviceRepository = $repositoryFactory->getServiceRepository();
         $this->characterRepository = $repositoryFactory->getCharacterRepository();
         $this->playerRepository = $repositoryFactory->getPlayerRepository();
         $this->serviceRegistration = $serviceRegistration;
@@ -86,15 +81,15 @@ class UpdateServiceAccounts extends Command
 
         $this->writeLine('Started "update-service-accounts"', false);
 
-        foreach ($this->serviceRepository->findBy([], ['name' => 'ASC']) as $service) {
-            if (!$service->getConfigurationDatabase()?->active) {
-                continue;
-            }
-            if ($serviceId > 0 && $service->getId() !== $serviceId) {
-                continue;
-            }
+        $limit = $serviceId ? [$serviceId] : [];
+        foreach ($this->serviceRegistration->getServicesWithImplementation($limit) as $service) {
             $this->writeLine('  Updating '. $service->getName() . ' ...', false);
-            $this->updateService($service, $sleep);
+            $implementation = $service->getImplementation();
+            if ($implementation === null) {
+                $this->writeLine('  Service implementation not found for ' . $service->getName());
+                continue;
+            }
+            $this->updateService($service->getName(), $implementation, $sleep);
         }
 
         $this->writeLine('Finished "update-service-accounts"', false);
@@ -102,24 +97,18 @@ class UpdateServiceAccounts extends Command
         return 0;
     }
 
-    private function updateService(Service $service, int $sleep): void
+    private function updateService(string $serviceName, ServiceInterface $implementation, int $sleep): void
     {
-        $implementation = $this->serviceRegistration->getServiceImplementation($service);
-        if ($implementation === null) {
-            $this->writeLine('  Service implementation not found for ' . $service->getName());
-            return;
-        }
-
         try {
             $allAccounts = $implementation->getAllAccounts();
         } catch (Exception) {
-            $this->writeLine('  Could not get accounts for ' . $service->getName());
+            $this->writeLine('  Could not get accounts for ' . $serviceName);
             return;
         }
         try {
             $allPlayerAccounts = $implementation->getAllPlayerAccounts();
         } catch (Exception) {
-            $this->writeLine('  Could not get accounts for ' . $service->getName());
+            $this->writeLine('  Could not get accounts for ' . $serviceName);
             return;
         }
 
@@ -143,7 +132,7 @@ class UpdateServiceAccounts extends Command
         }
 
         $this->writeLine(
-            "  Updated {$service->getName()}: " .
+            "  Updated $serviceName: " .
             "$this->accountsUpdated accounts updated, " .
             "$this->updatesFailed updates failed, " .
             "$this->charactersOrPlayersNotFound characters or players not found."

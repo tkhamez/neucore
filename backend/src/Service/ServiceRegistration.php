@@ -90,6 +90,29 @@ class ServiceRegistration
         return $service;
     }
 
+    /**
+     * Returns service implementation of active services.
+     *
+     * @param int[] $limitToIds
+     * @return Service[] Contains the implementation if it could be found.
+     */
+    public function getServicesWithImplementation(array $limitToIds = []): array
+    {
+        $result = [];
+        foreach ($this->repositoryFactory->getServiceRepository()->findBy([]) as $service) {
+            if (!$service->getConfigurationDatabase()?->active) {
+                continue;
+            }
+            if (!empty($limitToIds) && !in_array($service->getId(), $limitToIds)) {
+                continue;
+            }
+            $implementation = $this->getServiceImplementation($service);
+            $service->setImplementation($implementation);
+            $result[] = $service;
+        }
+        return $result;
+    }
+
     public function getServiceImplementation(Service $service): ?ServiceInterface
     {
         if (!$service->getConfigurationFile()) {

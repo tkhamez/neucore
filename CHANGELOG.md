@@ -1,5 +1,12 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- **BC Break**: Updated [Neucore plugin](https://github.com/tkhamez/neucore-plugin) to 0.10.0.
+- Added search for service accounts to *Member Data -> Characters*.
+
 ## 1.41.0
 
 1 Jan 2023
