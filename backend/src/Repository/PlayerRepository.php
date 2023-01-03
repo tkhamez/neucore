@@ -269,12 +269,27 @@ class PlayerRepository extends EntityRepository
             $result = array_merge($result, $query2->getQuery()->getResult(), $query3->getQuery()->getResult());
         }
 
+        // remove duplicates
+        $finalResult = [];
+        $idents = [];
+        foreach ($result as $item) {
+            $charId = (int) $item['character_id'];
+            $charName = (string) $item['character_name'];
+            $playerId = (int) $item['player_id'];
+            $compare = "$charId|$playerId|$charName";
+            if (!in_array($compare, $idents)) {
+                $idents[] = $compare;
+                $finalResult[] = new SearchResult($charId, $charName, $playerId, (string)$item['player_name']);
+            }
+        }
+
+        // sort
         if (!$currentOnly) {
-            uasort($result, function ($a, $b) {
-                $nameA = mb_strtolower($a['character_name']);
-                $nameB = mb_strtolower($b['character_name']);
-                $playerNameA = mb_strtolower($a['player_name']);
-                $playerNameB = mb_strtolower($b['player_name']);
+            uasort($finalResult, function (SearchResult $a, SearchResult $b) {
+                $nameA = mb_strtolower($a->characterName);
+                $nameB = mb_strtolower($b->characterName);
+                $playerNameA = mb_strtolower($a->playerName);
+                $playerNameB = mb_strtolower($b->playerName);
                 if ($nameA < $nameB) {
                     return -1;
                 } elseif ($nameA > $nameB) {
@@ -288,14 +303,7 @@ class PlayerRepository extends EntityRepository
             });
         }
 
-        return array_map(function (array $row) {
-            return new SearchResult(
-                (int) $row['character_id'],
-                (string) $row['character_name'],
-                (int) $row['player_id'],
-                (string) $row['player_name'],
-            );
-        }, array_values($result));
+        return array_values($finalResult);
     }
 
     /**
