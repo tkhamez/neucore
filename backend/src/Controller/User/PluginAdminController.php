@@ -8,9 +8,11 @@ use Neucore\Controller\BaseController;
 use Neucore\Data\PluginConfigurationFile;
 use Neucore\Entity\Plugin;
 use Neucore\Data\PluginConfigurationDatabase;
+use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Neucore\Plugin\Exception;
 use Neucore\Service\Config;
+use Neucore\Service\ObjectManager;
 use Neucore\Service\PluginService;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -26,6 +28,60 @@ use Psr\Log\LoggerInterface;
  */
 class PluginAdminController extends BaseController
 {
+    private PluginService $pluginService;
+
+    public function __construct(
+        ResponseInterface $response,
+        ObjectManager     $objectManager,
+        RepositoryFactory $repositoryFactory,
+        PluginService     $pluginService,
+    ) {
+        parent::__construct($response, $objectManager, $repositoryFactory);
+        $this->pluginService = $pluginService;
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/user/plugin-admin/{id}/get",
+     *     operationId="pluginAdminGet",
+     *     summary="Returns plugin.",
+     *     description="Needs role: plugin-admin",
+     *     tags={"PluginAdmin"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the plugin.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="The service.",
+     *         @OA\JsonContent(ref="#/components/schemas/Plugin")
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Plugin not found."
+     *     )
+     * )
+     */
+    public function get(string $id): ResponseInterface
+    {
+        // get service with data from plugin.yml
+        $plugin = $this->pluginService->getPlugin((int) $id);
+
+        if (!$plugin) {
+            return $this->response->withStatus(404);
+        }
+
+        return $this->withJson($plugin->jsonSerialize(false, true, false));
+    }
+
     /**
      * @OA\Get(
      *     path="/user/plugin-admin/list",

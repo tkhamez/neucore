@@ -8,7 +8,6 @@ namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Character;
-use Neucore\Entity\Role;
 use Neucore\Entity\Plugin;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
@@ -41,13 +40,6 @@ use Psr\Log\LoggerInterface;
  *     @OA\Property(property="status", type="string", nullable=true,
  *                  enum={"Pending", "Active", "Deactivated", "Unknown"}),
  *     @OA\Property(property="name", type="string", nullable=true),
- * )
- *
- * @OA\Schema(
- *     schema="UpdateAccountsResult",
- *     required={"serviceName", "characterId"},
- *     @OA\Property(property="serviceName", type="string"),
- *     @OA\Property(property="characterId", type="integer"),
  * )
  */
 class ServiceController extends BaseController
@@ -83,7 +75,7 @@ class ServiceController extends BaseController
      *     path="/user/service/{id}/get",
      *     operationId="serviceGet",
      *     summary="Returns service.",
-     *     description="Needs role: user, plugin-admin",
+     *     description="Needs role: user",
      *     tags={"Service"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -92,12 +84,6 @@ class ServiceController extends BaseController
      *         required=true,
      *         description="ID of the service.",
      *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="allowAdmin",
-     *         in="query",
-     *         description="Do not check requirements if player is a service admin.",
-     *         @OA\Schema(type="string", enum={"true", "false"})
      *     ),
      *     @OA\Response(
      *         response="200",
@@ -114,16 +100,14 @@ class ServiceController extends BaseController
      *     )
      * )
      */
-    public function get(string $id, ServerRequestInterface $request, UserAuth $userAuth): ResponseInterface
+    public function get(string $id): ResponseInterface
     {
-        $allowAdmin = $this->getQueryParam($request, 'allowAdmin') === 'true';
-        $plugin = $this->getPlugin((int) $id, $allowAdmin);
+        $plugin = $this->getPlugin((int) $id);
         if (!$plugin) {
             return $this->response->withStatus($this->responseErrorCode);
         }
 
-        $fullConfig = $allowAdmin && $this->getUser($userAuth)->getPlayer()->hasRole(Role::PLUGIN_ADMIN);
-        return $this->withJson($plugin->jsonSerialize(false, $fullConfig, false));
+        return $this->withJson($plugin->jsonSerialize(false, false, false));
     }
 
     /**
@@ -244,7 +228,7 @@ class ServiceController extends BaseController
             return $this->withJson('no_main', 409);
         }
 
-        $plugin = $this->getPlugin((int) $id, false);
+        $plugin = $this->getPlugin((int) $id);
         if (!$plugin) {
             return $this->response->withStatus($this->responseErrorCode);
         }
@@ -476,13 +460,8 @@ class ServiceController extends BaseController
         return $this->withJson($newPassword);
     }
 
-    private function getPlugin(int $id, bool $allowAdmin): ?Plugin
+    private function getPlugin(int $id): ?Plugin
     {
-        $isAdmin = false;
-        if ($allowAdmin) {
-            $isAdmin = $this->getUser($this->userAuth)->getPlayer()->hasRole(Role::PLUGIN_ADMIN);
-        }
-
         // get service with data from plugin.yml
         $plugin = $this->pluginService->getPlugin($id);
         if ($plugin === null) {
@@ -491,13 +470,13 @@ class ServiceController extends BaseController
         }
 
         // check service permission
-        if (!$isAdmin && !$this->userAuth->hasRequiredGroups($plugin)) {
+        if (!$this->userAuth->hasRequiredGroups($plugin)) {
             $this->responseErrorCode = 403;
             return null;
         }
 
         // check active
-        if (!$isAdmin && !$plugin->getConfigurationDatabase()?->active) {
+        if (!$plugin->getConfigurationDatabase()?->active) {
             $this->responseErrorCode = 404;
             return null;
         }
@@ -523,7 +502,7 @@ class ServiceController extends BaseController
 
     private function getPluginAndServiceImplementation(int $id): ?ServiceInterface
     {
-        $plugin = $this->getPlugin($id, false);
+        $plugin = $this->getPlugin($id);
         return $plugin ? $this->getServiceImplementation($plugin) : null;
     }
 

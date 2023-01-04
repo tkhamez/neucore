@@ -41,8 +41,6 @@ class ServiceControllerTest extends WebTestCase
 
     // entity IDs
     private int $g1;
-    private int $g2;
-    private int $g7;
     private int $s1;
     private int $s2;
     private int $s3;
@@ -128,88 +126,6 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testGet200_NotActiveAdmin()
-    {
-        $this->setupDb(true, false);
-        $this->loginUser(4);
-
-        $response = $this->runApp(
-            'GET',
-            "/api/user/service/$this->s1/get?allowAdmin=true",
-            null,
-            null,
-            [],
-            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
-        );
-        $this->assertEquals(200, $response->getStatusCode());
-    }
-
-    public function testGet200_DeactivatedGroups_Admin()
-    {
-        $this->setupDb();
-        $this->setupDeactivateAccount();
-        $this->loginUser(4);
-
-        $response2 = $this->runApp(
-            'GET',
-            "/api/user/service/$this->s1/get?allowAdmin=true",
-            null,
-            null,
-            [],
-            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
-        );
-        $this->assertEquals(200, $response2->getStatusCode());
-    }
-
-    public function testGet200_MissingGroups_Admin()
-    {
-        $this->setupDb();
-        $this->loginUser(4);
-
-        $response = $this->runApp(
-            'GET',
-            "/api/user/service/$this->s3/get?allowAdmin=true",
-            null,
-            null,
-            [],
-            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']]
-        );
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSame(
-            [
-                'id' => $this->s3,
-                'name' => 'S3',
-                'configurationDatabase' => [
-                    'active' => true,
-                    'requiredGroups' => [$this->g2, $this->g7],
-                    'directoryName' => 'plugin3',
-                    'URLs' => [],
-                    'textTop' => '',
-                    'textAccount' => '',
-                    'textRegister' => '',
-                    'textPending' => '',
-                    'configurationData' => '',
-                ],
-                'configurationFile' => [
-                    'name' => 'Test',
-                    'type' => 'service',
-                    'oneAccount' => false,
-                    'properties' => [],
-                    'showPassword' => false,
-                    'actions' => [PluginConfigurationFile::ACTION_UPDATE_ACCOUNT],
-                    'directoryName' => 'plugin3',
-                    'URLs' => [],
-                    'textTop' => '',
-                    'textAccount' => '',
-                    'textRegister' => '',
-                    'textPending' => '',
-                    'configurationData' => '',
-                ]
-            ],
-            $this->parseJsonBody($response)
-        );
-    }
-
     public function testGet200_WithoutYamlConfig()
     {
         $this->setupDb();
@@ -219,10 +135,9 @@ class ServiceControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->clear();
 
-        // no admin
         $this->loginUser(1);
 
-        $response1a = $this->runApp(
+        $response = $this->runApp(
             'GET',
             "/api/user/service/{$service5->getId()}/get",
             null,
@@ -230,41 +145,7 @@ class ServiceControllerTest extends WebTestCase
             [],
             [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
         );
-        $this->assertEquals(404, $response1a->getStatusCode());
-
-        $response1b = $this->runApp(
-            'GET',
-            "/api/user/service/{$service5->getId()}/get?allowAdmin=true",
-            null,
-            null,
-            [],
-            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
-        );
-        $this->assertEquals(404, $response1b->getStatusCode());
-
-        // login admin
-        $this->loginUser(4);
-
-        $response2a = $this->runApp(
-            'GET',
-            "/api/user/service/{$service5->getId()}/get",
-            null,
-            null,
-            [],
-            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
-        );
-        $this->assertEquals(404, $response2a->getStatusCode());
-
-        $response2b = $this->runApp(
-            'GET',
-            "/api/user/service/{$service5->getId()}/get?allowAdmin=true",
-            null,
-            null,
-            [],
-            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
-        );
-        $this->assertEquals(200, $response2b->getStatusCode());
-        $this->assertSame(['id' => $service5->getId(), 'name' => 'S5'], $this->parseJsonBody($response2b));
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
     public function testGet200()
@@ -1043,10 +924,8 @@ class ServiceControllerTest extends WebTestCase
     private function setupDb(bool $noRequiredGroupsForService1 = false, bool $s1Active = true): void
     {
         $group1 = (new Group())->setName('G1');
-        $group2 = (new Group())->setName('G2');
         $group7 = (new Group())->setName('G7');
         $this->em->persist($group1);
-        $this->em->persist($group2);
         $this->em->persist($group7);
         $this->em->flush();
 
@@ -1066,7 +945,7 @@ class ServiceControllerTest extends WebTestCase
         $conf3 = new PluginConfigurationDatabase();
         $conf3->directoryName = 'plugin3'; // action: update-account
         $conf3->active = true;
-        $conf3->requiredGroups = [$group2->getId(), $group7->getId()];
+        $conf3->requiredGroups = [$group7->getId()];
         $service3 = (new Plugin())->setName('S3')->setConfigurationDatabase($conf3);
 
         $conf4 = new PluginConfigurationDatabase();
@@ -1087,8 +966,6 @@ class ServiceControllerTest extends WebTestCase
         $this->helper->addCharacterMain('Admin', 4, [Role::USER, ROLE::PLUGIN_ADMIN, Role::USER_ADMIN]);
 
         $this->g1 = $group1->getId();
-        $this->g2 = $group2->getId();
-        $this->g7 = $group7->getId();
         $this->s1 = $service1->getId();
         $this->s2 = $service2->getId();
         $this->s3 = $service3->getId();

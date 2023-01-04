@@ -225,6 +225,7 @@ return [
     '/api/user/service/{id}/reset-password/{characterId}'   => ['PUT',  [ServiceController::class, 'resetPassword']],
     '/api/user/service/update-all-accounts/{playerId}'      => ['PUT',  [ServiceController::class, 'updateAllAccounts']],
 
+    '/api/user/plugin-admin/{id}/get'                  => ['GET',  [PluginAdminController::class, 'get']],
     '/api/user/plugin-admin/list'                      => ['GET',    [PluginAdminController::class, 'list']],
     '/api/user/plugin-admin/configurations'            => ['GET',    [PluginAdminController::class, 'configurations']],
     '/api/user/plugin-admin/create'                    => ['POST',   [PluginAdminController::class, 'create']],

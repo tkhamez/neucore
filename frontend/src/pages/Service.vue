@@ -341,7 +341,7 @@ function getData(vm) {
     const api = new ServiceApi();
 
     vm.service = null;
-    api.serviceGet(getServiceId(vm), {allowAdmin: 'false'}, (error, data) => {
+    api.serviceGet(getServiceId(vm), (error, data) => {
         if (!error) {
             vm.service = data;
             if (!vm.service.configurationDatabase) {

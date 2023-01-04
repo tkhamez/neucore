@@ -232,6 +232,7 @@ Group API
 - List all groups. `GET /user/group/all`
 
 PluginAdmin API
+- Returns plugin. `GET /user/plugin-admin/{id}/get`
 - Lists all plugins. `GET /user/plugin-admin/list`
 - Returns data from plugin.yml files and their directory. `GET /user/plugin-admin/configurations`
 - Creates a plugin. `POST /user/plugin-admin/create`

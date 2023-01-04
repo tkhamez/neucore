@@ -40,6 +40,98 @@ class PluginAdminControllerTest extends WebTestCase
         unset($_ENV['NEUCORE_PLUGINS_INSTALL_DIR']);
     }
 
+    public function testGet403()
+    {
+        $response = $this->runApp('GET', '/api/user/plugin-admin/1/get');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->loginUser(2);
+
+        $response2 = $this->runApp('GET', '/api/user/plugin-admin/1/get');
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testGet404()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('GET', '/api/user/plugin-admin/'.($this->serviceId + 100).'/get');
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testGet200_WithoutYamlConfig()
+    {
+        $this->setupDb();
+
+        $service5 = (new Plugin())->setName('S5');
+        $this->helper->getEm()->persist($service5);
+        $this->helper->getEm()->flush();
+        $this->helper->getEm()->clear();
+
+        $this->loginUser(1);
+
+        $response = $this->runApp(
+            'GET',
+            "/api/user/plugin-admin/{$service5->getId()}/get",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(['id' => $service5->getId(), 'name' => 'S5'], $this->parseJsonBody($response));
+    }
+
+    public function testGet200()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp(
+            'GET',
+            "/api/user/plugin-admin/$this->serviceId/get",
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginAdminController']],
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(
+            [
+                'id' => $this->serviceId,
+                'name' => 'S1',
+                'configurationDatabase' => [
+                    'active' => false,
+                    'requiredGroups' => [],
+                    'directoryName' => 'plugin3',
+                    'URLs' => [],
+                    'textTop' => '',
+                    'textAccount' => '',
+                    'textRegister' => '',
+                    'textPending' => '',
+                    'configurationData' => '',
+                ],
+                'configurationFile' => [
+                    'name' => '',
+                    'type' => '',
+                    'oneAccount' => true,
+                    'properties' => [PluginConfigurationFile::PROPERTY_USERNAME],
+                    'showPassword' => true,
+                    'actions' => [PluginConfigurationFile::ACTION_UPDATE_ACCOUNT],
+                    'directoryName' => 'plugin3',
+                    'URLs' => [],
+                    'textTop' => '',
+                    'textAccount' => '',
+                    'textRegister' => '',
+                    'textPending' => '',
+                    'configurationData' => '',
+                ]
+            ],
+            $this->parseJsonBody($response)
+        );
+    }
+
     public function testList403()
     {
         $response1 = $this->runApp('GET', '/api/user/plugin-admin/list');
@@ -354,8 +446,8 @@ class PluginAdminControllerTest extends WebTestCase
         $this->helper->emptyDb();
         $em = $this->helper->getEm();
 
-        $this->helper->addCharacterMain('User', 1, [Role::PLUGIN_ADMIN]);
-        $this->helper->addCharacterMain('Admin', 2, [Role::USER]);
+        $this->helper->addCharacterMain('Admin', 1, [Role::PLUGIN_ADMIN]);
+        $this->helper->addCharacterMain('User', 2, [Role::USER]);
 
         $conf = new PluginConfigurationDatabase();
         $conf->directoryName = 'plugin3';

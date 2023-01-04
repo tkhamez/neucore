@@ -1,4 +1,9 @@
 phpClass: Tests\Functional\Controller\User\PluginAdminController\TestService3
 psr4Prefix: Tests\Functional\Controller\User\PluginAdminController
 psr4Path: src
+oneAccount: true
+properties:
+  - username
 showPassword: true
+actions:
+  - update-account

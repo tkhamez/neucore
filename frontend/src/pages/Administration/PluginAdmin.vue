@@ -174,7 +174,7 @@
 <script>
 import {toRef} from "vue";
 import Multiselect from '@suadelabs/vue3-multiselect';
-import {ServiceApi, PluginAdminApi, GroupApi} from "neucore-js-client";
+import {PluginAdminApi, GroupApi} from "neucore-js-client";
 import Helper from "../../classes/Helper";
 import Util from "../../classes/Util";
 import Edit from '../../components/EntityEdit.vue';
@@ -386,7 +386,7 @@ function getPlugin(vm) {
         return;
     }
 
-    new ServiceApi().serviceGet(vm.route[1], {allowAdmin: 'true'}, (error, data) => {
+    new PluginAdminApi().pluginAdminGet(vm.route[1], (error, data) => {
         if (!error) {
             vm.activePlugin = data;
             if (vm.activePlugin.configurationDatabase) {
