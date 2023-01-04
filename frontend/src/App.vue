@@ -55,7 +55,7 @@ import AppManagement         from './pages/Management/AppManagement.vue';
 import PlayerManagement from './pages/Management/PlayerManagement.vue';
 import GroupAdmin     from './pages/Administration/GroupAdmin.vue';
 import AppAdmin       from './pages/Administration/AppAdmin.vue';
-import ServiceAdmin   from './pages/Administration/ServiceAdmin.vue';
+import PluginAdmin   from './pages/Administration/PluginAdmin.vue';
 import UserAdmin      from './pages/Administration/UserAdmin.vue';
 import RoleAdmin      from './pages/Administration/RoleAdmin.vue';
 import TrackingAdmin  from './pages/Administration/TrackingAdmin.vue';
@@ -83,7 +83,7 @@ export default {
         PlayerManagement,
         GroupAdmin,
         AppAdmin,
-        ServiceAdmin,
+        PluginAdmin,
         UserAdmin,
         RoleAdmin,
         TrackingAdmin,
@@ -126,7 +126,7 @@ export default {
                 'PlayerManagement',
                 'GroupAdmin',
                 'AppAdmin',
-                'ServiceAdmin',
+                'PluginAdmin',
                 'UserAdmin',
                 'RoleAdmin',
                 'TrackingAdmin',

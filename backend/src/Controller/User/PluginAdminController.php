@@ -20,23 +20,23 @@ use Psr\Log\LoggerInterface;
 
 /**
  * @OA\Tag(
- *     name="ServiceAdmin",
- *     description="Service administration."
+ *     name="PluginAdmin",
+ *     description="Plugin administration."
  * )
  */
-class ServiceAdminController extends BaseController
+class PluginAdminController extends BaseController
 {
     /**
      * @OA\Get(
-     *     path="/user/service-admin/list",
-     *     operationId="serviceAdminList",
-     *     summary="Lists all services.",
-     *     description="Needs role: service-admin",
-     *     tags={"ServiceAdmin"},
+     *     path="/user/plugin-admin/list",
+     *     operationId="pluginAdminList",
+     *     summary="Lists all plugins.",
+     *     description="Needs role: plugin-admin",
+     *     tags={"PluginAdmin"},
      *     security={{"Session"={}}},
      *     @OA\Response(
      *         response="200",
-     *         description="List of services.",
+     *         description="List of plugins.",
      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Plugin"))
      *     ),
      *     @OA\Response(
@@ -52,11 +52,11 @@ class ServiceAdminController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/user/service-admin/configurations",
-     *     operationId="serviceAdminConfigurations",
+     *     path="/user/plugin-admin/configurations",
+     *     operationId="pluginAdminConfigurations",
      *     summary="Returns data from plugin.yml files and their directory.",
-     *     description="Needs role: service-admin",
-     *     tags={"ServiceAdmin"},
+     *     description="Needs role: plugin-admin",
+     *     tags={"PluginAdmin"},
      *     security={{"Session"={}}},
      *     @OA\Response(
      *         response="200",
@@ -101,18 +101,29 @@ class ServiceAdminController extends BaseController
             $configurations[] = $pluginConfig;
         }
 
+        uasort($configurations, function (PluginConfigurationFile $a, PluginConfigurationFile $b) {
+            $compareA = "$a->type|$a->name|$a->directoryName";
+            $compareB = "$b->type|$b->name|$a->directoryName";
+            if ($compareA < $compareB) {
+                return -1;
+            } elseif ($compareA > $compareB) {
+                return 1;
+            }
+            return 0;
+        });
+
         return $this->withJson(array_map(function (PluginConfigurationFile $configuration) {
             return $configuration->jsonSerialize(true, false);
-        }, $configurations));
+        }, array_values($configurations)));
     }
 
     /**
      * @OA\Post(
-     *     path="/user/service-admin/create",
-     *     operationId="serviceAdminCreate",
-     *     summary="Creates a service.",
-     *     description="Needs role: service-admin",
-     *     tags={"ServiceAdmin"},
+     *     path="/user/plugin-admin/create",
+     *     operationId="pluginAdminCreate",
+     *     summary="Creates a plugin.",
+     *     description="Needs role: plugin-admin",
+     *     tags={"PluginAdmin"},
      *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\RequestBody(
      *         @OA\MediaType(
@@ -122,7 +133,7 @@ class ServiceAdminController extends BaseController
      *                 required={"name"},
      *                 @OA\Property(
      *                     property="name",
-     *                     description="Name of the service.",
+     *                     description="Name of the plugin.",
      *                     type="string",
      *                     maxLength=255,
      *                 )
@@ -131,12 +142,12 @@ class ServiceAdminController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="201",
-     *         description="The new service.",
+     *         description="The new plugin.",
      *         @OA\JsonContent(ref="#/components/schemas/Plugin")
      *     ),
      *     @OA\Response(
      *         response="400",
-     *         description="Service name is missing."
+     *         description="Name is missing."
      *     ),
      *     @OA\Response(
      *         response="403",
@@ -159,17 +170,17 @@ class ServiceAdminController extends BaseController
 
     /**
      * @OA\Put(
-     *     path="/user/service-admin/{id}/rename",
-     *     operationId="serviceAdminRename",
-     *     summary="Renames a service.",
-     *     description="Needs role: service-admin",
-     *     tags={"ServiceAdmin"},
+     *     path="/user/plugin-admin/{id}/rename",
+     *     operationId="pluginAdminRename",
+     *     summary="Renames a plugin.",
+     *     description="Needs role: plugin-admin",
+     *     tags={"PluginAdmin"},
      *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID of the service.",
+     *         description="ID of the plugin.",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\RequestBody(
@@ -180,7 +191,7 @@ class ServiceAdminController extends BaseController
      *                 required={"name"},
      *                 @OA\Property(
      *                     property="name",
-     *                     description="New name for the service.",
+     *                     description="New name for the plugin.",
      *                     type="string",
      *                     maxLength=255
      *                 )
@@ -189,12 +200,12 @@ class ServiceAdminController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="200",
-     *         description="Service was renamed.",
+     *         description="Plugin was renamed.",
      *         @OA\JsonContent(ref="#/components/schemas/Plugin")
      *     ),
      *     @OA\Response(
      *         response="400",
-     *         description="Service name is missing."
+     *         description="Name is missing."
      *     ),
      *     @OA\Response(
      *         response="403",
@@ -202,7 +213,7 @@ class ServiceAdminController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="404",
-     *         description="Service not found."
+     *         description="Plugin not found."
      *     )
      * )
      */
@@ -225,22 +236,22 @@ class ServiceAdminController extends BaseController
 
     /**
      * @OA\Delete(
-     *     path="/user/service-admin/{id}/delete",
-     *     operationId="serviceAdminDelete",
-     *     summary="Deletes a service.",
-     *     description="Needs role: service-admin",
-     *     tags={"ServiceAdmin"},
+     *     path="/user/plugin-admin/{id}/delete",
+     *     operationId="pluginAdminDelete",
+     *     summary="Deletes a plugin.",
+     *     description="Needs role: plugin-admin",
+     *     tags={"PluginAdmin"},
      *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID of the service.",
+     *         description="ID of the plugin.",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response="204",
-     *         description="Service was deleted."
+     *         description="Plugin was deleted."
      *     ),
      *     @OA\Response(
      *         response="403",
@@ -248,7 +259,7 @@ class ServiceAdminController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="404",
-     *         description="Service not found."
+     *         description="Plugin not found."
      *     )
      * )
      */
@@ -267,17 +278,17 @@ class ServiceAdminController extends BaseController
     /**
      * @noinspection PhpUnused
      * @OA\Put(
-     *     path="/user/service-admin/{id}/save-configuration",
-     *     operationId="serviceAdminSaveConfiguration",
-     *     summary="Saves the service configuration.",
-     *     description="Needs role: service-admin",
-     *     tags={"ServiceAdmin"},
+     *     path="/user/plugin-admin/{id}/save-configuration",
+     *     operationId="pluginAdminSaveConfiguration",
+     *     summary="Saves the plugin configuration.",
+     *     description="Needs role: plugin-admin",
+     *     tags={"PluginAdmin"},
      *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID of the service.",
+     *         description="ID of the plugin.",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\RequestBody(

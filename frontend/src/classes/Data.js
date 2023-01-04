@@ -65,7 +65,7 @@ export default class Data {
         'group-admin',
         'group-manager',
         'settings',
-        'service-admin',
+        'plugin-admin',
         'statistics',
         'tracking',
         'tracking-admin',

@@ -1,0 +1,4 @@
+phpClass: Tests\Functional\Controller\User\PluginAdminController\TestService3
+psr4Prefix: Tests\Functional\Controller\User\PluginAdminController
+psr4Path: src
+showPassword: true

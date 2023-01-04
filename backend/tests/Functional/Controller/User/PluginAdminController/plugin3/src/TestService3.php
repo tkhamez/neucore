@@ -4,7 +4,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Functional\Controller\User\ServiceAdminController;
+namespace Tests\Functional\Controller\User\PluginAdminController;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;

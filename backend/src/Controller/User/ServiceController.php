@@ -83,7 +83,7 @@ class ServiceController extends BaseController
      *     path="/user/service/{id}/get",
      *     operationId="serviceGet",
      *     summary="Returns service.",
-     *     description="Needs role: user, service-admin",
+     *     description="Needs role: user, plugin-admin",
      *     tags={"Service"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -122,7 +122,7 @@ class ServiceController extends BaseController
             return $this->response->withStatus($this->responseErrorCode);
         }
 
-        $fullConfig = $allowAdmin && $this->getUser($userAuth)->getPlayer()->hasRole(Role::SERVICE_ADMIN);
+        $fullConfig = $allowAdmin && $this->getUser($userAuth)->getPlayer()->hasRole(Role::PLUGIN_ADMIN);
         return $this->withJson($plugin->jsonSerialize(false, $fullConfig, false));
     }
 
@@ -480,7 +480,7 @@ class ServiceController extends BaseController
     {
         $isAdmin = false;
         if ($allowAdmin) {
-            $isAdmin = $this->getUser($this->userAuth)->getPlayer()->hasRole(Role::SERVICE_ADMIN);
+            $isAdmin = $this->getUser($this->userAuth)->getPlayer()->hasRole(Role::PLUGIN_ADMIN);
         }
 
         // get service with data from plugin.yml

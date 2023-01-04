@@ -35,7 +35,7 @@ class RoleFixtureLoader
             18 => Role::WATCHLIST_ADMIN,
             19 => Role::WATCHLIST_MANAGER,
             20 => Role::USER_CHARS,
-            21 => Role::SERVICE_ADMIN,
+            21 => Role::PLUGIN_ADMIN,
             22 => Role::STATISTICS,
         ];
 

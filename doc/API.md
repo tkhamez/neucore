@@ -21,7 +21,7 @@ can be a `Corporation` object, be null, or not exist at all.
   * [user-chars](#user-chars)
   * [group-admin](#group-admin)
   * [group-manager](#group-manager)
-  * [service-admin](#service-admin)
+  * [plugin-admin](#plugin-admin)
   * [statistics](#statistics)
   * [app-admin](#app-admin)
   * [app-manager](#app-manager)
@@ -224,20 +224,20 @@ Group API
 - Remove player from a group. `PUT /user/group/{id}/remove-member/{pid}`
 - List all members of a group. `GET /user/group/{id}/members`
 
-#### service-admin
+#### plugin-admin
 
-Allows players to create and edit services.
+Allows players to create and edit plugins.
 
 Group API
 - List all groups. `GET /user/group/all`
 
-ServiceAdmin API
-- Lists all services. `GET /user/service-admin/list`
-- Returns data from plugin.yml files and their directory. `GET /user/service-admin/configurations`
-- Creates a service. `POST /user/service-admin/create`
-- Renames a service. `PUT /user/service-admin/{id}/rename`
-- Deletes a service. `DELETE /user/service-admin/{id}/delete`
-- Saves the service configuration. `PUT /user/service-admin/{id}/save-configuration`
+PluginAdmin API
+- Lists all plugins. `GET /user/plugin-admin/list`
+- Returns data from plugin.yml files and their directory. `GET /user/plugin-admin/configurations`
+- Creates a plugin. `POST /user/plugin-admin/create`
+- Renames a plugin. `PUT /user/plugin-admin/{id}/rename`
+- Deletes a plugin. `DELETE /user/plugin-admin/{id}/delete`
+- Saves the plugin configuration. `PUT /user/plugin-admin/{id}/save-configuration`
 
 #### statistics
 

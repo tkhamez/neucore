@@ -1084,7 +1084,7 @@ class ServiceControllerTest extends WebTestCase
             ->getPlayer();
         $this->helper->addCharacterToPlayer('Char2', 2, $this->player);
         $this->helper->addCharacterToPlayer('Char3', 3, $this->player);
-        $this->helper->addCharacterMain('Admin', 4, [Role::USER, ROLE::SERVICE_ADMIN, Role::USER_ADMIN]);
+        $this->helper->addCharacterMain('Admin', 4, [Role::USER, ROLE::PLUGIN_ADMIN, Role::USER_ADMIN]);
 
         $this->g1 = $group1->getId();
         $this->g2 = $group2->getId();

@@ -59,11 +59,11 @@ This role is assigned automatically depending on whether the player is a manager
 
 {group-manager}
 
-#### service-admin
+#### plugin-admin
 
-Allows players to create and edit services.
+Allows players to create and edit plugins.
 
-{service-admin}
+{plugin-admin}
 
 #### statistics
 

@@ -65,7 +65,7 @@ class GroupController extends BaseController
      *     path="/user/group/all",
      *     operationId="userGroupAll",
      *     summary="List all groups.",
-     *     description="Needs role: app-admin, group-admin, watchlist-admin, service-admin or user-manager",
+     *     description="Needs role: app-admin, group-admin, watchlist-admin, plugin-admin or user-manager",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @OA\Response(

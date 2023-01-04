@@ -15,7 +15,7 @@ use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\Logger;
 
-class ServiceAdminControllerTest extends WebTestCase
+class PluginAdminControllerTest extends WebTestCase
 {
     private Helper $helper;
 
@@ -42,12 +42,12 @@ class ServiceAdminControllerTest extends WebTestCase
 
     public function testList403()
     {
-        $response1 = $this->runApp('GET', '/api/user/service-admin/list');
+        $response1 = $this->runApp('GET', '/api/user/plugin-admin/list');
         $this->assertEquals(403, $response1->getStatusCode());
 
         $this->loginUser(2);
 
-        $response2 = $this->runApp('GET', '/api/user/service-admin/list');
+        $response2 = $this->runApp('GET', '/api/user/plugin-admin/list');
         $this->assertEquals(403, $response2->getStatusCode());
     }
 
@@ -55,19 +55,19 @@ class ServiceAdminControllerTest extends WebTestCase
     {
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', '/api/user/service-admin/list');
+        $response = $this->runApp('GET', '/api/user/plugin-admin/list');
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([['id' => $this->serviceId, 'name' => 'S1']], $this->parseJsonBody($response));
     }
 
     public function testConfigurations403()
     {
-        $response1 = $this->runApp('GET', '/api/user/service-admin/configurations');
+        $response1 = $this->runApp('GET', '/api/user/plugin-admin/configurations');
         $this->assertEquals(403, $response1->getStatusCode());
 
         $this->loginUser(2);
 
-        $response2 = $this->runApp('GET', '/api/user/service-admin/configurations');
+        $response2 = $this->runApp('GET', '/api/user/plugin-admin/configurations');
         $this->assertEquals(403, $response2->getStatusCode());
     }
 
@@ -75,11 +75,11 @@ class ServiceAdminControllerTest extends WebTestCase
     {
         $this->loginUser(1);
 
-        $pluginBaseDir = __DIR__ . '/ServiceAdminController/Error';
+        $pluginBaseDir = __DIR__ . '/PluginAdminController/Error';
 
         $response = $this->runApp(
             'GET',
-            '/api/user/service-admin/configurations',
+            '/api/user/plugin-admin/configurations',
             null,
             null,
             [LoggerInterface::class => $this->log], // ignore log
@@ -95,7 +95,7 @@ class ServiceAdminControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/api/user/service-admin/configurations',
+            '/api/user/plugin-admin/configurations',
             null,
             null,
             [],
@@ -112,11 +112,11 @@ class ServiceAdminControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/api/user/service-admin/configurations',
+            '/api/user/plugin-admin/configurations',
             null,
             null,
             [],
-            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceAdminController/OK']],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginAdminController/OK']],
         );
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -139,12 +139,12 @@ class ServiceAdminControllerTest extends WebTestCase
 
     public function testCreate403()
     {
-        $response = $this->runApp('POST', '/api/user/service-admin/create');
+        $response = $this->runApp('POST', '/api/user/plugin-admin/create');
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->loginUser(2);
 
-        $response = $this->runApp('POST', '/api/user/service-admin/create');
+        $response = $this->runApp('POST', '/api/user/plugin-admin/create');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -152,7 +152,7 @@ class ServiceAdminControllerTest extends WebTestCase
     {
         $this->loginUser(1);
 
-        $response = $this->runApp('POST', '/api/user/service-admin/create', ['name' => ''], [
+        $response = $this->runApp('POST', '/api/user/plugin-admin/create', ['name' => ''], [
             'Content-Type' => 'application/x-www-form-urlencoded'
         ]);
         $this->assertEquals(400, $response->getStatusCode());
@@ -162,7 +162,7 @@ class ServiceAdminControllerTest extends WebTestCase
     {
         $this->loginUser(1);
 
-        $response = $this->runApp('POST', '/api/user/service-admin/create', ['name' => 'New Service'], [
+        $response = $this->runApp('POST', '/api/user/plugin-admin/create', ['name' => 'New Service'], [
             'Content-Type' => 'application/x-www-form-urlencoded'
         ]);
         $this->assertEquals(201, $response->getStatusCode());
@@ -178,12 +178,12 @@ class ServiceAdminControllerTest extends WebTestCase
 
     public function testRename403()
     {
-        $response = $this->runApp('PUT', '/api/user/service-admin/1/rename');
+        $response = $this->runApp('PUT', '/api/user/plugin-admin/1/rename');
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->loginUser(2);
 
-        $response = $this->runApp('PUT', '/api/user/service-admin/1/rename');
+        $response = $this->runApp('PUT', '/api/user/plugin-admin/1/rename');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -191,7 +191,7 @@ class ServiceAdminControllerTest extends WebTestCase
     {
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', '/api/user/service-admin/'.($this->serviceId+99).'/rename');
+        $response = $this->runApp('PUT', '/api/user/plugin-admin/'.($this->serviceId+99).'/rename');
 
         $this->assertEquals(404, $response->getStatusCode());
     }
@@ -202,7 +202,7 @@ class ServiceAdminControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'PUT',
-            "/api/user/service-admin/$this->serviceId/rename",
+            "/api/user/plugin-admin/$this->serviceId/rename",
             ['name' => ''],
             ['Content-Type' => 'application/x-www-form-urlencoded']
         );
@@ -216,7 +216,7 @@ class ServiceAdminControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'PUT',
-            "/api/user/service-admin/$this->serviceId/rename",
+            "/api/user/plugin-admin/$this->serviceId/rename",
             ['name' => 'Renamed Service'],
             ['Content-Type' => 'application/x-www-form-urlencoded']
         );
@@ -233,12 +233,12 @@ class ServiceAdminControllerTest extends WebTestCase
 
     public function testDelete403()
     {
-        $response = $this->runApp('DELETE', '/api/user/service-admin/1/delete');
+        $response = $this->runApp('DELETE', '/api/user/plugin-admin/1/delete');
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->loginUser(2);
 
-        $response = $this->runApp('DELETE', '/api/user/service-admin/1/delete');
+        $response = $this->runApp('DELETE', '/api/user/plugin-admin/1/delete');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -246,7 +246,7 @@ class ServiceAdminControllerTest extends WebTestCase
     {
         $this->loginUser(1);
 
-        $response = $this->runApp('DELETE', '/api/user/service-admin/'.($this->serviceId+99).'/delete');
+        $response = $this->runApp('DELETE', '/api/user/plugin-admin/'.($this->serviceId+99).'/delete');
 
         $this->assertEquals(404, $response->getStatusCode());
     }
@@ -255,7 +255,7 @@ class ServiceAdminControllerTest extends WebTestCase
     {
         $this->loginUser(1);
 
-        $response = $this->runApp('DELETE', "/api/user/service-admin/$this->serviceId/delete");
+        $response = $this->runApp('DELETE', "/api/user/plugin-admin/$this->serviceId/delete");
 
         $this->assertEquals(204, $response->getStatusCode());
 
@@ -265,12 +265,12 @@ class ServiceAdminControllerTest extends WebTestCase
 
     public function testSaveConfiguration403()
     {
-        $response = $this->runApp('PUT', '/api/user/service-admin/1/save-configuration');
+        $response = $this->runApp('PUT', '/api/user/plugin-admin/1/save-configuration');
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->loginUser(2);
 
-        $response = $this->runApp('PUT', '/api/user/service-admin/1/save-configuration');
+        $response = $this->runApp('PUT', '/api/user/plugin-admin/1/save-configuration');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -278,7 +278,7 @@ class ServiceAdminControllerTest extends WebTestCase
     {
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', '/api/user/service-admin/'.($this->serviceId+99).'/save-configuration');
+        $response = $this->runApp('PUT', '/api/user/plugin-admin/'.($this->serviceId+99).'/save-configuration');
 
         $this->assertEquals(404, $response->getStatusCode());
     }
@@ -289,7 +289,7 @@ class ServiceAdminControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'PUT',
-            "/api/user/service-admin/$this->serviceId/save-configuration",
+            "/api/user/plugin-admin/$this->serviceId/save-configuration",
             ['configuration' => \json_encode([
                 'directoryName' => 'plugin3', // did not change
                 'active' => true,
@@ -303,7 +303,7 @@ class ServiceAdminControllerTest extends WebTestCase
             ])],
             ['Content-Type' => 'application/x-www-form-urlencoded'],
             [LoggerInterface::class => $this->log],
-            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceAdminController']]
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginAdminController']]
         );
 
         $this->assertEquals(204, $response->getStatusCode());
@@ -334,13 +334,13 @@ class ServiceAdminControllerTest extends WebTestCase
 
         $response1 = $this->runApp(
             'PUT',
-            "/api/user/service-admin/$this->serviceId/save-configuration",
+            "/api/user/plugin-admin/$this->serviceId/save-configuration",
             ['configuration' => ['invalid']],
             ['Content-Type' => 'application/x-www-form-urlencoded']
         );
         $response2 = $this->runApp(
             'PUT',
-            "/api/user/service-admin/$this->serviceId/save-configuration",
+            "/api/user/plugin-admin/$this->serviceId/save-configuration",
             ['configuration' => "invalid"],
             ['Content-Type' => 'application/x-www-form-urlencoded']
         );
@@ -354,7 +354,7 @@ class ServiceAdminControllerTest extends WebTestCase
         $this->helper->emptyDb();
         $em = $this->helper->getEm();
 
-        $this->helper->addCharacterMain('User', 1, [Role::SERVICE_ADMIN]);
+        $this->helper->addCharacterMain('User', 1, [Role::PLUGIN_ADMIN]);
         $this->helper->addCharacterMain('Admin', 2, [Role::USER]);
 
         $conf = new PluginConfigurationDatabase();

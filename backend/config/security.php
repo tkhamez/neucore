@@ -75,7 +75,7 @@ return [
     '/api/user/group/public'                  => [Role::USER],
     '/api/user/group/all'                     => [
                                                     Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER_MANAGER,
-                                                    Role::SERVICE_ADMIN, Role::WATCHLIST_ADMIN
+                                                    Role::PLUGIN_ADMIN, Role::WATCHLIST_ADMIN
                                                  ],
     '/api/user/group/{id}/applications'       => [Role::GROUP_MANAGER],
     '/api/user/group/accept-application/{id}' => [Role::GROUP_MANAGER],
@@ -134,7 +134,7 @@ return [
     '/api/user/watchlist/{id}/allowlist-alliance/'        => [Role::WATCHLIST_MANAGER], # add, remove
     '/api/user/watchlist'                                 => [Role::WATCHLIST_ADMIN], # several admin functions
 
-    '/api/user/service-admin/'              => [Role::SERVICE_ADMIN],
+    '/api/user/plugin-admin/'               => [Role::PLUGIN_ADMIN],
     '/api/user/service/update-all-accounts' => [Role::USER_ADMIN, Role::USER_MANAGER, Role::GROUP_ADMIN,
                                                 Role::APP_ADMIN, Role::USER_CHARS, Role::TRACKING, Role::WATCHLIST],
     '/api/user/service/'                    => [Role::USER],

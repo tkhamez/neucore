@@ -68,9 +68,9 @@
                         <a v-if="h.hasRole('user-admin')"
                            class="dropdown-item" :class="{ active: page === 'RoleAdmin' }"
                            href="#RoleAdmin">Roles</a>
-                        <a v-if="h.hasRole('service-admin')"
-                           class="dropdown-item" :class="{ active: page === 'ServiceAdmin' }"
-                           href="#ServiceAdmin">Services</a>
+                        <a v-if="h.hasRole('plugin-admin')"
+                           class="dropdown-item" :class="{ active: page === 'PluginAdmin' }"
+                           href="#PluginAdmin">Plugins</a>
                         <a v-if="h.hasRole('tracking-admin')"
                            class="dropdown-item" :class="{ active: page === 'TrackingAdmin' }"
                            href="#TrackingAdmin">Tracking</a>
@@ -156,7 +156,7 @@ export default {
             settings: toRef(this.store.state, 'settings'),
             managePages: ['GroupManagement', 'AppManagement', 'PlayerManagement'],
             adminPages: [
-                'GroupAdmin', 'ServiceAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings',
+                'GroupAdmin', 'PluginAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings',
                 'EVELoginAdmin', 'Statistics'
             ],
             memberDataPages: ['Tracking', 'Watchlist', 'Esi', 'Characters'],

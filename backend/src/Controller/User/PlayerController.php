@@ -61,7 +61,7 @@ class PlayerController extends BaseController
     private array $assignableRoles = [
         Role::APP_ADMIN,
         Role::GROUP_ADMIN,
-        Role::SERVICE_ADMIN,
+        Role::PLUGIN_ADMIN,
         Role::STATISTICS,
         Role::USER_ADMIN,
         Role::USER_MANAGER,
@@ -621,7 +621,7 @@ class PlayerController extends BaseController
      *         @OA\Schema(
      *             type="string",
      *             enum={"user", "user-admin", "user-manager", "user-chars", "group-admin", "group-manager",
-     *                   "service-admin", "app-admin", "app-manager", "esi", "settings", "tracking", "tracking-admin",
+     *                   "plugin-admin", "app-admin", "app-manager", "esi", "settings", "tracking", "tracking-admin",
      *                   "watchlist", "watchlist-manager", "watchlist-admin"}
      *         ),
      *     ),
@@ -647,7 +647,7 @@ class PlayerController extends BaseController
             Role::USER_MANAGER,
             Role::USER_CHARS,
             Role::GROUP_ADMIN,
-            Role::SERVICE_ADMIN,
+            Role::PLUGIN_ADMIN,
             Role::STATISTICS,
             Role::APP_ADMIN,
             Role::ESI,
@@ -727,7 +727,7 @@ class PlayerController extends BaseController
      *         description="Name of the role.",
      *         @OA\Schema(
      *             type="string",
-     *             enum={"app-admin", "user-manager", "user-chars", "group-admin", "service-admin", "user-admin",
+     *             enum={"app-admin", "user-manager", "user-chars", "group-admin", "plugin-admin", "user-admin",
      *                   "app-admin", "esi", "settings", "tracking-admin", "watchlist-admin"}
      *         )
      *     ),
@@ -788,7 +788,7 @@ class PlayerController extends BaseController
      *         description="Name of the role.",
      *         @OA\Schema(
      *             type="string",
-     *             enum={"app-admin", "user-manager", "user-chars", "group-admin", "service-admin", "user-admin",
+     *             enum={"app-admin", "user-manager", "user-chars", "group-admin", "plugin-admin", "user-admin",
      *                   "app-admin", "esi", "settings", "tracking-admin", "watchlist-admin"}
      *         )
      *     ),

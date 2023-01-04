@@ -17,7 +17,7 @@ use Neucore\Controller\User\EsiController;
 use Neucore\Controller\User\GroupController;
 use Neucore\Controller\User\PlayerController;
 use Neucore\Controller\User\RoleController;
-use Neucore\Controller\User\ServiceAdminController;
+use Neucore\Controller\User\PluginAdminController;
 use Neucore\Controller\User\ServiceController;
 use Neucore\Controller\User\SettingsController;
 use Neucore\Controller\User\SettingsEveLoginController;
@@ -225,12 +225,12 @@ return [
     '/api/user/service/{id}/reset-password/{characterId}'   => ['PUT',  [ServiceController::class, 'resetPassword']],
     '/api/user/service/update-all-accounts/{playerId}'      => ['PUT',  [ServiceController::class, 'updateAllAccounts']],
 
-    '/api/user/service-admin/list'                      => ['GET',    [ServiceAdminController::class, 'list']],
-    '/api/user/service-admin/configurations'            => ['GET',    [ServiceAdminController::class, 'configurations']],
-    '/api/user/service-admin/create'                    => ['POST',   [ServiceAdminController::class, 'create']],
-    '/api/user/service-admin/{id}/rename'               => ['PUT',    [ServiceAdminController::class, 'rename']],
-    '/api/user/service-admin/{id}/delete'               => ['DELETE', [ServiceAdminController::class, 'delete']],
-    '/api/user/service-admin/{id}/save-configuration'   => ['PUT',    [ServiceAdminController::class, 'saveConfiguration']],
+    '/api/user/plugin-admin/list'                      => ['GET',    [PluginAdminController::class, 'list']],
+    '/api/user/plugin-admin/configurations'            => ['GET',    [PluginAdminController::class, 'configurations']],
+    '/api/user/plugin-admin/create'                    => ['POST',   [PluginAdminController::class, 'create']],
+    '/api/user/plugin-admin/{id}/rename'               => ['PUT',    [PluginAdminController::class, 'rename']],
+    '/api/user/plugin-admin/{id}/delete'               => ['DELETE', [PluginAdminController::class, 'delete']],
+    '/api/user/plugin-admin/{id}/save-configuration'   => ['PUT',    [PluginAdminController::class, 'saveConfiguration']],
 
     '/api/user/statistics/player-logins'                => ['GET', [StatisticsController::class, 'playerLogins']],
     '/api/user/statistics/total-monthly-app-requests'   => ['GET', [StatisticsController::class, 'totalMonthlyAppRequests']],

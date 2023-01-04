@@ -1,14 +1,14 @@
 <template>
 <div class="container-fluid">
 
-    <edit :type="'Service'" ref="editModal"
+    <edit :type="'Plugin'" ref="editModal"
           :functionCreate="create"
           :functionDelete="deleteIt"
           :functionRename="rename"></edit>
 
     <div class="row mt-3">
         <div class="col-lg-12">
-            <h1>Service Administration</h1>
+            <h1>Plugin Administration</h1>
         </div>
     </div>
 
@@ -16,39 +16,39 @@
         <div class="col-lg-4 sticky-column">
             <div class="nc-menu card border-secondary mb-3">
                 <h4 class="card-header">
-                    Services
-                    <span class="far fa-plus-square add-service" title="Add group"
+                    Plugins
+                    <span class="far fa-plus-square add-plugin" title="Add group"
                           @mouseover="U.addHighlight" @mouseleave="U.removeHighlight"
                           v-on:click="showCreateModal()"></span>
                 </h4>
                 <div class="list-group">
-                    <span v-for="service in services" class="nc-list-item-wrap"
-                          :class="{ active: activeService && activeService.id === service.id }">
+                    <span v-for="plugin in plugins" class="nc-list-item-wrap"
+                          :class="{ active: activePlugin && activePlugin.id === plugin.id }">
                         <a class="list-group-item list-group-item-action"
-                           :class="{ active: activeService && activeService.id === service.id }"
-                           :href="`#ServiceAdmin/${service.id}`">
-                            {{ service.name }}
+                           :class="{ active: activePlugin && activePlugin.id === plugin.id }"
+                           :href="`#PluginAdmin/${plugin.id}`">
+                            {{ plugin.name }}
                         </a>
                         <span class="entity-actions">
                             <span role="img" aria-label="Edit" title="Edit"
                                   class="fa-regular fa-pen-to-square me-1"
                                   @mouseover="(ele) => U.addHighlight(ele, 'warning')"
                                   @mouseleave="(ele) => U.removeHighlight(ele, 'warning')"
-                                  v-on:click="showEditModal(service)"></span>
+                                  v-on:click="showEditModal(plugin)"></span>
                             <span role="img" aria-label="Delete" title="Delete"
                                   class="far fa-trash-alt me-1"
                                   @mouseover="(ele) => U.addHighlight(ele, 'danger')"
                                   @mouseleave="(ele) => U.removeHighlight(ele, 'danger')"
-                                  v-on:click="showDeleteModal(service)"></span>
+                                  v-on:click="showDeleteModal(plugin)"></span>
                         </span>
                     </span>
                 </div>
             </div>
         </div>
 
-        <div v-if="activeService" v-cloak class="col-lg-8">
+        <div v-if="activePlugin" v-cloak class="col-lg-8">
             <div class="card border-secondary mb-3" >
-                <h4 class="card-header">{{ activeService.name }}</h4>
+                <h4 class="card-header">{{ activePlugin.name }}</h4>
             </div>
             <div class="card border-secondary mb-3">
                 <div v-cloak class="card-body">
@@ -56,12 +56,11 @@
 
                     <label class="col-form-label w-100 mb-3">
                         Plugin
-                        <select class="form-select" v-model="activeService.configurationDatabase.directoryName"
+                        <select class="form-select" v-model="activePlugin.configurationDatabase.directoryName"
                                 v-on:change="updateConfiguration()">
                             <option value=""></option>
                             <option v-for="option in configurations" v-bind:value="option.directoryName">
-                                {{ option.name }}
-                                ({{ option.directoryName }})
+                                {{ option.type }}: {{ option.name }} ({{ option.directoryName }})
                             </option>
                         </select>
                         <span class="form-text lh-sm d-block text-warning">
@@ -78,7 +77,7 @@
                             </span>
                         </label>
                         <input class="form-check-input" type="checkbox" id="configActive" :disabled="!formEnabled"
-                               v-model="activeService.configurationDatabase.active">
+                               v-model="activePlugin.configurationDatabase.active">
                     </div>
 
                     <div class="col-form-label w-100 mb-2">
@@ -88,7 +87,7 @@
                                      :multiple="true" :loading="false" :searchable="true" placeholder="Select groups">
                         </multiselect>
                         <div class="form-text lh-sm">
-                            Groups that an account must have (one of them) to see this service. This is also passed
+                            Groups that an account must have (one of them) to see this plugin. This is also passed
                             to the plugin so accounts can be removed if a player loses all groups.
                         </div>
                     </div>
@@ -129,31 +128,31 @@
                         <label class="col-form-label w-100 mt-2">
                             Text Top
                             <textarea class="form-control" rows="5"
-                                      v-model="activeService.configurationDatabase.textTop"></textarea>
+                                      v-model="activePlugin.configurationDatabase.textTop"></textarea>
                             <span class="form-text lh-sm d-block">Text above the list of accounts.</span>
                         </label>
                         <label class="col-form-label w-100">
                             Text Account
                             <textarea class="form-control" rows="5"
-                                      v-model="activeService.configurationDatabase.textAccount"></textarea>
+                                      v-model="activePlugin.configurationDatabase.textAccount"></textarea>
                             <span class="form-text lh-sm d-block">Text below account table.</span>
                         </label>
                         <label class="col-form-label w-100">
                             Text Register
                             <textarea class="form-control" rows="5"
-                                      v-model="activeService.configurationDatabase.textRegister"></textarea>
+                                      v-model="activePlugin.configurationDatabase.textRegister"></textarea>
                             <span class="form-text lh-sm d-block">Text below the registration form/button.</span>
                         </label>
                         <label class="col-form-label w-100">
                             Text Pending
                             <textarea class="form-control" rows="5"
-                                      v-model="activeService.configurationDatabase.textPending"></textarea>
+                                      v-model="activePlugin.configurationDatabase.textPending"></textarea>
                             <span class="form-text lh-sm d-block">Text below an account with status "pending".</span>
                         </label>
                         <label class="col-form-label w-100">
                             Configuration Data
                             <textarea class="form-control" rows="15"
-                                      v-model="activeService.configurationDatabase.configurationData"></textarea>
+                                      v-model="activePlugin.configurationDatabase.configurationData"></textarea>
                             <span class="form-text lh-sm d-block">Additional configuration for the plugin.</span>
                         </label>
                     </fieldset>
@@ -175,7 +174,7 @@
 <script>
 import {toRef} from "vue";
 import Multiselect from '@suadelabs/vue3-multiselect';
-import {ServiceApi, ServiceAdminApi, GroupApi} from "neucore-js-client";
+import {ServiceApi, PluginAdminApi, GroupApi} from "neucore-js-client";
 import Helper from "../../classes/Helper";
 import Util from "../../classes/Util";
 import Edit from '../../components/EntityEdit.vue';
@@ -197,10 +196,10 @@ export default {
             h: new Helper(this),
             U: Util,
             settings: toRef(this.store.state, 'settings'),
-            services: [],
+            plugins: [],
             allGroups: null,
             configurations: null,
-            activeService: null,
+            activePlugin: null,
             requiredGroups: '',
             URLs: [],
         }
@@ -209,8 +208,8 @@ export default {
     computed: {
         formEnabled() {
             return (
-                this.activeService.configurationDatabase.directoryName &&
-                this.activeService.configurationDatabase.directoryName.length > 0
+                this.activePlugin.configurationDatabase.directoryName &&
+                this.activePlugin.configurationDatabase.directoryName.length > 0
             );
         }
     },
@@ -218,99 +217,99 @@ export default {
     mounted() {
         window.scrollTo(0, 0);
         getList(this);
-        getGroups(this, () => getService(this));
-        getConfigurations(this, () => getService(this));
+        getGroups(this, () => getPlugin(this));
+        getConfigurations(this, () => getPlugin(this));
     },
 
     watch: {
         route() {
-            getService(this);
+            getPlugin(this);
         },
     },
 
     methods: {
         create(name) {
-            new ServiceAdminApi().serviceAdminCreate(name, (error, data, response) => {
+            new PluginAdminApi().pluginAdminCreate(name, (error, data, response) => {
                 if (response.status === 400) {
                     this.h.message('Missing name.', 'error');
                 } else if (error) {
-                    this.h.message('Error creating service.', 'error');
+                    this.h.message('Error creating plugin.', 'error');
                 } else {
                     this.emitter.emit('settingsChange');
                     this.$refs.editModal.hideModal();
-                    this.h.message('Service created.', 'success');
-                    window.location.hash = `#ServiceAdmin/${data.id}`;
+                    this.h.message('Plugin created.', 'success');
+                    window.location.hash = `#PluginAdmin/${data.id}`;
                     getList(this);
                 }
             });
         },
 
         deleteIt(id) {
-            new ServiceAdminApi().serviceAdminDelete(id, error => {
+            new PluginAdminApi().pluginAdminDelete(id, error => {
                 if (error) {
-                    this.h.message('Error deleting service', 'error');
+                    this.h.message('Error deleting plugin', 'error');
                 } else {
                     this.emitter.emit('settingsChange');
                     this.$refs.editModal.hideModal();
-                    this.h.message('Service deleted.', 'success');
-                    window.location.hash = '#ServiceAdmin';
+                    this.h.message('Plugin deleted.', 'success');
+                    window.location.hash = '#PluginAdmin';
                     getList(this);
                 }
             });
         },
 
         rename(id, name) {
-            new ServiceAdminApi().serviceAdminRename(id, name, (error, data, response) => {
+            new PluginAdminApi().pluginAdminRename(id, name, (error, data, response) => {
                 if (response.status === 400) {
                     this.h.message('Missing name.', 'error');
                 } else if (error) {
-                    this.h.message('Error renaming service.', 'error');
+                    this.h.message('Error renaming plugin.', 'error');
                 } else {
                     this.emitter.emit('settingsChange');
                     this.$refs.editModal.hideModal();
-                    this.h.message('Service renamed.', 'success');
+                    this.h.message('Plugin renamed.', 'success');
                     getList(this);
-                    getService(this);
+                    getPlugin(this);
                 }
             });
         },
 
         updateConfiguration() {
-            if (this.activeService.configurationDatabase.directoryName === '') {
-                this.activeService.configurationDatabase.URLs = [];
-                this.activeService.configurationDatabase.textTop = '';
-                this.activeService.configurationDatabase.textAccount = '';
-                this.activeService.configurationDatabase.textRegister = '';
-                this.activeService.configurationDatabase.textPending = '';
-                this.activeService.configurationDatabase.configurationData = '';
+            if (this.activePlugin.configurationDatabase.directoryName === '') {
+                this.activePlugin.configurationDatabase.URLs = [];
+                this.activePlugin.configurationDatabase.textTop = '';
+                this.activePlugin.configurationDatabase.textAccount = '';
+                this.activePlugin.configurationDatabase.textRegister = '';
+                this.activePlugin.configurationDatabase.textPending = '';
+                this.activePlugin.configurationDatabase.configurationData = '';
                 this.URLs = [];
 
                 return;
             }
 
             for (const config of this.configurations) {
-                if (config.directoryName !== this.activeService.configurationDatabase.directoryName) {
+                if (config.directoryName !== this.activePlugin.configurationDatabase.directoryName) {
                     continue;
                 }
 
-                this.activeService.configurationDatabase.URLs = config.URLs;
-                this.activeService.configurationDatabase.textTop = config.textTop;
-                this.activeService.configurationDatabase.textAccount = config.textAccount;
-                this.activeService.configurationDatabase.textRegister = config.textRegister;
-                this.activeService.configurationDatabase.textPending = config.textPending;
-                this.activeService.configurationDatabase.configurationData = config.configurationData;
-                this.URLs = this.activeService.configurationDatabase.URLs;
+                this.activePlugin.configurationDatabase.URLs = config.URLs;
+                this.activePlugin.configurationDatabase.textTop = config.textTop;
+                this.activePlugin.configurationDatabase.textAccount = config.textAccount;
+                this.activePlugin.configurationDatabase.textRegister = config.textRegister;
+                this.activePlugin.configurationDatabase.textPending = config.textPending;
+                this.activePlugin.configurationDatabase.configurationData = config.configurationData;
+                this.URLs = this.activePlugin.configurationDatabase.URLs;
 
                 return;
             }
         },
 
         saveConfiguration() {
-            const config = this.activeService.configurationDatabase;
+            const config = this.activePlugin.configurationDatabase;
             config.URLs = this.URLs.filter(url => url.url || url.title || url.target);
             config.requiredGroups = Util.buildIdList(this.requiredGroups);
-            new ServiceAdminApi().serviceAdminSaveConfiguration(
-                this.activeService.id,
+            new PluginAdminApi().pluginAdminSaveConfiguration(
+                this.activePlugin.id,
                 {configuration: JSON.stringify(config)},
                 (error, data, response) => {
                     if (response.status === 400) {
@@ -322,7 +321,7 @@ export default {
                         this.$refs.editModal.hideModal();
                         this.h.message('Configuration updated.', 'success');
                         getList(this);
-                        getService(this);
+                        getPlugin(this);
                     }
                 }
             );
@@ -337,19 +336,19 @@ export default {
         },
 
         showEditModal() {
-            this.$refs.editModal.showEditModal(this.activeService);
+            this.$refs.editModal.showEditModal(this.activePlugin);
         },
 
         showDeleteModal() {
-            this.$refs.editModal.showDeleteModal(this.activeService);
+            this.$refs.editModal.showDeleteModal(this.activePlugin);
         },
     }
 }
 
 function getList(vm) {
-    new ServiceAdminApi().serviceAdminList((error, data) => {
+    new PluginAdminApi().pluginAdminList((error, data) => {
         if (!error) {
-            vm.services = data;
+            vm.plugins = data;
         }
     });
 }
@@ -365,7 +364,7 @@ function getGroups(vm, callback) {
 }
 
 function getConfigurations(vm, callback) {
-    new ServiceAdminApi().serviceAdminConfigurations((error, data) => {
+    new PluginAdminApi().pluginAdminConfigurations((error, data) => {
         if (error) { // 403 usually
             return;
         }
@@ -374,27 +373,27 @@ function getConfigurations(vm, callback) {
     });
 }
 
-function getService(vm) {
+function getPlugin(vm) {
     if (vm.allGroups === null || vm.configurations === null) {
         return; // wait for both
     }
 
-    vm.activeService = null;
+    vm.activePlugin = null;
     vm.requiredGroups = '';
     vm.URLs = [];
 
-    if (!vm.route[1] || !vm.h.hasRole('service-admin')) { // configuration object is incomplete without this role
+    if (!vm.route[1] || !vm.h.hasRole('plugin-admin')) { // configuration object is incomplete without this role
         return;
     }
 
     new ServiceApi().serviceGet(vm.route[1], {allowAdmin: 'true'}, (error, data) => {
         if (!error) {
-            vm.activeService = data;
-            if (vm.activeService.configurationDatabase) {
-                vm.requiredGroups = findSelectedGroups(vm, vm.activeService.configurationDatabase.requiredGroups);
-                vm.URLs = vm.activeService.configurationDatabase.URLs;
+            vm.activePlugin = data;
+            if (vm.activePlugin.configurationDatabase) {
+                vm.requiredGroups = findSelectedGroups(vm, vm.activePlugin.configurationDatabase.requiredGroups);
+                vm.URLs = vm.activePlugin.configurationDatabase.URLs;
             } else {
-                vm.activeService.configurationDatabase = {};
+                vm.activePlugin.configurationDatabase = {};
             }
         }
     });
@@ -417,7 +416,7 @@ function findSelectedGroups(vm, selectedIds) {
 </script>
 
 <style scoped>
-    .add-service {
+    .add-plugin {
         float: right;
         cursor: pointer;
     }

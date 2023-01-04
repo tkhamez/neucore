@@ -17,7 +17,7 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     type="string",
  *     enum={"app", "app-groups", "app-chars", "app-tracking", "app-esi", "user", "user-admin", "user-manager",
- *           "user-chars", "group-admin", "group-manager", "app-admin", "app-manager", "service-admin", "statistics",
+ *           "user-chars", "group-admin", "group-manager", "app-admin", "app-manager", "plugin-admin", "statistics",
  *           "esi", "settings", "tracking", "tracking-admin", "watchlist", "watchlist-manager", "watchlist-admin"})
  * )
  *
@@ -41,7 +41,7 @@ class Role implements \JsonSerializable
     public const USER_MANAGER = 'user-manager';
     public const USER_CHARS = 'user-chars';
     public const GROUP_ADMIN = 'group-admin';
-    public const SERVICE_ADMIN = 'service-admin';
+    public const PLUGIN_ADMIN = 'plugin-admin';
     public const STATISTICS = 'statistics';
     public const APP_ADMIN = 'app-admin';
     public const ESI = 'esi';
@@ -60,7 +60,7 @@ class Role implements \JsonSerializable
         Role::USER_MANAGER,
         Role::USER_CHARS,
         Role::GROUP_ADMIN,
-        Role::SERVICE_ADMIN,
+        Role::PLUGIN_ADMIN,
         Role::STATISTICS,
         Role::APP_ADMIN,
         Role::ESI,
