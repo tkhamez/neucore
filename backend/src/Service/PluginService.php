@@ -13,6 +13,8 @@ use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Neucore\Plugin\Exception;
+use Neucore\Plugin\GeneralPluginInterface;
+use Neucore\Plugin\PluginInterface;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\PluginConfiguration;
 use Neucore\Plugin\ServiceInterface;
@@ -110,12 +112,15 @@ class PluginService
             if ($implementation instanceof ServiceInterface) {
                 $plugin->setServiceImplementation($implementation);
             }
+            if ($implementation instanceof GeneralPluginInterface) {
+                $plugin->setGeneralPluginImplementation($implementation);
+            }
             $result[] = $plugin;
         }
         return $result;
     }
 
-    public function getPluginImplementation(Plugin $plugin): ?ServiceInterface
+    public function getPluginImplementation(Plugin $plugin): ?PluginInterface
     {
         if (!$plugin->getConfigurationFile()) {
             try {
@@ -165,11 +170,19 @@ class PluginService
         }
 
         $implements = class_implements($phpClass);
-        if (!is_array($implements) || !in_array(ServiceInterface::class, $implements)) {
+        if (
+            !is_array($implements) ||
+            (
+                !in_array(ServiceInterface::class, $implements) &&
+                !in_array(GeneralPluginInterface::class, $implements)
+            )
+        ) {
             return null;
         }
 
+        // PluginInterface::__construct
         // ServiceInterface::__construct
+        // GeneralPluginInterface::__construct
         $obj = new $phpClass(
             $this->log,
             new PluginConfiguration(
@@ -179,7 +192,7 @@ class PluginService
             )
         );
 
-        return $obj instanceof ServiceInterface ? $obj : null;
+        return $obj instanceof PluginInterface ? $obj : null;
     }
 
     /**

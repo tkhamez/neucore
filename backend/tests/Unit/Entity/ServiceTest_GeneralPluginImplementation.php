@@ -1,10 +1,6 @@
 <?php
-/** @noinspection PhpUnused */
-/** @noinspection PhpIllegalPsrClassPathInspection */
 
-declare(strict_types=1);
-
-namespace Tests\Unit\Service\PluginService\plugin\src;
+namespace Tests\Unit\Entity;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
@@ -14,7 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class TestPlugin implements GeneralPluginInterface
+class ServiceTest_GeneralPluginImplementation implements GeneralPluginInterface
 {
     public function __construct(LoggerInterface $logger, PluginConfiguration $pluginConfiguration)
     {

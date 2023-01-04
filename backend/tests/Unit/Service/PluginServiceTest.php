@@ -18,6 +18,7 @@ use Neucore\Entity\Player;
 use Neucore\Entity\Plugin;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
+use Neucore\Plugin\GeneralPluginInterface;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\PluginConfiguration;
 use Neucore\Plugin\ServiceInterface;
@@ -231,24 +232,35 @@ class PluginServiceTest extends TestCase
         $conf4 = new PluginConfigurationDatabase();
         $conf4->directoryName = 'plugin-general';
         $conf4->active = true;
-        $service4 = (new Plugin())->setName('S3')->setConfigurationDatabase($conf4);
+        $service4 = (new Plugin())->setName('S4')->setConfigurationDatabase($conf4);
+
+        $conf5 = new PluginConfigurationDatabase();
+        $conf5->directoryName = 'plugin-both';
+        $conf5->active = true;
+        $service5 = (new Plugin())->setName('S5')->setConfigurationDatabase($conf5);
 
         $this->om->persist($service1);
         $this->om->persist($service2);
         $this->om->persist($service3);
         $this->om->persist($service4);
+        $this->om->persist($service5);
         $this->om->flush();
         $this->om->clear();
 
         $actual = $this->pluginService->getPluginWithImplementation(
-            [$service1->getId(), $service2->getId(), $service4->getId()]
+            [$service1->getId(), $service2->getId(), $service4->getId(), $service5->getId()]
         );
 
-        $this->assertSame(2, count($actual));
+        $this->assertSame(3, count($actual));
         $this->assertSame($service1->getId(), $actual[0]->getId());
         $this->assertSame($service4->getId(), $actual[1]->getId());
+        $this->assertSame($service5->getId(), $actual[2]->getId());
         $this->assertInstanceOf(ServiceInterface::class, $actual[0]->getServiceImplementation());
         $this->assertNull($actual[1]->getServiceImplementation());
+        $this->assertInstanceOf(ServiceInterface::class, $actual[2]->getServiceImplementation());
+        $this->assertNull($actual[0]->getGeneralPluginImplementation());
+        $this->assertInstanceOf(GeneralPluginInterface::class, $actual[1]->getGeneralPluginImplementation());
+        $this->assertInstanceOf(GeneralPluginInterface::class, $actual[2]->getGeneralPluginImplementation());
     }
 
     public function testGetPluginImplementation()
@@ -277,6 +289,18 @@ class PluginServiceTest extends TestCase
             ['/some/path', __DIR__ .  '/PluginService/plugin-name/src'],
             self::$loader->getPrefixesPsr4()[self::PSR_PREFIX.'\\']
         );
+    }
+
+    public function testGetPluginImplementation_GeneralPlugin()
+    {
+        $plugin = new Plugin();
+        $conf = new PluginConfigurationDatabase();
+        $conf->directoryName = 'plugin-general';
+        $plugin->setConfigurationDatabase($conf);
+
+        $implementation = $this->pluginService->getPluginImplementation($plugin);
+
+        $this->assertInstanceOf(GeneralPluginInterface::class, $implementation);
     }
 
     public function testGetAccounts_NoCharacters()

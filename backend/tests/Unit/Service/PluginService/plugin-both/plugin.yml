@@ -1,0 +1,4 @@
+type: service
+phpClass: Tests\Unit\Service\PluginService\plugin\src\TestBoth
+psr4Prefix: Tests\Unit\Service\PluginService\plugin\src
+psr4Path: src

@@ -509,7 +509,7 @@ class ServiceController extends BaseController
     {
         // get service object
         $serviceImplementation = $this->pluginService->getPluginImplementation($service);
-        if ($serviceImplementation === null) {
+        if (!$serviceImplementation instanceof ServiceInterface) {
             $this->log->error(
                 "ServiceController: The configured service class does not exist or does not implement " .
                 "Neucore\Plugin\ServiceInterface."

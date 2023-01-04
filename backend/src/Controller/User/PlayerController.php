@@ -15,6 +15,7 @@ use Neucore\Data\ServiceAccount;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
+use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\Account;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\ObjectManager;
@@ -1224,7 +1225,7 @@ class PlayerController extends BaseController
         foreach ($plugins as $plugin) {
             $implementation = $pluginService->getPluginImplementation($plugin);
             $accounts = [];
-            if ($implementation) {
+            if ($implementation instanceof ServiceInterface) {
                 try {
                     $accounts = $pluginService->getAccounts($implementation, $player->getCharacters());
                 } catch (Exception) {

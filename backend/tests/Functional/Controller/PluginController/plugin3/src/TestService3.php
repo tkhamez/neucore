@@ -4,7 +4,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Service\PluginService\plugin\src;
+namespace Tests\Functional\Controller\PluginController;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class TestPlugin implements GeneralPluginInterface
+class TestService3 implements GeneralPluginInterface
 {
     public function __construct(LoggerInterface $logger, PluginConfiguration $pluginConfiguration)
     {
@@ -34,6 +34,6 @@ class TestPlugin implements GeneralPluginInterface
         array $managerGroups,
         array $roles,
     ): ResponseInterface {
-        throw new Exception();
+        throw new Exception('Exception from general plugin.');
     }
 }

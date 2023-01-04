@@ -202,6 +202,31 @@ class PluginControllerTest extends WebTestCase
             '/#Service/'.$plugin->getId().'/?message=Unknown%20error.',
             $response->getHeader('Location')[0]
         );
-        $this->assertSame('Exception from plugin.', $logger->getHandler()->getRecords()[0]['message']);
+        $this->assertSame('Exception from service plugin.', $logger->getHandler()->getRecords()[0]['message']);
+    }
+
+    public function testRequest200_Exception_GeneralPlugin()
+    {
+        $this->helper->addCharacterMain('User 100', 100);
+        $this->loginUser(100);
+        $configuration = new PluginConfigurationDatabase();
+        $configuration->directoryName = 'plugin3';
+        $plugin = (new Plugin())->setName('Plugin 3')->setConfigurationDatabase($configuration);
+        $this->om->persist($plugin);
+        $this->om->flush();
+
+        $logger = new Logger('Test');
+        $response = $this->runApp(
+            'GET',
+            '/plugin/'.$plugin->getId().'/test',
+            null,
+            null,
+            [LoggerInterface::class => $logger],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginController']],
+        );
+
+        $this->assertSame('Exception from general plugin.', $logger->getHandler()->getRecords()[0]['message']);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringStartsWith('Error from plugin.', $response->getBody()->__toString());
     }
 }

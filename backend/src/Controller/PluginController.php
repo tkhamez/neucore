@@ -6,6 +6,7 @@ namespace Neucore\Controller;
 
 use Neucore\Log\Context;
 use Neucore\Plugin\Exception;
+use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\PluginService;
 use Neucore\Service\UserAuth;
 use Psr\Http\Message\ResponseInterface;
@@ -73,9 +74,14 @@ class PluginController extends BaseController
             );
         } catch (Exception $e) {
             $logger->error($e->getMessage(), [Context::EXCEPTION => $e]);
-            return $this->response
-                ->withHeader('Location', '/#Service/' . $plugin->getId() . '/?message=Unknown%20error.')
-                ->withStatus(302);
+            if ($implementation instanceof ServiceInterface) {
+                return $this->response
+                    ->withHeader('Location', '/#Service/' . $plugin->getId() . '/?message=Unknown%20error.')
+                    ->withStatus(302);
+            } else {
+                $this->response->getBody()->write($this->getBodyWithHomeLink('Error from plugin.'));
+                return $this->response;
+            }
         }
     }
 }

@@ -4,10 +4,11 @@
 
 declare(strict_types=1);
 
-namespace Tests\Functional\Controller\PluginController;
+namespace Tests\Unit\Service\PluginService\plugin\src;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
+use Neucore\Plugin\GeneralPluginInterface;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\PluginConfiguration;
 use Neucore\Plugin\ServiceInterface;
@@ -15,13 +16,14 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class TestService1 implements ServiceInterface
+class TestBoth implements GeneralPluginInterface, ServiceInterface
 {
-    public static array $data = [];
-
     public function __construct(LoggerInterface $logger, PluginConfiguration $pluginConfiguration)
     {
-        self::$data = [];
+    }
+
+    public function onConfigurationChange(): void
+    {
     }
 
     public function request(
@@ -34,26 +36,12 @@ class TestService1 implements ServiceInterface
         array $managerGroups,
         array $roles,
     ): ResponseInterface {
-        if (($request->getQueryParams()['error'] ?? '') === '1') {
-            throw new Exception('Exception from service plugin.');
-        }
-
-        self::$data = [
-            'name' => $name,
-            'main' => $main,
-            'characters' => $characters,
-            'memberGroups' => $memberGroups,
-            'managerGroups' => $managerGroups,
-            'roles' => $roles,
-        ];
-
-        $response->getBody()->write('Response from plugin.');
-        return $response;
+        throw new Exception();
     }
 
     public function getAccounts(array $characters): array
     {
-        throw new Exception();
+        return [];
     }
 
     public function register(
@@ -91,10 +79,6 @@ class TestService1 implements ServiceInterface
     public function getAllPlayerAccounts(): array
     {
         throw new Exception();
-    }
-
-    public function onConfigurationChange(): void
-    {
     }
 
     public function search(string $query): array

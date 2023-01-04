@@ -8,6 +8,7 @@ namespace Neucore\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Data\PluginConfigurationFile;
 use Neucore\Data\PluginConfigurationDatabase;
+use Neucore\Plugin\GeneralPluginInterface;
 use Neucore\Plugin\ServiceInterface;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -49,7 +50,9 @@ class Plugin implements \JsonSerializable
      */
     private ?PluginConfigurationFile $configurationFile = null;
 
-    private ?ServiceInterface $implementation = null;
+    private ?ServiceInterface $serviceImplementation = null;
+
+    private ?GeneralPluginInterface $generalPluginImplementation = null;
 
     public function jsonSerialize(
         bool $onlyRequired = true,
@@ -116,12 +119,23 @@ class Plugin implements \JsonSerializable
 
     public function getServiceImplementation(): ?ServiceInterface
     {
-        return $this->implementation;
+        return $this->serviceImplementation;
     }
 
     public function setServiceImplementation(?ServiceInterface $implementation): self
     {
-        $this->implementation = $implementation;
+        $this->serviceImplementation = $implementation;
+        return $this;
+    }
+
+    public function getGeneralPluginImplementation(): ?GeneralPluginInterface
+    {
+        return $this->generalPluginImplementation;
+    }
+
+    public function setGeneralPluginImplementation(?GeneralPluginInterface $implementation): self
+    {
+        $this->generalPluginImplementation = $implementation;
         return $this;
     }
 }
