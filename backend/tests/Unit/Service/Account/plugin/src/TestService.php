@@ -10,7 +10,7 @@ namespace Tests\Unit\Service\Account;
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
-use Neucore\Plugin\ServiceConfiguration;
+use Neucore\Plugin\PluginConfiguration;
 use Neucore\Plugin\ServiceInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,7 +20,7 @@ class TestService implements ServiceInterface
 {
     public static array $updateAccount = [];
 
-    public function __construct(LoggerInterface $logger, ServiceConfiguration $serviceConfiguration)
+    public function __construct(LoggerInterface $logger, PluginConfiguration $pluginConfiguration)
     {
     }
 
@@ -70,11 +70,14 @@ class TestService implements ServiceInterface
     }
 
     public function request(
-        CoreCharacter $coreCharacter,
         string $name,
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $groups
+        CoreCharacter $main,
+        array $characters,
+        array $memberGroups,
+        array $managerGroups,
+        array $roles,
     ): ResponseInterface {
         throw new Exception();
     }

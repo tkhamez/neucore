@@ -7,7 +7,12 @@ namespace Tests\Functional\Controller;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\Plugin;
+use Neucore\Entity\Role;
+use Neucore\Plugin\CoreCharacter;
+use Neucore\Plugin\CoreGroup;
+use Neucore\Plugin\CoreRole;
 use Psr\Log\LoggerInterface;
+use Tests\Functional\Controller\PluginController\TestService1;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\Logger;
@@ -122,11 +127,14 @@ class PluginControllerTest extends WebTestCase
 
     public function testRequest_Success()
     {
-        $character = $this->helper->addCharacterMain('User 100', 100, [], ['Group 1']);
+        $character = $this->helper->addCharacterMain('User 100', 100, [Role::USER], ['Group 1', 'Group 2']);
+        $player = $character->getPlayer();
+        $this->helper->addCharacterToPlayer('User 200', 200, $player);
+        $player->addManagerGroup($player->getGroups()[1]);
         $this->loginUser(100);
         $configuration = new PluginConfigurationDatabase();
         $configuration->directoryName = 'plugin1';
-        $configuration->requiredGroups = [$character->getPlayer()->getGroups()[0]->getId()];
+        $configuration->requiredGroups = [$player->getGroups()[0]->getId()];
         $plugin = (new Plugin())->setName('Plugin 1')->setConfigurationDatabase($configuration);
         $this->om->persist($plugin);
         $this->om->flush();
@@ -139,11 +147,37 @@ class PluginControllerTest extends WebTestCase
             [],
             [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginController']],
         );
-        $this->assertSame('Response from plugin.', $response->getBody()->__toString());
+
         $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('Response from plugin.', $response->getBody()->__toString());
+
+        $this->assertSame('auth', TestService1::$data['name']);
+
+        $this->assertInstanceOf(CoreCharacter::class, TestService1::$data['main']);
+        $this->assertSame(100, TestService1::$data['main']->id);
+
+        $this->assertSame(2, count(TestService1::$data['characters']));
+        $this->assertInstanceOf(CoreCharacter::class, TestService1::$data['characters'][0]);
+        $this->assertInstanceOf(CoreCharacter::class, TestService1::$data['characters'][1]);
+        $this->assertSame(100, TestService1::$data['characters'][0]->id);
+        $this->assertSame(200, TestService1::$data['characters'][1]->id);
+
+        $this->assertSame(2, count(TestService1::$data['memberGroups']));
+        $this->assertInstanceOf(CoreGroup::class, TestService1::$data['memberGroups'][0]);
+        $this->assertInstanceOf(CoreGroup::class, TestService1::$data['memberGroups'][1]);
+        $this->assertSame('Group 1', TestService1::$data['memberGroups'][0]->name);
+        $this->assertSame('Group 2', TestService1::$data['memberGroups'][1]->name);
+
+        $this->assertSame(1, count(TestService1::$data['managerGroups']));
+        $this->assertInstanceOf(CoreGroup::class, TestService1::$data['managerGroups'][0]);
+        $this->assertSame('Group 2', TestService1::$data['managerGroups'][0]->name);
+
+        $this->assertSame(1, count(TestService1::$data['roles']));
+        $this->assertInstanceOf(CoreRole::class, TestService1::$data['roles'][0]);
+        $this->assertSame(Role::USER, TestService1::$data['roles'][0]->name);
     }
 
-    public function testRequest302_Exception()
+    public function testRequest302_Exception_ServicePlugin()
     {
         $this->helper->addCharacterMain('User 100', 100);
         $this->loginUser(100);

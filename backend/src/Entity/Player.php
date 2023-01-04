@@ -8,7 +8,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
+use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\CoreGroup;
+use Neucore\Plugin\CoreRole;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 
@@ -303,6 +305,16 @@ class Player implements \JsonSerializable
     }
 
     /**
+     * @return CoreRole[]
+     */
+    public function getCoreRoles(): array
+    {
+        return array_map(function (Role $role) {
+            return new CoreRole($role->getId(), $role->getName());
+        }, $this->getRoles());
+    }
+
+    /**
      * @return string[]
      */
     public function getRoleNames(): array
@@ -339,6 +351,16 @@ class Player implements \JsonSerializable
     public function getCharacters(): array
     {
         return array_values($this->characters->toArray());
+    }
+
+    /**
+     * @return CoreCharacter[]
+     */
+    public function getCoreCharacters(): array
+    {
+        return array_map(function (Character $character) {
+            return $character->toCoreCharacter();
+        }, $this->getCharacters());
     }
 
     public function getCharactersId(): array
@@ -564,6 +586,16 @@ class Player implements \JsonSerializable
     public function getManagerGroups(): array
     {
         return array_values($this->managerGroups->toArray());
+    }
+
+    /**
+     * @return CoreGroup[]
+     */
+    public function getManagerCoreGroups(): array
+    {
+        return array_map(function (Group $group) {
+            return new CoreGroup($group->getId(), $group->getName());
+        }, $this->getManagerGroups());
     }
 
     public function hasManagerGroup(int $groupId): bool

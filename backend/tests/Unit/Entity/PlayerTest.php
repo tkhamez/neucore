@@ -17,7 +17,9 @@ use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
+use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\CoreGroup;
+use Neucore\Plugin\CoreRole;
 use PHPUnit\Framework\TestCase;
 
 class PlayerTest extends TestCase
@@ -186,6 +188,20 @@ class PlayerTest extends TestCase
         $this->assertSame([$r1], $player->getRoles());
     }
 
+    public function testGetCoreRoles()
+    {
+        $player = new Player();
+        $r1 = (new Role(1))->setName('n1');
+        $r2 = (new Role(2))->setName('n2');
+        $player->addRole($r1)->addRole($r2);
+
+        $this->assertSame(2, count($player->getCoreRoles()));
+        $this->assertInstanceOf(CoreRole::class, $player->getCoreRoles()[0]);
+        $this->assertInstanceOf(CoreRole::class, $player->getCoreRoles()[1]);
+        $this->assertSame('n1', $player->getCoreRoles()[0]->name);
+        $this->assertSame('n2', $player->getCoreRoles()[1]->name);
+    }
+
     public function testGetRoleNames()
     {
         $player = new Player();
@@ -221,6 +237,20 @@ class PlayerTest extends TestCase
 
         $play->removeCharacter($c2);
         $this->assertSame([$c1], $play->getCharacters());
+    }
+
+    public function testGetCoreCharacters()
+    {
+        $player = new Player();
+        $c1 = (new Character())->setName('c1')->setPlayer($player);
+        $c2 = (new Character())->setName('c2')->setPlayer($player);
+        $player->addCharacter($c1)->addCharacter($c2);
+
+        $this->assertSame(2, count($player->getCoreCharacters()));
+        $this->assertInstanceOf(CoreCharacter::class, $player->getCoreCharacters()[0]);
+        $this->assertInstanceOf(CoreCharacter::class, $player->getCoreCharacters()[1]);
+        $this->assertSame('c1', $player->getCoreCharacters()[0]->name);
+        $this->assertSame('c2', $player->getCoreCharacters()[1]->name);
     }
 
     public function testHasCharacter()
@@ -500,6 +530,19 @@ class PlayerTest extends TestCase
 
         $play->removeManagerGroup($g2);
         $this->assertSame([$g1], $play->getManagerGroups());
+    }
+
+    public function testGetManagerCoreGroups()
+    {
+        $player = new Player();
+        $player->addManagerGroup((new Group())->setName('g1'));
+        $player->addManagerGroup((new Group())->setName('g2'));
+
+        $this->assertSame(2, count($player->getManagerCoreGroups()));
+        $this->assertInstanceOf(CoreGroup::class, $player->getManagerCoreGroups()[0]);
+        $this->assertInstanceOf(CoreGroup::class, $player->getManagerCoreGroups()[1]);
+        $this->assertSame('g1', $player->getManagerCoreGroups()[0]->name);
+        $this->assertSame('g2', $player->getManagerCoreGroups()[1]->name);
     }
 
     public function testHasManagerGroup()

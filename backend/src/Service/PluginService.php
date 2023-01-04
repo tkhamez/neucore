@@ -14,7 +14,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
-use Neucore\Plugin\ServiceConfiguration;
+use Neucore\Plugin\PluginConfiguration;
 use Neucore\Plugin\ServiceInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Yaml\Exception\ParseException;
@@ -172,7 +172,7 @@ class PluginService
         // ServiceInterface::__construct
         $obj = new $phpClass(
             $this->log,
-            new ServiceConfiguration(
+            new PluginConfiguration(
                 $plugin->getId(),
                 array_map('intval', $pluginConfigDb->requiredGroups),
                 $pluginConfigDb->configurationData

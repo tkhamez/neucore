@@ -32,7 +32,7 @@ parameters:
 			message: '#Method (.*) has no return type specified.#'
 			path: %currentWorkingDirectory%/tests/*
 		-
-			message: '#(.*)has an unused parameter \$serviceConfiguration#'
+			message: '#(.*)has an unused parameter \$pluginConfiguration#'
 			path: %currentWorkingDirectory%/tests/*
 		-
 			message: '#Cannot call method (.*) on (.*)\|null.#'

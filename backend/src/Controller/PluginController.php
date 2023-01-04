@@ -61,7 +61,16 @@ class PluginController extends BaseController
         }
 
         try {
-            return $implementation->request($coreCharacter, $name, $request, $this->response, $player->getCoreGroups());
+            return $implementation->request(
+                $name,
+                $request,
+                $this->response,
+                $coreCharacter,
+                $player->getCoreCharacters(),
+                $player->getCoreGroups(),
+                $player->getManagerCoreGroups(),
+                $player->getCoreRoles(),
+            );
         } catch (Exception $e) {
             $logger->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return $this->response

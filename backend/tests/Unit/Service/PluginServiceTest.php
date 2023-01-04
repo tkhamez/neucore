@@ -19,7 +19,7 @@ use Neucore\Entity\Plugin;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
-use Neucore\Plugin\ServiceConfiguration;
+use Neucore\Plugin\PluginConfiguration;
 use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\Config;
@@ -72,7 +72,7 @@ class PluginServiceTest extends TestCase
         );
         $this->testService1Impl = new TestService1(
             $this->log,
-            new ServiceConfiguration(0, [], '')
+            new PluginConfiguration(0, [], '')
         );
         TestService1::$getAccountException = false;
         TestService1::$moved = null;
@@ -268,7 +268,7 @@ class PluginServiceTest extends TestCase
 
         $this->assertInstanceOf(ServiceInterface::class, $implementation);
         /* @phan-suppress-next-line PhanUndeclaredMethod */
-        $configuration = $implementation->getServiceConfiguration();
+        $configuration = $implementation->getPluginConfiguration();
         $this->assertSame(0, $configuration->id);
         $this->assertSame([1, 2], $configuration->requiredGroups);
         $this->assertSame('other: data', $configuration->configurationData);
