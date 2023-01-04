@@ -72,12 +72,15 @@ class PluginAdminController extends BaseController
      */
     public function get(string $id): ResponseInterface
     {
-        // get service with data from plugin.yml
+        // Get service with data from plugin.yml
         $plugin = $this->pluginService->getPlugin((int) $id);
 
         if (!$plugin) {
             return $this->response->withStatus(404);
         }
+
+        // Load implementation to fill the "types" property of the "configurationFile" property of the plugin.
+        $this->pluginService->getPluginImplementation($plugin);
 
         return $this->withJson($plugin->jsonSerialize(false, true, false));
     }
@@ -154,12 +157,15 @@ class PluginAdminController extends BaseController
                 return $this->response->withStatus(500);
             }
 
+            // Load implementation to fill the "types" property of the "configurationFile" property of the plugin.
+            $pluginService->loadPluginImplementation($pluginConfig);
+
             $configurations[] = $pluginConfig;
         }
 
         uasort($configurations, function (PluginConfigurationFile $a, PluginConfigurationFile $b) {
-            $compareA = "$a->type|$a->name|$a->directoryName";
-            $compareB = "$b->type|$b->name|$a->directoryName";
+            $compareA = implode(',', $a->types) . "$a->name|$a->directoryName";
+            $compareB = implode(',', $b->types) . "$b->name|$a->directoryName";
             if ($compareA < $compareB) {
                 return -1;
             } elseif ($compareA > $compareB) {

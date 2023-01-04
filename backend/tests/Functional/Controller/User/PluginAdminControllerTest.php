@@ -114,7 +114,7 @@ class PluginAdminControllerTest extends WebTestCase
                 ],
                 'configurationFile' => [
                     'name' => '',
-                    'type' => '',
+                    'types' => [PluginConfigurationFile::TYPE_SERVICE],
                     'oneAccount' => true,
                     'properties' => [PluginConfigurationFile::PROPERTY_USERNAME],
                     'showPassword' => true,
@@ -214,7 +214,7 @@ class PluginAdminControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([[
             'name' => 'Test',
-            'type' => PluginConfigurationFile::TYPE_SERVICE,
+            'types' => [PluginConfigurationFile::TYPE_GENERAL],
             'directoryName' => 'plugin-name',
             'oneAccount' => true,
             'properties' => ['username'],

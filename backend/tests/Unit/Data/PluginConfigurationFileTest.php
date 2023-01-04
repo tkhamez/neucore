@@ -23,7 +23,7 @@ class PluginConfigurationFileTest extends TestCase
     {
         $obj = PluginConfigurationFile::fromArray([
             'name' => 'name',
-            'type' => PluginConfigurationFile::TYPE_SERVICE,
+            'types' => [PluginConfigurationFile::TYPE_SERVICE],
             'phpClass' => 'class',
             'psr4Prefix' => 'prefix',
             'psr4Path' => 'path',
@@ -41,7 +41,7 @@ class PluginConfigurationFileTest extends TestCase
         ]);
 
         $this->assertSame('name', $obj->name);
-        $this->assertSame(PluginConfigurationFile::TYPE_SERVICE, $obj->type);
+        $this->assertSame([], $obj->types); // not loaded because
         $this->assertSame('class', $obj->phpClass);
         $this->assertSame('prefix', $obj->psr4Prefix);
         $this->assertSame('path', $obj->psr4Path);
@@ -65,7 +65,7 @@ class PluginConfigurationFileTest extends TestCase
     {
         $obj = new PluginConfigurationFile();
         $obj->name = 'name';
-        $obj->type = PluginConfigurationFile::TYPE_SERVICE;
+        $obj->types = [PluginConfigurationFile::TYPE_SERVICE];
         $obj->phpClass = 'class';
         $obj->psr4Prefix = 'prefix';
         $obj->psr4Path = 'path';
@@ -89,7 +89,7 @@ class PluginConfigurationFileTest extends TestCase
         $this->assertSame(
             [
                 'name' => 'name',
-                'type' => PluginConfigurationFile::TYPE_SERVICE,
+                'types' => [PluginConfigurationFile::TYPE_SERVICE],
                 'phpClass' => 'class',
                 'psr4Prefix' => 'prefix',
                 'psr4Path' => 'path',
@@ -112,7 +112,7 @@ class PluginConfigurationFileTest extends TestCase
         $this->assertSame(
             [
                 'name' => 'name',
-                'type' => PluginConfigurationFile::TYPE_SERVICE,
+                'types' => [PluginConfigurationFile::TYPE_SERVICE],
                 'oneAccount' => true,
                 'properties' => [PluginConfigurationFile::PROPERTY_USERNAME],
                 'showPassword' => true,
@@ -131,7 +131,7 @@ class PluginConfigurationFileTest extends TestCase
         $this->assertSame(
             [
                 'name' => 'name',
-                'type' => PluginConfigurationFile::TYPE_SERVICE,
+                'types' => [PluginConfigurationFile::TYPE_SERVICE],
                 'oneAccount' => true,
                 'properties' => [PluginConfigurationFile::PROPERTY_USERNAME],
                 'showPassword' => true,
@@ -151,7 +151,7 @@ class PluginConfigurationFileTest extends TestCase
         $this->assertSame(
             [
                 'name' => 'name',
-                'type' => PluginConfigurationFile::TYPE_SERVICE,
+                'types' => [PluginConfigurationFile::TYPE_SERVICE],
                 'oneAccount' => true,
                 'properties' => [PluginConfigurationFile::PROPERTY_USERNAME],
                 'showPassword' => true,

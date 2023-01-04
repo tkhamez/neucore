@@ -54,13 +54,16 @@
                 <div v-cloak class="card-body">
                     <h5>Configuration</h5>
 
+                    <p class="small">Plugin URL: <a :href="pluginUrl">{{ pluginUrl }}</a></p>
+
                     <label class="col-form-label w-100 mb-3">
                         Plugin
                         <select class="form-select" v-model="activePlugin.configurationDatabase.directoryName"
                                 v-on:change="updateConfiguration()">
                             <option value=""></option>
                             <option v-for="option in configurations" v-bind:value="option.directoryName">
-                                {{ option.type }}: {{ option.name }} ({{ option.directoryName }})
+                                [{{ option.types.join(',') }}]
+                                {{ option.name }} ({{ option.directoryName }})
                             </option>
                         </select>
                         <span class="form-text lh-sm d-block text-warning">
@@ -99,51 +102,59 @@
                             overwritten here.
                         </p>
 
-                        <p class="mb-0">Link Buttons</p>
-                        <small class="text-muted">
-                            Placeholders for URL: {plugin_id}, {username}, {password}, {email}
-                        </small>
-                        <br>
-                        <div class="row mb-2" v-for="(url, idx) in URLs">
-                            <label class="text-muted col-sm-2 col-form-label" :for="`configUrl${idx}`">URL</label>
-                            <div class="col-sm-10">
-                                <!--suppress HtmlFormInputWithoutLabel -->
-                                <input type="text" class="form-control" :id="`configUrl${idx}`" v-model="url.url">
+                        <div v-cloak v-if="isService">
+                            <p class="mb-0">Link Buttons</p>
+                            <small class="text-muted">
+                                Placeholders for URL: {plugin_id}, {username}, {password}, {email}
+                            </small>
+                            <br>
+                            <div class="row mb-2" v-for="(url, idx) in URLs">
+                                <label class="text-muted col-sm-2 col-form-label" :for="`configUrl${idx}`">URL</label>
+                                <div class="col-sm-10">
+                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                    <input type="text" class="form-control" :id="`configUrl${idx}`" v-model="url.url">
+                                </div>
+                                <label class="text-muted col-sm-2 col-form-label" :for="`configTitle${idx}`">
+                                    Title
+                                </label>
+                                <div class="col-sm-10">
+                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                    <input type="text" class="form-control" :id="`configTitle${idx}`"
+                                           v-model="url.title">
+                                </div>
+                                <label class="text-muted col-sm-2 col-form-label" :for="`configTarget${idx}`">
+                                    Target
+                                </label>
+                                <div class="col-sm-10">
+                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                    <input type="text" class="form-control" :id="`configTarget${idx}`"
+                                           v-model="url.target">
+                                </div>
                             </div>
-                            <label class="text-muted col-sm-2 col-form-label" :for="`configTitle${idx}`">Title</label>
-                            <div class="col-sm-10">
-                                <!--suppress HtmlFormInputWithoutLabel -->
-                                <input type="text" class="form-control" :id="`configTitle${idx}`" v-model="url.title">
-                            </div>
-                            <label class="text-muted col-sm-2 col-form-label" :for="`configTarget${idx}`">Target</label>
-                            <div class="col-sm-10">
-                                <!--suppress HtmlFormInputWithoutLabel -->
-                                <input type="text" class="form-control" :id="`configTarget${idx}`" v-model="url.target">
-                            </div>
+                            <button class="btn btn-sm btn-primary mb-2" v-on:click.prevent="addUrl()"
+                                    :disabled="!formEnabled">Add link</button><br>
+                            <small class="text-muted">Note: To remove a link button clear all fields and save.</small>
                         </div>
-                        <button class="btn btn-sm btn-primary mb-2" v-on:click.prevent="addUrl()"
-                                :disabled="!formEnabled">Add link</button><br>
-                        <small class="text-muted">Note: To remove a link button clear all fields and save.</small>
 
-                        <label class="col-form-label w-100 mt-2">
+                        <label v-cloak v-if="isService" class="col-form-label w-100 mt-2">
                             Text Top
                             <textarea class="form-control" rows="5"
                                       v-model="activePlugin.configurationDatabase.textTop"></textarea>
                             <span class="form-text lh-sm d-block">Text above the list of accounts.</span>
                         </label>
-                        <label class="col-form-label w-100">
+                        <label v-cloak v-if="isService" class="col-form-label w-100">
                             Text Account
                             <textarea class="form-control" rows="5"
                                       v-model="activePlugin.configurationDatabase.textAccount"></textarea>
                             <span class="form-text lh-sm d-block">Text below account table.</span>
                         </label>
-                        <label class="col-form-label w-100">
+                        <label v-cloak v-if="isService" class="col-form-label w-100">
                             Text Register
                             <textarea class="form-control" rows="5"
                                       v-model="activePlugin.configurationDatabase.textRegister"></textarea>
                             <span class="form-text lh-sm d-block">Text below the registration form/button.</span>
                         </label>
-                        <label class="col-form-label w-100">
+                        <label v-cloak v-if="isService" class="col-form-label w-100">
                             Text Pending
                             <textarea class="form-control" rows="5"
                                       v-model="activePlugin.configurationDatabase.textPending"></textarea>
@@ -178,6 +189,7 @@ import {PluginAdminApi, GroupApi} from "neucore-js-client";
 import Helper from "../../classes/Helper";
 import Util from "../../classes/Util";
 import Edit from '../../components/EntityEdit.vue';
+import Data from "../../classes/Data";
 
 export default {
     components: {
@@ -200,6 +212,7 @@ export default {
             allGroups: null,
             configurations: null,
             activePlugin: null,
+            isService: null,
             requiredGroups: '',
             URLs: [],
         }
@@ -211,6 +224,10 @@ export default {
                 this.activePlugin.configurationDatabase.directoryName &&
                 this.activePlugin.configurationDatabase.directoryName.length > 0
             );
+        },
+
+        pluginUrl() {
+            return `${Data.envVars.backendHost}/plugin/${this.route[1]}/anything-here`;
         }
     },
 
@@ -283,6 +300,7 @@ export default {
                 this.activePlugin.configurationDatabase.textPending = '';
                 this.activePlugin.configurationDatabase.configurationData = '';
                 this.URLs = [];
+                this.activePlugin.configurationFile.types = [];
 
                 return;
             }
@@ -299,6 +317,9 @@ export default {
                 this.activePlugin.configurationDatabase.textPending = config.textPending;
                 this.activePlugin.configurationDatabase.configurationData = config.configurationData;
                 this.URLs = this.activePlugin.configurationDatabase.URLs;
+
+                this.activePlugin.configurationFile.types = config.types;
+                this.isService = this.activePlugin.configurationFile.types.indexOf('service') !== -1
 
                 return;
             }
@@ -389,6 +410,11 @@ function getPlugin(vm) {
     new PluginAdminApi().pluginAdminGet(vm.route[1], (error, data) => {
         if (!error) {
             vm.activePlugin = data;
+            if (vm.activePlugin.configurationFile) {
+                vm.isService = vm.activePlugin.configurationFile.types.indexOf('service') !== -1
+            } else {
+                vm.activePlugin.configurationFile = {};
+            }
             if (vm.activePlugin.configurationDatabase) {
                 vm.requiredGroups = findSelectedGroups(vm, vm.activePlugin.configurationDatabase.requiredGroups);
                 vm.URLs = vm.activePlugin.configurationDatabase.URLs;

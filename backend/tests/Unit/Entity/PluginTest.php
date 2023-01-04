@@ -41,7 +41,7 @@ class PluginTest extends TestCase
                 ],
                 'configurationFile' => [
                     'name' => '',
-                    'type' => '',
+                    'types' => [],
                     'oneAccount' => false,
                     'properties' => [],
                     'showPassword' => false,
@@ -74,7 +74,7 @@ class PluginTest extends TestCase
                 ],
                 'configurationFile' => [
                     'name' => '',
-                    'type' => '',
+                    'types' => [],
                     'phpClass' => '',
                     'psr4Prefix' => '',
                     'psr4Path' => '',
@@ -111,7 +111,7 @@ class PluginTest extends TestCase
                 ],
                 'configurationFile' => [
                     'name' => '',
-                    'type' => '',
+                    'types' => [],
                     'oneAccount' => false,
                     'properties' => [],
                     'showPassword' => false,

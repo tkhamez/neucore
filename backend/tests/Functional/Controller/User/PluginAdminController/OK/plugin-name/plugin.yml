@@ -1,7 +1,6 @@
 name: Test
-type: service
-phpClass: Vendor\Neucore\Plugin\Name\Service
-psr4Prefix: Vendor\Neucore\Plugin\Name
+phpClass: Tests\Functional\Controller\User\PluginAdminController\TestServiceOK
+psr4Prefix: Tests\Functional\Controller\User\PluginAdminController
 psr4Path: src
 oneAccount: true
 properties:

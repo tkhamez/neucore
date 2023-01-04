@@ -136,10 +136,32 @@ class PluginService
             return null;
         }
 
+        $phpClass = $this->loadPluginImplementation($pluginConfigYaml);
+        if (!$phpClass) {
+            return null;
+        }
+
+        // PluginInterface::__construct
+        // ServiceInterface::__construct
+        // GeneralPluginInterface::__construct
+        $obj = new $phpClass(
+            $this->log,
+            new PluginConfiguration(
+                $plugin->getId(),
+                array_map('intval', $pluginConfigDb->requiredGroups),
+                $pluginConfigDb->configurationData
+            )
+        );
+
+        return $obj instanceof PluginInterface ? $obj : null;
+    }
+
+    public function loadPluginImplementation(PluginConfigurationFile $pluginConfigYaml): ?string
+    {
         // configure autoloader
         $psr4Path = '';
         if (is_string($this->config['plugins_install_dir'])) {
-            $psr4Path = $this->config['plugins_install_dir'] . DIRECTORY_SEPARATOR . $pluginConfigDb->directoryName .
+            $psr4Path = $this->config['plugins_install_dir'] . DIRECTORY_SEPARATOR . $pluginConfigYaml->directoryName .
                 DIRECTORY_SEPARATOR . $pluginConfigYaml->psr4Path;
         }
         if (!empty($pluginConfigYaml->psr4Prefix) && !empty($psr4Path) && is_dir($psr4Path)) {
@@ -164,35 +186,24 @@ class PluginService
         }
 
         $phpClass = $pluginConfigYaml->phpClass;
-
         if (!class_exists($phpClass)) {
             return null;
         }
 
         $implements = class_implements($phpClass);
-        if (
-            !is_array($implements) ||
-            (
-                !in_array(ServiceInterface::class, $implements) &&
-                !in_array(GeneralPluginInterface::class, $implements)
-            )
-        ) {
+        if (is_array($implements)) {
+            if (in_array(GeneralPluginInterface::class, $implements)) {
+                $pluginConfigYaml->types[] = PluginConfigurationFile::TYPE_GENERAL;
+            }
+            if (in_array(ServiceInterface::class, $implements)) {
+                $pluginConfigYaml->types[] = PluginConfigurationFile::TYPE_SERVICE;
+            }
+        }
+        if (empty($pluginConfigYaml->types)) {
             return null;
         }
 
-        // PluginInterface::__construct
-        // ServiceInterface::__construct
-        // GeneralPluginInterface::__construct
-        $obj = new $phpClass(
-            $this->log,
-            new PluginConfiguration(
-                $plugin->getId(),
-                array_map('intval', $pluginConfigDb->requiredGroups),
-                $pluginConfigDb->configurationData
-            )
-        );
-
-        return $obj instanceof PluginInterface ? $obj : null;
+        return $phpClass;
     }
 
     /**

@@ -1,5 +1,4 @@
 name: Test
-type: service
 phpClass: Tests\Functional\Controller\User\ServiceController\TestService3
 psr4Prefix: Tests\Functional\Controller\User\ServiceController
 psr4Path: src

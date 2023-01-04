@@ -1,3 +1,0 @@
-phpClass: Tests\Unit\Service\ServiceInvalid
-psr4Prefix: Tests\Unit\Service
-psr4Path: src

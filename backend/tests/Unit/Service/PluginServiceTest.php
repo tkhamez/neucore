@@ -12,6 +12,7 @@ use Composer\Autoload\ClassLoader;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Application;
 use Neucore\Data\PluginConfigurationDatabase;
+use Neucore\Data\PluginConfigurationFile;
 use Neucore\Entity\Character;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
@@ -114,7 +115,7 @@ class PluginServiceTest extends TestCase
         }
 
         $this->assertSame('Test', $actual->name);
-        $this->assertSame('service', $actual->type);
+        $this->assertSame([], $actual->types); // does not load implementation, so this is empty
         $this->assertSame('plugin-name', $actual->directoryName);
         $this->assertSame(self::PSR_PREFIX.'\TestService', $actual->phpClass);
         $this->assertSame(self::PSR_PREFIX, $actual->psr4Prefix);
@@ -176,7 +177,7 @@ class PluginServiceTest extends TestCase
 
         // from plugin.yml
         $this->assertSame('Test', $actual->getConfigurationFile()?->name);
-        $this->assertSame('service', $actual->getConfigurationFile()->type);
+        $this->assertSame([], $actual->getConfigurationFile()->types); // does not load implementation, so empty
 
         // from database
         $this->assertSame('top text', $actual->getConfigurationDatabase()?->textTop);
@@ -192,6 +193,16 @@ class PluginServiceTest extends TestCase
         $this->assertNull($this->pluginService->getPluginImplementation($service));
     }
 
+    public function testGetPluginImplementation_MissingConfiguration()
+    {
+        $service = new Plugin();
+        $conf = new PluginConfigurationFile();
+        $conf->directoryName = 'plugin-name';
+        $service->setConfigurationFile($conf);
+
+        $this->assertNull($this->pluginService->getPluginImplementation($service));
+    }
+
     public function testGetPluginImplementation_MissingPhpClass()
     {
         $service = new Plugin();
@@ -202,14 +213,106 @@ class PluginServiceTest extends TestCase
         $this->assertNull($this->pluginService->getPluginImplementation($service));
     }
 
-    public function testGetPluginImplementation_PhpClassMissingImplementation()
+    public function testGetPluginImplementation()
     {
+        // add same prefix to test, so that the new path is added, not replaced
+        self::$loader->setPsr4(self::PSR_PREFIX.'\\', ['/some/path']);
+
         $service = new Plugin();
         $conf = new PluginConfigurationDatabase();
-        $conf->directoryName = 'plugin-class-missing-impl';
+        $conf->directoryName = 'plugin-name';
+        $conf->requiredGroups = [1, 2];
+        $conf->configurationData = 'other: data';
         $service->setConfigurationDatabase($conf);
 
-        $this->assertNull($this->pluginService->getPluginImplementation($service));
+        /* @var TestService $implementation */
+        $implementation = $this->pluginService->getPluginImplementation($service);
+
+        $this->assertSame([PluginConfigurationFile::TYPE_SERVICE], $service->getConfigurationFile()->types);
+
+        $this->assertNotInstanceOf(GeneralPluginInterface::class, $implementation);
+        $this->assertInstanceOf(ServiceInterface::class, $implementation);
+
+        /* @phan-suppress-next-line PhanUndeclaredMethod */
+        $configuration = $implementation->getPluginConfiguration();
+        $this->assertSame(0, $configuration->id);
+        $this->assertSame([1, 2], $configuration->requiredGroups);
+        $this->assertSame('other: data', $configuration->configurationData);
+
+        $this->assertSame(
+            ['/some/path', __DIR__ .  '/PluginService/plugin-name/src'],
+            self::$loader->getPrefixesPsr4()[self::PSR_PREFIX.'\\']
+        );
+    }
+
+    public function testLoadPluginImplementation_PhpClassMissingImplementation()
+    {
+        $conf = new PluginConfigurationFile();
+        $conf->directoryName = 'plugin-class-missing-impl';
+        $conf->phpClass = 'Tests\Unit\Service\PluginService\plugin\src\Invalid';
+        $conf->psr4Prefix = 'Tests\Unit\Service\PluginService\plugin\src';
+        $conf->psr4Path = 'src';
+
+        $this->assertNull($this->pluginService->loadPluginImplementation($conf));
+    }
+
+    public function testLoadPluginImplementation_ClassDoesNotImplement()
+    {
+        $conf = new PluginConfigurationFile();
+        $conf->directoryName = 'plugin-class-missing-impl';
+        $conf->phpClass = 'Tests\Unit\Service\PluginService\plugin\src\ServiceInvalid';
+        $conf->psr4Prefix = 'Tests\Unit\Service\PluginService\plugin\src';
+        $conf->psr4Path = 'src';
+
+        $this->assertNull($this->pluginService->loadPluginImplementation($conf));
+    }
+
+    public function testLoadPluginImplementation_Service()
+    {
+        $conf = new PluginConfigurationFile();
+        $conf->directoryName = 'plugin-name';
+        $conf->phpClass = 'Tests\Unit\Service\PluginService\plugin\src\TestService';
+        $conf->psr4Prefix = 'Tests\Unit\Service\PluginService\plugin\src';
+        $conf->psr4Path = 'src';
+
+        $this->assertSame(
+            'Tests\Unit\Service\PluginService\plugin\src\TestService',
+            $this->pluginService->loadPluginImplementation($conf)
+        );
+        $this->assertSame([PluginConfigurationFile::TYPE_SERVICE], $conf->types);
+    }
+
+    public function testLoadPluginImplementation_GeneralPlugin()
+    {
+        $conf = new PluginConfigurationFile();
+        $conf->directoryName = 'plugin-general';
+        $conf->phpClass = 'Tests\Unit\Service\PluginService\plugin\src\TestPlugin';
+        $conf->psr4Prefix = 'Tests\Unit\Service\PluginService\plugin\src';
+        $conf->psr4Path = 'src';
+
+        $this->assertSame(
+            'Tests\Unit\Service\PluginService\plugin\src\TestPlugin',
+            $this->pluginService->loadPluginImplementation($conf)
+        );
+        $this->assertSame([PluginConfigurationFile::TYPE_GENERAL], $conf->types);
+    }
+
+    public function testLoadPluginImplementation_ImplementsBoth()
+    {
+        $conf = new PluginConfigurationFile();
+        $conf->directoryName = 'plugin-both';
+        $conf->phpClass = 'Tests\Unit\Service\PluginService\plugin\src\TestBoth';
+        $conf->psr4Prefix = 'Tests\Unit\Service\PluginService\plugin\src';
+        $conf->psr4Path = 'src';
+
+        $this->assertSame(
+            'Tests\Unit\Service\PluginService\plugin\src\TestBoth',
+            $this->pluginService->loadPluginImplementation($conf)
+        );
+        $this->assertSame(
+            [PluginConfigurationFile::TYPE_GENERAL, PluginConfigurationFile::TYPE_SERVICE],
+            $conf->types
+        );
     }
 
     public function testGetPluginWithImplementation()
@@ -261,46 +364,13 @@ class PluginServiceTest extends TestCase
         $this->assertNull($actual[0]->getGeneralPluginImplementation());
         $this->assertInstanceOf(GeneralPluginInterface::class, $actual[1]->getGeneralPluginImplementation());
         $this->assertInstanceOf(GeneralPluginInterface::class, $actual[2]->getGeneralPluginImplementation());
-    }
 
-    public function testGetPluginImplementation()
-    {
-        // add same prefix to test, so that the new path is added, not replaced
-        self::$loader->setPsr4(self::PSR_PREFIX.'\\', ['/some/path']);
-
-        $service = new Plugin();
-        $conf = new PluginConfigurationDatabase();
-        $conf->directoryName = 'plugin-name';
-        $conf->requiredGroups = [1, 2];
-        $conf->configurationData = 'other: data';
-        $service->setConfigurationDatabase($conf);
-
-        /* @var TestService $implementation */
-        $implementation = $this->pluginService->getPluginImplementation($service);
-
-        $this->assertInstanceOf(ServiceInterface::class, $implementation);
-        /* @phan-suppress-next-line PhanUndeclaredMethod */
-        $configuration = $implementation->getPluginConfiguration();
-        $this->assertSame(0, $configuration->id);
-        $this->assertSame([1, 2], $configuration->requiredGroups);
-        $this->assertSame('other: data', $configuration->configurationData);
-
+        $this->assertSame([PluginConfigurationFile::TYPE_SERVICE], $actual[0]->getConfigurationFile()->types);
+        $this->assertSame([PluginConfigurationFile::TYPE_GENERAL], $actual[1]->getConfigurationFile()->types);
         $this->assertSame(
-            ['/some/path', __DIR__ .  '/PluginService/plugin-name/src'],
-            self::$loader->getPrefixesPsr4()[self::PSR_PREFIX.'\\']
+            [PluginConfigurationFile::TYPE_GENERAL, PluginConfigurationFile::TYPE_SERVICE],
+            $actual[2]->getConfigurationFile()->types
         );
-    }
-
-    public function testGetPluginImplementation_GeneralPlugin()
-    {
-        $plugin = new Plugin();
-        $conf = new PluginConfigurationDatabase();
-        $conf->directoryName = 'plugin-general';
-        $plugin->setConfigurationDatabase($conf);
-
-        $implementation = $this->pluginService->getPluginImplementation($plugin);
-
-        $this->assertInstanceOf(GeneralPluginInterface::class, $implementation);
     }
 
     public function testGetAccounts_NoCharacters()

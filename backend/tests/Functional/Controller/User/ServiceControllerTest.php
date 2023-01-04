@@ -176,7 +176,7 @@ class ServiceControllerTest extends WebTestCase
                 ],
                 'configurationFile' => [
                     'name' => '',
-                    'type' => '',
+                    'types' => [],
                     'oneAccount' => false,
                     'properties' => [],
                     'showPassword' => false,

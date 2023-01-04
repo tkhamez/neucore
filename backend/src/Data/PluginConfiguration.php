@@ -15,7 +15,7 @@ abstract class PluginConfiguration
     /**
      * Directory where the plugin.yml file is stored.
      *
-     * Always set when the data from the file is read.
+     * Only from database but always set when the data from the file is read.
      *
      * @OA\Property()
      */

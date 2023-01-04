@@ -17,6 +17,8 @@ use OpenApi\Annotations as OA;
  */
 class PluginConfigurationFile extends PluginConfiguration implements \JsonSerializable
 {
+    public const TYPE_GENERAL = 'general';
+
     public const TYPE_SERVICE = 'service';
 
     public const PROPERTY_USERNAME = 'username';
@@ -39,9 +41,12 @@ class PluginConfigurationFile extends PluginConfiguration implements \JsonSerial
     public string $name = '';
 
     /**
-     * @OA\Property(enum={"service"})
+     * Not part of the file but will be set when the plugin implementation is loaded.
+     *
+     * @OA\Property(enum={"general", "service"})
+     * @var string[]
      */
-    public string $type = '';
+    public array $types = [];
 
     public string $phpClass = '';
 
@@ -72,14 +77,13 @@ class PluginConfigurationFile extends PluginConfiguration implements \JsonSerial
     public array $actions = [];
 
     /**
-     * @param array $data Array created from jsonSerialize().
+     * @param array $data Array created from jsonSerialize(), except "types".
      */
     public static function fromArray(array $data): self
     {
         $obj = new self();
 
         $obj->name = $data['name'] ?? '';
-        $obj->type = $data['type'] ?? '';
         $obj->phpClass = $data['phpClass'] ?? '';
         $obj->psr4Prefix = $data['psr4Prefix'] ?? '';
         $obj->psr4Path = $data['psr4Path'] ?? '';
@@ -97,7 +101,7 @@ class PluginConfigurationFile extends PluginConfiguration implements \JsonSerial
     {
         $result = [
             'name' => $this->name,
-            'type' => $this->type,
+            'types' => $this->types,
             'phpClass' => $this->phpClass,
             'psr4Prefix' => $this->psr4Prefix,
             'psr4Path' => $this->psr4Path,
