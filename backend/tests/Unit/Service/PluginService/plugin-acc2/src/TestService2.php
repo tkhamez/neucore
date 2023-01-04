@@ -1,9 +1,11 @@
 <?php
 /** @noinspection PhpIllegalPsrClassPathInspection */
+/** @noinspection PhpUnused */
+/* @phan-file-suppress PhanTypeMismatchReturn */
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Service\ServiceRegistration\plugin\src;
+namespace Tests\Unit\Service\PluginService\plugin\src;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
@@ -14,23 +16,15 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class TestService implements ServiceInterface
+class TestService2 implements ServiceInterface
 {
-    private ServiceConfiguration $serviceConfiguration;
-
     public function __construct(LoggerInterface $logger, ServiceConfiguration $serviceConfiguration)
     {
-        $this->serviceConfiguration = $serviceConfiguration;
-    }
-
-    public function getServiceConfiguration(): ServiceConfiguration
-    {
-        return $this->serviceConfiguration;
     }
 
     public function getAccounts(array $characters): array
     {
-        return [];
+        throw new Exception();
     }
 
     public function register(
@@ -52,7 +46,7 @@ class TestService implements ServiceInterface
 
     public function moveServiceAccount(int $toPlayerId, int $fromPlayerId): bool
     {
-        return true;
+        throw new Exception();
     }
 
     public function resetPassword(int $characterId): string

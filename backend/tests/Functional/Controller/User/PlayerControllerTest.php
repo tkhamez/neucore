@@ -18,7 +18,7 @@ use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
-use Neucore\Entity\Service;
+use Neucore\Entity\Plugin;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\RepositoryFactory;
@@ -851,7 +851,7 @@ class PlayerControllerTest extends WebTestCase
         // add service with account
         $conf = new PluginConfigurationDatabase();
         $conf->directoryName = 'plugin';
-        $service = (new Service())->setName('A Service')->setConfigurationDatabase($conf);
+        $service = (new Plugin())->setName('A Service')->setConfigurationDatabase($conf);
         $this->em->persist($service);
         $this->em->flush();
 

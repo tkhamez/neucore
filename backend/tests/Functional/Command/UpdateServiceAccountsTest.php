@@ -7,7 +7,7 @@ namespace Tests\Functional\Command;
 require_once __DIR__ . '/UpdateServiceAccounts/plugin1/src/TestService1.php';
 
 use Neucore\Data\PluginConfigurationDatabase;
-use Neucore\Entity\Service;
+use Neucore\Entity\Plugin;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\Command\UpdateServiceAccounts\TestService1;
 use Tests\Functional\ConsoleTestCase;
@@ -56,16 +56,16 @@ class UpdateServiceAccountsTest extends ConsoleTestCase
         $conf1 = new PluginConfigurationDatabase();
         $conf1->directoryName = 'plugin1';
         $conf1->active = true;
-        $service1 = (new Service())->setName('S1')->setConfigurationDatabase($conf1);
+        $service1 = (new Plugin())->setName('S1')->setConfigurationDatabase($conf1);
 
         $conf2 = new PluginConfigurationDatabase();
         $conf2->directoryName = 'plugin2';
         $conf2->active = true;
-        $service2 = (new Service())->setName('S2')->setConfigurationDatabase($conf2);
+        $service2 = (new Plugin())->setName('S2')->setConfigurationDatabase($conf2);
 
         // Inactive service, will be ignored.
         $conf3 = new PluginConfigurationDatabase();
-        $service3 = (new Service())->setName('S3')->setConfigurationDatabase($conf3);
+        $service3 = (new Plugin())->setName('S3')->setConfigurationDatabase($conf3);
 
         $em->persist($service1);
         $em->persist($service2);

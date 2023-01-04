@@ -6,7 +6,7 @@ namespace Neucore\Controller;
 
 use Neucore\Log\Context;
 use Neucore\Plugin\Exception;
-use Neucore\Service\ServiceRegistration;
+use Neucore\Service\PluginService;
 use Neucore\Service\UserAuth;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,12 +20,12 @@ class PluginController extends BaseController
      * This URL is public.
      */
     public function request(
-        string $id,
-        string $name,
+        string                 $id,
+        string                 $name,
         ServerRequestInterface $request,
-        ServiceRegistration $serviceRegistration,
-        UserAuth $userAuth,
-        LoggerInterface $logger
+        PluginService          $pluginService,
+        UserAuth               $userAuth,
+        LoggerInterface        $logger
     ): ResponseInterface {
         $user = $userAuth->getUser();
         if (!$user) {
@@ -34,20 +34,20 @@ class PluginController extends BaseController
         }
         $player = $user->getPlayer();
 
-        $service = $this->repositoryFactory->getServiceRepository()->find((int) $id);
-        if ($service === null) {
-            $this->response->getBody()->write($this->getBodyWithHomeLink('Service not found.'));
+        $plugin = $this->repositoryFactory->getPluginRepository()->find((int) $id);
+        if ($plugin === null) {
+            $this->response->getBody()->write($this->getBodyWithHomeLink('Plugin not found.'));
             return $this->response->withStatus(404);
         }
 
-        if (!$userAuth->hasRequiredGroups($service)) {
-            $this->response->getBody()->write($this->getBodyWithHomeLink('Not allowed to use this service.'));
+        if (!$userAuth->hasRequiredGroups($plugin)) {
+            $this->response->getBody()->write($this->getBodyWithHomeLink('Not allowed to use this plugin.'));
             return $this->response->withStatus(403);
         }
 
-        $implementation = $serviceRegistration->getServiceImplementation($service);
+        $implementation = $pluginService->getPluginImplementation($plugin);
         if (!$implementation) {
-            $this->response->getBody()->write($this->getBodyWithHomeLink('Service implementation not found.'));
+            $this->response->getBody()->write($this->getBodyWithHomeLink('Plugin implementation not found.'));
             return $this->response->withStatus(404);
         }
 
@@ -65,7 +65,7 @@ class PluginController extends BaseController
         } catch (Exception $e) {
             $logger->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return $this->response
-                ->withHeader('Location', '/#Service/' . $service->getId() . '/?message=Unknown%20error.')
+                ->withHeader('Location', '/#Service/' . $plugin->getId() . '/?message=Unknown%20error.')
                 ->withStatus(302);
         }
     }

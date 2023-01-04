@@ -10,6 +10,7 @@ use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Service\Config;
 use Neucore\Service\EveMail;
+use Neucore\Service\PluginService;
 use Neucore\Service\UserAuth;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -48,7 +49,7 @@ class SettingsController extends BaseController
      *     )
      * )
      */
-    public function systemList(UserAuth $userAuth, Config $config): ResponseInterface
+    public function systemList(UserAuth $userAuth, Config $config, PluginService $pluginService): ResponseInterface
     {
         $settingsRepository = $this->repositoryFactory->getSystemVariableRepository();
         $groupRepository = $this->repositoryFactory->getGroupRepository();
@@ -60,9 +61,9 @@ class SettingsController extends BaseController
         }
 
         $services = [];
-        foreach ($this->repositoryFactory->getServiceRepository()->findBy([], ['name' => 'asc']) as $service) {
-            if ($userAuth->hasRequiredGroups($service) && $service->getConfigurationDatabase()?->active) {
-                $services[] = $service;
+        foreach ($pluginService->getPluginWithImplementation() as $plugin) {
+            if ($plugin->getServiceImplementation() && $userAuth->hasRequiredGroups($plugin)) {
+                $services[] = $plugin;
             }
         }
 

@@ -28,6 +28,7 @@ class Version20221225185723 extends AbstractMigration
      */
     private function updateActive(bool $active): void
     {
+        /** @noinspection SqlResolve */
         $serviceConfigurations = $this->connection->executeQuery('SELECT id, configuration FROM services');
         foreach ($serviceConfigurations->fetchAllAssociative() as $data) {
             $configuration = json_decode((string)$data['configuration'], true);
@@ -43,6 +44,7 @@ class Version20221225185723 extends AbstractMigration
                 unset($configData['active']);
             }
 
+            /** @noinspection SqlResolve */
             $this->connection->executeQuery(
                 'UPDATE services SET configuration = ? WHERE id = ?',
                 [json_encode($configData), $data['id']]

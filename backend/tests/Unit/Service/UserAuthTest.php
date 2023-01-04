@@ -16,7 +16,7 @@ use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
-use Neucore\Entity\Service;
+use Neucore\Entity\Plugin;
 use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
@@ -559,7 +559,7 @@ class UserAuthTest extends TestCase
         $this->helper->getEm()->flush();
 
         // no required group, no logged-in user
-        $service = new Service();
+        $service = new Plugin();
         $this->assertFalse($this->service->hasRequiredGroups($service));
 
         // log in user

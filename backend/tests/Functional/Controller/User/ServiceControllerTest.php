@@ -14,7 +14,7 @@ use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
-use Neucore\Entity\Service;
+use Neucore\Entity\Plugin;
 use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\SystemVariable;
 use Neucore\Plugin\CoreGroup;
@@ -214,7 +214,7 @@ class ServiceControllerTest extends WebTestCase
     {
         $this->setupDb();
 
-        $service5 = (new Service())->setName('S5');
+        $service5 = (new Plugin())->setName('S5');
         $this->em->persist($service5);
         $this->em->flush();
         $this->em->clear();
@@ -887,7 +887,7 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(1, $this->parseJsonBody($response));
         $this->assertSame(
-            ['ServiceController::updateAllAccounts: S3: '],
+            ['PluginService::updatePlayerAccounts: S3: '],
             $this->log->getMessages()
         );
     }
@@ -1056,23 +1056,23 @@ class ServiceControllerTest extends WebTestCase
         if (!$noRequiredGroupsForService1) {
             $conf1->requiredGroups = [$group1->getId()];
         }
-        $service1 = (new Service())->setName('S1')->setConfigurationDatabase($conf1);
+        $service1 = (new Plugin())->setName('S1')->setConfigurationDatabase($conf1);
 
         $conf2 = new PluginConfigurationDatabase();
         $conf2->directoryName = 'plugin2';
         $conf2->active = true;
-        $service2 = (new Service())->setName('S2')->setConfigurationDatabase($conf2);
+        $service2 = (new Plugin())->setName('S2')->setConfigurationDatabase($conf2);
 
         $conf3 = new PluginConfigurationDatabase();
         $conf3->directoryName = 'plugin3'; // action: update-account
         $conf3->active = true;
         $conf3->requiredGroups = [$group2->getId(), $group7->getId()];
-        $service3 = (new Service())->setName('S3')->setConfigurationDatabase($conf3);
+        $service3 = (new Plugin())->setName('S3')->setConfigurationDatabase($conf3);
 
         $conf4 = new PluginConfigurationDatabase();
         $conf4->directoryName = 'plugin4'; // action: reset-password
         $conf4->active = true;
-        $service4 = (new Service())->setName('S4')->setConfigurationDatabase($conf4);
+        $service4 = (new Plugin())->setName('S4')->setConfigurationDatabase($conf4);
 
         $this->em->persist($service1);
         $this->em->persist($service2);

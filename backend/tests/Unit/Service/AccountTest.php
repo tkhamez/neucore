@@ -24,7 +24,7 @@ use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
-use Neucore\Entity\Service;
+use Neucore\Entity\Plugin;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterNameChangeRepository;
@@ -695,7 +695,7 @@ class AccountTest extends TestCase
     {
         $conf1 = new PluginConfigurationDatabase();
         $conf1->directoryName = 'plugin';
-        $service1 = (new Service())->setName('S1')->setConfigurationDatabase($conf1);
+        $service1 = (new Plugin())->setName('S1')->setConfigurationDatabase($conf1);
 
         $player1 = (new Player())->setName('player 1');
         $player2 = (new Player())->setName('player 2');

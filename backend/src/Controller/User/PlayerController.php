@@ -18,7 +18,7 @@ use Neucore\Plugin\Exception;
 use Neucore\Service\Account;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\ObjectManager;
-use Neucore\Service\ServiceRegistration;
+use Neucore\Service\PluginService;
 use Neucore\Service\UserAuth;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -852,7 +852,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function showById(string $id, ServiceRegistration $serviceRegistration): ResponseInterface
+    public function showById(string $id, PluginService $pluginService): ResponseInterface
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
@@ -863,7 +863,7 @@ class PlayerController extends BaseController
         $json = $player->jsonSerialize(false, true, true); // with character name changes and ESI tokens
         $json['removedCharacters'] = $player->getRemovedCharacters();
         $json['incomingCharacters'] = $player->getIncomingCharacters();
-        $json['serviceAccounts'] = $this->getServiceAccounts($player, $serviceRegistration);
+        $json['serviceAccounts'] = $this->getServiceAccounts($player, $pluginService);
 
         return $this->withJson($json);
     }
@@ -904,7 +904,7 @@ class PlayerController extends BaseController
     public function characters(
         string $id,
         UserAuth $userAuth,
-        ServiceRegistration $serviceRegistration
+        PluginService $pluginService
     ): ResponseInterface {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
@@ -930,7 +930,7 @@ class PlayerController extends BaseController
             'groups' => $player->getGroups(),
             'removedCharacters' => $player->getRemovedCharacters(),
             'incomingCharacters' => $player->getIncomingCharacters(),
-            'serviceAccounts' => $this->getServiceAccounts($player, $serviceRegistration),
+            'serviceAccounts' => $this->getServiceAccounts($player, $pluginService),
         ]);
     }
 
@@ -1216,25 +1216,25 @@ class PlayerController extends BaseController
         return false;
     }
 
-    private function getServiceAccounts(Player $player, ServiceRegistration $serviceRegistration): array
+    private function getServiceAccounts(Player $player, PluginService $pluginService): array
     {
         $result = [];
 
-        $services = $this->repositoryFactory->getServiceRepository()->findBy([]);
-        foreach ($services as $service) {
-            $implementation = $serviceRegistration->getServiceImplementation($service);
+        $plugins = $this->repositoryFactory->getPluginRepository()->findBy([]);
+        foreach ($plugins as $plugin) {
+            $implementation = $pluginService->getPluginImplementation($plugin);
             $accounts = [];
             if ($implementation) {
                 try {
-                    $accounts = $serviceRegistration->getAccounts($implementation, $player->getCharacters());
+                    $accounts = $pluginService->getAccounts($implementation, $player->getCharacters());
                 } catch (Exception) {
                     // do nothing, service needs to log its errors
                 }
             }
             foreach ($accounts as $account) {
                 $result[] = new ServiceAccount(
-                    $service->getId(),
-                    $service->getName(),
+                    $plugin->getId(),
+                    $plugin->getName(),
                     $account->getCharacterId(),
                     $account->getUsername(),
                     $account->getStatus(),

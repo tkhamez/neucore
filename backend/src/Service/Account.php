@@ -56,7 +56,7 @@ class Account
 
     private OAuthToken $tokenService;
 
-    private ServiceRegistration $serviceRegistration;
+    private PluginService $pluginService;
 
     public function __construct(
         LoggerInterface $log,
@@ -65,7 +65,7 @@ class Account
         EsiData $esiData,
         AutoGroupAssignment $autoGroupAssignment,
         OAuthToken $tokenService,
-        ServiceRegistration $serviceRegistration
+        PluginService $pluginService
     ) {
         $this->log = $log;
         $this->objectManager = $objectManager;
@@ -73,7 +73,7 @@ class Account
         $this->esiData = $esiData;
         $this->autoGroupAssignment = $autoGroupAssignment;
         $this->tokenService = $tokenService;
-        $this->serviceRegistration = $serviceRegistration;
+        $this->pluginService = $pluginService;
     }
 
     /**
@@ -345,7 +345,7 @@ class Account
         $this->updateGroups($to->getId()); // flushes entity manager
         $this->updateGroups($from->getId());
 
-        $this->serviceRegistration->updatePlayerAccounts($to, $from);
+        $this->pluginService->updatePlayerAccounts($to, $from);
 
         return $to;
     }

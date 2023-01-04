@@ -9,14 +9,14 @@ namespace Neucore\Controller\User;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Character;
 use Neucore\Entity\Role;
-use Neucore\Entity\Service;
+use Neucore\Entity\Plugin;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\ObjectManager;
-use Neucore\Service\ServiceRegistration;
+use Neucore\Service\PluginService;
 use Neucore\Service\UserAuth;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -54,7 +54,7 @@ class ServiceController extends BaseController
 {
     private LoggerInterface $log;
 
-    private ServiceRegistration $serviceRegistration;
+    private PluginService $pluginService;
 
     private UserAuth $userAuth;
 
@@ -64,16 +64,16 @@ class ServiceController extends BaseController
 
     public function __construct(
         ResponseInterface $response,
-        ObjectManager $objectManager,
+        ObjectManager     $objectManager,
         RepositoryFactory $repositoryFactory,
-        LoggerInterface $log,
-        ServiceRegistration $serviceRegistration,
-        UserAuth $userAuth,
-        AccountGroup $accountGroup
+        LoggerInterface   $log,
+        PluginService     $pluginService,
+        UserAuth          $userAuth,
+        AccountGroup      $accountGroup
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
         $this->log = $log;
-        $this->serviceRegistration = $serviceRegistration;
+        $this->pluginService = $pluginService;
         $this->userAuth = $userAuth;
         $this->accountGroup = $accountGroup;
     }
@@ -102,7 +102,7 @@ class ServiceController extends BaseController
      *     @OA\Response(
      *         response="200",
      *         description="The service.",
-     *         @OA\JsonContent(ref="#/components/schemas/Service")
+     *         @OA\JsonContent(ref="#/components/schemas/Plugin")
      *     ),
      *     @OA\Response(
      *         response="403",
@@ -117,13 +117,13 @@ class ServiceController extends BaseController
     public function get(string $id, ServerRequestInterface $request, UserAuth $userAuth): ResponseInterface
     {
         $allowAdmin = $this->getQueryParam($request, 'allowAdmin') === 'true';
-        $service = $this->getService((int) $id, $allowAdmin);
-        if (!$service) {
+        $plugin = $this->getPlugin((int) $id, $allowAdmin);
+        if (!$plugin) {
             return $this->response->withStatus($this->responseErrorCode);
         }
 
         $fullConfig = $allowAdmin && $this->getUser($userAuth)->getPlayer()->hasRole(Role::SERVICE_ADMIN);
-        return $this->withJson($service->jsonSerialize(false, $fullConfig, false));
+        return $this->withJson($plugin->jsonSerialize(false, $fullConfig, false));
     }
 
     /**
@@ -163,13 +163,13 @@ class ServiceController extends BaseController
      */
     public function accounts(string $id, UserAuth $userAuth): ResponseInterface
     {
-        $serviceImplementation = $this->getServiceAndServiceImplementation((int) $id);
+        $serviceImplementation = $this->getPluginAndServiceImplementation((int) $id);
         if (!$serviceImplementation) {
             return $this->response->withStatus($this->responseErrorCode);
         }
 
         try {
-            $accountData = $this->serviceRegistration->getAccounts(
+            $accountData = $this->pluginService->getAccounts(
                 $serviceImplementation,
                 $this->getUser($userAuth)->getPlayer()->getCharacters()
             );
@@ -244,24 +244,24 @@ class ServiceController extends BaseController
             return $this->withJson('no_main', 409);
         }
 
-        $service = $this->getService((int) $id, false);
-        if (!$service) {
+        $plugin = $this->getPlugin((int) $id, false);
+        if (!$plugin) {
             return $this->response->withStatus($this->responseErrorCode);
         }
-        $serviceImplementation = $this->getServiceImplementation($service);
+        $serviceImplementation = $this->getServiceImplementation($plugin);
         if (!$serviceImplementation) {
             return $this->response->withStatus($this->responseErrorCode);
         }
 
         // check if a new account may be created
-        $oneAccountOnly = $service->getConfigurationFile()?->oneAccount;
+        $oneAccountOnly = $plugin->getConfigurationFile()?->oneAccount;
         if ($oneAccountOnly) {
             $characters = $player->getCharacters();
         } else {
             $characters = [$main];
         }
         try {
-            $accounts = $this->serviceRegistration->getAccounts($serviceImplementation, $characters, false);
+            $accounts = $this->pluginService->getAccounts($serviceImplementation, $characters, false);
         } catch (Exception) {
             return $this->response->withStatus(500);
         }
@@ -342,7 +342,7 @@ class ServiceController extends BaseController
      */
     public function updateAccount(string $id, string $characterId, UserAuth $userAuth): ResponseInterface
     {
-        $serviceImplementation = $this->getServiceAndServiceImplementation((int)$id);
+        $serviceImplementation = $this->getPluginAndServiceImplementation((int)$id);
         $validCharacter = $this->validateCharacter((int)$characterId, $userAuth);
         if (!$serviceImplementation || !$validCharacter) {
             return $this->response->withStatus($this->responseErrorCode);
@@ -355,7 +355,7 @@ class ServiceController extends BaseController
         }
 
         // Update account.
-        $error = $this->serviceRegistration->updateServiceAccount($validCharacter, $serviceImplementation);
+        $error = $this->pluginService->updateServiceAccount($validCharacter, $serviceImplementation);
         if (!empty($error)) {
             return $this->withJson($error, 409);
         } elseif ($error === '') {
@@ -408,7 +408,7 @@ class ServiceController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $updated = $this->serviceRegistration->updatePlayerAccounts($player);
+        $updated = $this->pluginService->updatePlayerAccounts($player);
 
         // Do not return account data because roles tracking and watchlist may execute this.
         return $this->withJson(count($updated));
@@ -457,7 +457,7 @@ class ServiceController extends BaseController
      */
     public function resetPassword(string $id, string $characterId, UserAuth $userAuth): ResponseInterface
     {
-        $serviceImplementation = $this->getServiceAndServiceImplementation((int)$id);
+        $serviceImplementation = $this->getPluginAndServiceImplementation((int)$id);
         if (!$serviceImplementation) {
             return $this->response->withStatus($this->responseErrorCode);
         }
@@ -476,7 +476,7 @@ class ServiceController extends BaseController
         return $this->withJson($newPassword);
     }
 
-    private function getService(int $id, bool $allowAdmin): ?Service
+    private function getPlugin(int $id, bool $allowAdmin): ?Plugin
     {
         $isAdmin = false;
         if ($allowAdmin) {
@@ -484,31 +484,31 @@ class ServiceController extends BaseController
         }
 
         // get service with data from plugin.yml
-        $service = $this->serviceRegistration->getService($id);
-        if ($service === null) {
+        $plugin = $this->pluginService->getPlugin($id);
+        if ($plugin === null) {
             $this->responseErrorCode = 404;
             return null;
         }
 
         // check service permission
-        if (!$isAdmin && !$this->userAuth->hasRequiredGroups($service)) {
+        if (!$isAdmin && !$this->userAuth->hasRequiredGroups($plugin)) {
             $this->responseErrorCode = 403;
             return null;
         }
 
         // check active
-        if (!$isAdmin && !$service->getConfigurationDatabase()?->active) {
+        if (!$isAdmin && !$plugin->getConfigurationDatabase()?->active) {
             $this->responseErrorCode = 404;
             return null;
         }
 
-        return $service;
+        return $plugin;
     }
 
-    private function getServiceImplementation(Service $service): ?ServiceInterface
+    private function getServiceImplementation(Plugin $service): ?ServiceInterface
     {
         // get service object
-        $serviceImplementation = $this->serviceRegistration->getServiceImplementation($service);
+        $serviceImplementation = $this->pluginService->getPluginImplementation($service);
         if ($serviceImplementation === null) {
             $this->log->error(
                 "ServiceController: The configured service class does not exist or does not implement " .
@@ -521,10 +521,10 @@ class ServiceController extends BaseController
         return $serviceImplementation;
     }
 
-    private function getServiceAndServiceImplementation(int $id): ?ServiceInterface
+    private function getPluginAndServiceImplementation(int $id): ?ServiceInterface
     {
-        $service = $this->getService($id, false);
-        return $service ? $this->getServiceImplementation($service) : null;
+        $plugin = $this->getPlugin($id, false);
+        return $plugin ? $this->getServiceImplementation($plugin) : null;
     }
 
     private function validateCharacter(int $characterId, UserAuth $userAuth): ?Character
@@ -548,7 +548,7 @@ class ServiceController extends BaseController
         Character $validCharacter
     ): ?ServiceAccountData {
         try {
-            $account = $this->serviceRegistration->getAccounts(
+            $account = $this->pluginService->getAccounts(
                 $serviceImplementation,
                 [$validCharacter],
                 false

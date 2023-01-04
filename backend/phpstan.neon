@@ -23,9 +23,6 @@ parameters:
 			message: '#Parameter \#1 \$pdoOrDsn (.*) object\|resource given.#'
 			path: %currentWorkingDirectory%/src/Factory/SessionHandlerFactory.php
 		-
-			message: '#Method (.*)getServiceImplementation(.*) should return (.*) but returns object.#'
-			path: %currentWorkingDirectory%/src/Service/ServiceRegistration.php
-		-
 			message: '#(.*)Watchlist::getExemptionList\(\) should return(.*)but returns(.*)#'
 			path: %currentWorkingDirectory%/src/Service/Watchlist.php
 		-
@@ -54,10 +51,10 @@ parameters:
 			path: %currentWorkingDirectory%/tests/Unit/*
 		-
 			message: '#Call to an undefined method #'
-			path: %currentWorkingDirectory%/tests/Unit/Service/ServiceRegistrationTest.php
+			path: %currentWorkingDirectory%/tests/Unit/Service/PluginServiceTest.php
 		-
 			message: '#should return array(.*)but returns array#'
-			path: %currentWorkingDirectory%/tests/Unit/Service/ServiceRegistration/plugin-acc1/src/TestService1.php
+			path: %currentWorkingDirectory%/tests/Unit/Service/PluginService/plugin-acc1/src/TestService1.php
 		-
 			message: '#Method (.*) should return (.*) but returns (.*)#'
 			path: %currentWorkingDirectory%/tests/Unit/Service/OAuthTokenTest.php

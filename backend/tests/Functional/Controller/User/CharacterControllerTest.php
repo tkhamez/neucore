@@ -11,7 +11,7 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
-use Neucore\Entity\Service;
+use Neucore\Entity\Plugin;
 use Neucore\Factory\RepositoryFactory;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
@@ -485,7 +485,7 @@ class CharacterControllerTest extends WebTestCase
         $conf = new PluginConfigurationDatabase();
         $conf->directoryName = 'plugin';
         $conf->active = true;
-        $service = (new Service())->setName('S1')->setConfigurationDatabase($conf);
+        $service = (new Plugin())->setName('S1')->setConfigurationDatabase($conf);
 
         $this->helper->getObjectManager()->persist($corp);
         $this->helper->getObjectManager()->persist($removedChar);

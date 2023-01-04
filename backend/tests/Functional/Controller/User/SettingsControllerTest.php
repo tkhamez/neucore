@@ -12,7 +12,7 @@ use Neucore\Entity\Alliance;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Role;
-use Neucore\Entity\Service;
+use Neucore\Entity\Plugin;
 use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
@@ -37,9 +37,9 @@ class SettingsControllerTest extends WebTestCase
 
     private SystemVariableRepository $systemVariableRepository;
 
-    private Service $service1;
+    private Plugin $service1;
 
-    private Service $service2;
+    private Plugin $service2;
 
     public static function setupBeforeClass(): void
     {
@@ -68,7 +68,14 @@ class SettingsControllerTest extends WebTestCase
 
         // Note: the list of variables is not complete
 
-        $response = $this->runApp('GET', '/api/user/settings/system/list');
+        $response = $this->runApp(
+            'GET',
+            '/api/user/settings/system/list',
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/SettingsController']],
+        );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
@@ -88,7 +95,14 @@ class SettingsControllerTest extends WebTestCase
 
         // Note: the list of variables is not complete
 
-        $response = $this->runApp('GET', '/api/user/settings/system/list');
+        $response = $this->runApp(
+            'GET',
+            '/api/user/settings/system/list',
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/SettingsController']],
+        );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
@@ -111,7 +125,14 @@ class SettingsControllerTest extends WebTestCase
 
         // Note: the list of variables is not complete
 
-        $response = $this->runApp('GET', '/api/user/settings/system/list');
+        $response = $this->runApp(
+            'GET',
+            '/api/user/settings/system/list',
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/SettingsController']],
+        );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
@@ -343,22 +364,26 @@ class SettingsControllerTest extends WebTestCase
         $admin = $this->helper->addCharacterMain('Admin', 6, [Role::USER, Role::SETTINGS]);
 
         $conf1 = new PluginConfigurationDatabase();
+        $conf1->directoryName = 'plugin';
         $conf1->active = true;
-        $this->service1 = (new Service())->setName('s1')->setConfigurationDatabase($conf1);
+        $this->service1 = (new Plugin())->setName('s1')->setConfigurationDatabase($conf1);
 
         $conf2 = new PluginConfigurationDatabase();
+        $conf2->directoryName = 'plugin';
         $conf2->active = true;
         $conf2->requiredGroups = [$group->getId()];
-        $this->service2 = (new Service())->setName('s2')->setConfigurationDatabase($conf2);
+        $this->service2 = (new Plugin())->setName('s2')->setConfigurationDatabase($conf2);
 
         $conf3 = new PluginConfigurationDatabase();
+        $conf3->directoryName = 'plugin';
         $conf3->active = true;
         $conf3->requiredGroups = [$group->getId()+99];
-        $service3 = (new Service())->setName('s3')->setConfigurationDatabase($conf3);
+        $service3 = (new Plugin())->setName('s3')->setConfigurationDatabase($conf3);
 
         // Inactive service, will be ignored
         $conf4 = new PluginConfigurationDatabase();
-        $service4 = (new Service())->setName('s4')->setConfigurationDatabase($conf4);
+        $conf4->directoryName = 'plugin';
+        $service4 = (new Plugin())->setName('s4')->setConfigurationDatabase($conf4);
 
         $alli = (new Alliance())->setId(456);
         $corp = (new Corporation())->setId(2020)->setAlliance($alli);

@@ -1,3 +1,4 @@
+type: service
 phpClass: Tests\Functional\Command\UpdateServiceAccounts\TestService2
 psr4Prefix: Tests\Functional\Command\UpdateServiceAccounts
 psr4Path: src

@@ -7,24 +7,24 @@ namespace Tests\Unit\Entity;
 
 use Neucore\Data\PluginConfigurationFile;
 use Neucore\Data\PluginConfigurationURL;
-use Neucore\Entity\Service;
+use Neucore\Entity\Plugin;
 use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Plugin\ServiceConfiguration;
 use PHPUnit\Framework\TestCase;
 use Tests\Logger;
 
-class ServiceTest extends TestCase
+class PluginTest extends TestCase
 {
     public function testJsonSerialize()
     {
-        $service = new Service();
-        $service->setName('s1');
-        $service->setConfigurationDatabase(new PluginConfigurationDatabase());
-        $service->setConfigurationFile(new PluginConfigurationFile());
+        $plugin = new Plugin();
+        $plugin->setName('s1');
+        $plugin->setConfigurationDatabase(new PluginConfigurationDatabase());
+        $plugin->setConfigurationFile(new PluginConfigurationFile());
 
         $this->assertSame(
             ['id' => 0, 'name' => 's1'],
-            json_decode((string) json_encode($service), true)
+            json_decode((string) json_encode($plugin), true)
         );
 
         $this->assertSame(
@@ -54,7 +54,7 @@ class ServiceTest extends TestCase
                     'configurationData' => '',
                 ],
             ],
-            $service->jsonSerialize(false)
+            $plugin->jsonSerialize(false)
         );
 
         $this->assertSame(
@@ -91,7 +91,7 @@ class ServiceTest extends TestCase
                     'configurationData' => '',
                 ],
             ],
-            $service->jsonSerialize(false, true)
+            $plugin->jsonSerialize(false, true)
         );
 
         $this->assertSame(
@@ -125,20 +125,20 @@ class ServiceTest extends TestCase
                     'configurationData' => '',
                 ],
             ],
-            $service->jsonSerialize(false, true, false)
+            $plugin->jsonSerialize(false, true, false)
         );
     }
 
     public function testGetId()
     {
-        $this->assertSame(0, (new Service())->getId());
+        $this->assertSame(0, (new Plugin())->getId());
     }
 
     public function testSetGetName()
     {
-        $service = new Service();
-        $this->assertSame('', $service->getName());
-        $this->assertSame('name',  $service->setName('name')->getName());
+        $plugin = new Plugin();
+        $this->assertSame('', $plugin->getName());
+        $this->assertSame('name',  $plugin->setName('name')->getName());
     }
 
     public function testSetGetConfigurationDatabase()
@@ -170,7 +170,7 @@ class ServiceTest extends TestCase
 
         $this->assertSame(
             $expected,
-            (new Service())->setConfigurationDatabase($data)->getConfigurationDatabase()?->jsonSerialize()
+            (new Plugin())->setConfigurationDatabase($data)->getConfigurationDatabase()?->jsonSerialize()
         );
     }
 
@@ -179,15 +179,15 @@ class ServiceTest extends TestCase
         $data = new PluginConfigurationFile();
         $data->name = 'name';
 
-        $actual = (new Service())->setConfigurationFile($data)->getConfigurationFile();
+        $actual = (new Plugin())->setConfigurationFile($data)->getConfigurationFile();
 
         $this->assertSame($data, $actual);
     }
 
-    public function testSetGetImplementation()
+    public function testSetGetServiceImplementation()
     {
         $impl = new ServiceTest_ServiceImplementation(new Logger(''), new ServiceConfiguration(1, [], ''));
-        $actual = (new Service())->setImplementation($impl)->getImplementation();
+        $actual = (new Plugin())->setServiceImplementation($impl)->getServiceImplementation();
         $this->assertSame($impl, $actual);
     }
 }

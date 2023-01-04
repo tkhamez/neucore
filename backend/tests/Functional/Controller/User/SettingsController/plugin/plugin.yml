@@ -1,0 +1,4 @@
+type: service
+phpClass: Tests\Functional\Controller\User\SettingsController\TestService
+psr4Prefix: Tests\Functional\Controller\User\SettingsController
+psr4Path: src

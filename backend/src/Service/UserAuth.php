@@ -11,7 +11,7 @@ use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
-use Neucore\Entity\Service;
+use Neucore\Entity\Plugin;
 use Neucore\Entity\SystemVariable;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
@@ -161,7 +161,7 @@ class UserAuth implements RoleProviderInterface
         return $this->objectManager->flush();
     }
 
-    public function hasRequiredGroups(Service $service): bool
+    public function hasRequiredGroups(Plugin $service): bool
     {
         $character = $this->getUser();
         if ($character === null) {

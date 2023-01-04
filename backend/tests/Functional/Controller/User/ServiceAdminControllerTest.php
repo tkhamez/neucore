@@ -7,9 +7,9 @@ namespace Tests\Functional\Controller\User;
 use Neucore\Data\PluginConfigurationFile;
 use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\Role;
-use Neucore\Entity\Service;
+use Neucore\Entity\Plugin;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Repository\ServiceRepository;
+use Neucore\Repository\PluginRepository;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
@@ -19,7 +19,7 @@ class ServiceAdminControllerTest extends WebTestCase
 {
     private Helper $helper;
 
-    private ServiceRepository $repository;
+    private PluginRepository $repository;
 
     private int $serviceId;
 
@@ -28,7 +28,7 @@ class ServiceAdminControllerTest extends WebTestCase
     protected function setUp(): void
     {
         $this->helper = new Helper();
-        $this->repository = RepositoryFactory::getInstance($this->helper->getObjectManager())->getServiceRepository();
+        $this->repository = RepositoryFactory::getInstance($this->helper->getObjectManager())->getPluginRepository();
         $this->log = new Logger('test');
 
         $_SESSION = null;
@@ -359,7 +359,7 @@ class ServiceAdminControllerTest extends WebTestCase
 
         $conf = new PluginConfigurationDatabase();
         $conf->directoryName = 'plugin3';
-        $service = (new Service())->setName('S1')->setConfigurationDatabase($conf);
+        $service = (new Plugin())->setName('S1')->setConfigurationDatabase($conf);
 
         $em->persist($service);
         $em->flush();

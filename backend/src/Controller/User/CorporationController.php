@@ -227,7 +227,7 @@ class CorporationController extends BaseController
      *     )
      * )
      */
-    public function add(string $id, EsiData $service): ResponseInterface
+    public function add(string $id, EsiData $esiData): ResponseInterface
     {
         $corpId = (int) $id;
 
@@ -236,9 +236,9 @@ class CorporationController extends BaseController
         }
 
         // get corporation
-        $corporation = $service->fetchCorporation($corpId, false);
+        $corporation = $esiData->fetchCorporation($corpId, false);
         if ($corporation === null) {
-            $code = $service->getLastErrorCode();
+            $code = $esiData->getLastErrorCode();
             if ($code === 404 || $code === 400) {
                 return $this->response->withStatus($code);
             } else {
@@ -248,7 +248,7 @@ class CorporationController extends BaseController
 
         // fetch alliance
         if ($corporation->getAlliance() !== null) {
-            $service->fetchAlliance($corporation->getAlliance()->getId(), false);
+            $esiData->fetchAlliance($corporation->getAlliance()->getId(), false);
         }
 
         return $this->flushAndReturn(201, $corporation);

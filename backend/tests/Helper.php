@@ -36,7 +36,7 @@ use Neucore\Entity\Player;
 use Neucore\Entity\PlayerLogins;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
-use Neucore\Entity\Service;
+use Neucore\Entity\Plugin;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\EsiApiFactory;
@@ -47,7 +47,7 @@ use Neucore\Service\AutoGroupAssignment;
 use Neucore\Service\Config;
 use Neucore\Service\EsiData;
 use Neucore\Service\OAuthToken;
-use Neucore\Service\ServiceRegistration;
+use Neucore\Service\PluginService;
 use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
 use Symfony\Component\Yaml\Parser;
@@ -59,7 +59,7 @@ class Helper
     private static int $roleSequence = 0;
 
     private array $entities = [
-        Service::class,
+        Plugin::class,
         Watchlist::class,
         GroupApplication::class,
         AppRequests::class,
@@ -168,8 +168,8 @@ class Helper
         $accountGroup = new AccountGroup($repoFactory, $this->getObjectManager());
         $autoGroups = new AutoGroupAssignment($repoFactory, $accountGroup);
         $token = new OAuthToken($this->getAuthenticationProvider($client), $objectManager, $logger);
-        $serviceRegistration = new ServiceRegistration($logger, $repoFactory, $accountGroup, $config, new Parser());
-        return new Account($logger, $objectManager, $repoFactory, $esiData, $autoGroups, $token, $serviceRegistration);
+        $pluginService = new PluginService($logger, $repoFactory, $accountGroup, $config, new Parser());
+        return new Account($logger, $objectManager, $repoFactory, $esiData, $autoGroups, $token, $pluginService);
     }
 
     public function getUserAuthService(Logger $logger, Client $client, ?Config $config): UserAuth

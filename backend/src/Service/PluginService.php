@@ -8,7 +8,7 @@ use Neucore\Application;
 use Neucore\Data\PluginConfigurationFile;
 use Neucore\Entity\Character;
 use Neucore\Entity\Player;
-use Neucore\Entity\Service;
+use Neucore\Entity\Plugin;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
@@ -20,7 +20,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Parser;
 
-class ServiceRegistration
+class PluginService
 {
     private LoggerInterface $log;
 
@@ -74,65 +74,67 @@ class ServiceRegistration
         return $pluginConfigFile;
     }
 
-    public function getService(int $id): ?Service
+    public function getPlugin(int $id): ?Plugin
     {
-        $service = $this->repositoryFactory->getServiceRepository()->find($id);
-        if (!$service) {
+        $plugin = $this->repositoryFactory->getPluginRepository()->find($id);
+        if (!$plugin) {
             return null;
         }
 
         try {
-            $this->addConfigurationFromFile($service);
+            $this->addConfigurationFromFile($plugin);
         } catch (RuntimeException) {
             return null;
         }
 
-        return $service;
+        return $plugin;
     }
 
     /**
-     * Returns service implementation of active services.
+     * Returns active plugins with implementation, if available.
      *
      * @param int[] $limitToIds
-     * @return Service[] Contains the implementation if it could be found.
+     * @return Plugin[] Contains the implementation if it could be found.
      */
-    public function getServicesWithImplementation(array $limitToIds = []): array
+    public function getPluginWithImplementation(array $limitToIds = []): array
     {
         $result = [];
-        foreach ($this->repositoryFactory->getServiceRepository()->findBy([]) as $service) {
-            if (!$service->getConfigurationDatabase()?->active) {
+        foreach ($this->repositoryFactory->getPluginRepository()->findBy([], ['name' => 'asc']) as $plugin) {
+            if (!$plugin->getConfigurationDatabase()?->active) {
                 continue;
             }
-            if (!empty($limitToIds) && !in_array($service->getId(), $limitToIds)) {
+            if (!empty($limitToIds) && !in_array($plugin->getId(), $limitToIds)) {
                 continue;
             }
-            $implementation = $this->getServiceImplementation($service);
-            $service->setImplementation($implementation);
-            $result[] = $service;
+            $implementation = $this->getPluginImplementation($plugin);
+            if ($implementation instanceof ServiceInterface) {
+                $plugin->setServiceImplementation($implementation);
+            }
+            $result[] = $plugin;
         }
         return $result;
     }
 
-    public function getServiceImplementation(Service $service): ?ServiceInterface
+    public function getPluginImplementation(Plugin $plugin): ?ServiceInterface
     {
-        if (!$service->getConfigurationFile()) {
+        if (!$plugin->getConfigurationFile()) {
             try {
-                $this->addConfigurationFromFile($service);
+                $this->addConfigurationFromFile($plugin);
             } catch (RuntimeException) {
                 return null;
             }
         }
 
-        $serviceConfig = $service->getConfigurationDatabase();
-        $pluginConfigYaml = $service->getConfigurationFile();
-        if (!$serviceConfig || !$pluginConfigYaml) {
+        $pluginConfigDb = $plugin->getConfigurationDatabase();
+        $pluginConfigYaml = $plugin->getConfigurationFile();
+        if (!$pluginConfigDb || !$pluginConfigYaml) {
             return null;
         }
 
         // configure autoloader
         $psr4Path = '';
         if (is_string($this->config['plugins_install_dir'])) {
-            $psr4Path = $this->config['plugins_install_dir'] . DIRECTORY_SEPARATOR . $serviceConfig->directoryName .
+            $psr4Path = $this->config['plugins_install_dir'] . DIRECTORY_SEPARATOR . $pluginConfigDb->directoryName .
                 DIRECTORY_SEPARATOR . $pluginConfigYaml->psr4Path;
         }
         if (!empty($pluginConfigYaml->psr4Prefix) && !empty($psr4Path) && is_dir($psr4Path)) {
@@ -168,14 +170,16 @@ class ServiceRegistration
         }
 
         // ServiceInterface::__construct
-        return new $phpClass(
+        $obj = new $phpClass(
             $this->log,
             new ServiceConfiguration(
-                $service->getId(),
-                array_map('intval', $serviceConfig->requiredGroups),
-                $serviceConfig->configurationData
+                $plugin->getId(),
+                array_map('intval', $pluginConfigDb->requiredGroups),
+                $pluginConfigDb->configurationData
             )
         );
+
+        return $obj instanceof ServiceInterface ? $obj : null;
     }
 
     /**
@@ -204,14 +208,12 @@ class ServiceRegistration
         }
         foreach ($service->getAccounts($coreCharacters) as $account) {
             if (!$account instanceof ServiceAccountData) {
-                $this->log->error(
-                    "ServiceController: ServiceInterface::getAccounts must return an array of AccountData objects."
-                );
+                $this->log->error("ServiceInterface::getAccounts must return an array of AccountData objects.");
                 continue;
             }
-            if (! in_array($account->getCharacterId(), $characterIds)) {
+            if (!in_array($account->getCharacterId(), $characterIds)) {
                 if ($logErrorOnCharacterMismatch) {
-                    $this->log->error("ServiceController: Character ID does not match.");
+                    $this->log->error('PluginService::getAccounts: Character ID does not match.');
                 }
                 continue;
             }
@@ -225,22 +227,22 @@ class ServiceRegistration
     {
         $updated = [];
 
-        $services = $this->repositoryFactory->getServiceRepository()->findBy([]);
-        foreach ($services as $service) {
+        $plugins = $this->repositoryFactory->getPluginRepository()->findBy([]);
+        foreach ($plugins as $plugin) {
             try {
-                $this->addConfigurationFromFile($service);
+                $this->addConfigurationFromFile($plugin);
             } catch (RuntimeException) {
                 continue;
             }
 
             // Check if service has the "update-account" action
-            $actions = $service->getConfigurationFile() ? $service->getConfigurationFile()->actions : [];
+            $actions = $plugin->getConfigurationFile() ? $plugin->getConfigurationFile()->actions : [];
             if (!in_array(PluginConfigurationFile::ACTION_UPDATE_ACCOUNT, $actions)) {
                 continue;
             }
 
-            $implementation = $this->getServiceImplementation($service);
-            if (!$implementation) {
+            $implementation = $this->getPluginImplementation($plugin);
+            if (!$implementation instanceof ServiceInterface) {
                 continue;
             }
 
@@ -264,12 +266,12 @@ class ServiceRegistration
                 $error = $this->updateServiceAccount($character, $implementation);
                 if ($error === null) {
                     $updated[] = [
-                        'serviceName' => $service->getName(),
+                        'serviceName' => $plugin->getName(),
                         'characterId' => $account->getCharacterId()
                     ];
                 } else {
-                    $serviceName = $service->getName();
-                    $this->log->error("ServiceController::updateAllAccounts: $serviceName: $error");
+                    $serviceName = $plugin->getName();
+                    $this->log->error("PluginService::updatePlayerAccounts: $serviceName: $error");
                 }
             }
         }
@@ -308,9 +310,9 @@ class ServiceRegistration
     /**
      * @throws RuntimeException
      */
-    private function addConfigurationFromFile(Service $service): void
+    private function addConfigurationFromFile(Plugin $plugin): void
     {
-        $dirName = $service->getConfigurationDatabase()?->directoryName;
+        $dirName = $plugin->getConfigurationDatabase()?->directoryName;
         if (empty($dirName)) {
             return;
         }
@@ -320,6 +322,6 @@ class ServiceRegistration
             throw new RuntimeException('Cannot read YAML file.');
         }
 
-        $service->setConfigurationFile($yamlConfig);
+        $plugin->setConfigurationFile($yamlConfig);
     }
 }

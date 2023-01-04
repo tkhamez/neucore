@@ -1,5 +1,0 @@
-name: Test
-type: service
-phpClass: Tests\Unit\Service\ServiceRegistration\plugin\src\TestService2
-psr4Prefix: Tests\Unit\Service\ServiceRegistration\plugin\src
-psr4Path: src

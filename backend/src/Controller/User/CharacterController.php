@@ -17,7 +17,7 @@ use Neucore\Service\Account;
 use Neucore\Service\Config;
 use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
-use Neucore\Service\ServiceRegistration;
+use Neucore\Service\PluginService;
 use Neucore\Service\UserAuth;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -117,9 +117,9 @@ class CharacterController extends BaseController
      * @noinspection PhpUnused
      */
     public function findCharacter(
-        string $name,
+        string                 $name,
         ServerRequestInterface $request,
-        ServiceRegistration $serviceRegistration,
+        PluginService          $pluginService,
     ): ResponseInterface {
         $name = trim($name);
         if (mb_strlen($name) < 3) {
@@ -130,7 +130,7 @@ class CharacterController extends BaseController
         $result = $this->repositoryFactory->getPlayerRepository()->findCharacters($name, $currentOnly);
 
         if ($this->getQueryParam($request, 'plugin') === 'true') {
-            $result = $this->searchPlugins($name, $result, $serviceRegistration);
+            $result = $this->searchPlugins($name, $result, $pluginService);
         }
 
         return $this->withJson($result);
@@ -377,15 +377,15 @@ class CharacterController extends BaseController
      * @param SearchResult[] $result
      * @return SearchResult[]
      */
-    private function searchPlugins(string $name, array $result, ServiceRegistration $serviceRegistration): array
+    private function searchPlugins(string $name, array $result, PluginService $pluginService): array
     {
-        foreach ($serviceRegistration->getServicesWithImplementation() as $service) {
-            if (!$service->getImplementation()) {
+        foreach ($pluginService->getPluginWithImplementation() as $plugin) {
+            if (!$plugin->getServiceImplementation()) {
                 continue;
             }
 
             try {
-                $pluginResults = $service->getImplementation()->search($name);
+                $pluginResults = $plugin->getServiceImplementation()->search($name);
             } catch(Exception) {
                 continue;
             }

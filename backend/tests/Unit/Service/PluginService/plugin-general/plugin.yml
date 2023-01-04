@@ -1,0 +1,5 @@
+name: General plugin, not a service
+type: general
+phpClass: Tests\Unit\Service\PluginService\plugin\src\TestPlugin
+psr4Prefix: Tests\Unit\Service\PluginService\plugin\src
+psr4Path: src

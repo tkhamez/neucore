@@ -16,9 +16,9 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(required={"id", "name"})
  *
  * @ORM\Entity()
- * @ORM\Table(name="services")
+ * @ORM\Table(name="plugins")
  */
-class Service implements \JsonSerializable
+class Plugin implements \JsonSerializable
 {
     /**
      * @OA\Property()
@@ -114,12 +114,12 @@ class Service implements \JsonSerializable
         return $this;
     }
 
-    public function getImplementation(): ?ServiceInterface
+    public function getServiceImplementation(): ?ServiceInterface
     {
         return $this->implementation;
     }
 
-    public function setImplementation(?ServiceInterface $implementation): self
+    public function setServiceImplementation(?ServiceInterface $implementation): self
     {
         $this->implementation = $implementation;
         return $this;

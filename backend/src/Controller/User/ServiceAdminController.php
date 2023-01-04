@@ -6,12 +6,12 @@ namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
 use Neucore\Data\PluginConfigurationFile;
-use Neucore\Entity\Service;
+use Neucore\Entity\Plugin;
 use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Log\Context;
 use Neucore\Plugin\Exception;
 use Neucore\Service\Config;
-use Neucore\Service\ServiceRegistration;
+use Neucore\Service\PluginService;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
@@ -37,7 +37,7 @@ class ServiceAdminController extends BaseController
      *     @OA\Response(
      *         response="200",
      *         description="List of services.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Service"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Plugin"))
      *     ),
      *     @OA\Response(
      *         response="403",
@@ -47,7 +47,7 @@ class ServiceAdminController extends BaseController
      */
     public function list(): ResponseInterface
     {
-        return $this->withJson($this->repositoryFactory->getServiceRepository()->findBy([], ['name' => 'ASC']));
+        return $this->withJson($this->repositoryFactory->getPluginRepository()->findBy([], ['name' => 'ASC']));
     }
 
     /**
@@ -73,7 +73,7 @@ class ServiceAdminController extends BaseController
      *     )
      * )
      */
-    public function configurations(Config $config, ServiceRegistration $serviceRegistration): ResponseInterface
+    public function configurations(Config $config, PluginService $pluginService): ResponseInterface
     {
         $basePath = is_string($config['plugins_install_dir']) ? $config['plugins_install_dir'] : '';
 
@@ -93,12 +93,12 @@ class ServiceAdminController extends BaseController
                 continue;
             }
 
-            $serviceConfig = $serviceRegistration->getConfigurationFromConfigFile($fileInfo->getFilename());
-            if (!$serviceConfig) {
+            $pluginConfig = $pluginService->getConfigurationFromConfigFile($fileInfo->getFilename());
+            if (!$pluginConfig) {
                 return $this->response->withStatus(500);
             }
 
-            $configurations[] = $serviceConfig;
+            $configurations[] = $pluginConfig;
         }
 
         return $this->withJson(array_map(function (PluginConfigurationFile $configuration) {
@@ -132,7 +132,7 @@ class ServiceAdminController extends BaseController
      *     @OA\Response(
      *         response="201",
      *         description="The new service.",
-     *         @OA\JsonContent(ref="#/components/schemas/Service")
+     *         @OA\JsonContent(ref="#/components/schemas/Plugin")
      *     ),
      *     @OA\Response(
      *         response="400",
@@ -151,10 +151,10 @@ class ServiceAdminController extends BaseController
             return $this->response->withStatus(400);
         }
 
-        $service = (new Service())->setName($name);
-        $this->objectManager->persist($service);
+        $plugin = (new Plugin())->setName($name);
+        $this->objectManager->persist($plugin);
 
-        return $this->flushAndReturn(201, $service);
+        return $this->flushAndReturn(201, $plugin);
     }
 
     /**
@@ -190,7 +190,7 @@ class ServiceAdminController extends BaseController
      *     @OA\Response(
      *         response="200",
      *         description="Service was renamed.",
-     *         @OA\JsonContent(ref="#/components/schemas/Service")
+     *         @OA\JsonContent(ref="#/components/schemas/Plugin")
      *     ),
      *     @OA\Response(
      *         response="400",
@@ -208,8 +208,8 @@ class ServiceAdminController extends BaseController
      */
     public function rename(string $id, ServerRequestInterface $request): ResponseInterface
     {
-        $service = $this->repositoryFactory->getServiceRepository()->find((int)$id);
-        if ($service === null) {
+        $plugin = $this->repositoryFactory->getPluginRepository()->find((int)$id);
+        if ($plugin === null) {
             return $this->response->withStatus(404);
         }
 
@@ -218,9 +218,9 @@ class ServiceAdminController extends BaseController
             return $this->response->withStatus(400);
         }
 
-        $service->setName($name);
+        $plugin->setName($name);
 
-        return $this->flushAndReturn(200, $service);
+        return $this->flushAndReturn(200, $plugin);
     }
 
     /**
@@ -254,12 +254,12 @@ class ServiceAdminController extends BaseController
      */
     public function delete(string $id): ResponseInterface
     {
-        $service = $this->repositoryFactory->getServiceRepository()->find((int)$id);
-        if ($service === null) {
+        $plugin = $this->repositoryFactory->getPluginRepository()->find((int)$id);
+        if ($plugin === null) {
             return $this->response->withStatus(404);
         }
 
-        $this->objectManager->remove($service);
+        $this->objectManager->remove($plugin);
 
         return $this->flushAndReturn(204);
     }
@@ -311,13 +311,13 @@ class ServiceAdminController extends BaseController
      * )
      */
     public function saveConfiguration(
-        string $id,
+        string                 $id,
         ServerRequestInterface $request,
-        ServiceRegistration $serviceRegistration,
-        LoggerInterface $logger,
+        PluginService          $pluginService,
+        LoggerInterface        $logger,
     ): ResponseInterface {
-        $service = $this->repositoryFactory->getServiceRepository()->find((int)$id);
-        if ($service === null) {
+        $plugin = $this->repositoryFactory->getPluginRepository()->find((int)$id);
+        if ($plugin === null) {
             return $this->response->withStatus(404);
         }
 
@@ -329,7 +329,7 @@ class ServiceAdminController extends BaseController
         $data = \json_decode($configuration, true);
         if (is_array($data)) {
             $configRequest = PluginConfigurationDatabase::fromArray($data);
-            $service->setConfigurationDatabase($configRequest);
+            $plugin->setConfigurationDatabase($configRequest);
         } else {
             return $this->response->withStatus(400);
         }
@@ -337,7 +337,7 @@ class ServiceAdminController extends BaseController
         $response = $this->flushAndReturn(204);
 
         if ($response->getStatusCode() !== 500) {
-            $implementation = $serviceRegistration->getServiceImplementation($service);
+            $implementation = $pluginService->getPluginImplementation($plugin);
             try {
                 $implementation?->onConfigurationChange();
             } catch (Exception $e) {

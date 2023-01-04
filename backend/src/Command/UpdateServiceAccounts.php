@@ -13,7 +13,7 @@ use Neucore\Plugin\ServiceInterface;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Service\AccountGroup;
-use Neucore\Service\ServiceRegistration;
+use Neucore\Service\PluginService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -31,7 +31,7 @@ class UpdateServiceAccounts extends Command
 
     private PlayerRepository $playerRepository;
 
-    private ServiceRegistration $serviceRegistration;
+    private PluginService $pluginService;
 
     private AccountGroup $accountGroup;
 
@@ -42,11 +42,11 @@ class UpdateServiceAccounts extends Command
     private ?int $charactersOrPlayersNotFound = null;
 
     public function __construct(
-        LoggerInterface $logger,
+        LoggerInterface        $logger,
         EntityManagerInterface $entityManager,
-        RepositoryFactory $repositoryFactory,
-        ServiceRegistration $serviceRegistration,
-        AccountGroup $accountGroup
+        RepositoryFactory      $repositoryFactory,
+        PluginService          $pluginService,
+        AccountGroup           $accountGroup
     ) {
         parent::__construct();
         $this->logOutput($logger);
@@ -54,7 +54,7 @@ class UpdateServiceAccounts extends Command
         $this->entityManager = $entityManager;
         $this->characterRepository = $repositoryFactory->getCharacterRepository();
         $this->playerRepository = $repositoryFactory->getPlayerRepository();
-        $this->serviceRegistration = $serviceRegistration;
+        $this->pluginService = $pluginService;
         $this->accountGroup = $accountGroup;
     }
 
@@ -82,9 +82,9 @@ class UpdateServiceAccounts extends Command
         $this->writeLine('Started "update-service-accounts"', false);
 
         $limit = $serviceId ? [$serviceId] : [];
-        foreach ($this->serviceRegistration->getServicesWithImplementation($limit) as $service) {
+        foreach ($this->pluginService->getPluginWithImplementation($limit) as $service) {
             $this->writeLine('  Updating '. $service->getName() . ' ...', false);
-            $implementation = $service->getImplementation();
+            $implementation = $service->getServiceImplementation();
             if ($implementation === null) {
                 $this->writeLine('  Service implementation not found for ' . $service->getName());
                 continue;

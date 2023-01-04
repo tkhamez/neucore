@@ -22,7 +22,7 @@ use Neucore\Entity\Player;
 use Neucore\Entity\PlayerLogins;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
-use Neucore\Entity\Service;
+use Neucore\Entity\Plugin;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
 use Neucore\Repository\AllianceRepository;
@@ -42,7 +42,7 @@ use Neucore\Repository\PlayerLoginsRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Repository\RoleRepository;
-use Neucore\Repository\ServiceRepository;
+use Neucore\Repository\PluginRepository;
 use Neucore\Repository\SystemVariableRepository;
 use Neucore\Repository\WatchlistRepository;
 
@@ -148,9 +148,9 @@ class RepositoryFactory
         return $this->getRepository(RoleRepository::class, Role::class);
     }
 
-    public function getServiceRepository(): ServiceRepository
+    public function getPluginRepository(): PluginRepository
     {
-        return $this->getRepository(ServiceRepository::class, Service::class);
+        return $this->getRepository(PluginRepository::class, Plugin::class);
     }
 
     public function getSystemVariableRepository(): SystemVariableRepository

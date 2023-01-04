@@ -1,3 +1,4 @@
+type: service
 phpClass: Tests\Functional\Controller\User\CharacterController\TestService
 psr4Prefix: Tests\Functional\Controller\User\CharacterController
 psr4Path: src
