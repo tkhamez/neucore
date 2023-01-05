@@ -34,6 +34,11 @@ class PluginController extends BaseController
             return $this->response->withStatus(404);
         }
 
+        if (!$plugin->getConfigurationDatabase()?->active) {
+            $this->response->getBody()->write($this->getBodyWithHomeLink('Plugin is not active.'));
+            return $this->response->withStatus(404);
+        }
+
         $player = $userAuth->getUser()?->getPlayer();
 
         if (!$userAuth->hasRequiredGroups($plugin, true)) {

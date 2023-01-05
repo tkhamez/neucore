@@ -76,7 +76,8 @@
                         <label class="form-check-label" for="configActive">
                             Active<br>
                             <span class="form-text lh-sm d-block">
-                                Uncheck to disable for cron job and hide from users.
+                                Uncheck to disable for cron job and hide from users. The plugin URL will also only
+                                work for active plugins.
                             </span>
                         </label>
                         <input class="form-check-input" type="checkbox" id="configActive" :disabled="!formEnabled"

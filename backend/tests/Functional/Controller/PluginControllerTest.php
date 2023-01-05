@@ -45,12 +45,34 @@ class PluginControllerTest extends WebTestCase
         $this->assertSame(404, $response->getStatusCode());
     }
 
+    public function testRequest404_NotActive()
+    {
+        $configuration = new PluginConfigurationDatabase();
+        $configuration->directoryName = 'plugin1';
+        $configuration->active = false;
+        $plugin = (new Plugin())->setName('Plugin 1')->setConfigurationDatabase($configuration);
+        $this->om->persist($plugin);
+        $this->om->flush();
+
+        $response = $this->runApp(
+            'GET',
+            '/plugin/'.$plugin->getId().'/auth',
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginController']],
+        );
+        $this->assertSame(404, $response->getStatusCode());
+        $this->assertStringStartsWith('Plugin is not active.', $response->getBody()->__toString());
+    }
+
     public function testRequest403_MissingGroup()
     {
         $this->helper->addCharacterMain('User 100', 100);
         $this->loginUser(100);
         $configuration = new PluginConfigurationDatabase();
         $configuration->directoryName = 'plugin1';
+        $configuration->active = true;
         $configuration->requiredGroups = [1];
         $plugin = (new Plugin())->setName('Plugin 1')->setConfigurationDatabase($configuration);
         $this->om->persist($plugin);
@@ -74,6 +96,7 @@ class PluginControllerTest extends WebTestCase
         $this->loginUser(100);
         $configuration = new PluginConfigurationDatabase();
         $configuration->directoryName = 'plugin2';
+        $configuration->active = true;
         $plugin = (new Plugin())->setName('Plugin 2')->setConfigurationDatabase($configuration);
         $this->om->persist($plugin);
         $this->om->flush();
@@ -99,6 +122,7 @@ class PluginControllerTest extends WebTestCase
         $this->loginUser(100);
         $configuration = new PluginConfigurationDatabase();
         $configuration->directoryName = 'plugin1';
+        $configuration->active = true;
         $configuration->requiredGroups = [$player->getGroups()[0]->getId()];
         $plugin = (new Plugin())->setName('Plugin 1')->setConfigurationDatabase($configuration);
         $this->om->persist($plugin);
@@ -146,6 +170,7 @@ class PluginControllerTest extends WebTestCase
     {
         $configuration = new PluginConfigurationDatabase();
         $configuration->directoryName = 'plugin1';
+        $configuration->active = true;
         $plugin = (new Plugin())->setName('Plugin 1')->setConfigurationDatabase($configuration);
         $this->om->persist($plugin);
         $this->om->flush();
@@ -171,6 +196,7 @@ class PluginControllerTest extends WebTestCase
         $this->loginUser(100);
         $configuration = new PluginConfigurationDatabase();
         $configuration->directoryName = 'plugin1';
+        $configuration->active = true;
         $plugin = (new Plugin())->setName('Plugin 1')->setConfigurationDatabase($configuration);
         $this->om->persist($plugin);
         $this->om->flush();
@@ -199,6 +225,7 @@ class PluginControllerTest extends WebTestCase
         $this->loginUser(100);
         $configuration = new PluginConfigurationDatabase();
         $configuration->directoryName = 'plugin3';
+        $configuration->active = true;
         $plugin = (new Plugin())->setName('Plugin 3')->setConfigurationDatabase($configuration);
         $this->om->persist($plugin);
         $this->om->flush();
