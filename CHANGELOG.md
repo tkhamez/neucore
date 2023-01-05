@@ -9,6 +9,7 @@ dd mm yyyy
   (URL `/plugin/{id}/{name}`).
 - Added search for service accounts to *Member Data -> Characters*.
 - Duplicate character search results have been removed.
+- Small UI improvements.
 
 ## 1.41.0
 

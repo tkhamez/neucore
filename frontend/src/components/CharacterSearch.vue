@@ -49,7 +49,7 @@ export default {
                 this.searchTerm = value;
             }
 
-            if (this.searchTerm === '') {
+            if (this.searchTerm === '' || this.searchTerm.length < 3) {
                 this.$emit('result', []);
                 this.$refs.searchInput.focus();
             } else {
@@ -60,9 +60,6 @@ export default {
 }
 
 const findCharacter = _.debounce(vm => {
-    if (vm.searchTerm.length < 3) {
-        return;
-    }
     const api = new CharacterApi();
     const callback = (error, data) => {
         if (error) {
