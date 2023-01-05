@@ -28,20 +28,15 @@ class PluginController extends BaseController
         UserAuth               $userAuth,
         LoggerInterface        $logger
     ): ResponseInterface {
-        $user = $userAuth->getUser();
-        if (!$user) {
-            $this->response->getBody()->write($this->getBodyWithHomeLink('Not logged in.'));
-            return $this->response->withStatus(403);
-        }
-        $player = $user->getPlayer();
-
         $plugin = $this->repositoryFactory->getPluginRepository()->find((int) $id);
         if ($plugin === null) {
             $this->response->getBody()->write($this->getBodyWithHomeLink('Plugin not found.'));
             return $this->response->withStatus(404);
         }
 
-        if (!$userAuth->hasRequiredGroups($plugin)) {
+        $player = $userAuth->getUser()?->getPlayer();
+
+        if (!$userAuth->hasRequiredGroups($plugin, true)) {
             $this->response->getBody()->write($this->getBodyWithHomeLink('Not allowed to use this plugin.'));
             return $this->response->withStatus(403);
         }
@@ -52,26 +47,8 @@ class PluginController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        if ($player->getMain() !== null) {
-            $coreCharacter = $player->getMain()->toCoreCharacter();
-        } else {
-            $this->response->getBody()->write(
-                $this->getBodyWithHomeLink('Player or main character account not found.')
-            );
-            return $this->response->withStatus(404);
-        }
-
         try {
-            return $implementation->request(
-                $name,
-                $request,
-                $this->response,
-                $coreCharacter,
-                $player->getCoreCharacters(),
-                $player->getCoreGroups(),
-                $player->getManagerCoreGroups(),
-                $player->getCoreRoles(),
-            );
+            return $implementation->request($name, $request, $this->response, $player?->getCoreAccount());
         } catch (Exception $e) {
             $logger->error($e->getMessage(), [Context::EXCEPTION => $e]);
             if ($implementation instanceof ServiceInterface) {

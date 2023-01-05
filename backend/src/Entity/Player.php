@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
+use Neucore\Plugin\CoreAccount;
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\CoreGroup;
 use Neucore\Plugin\CoreRole;
@@ -664,5 +665,20 @@ class Player implements \JsonSerializable
     public function getIncomingCharacters(): array
     {
         return array_values($this->incomingCharacters->toArray());
+    }
+
+    public function getCoreAccount(): ?CoreAccount
+    {
+        $coreAccount = null;
+        if ($this->getMain()) {
+            $coreAccount = new CoreAccount(
+                $this->getMain()->toCoreCharacter(),
+                $this->getCoreCharacters(),
+                $this->getCoreGroups(),
+                $this->getManagerCoreGroups(),
+                $this->getCoreRoles(),
+            );
+        }
+        return $coreAccount;
     }
 }

@@ -562,6 +562,10 @@ class UserAuthTest extends TestCase
         $service = new Plugin();
         $this->assertFalse($this->service->hasRequiredGroups($service));
 
+        // no required group, no logged-in user, allow anonymous
+        $service = new Plugin();
+        $this->assertTrue($this->service->hasRequiredGroups($service, true));
+
         // log in user
         $character = $this->helper->addCharacterMain('Test User', 800);
         $_SESSION['character_id'] = 800;

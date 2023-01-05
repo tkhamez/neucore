@@ -7,8 +7,10 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User\ServiceController;
 
+use Neucore\Plugin\CoreAccount;
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
+use Neucore\Plugin\FactoryInterface;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\PluginConfiguration;
 use Neucore\Plugin\ServiceInterface;
@@ -22,8 +24,24 @@ class TestService1 implements ServiceInterface
 
     public static bool $throw = false;
 
-    public function __construct(LoggerInterface $logger, PluginConfiguration $pluginConfiguration)
+    public function __construct(
+        LoggerInterface $logger,
+        PluginConfiguration $pluginConfiguration,
+        FactoryInterface $factory,
+    ) {
+    }
+
+    public function onConfigurationChange(): void
     {
+    }
+
+    public function request(
+        string $name,
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        ?CoreAccount $coreAccount,
+    ): ResponseInterface {
+        throw new Exception();
     }
 
     public function getAccounts(array $characters): array
@@ -87,23 +105,6 @@ class TestService1 implements ServiceInterface
     public function getAllPlayerAccounts(): array
     {
         throw new Exception();
-    }
-
-    public function request(
-        string $name,
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-        CoreCharacter $main,
-        array $characters,
-        array $memberGroups,
-        array $managerGroups,
-        array $roles,
-    ): ResponseInterface {
-        throw new Exception();
-    }
-
-    public function onConfigurationChange(): void
-    {
     }
 
     public function search(string $query): array

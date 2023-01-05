@@ -2,18 +2,22 @@
 
 namespace Tests\Unit\Entity;
 
-use Neucore\Plugin\CoreCharacter;
+use Neucore\Plugin\CoreAccount;
 use Neucore\Plugin\Exception;
-use Neucore\Plugin\GeneralPluginInterface;
+use Neucore\Plugin\FactoryInterface;
+use Neucore\Plugin\GeneralInterface;
 use Neucore\Plugin\PluginConfiguration;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class ServiceTest_GeneralPluginImplementation implements GeneralPluginInterface
+class ServiceTest_GeneralPluginImplementation implements GeneralInterface
 {
-    public function __construct(LoggerInterface $logger, PluginConfiguration $pluginConfiguration)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        PluginConfiguration $pluginConfiguration,
+        FactoryInterface $factory,
+    ) {
     }
 
     public function onConfigurationChange(): void
@@ -24,11 +28,7 @@ class ServiceTest_GeneralPluginImplementation implements GeneralPluginInterface
         string $name,
         ServerRequestInterface $request,
         ResponseInterface $response,
-        CoreCharacter $main,
-        array $characters,
-        array $memberGroups,
-        array $managerGroups,
-        array $roles,
+        ?CoreAccount $coreAccount,
     ): ResponseInterface {
         throw new Exception();
     }

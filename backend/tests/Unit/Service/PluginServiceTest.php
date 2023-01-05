@@ -19,7 +19,8 @@ use Neucore\Entity\Player;
 use Neucore\Entity\Plugin;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
-use Neucore\Plugin\GeneralPluginInterface;
+use Neucore\Plugin\Factory;
+use Neucore\Plugin\GeneralInterface;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\PluginConfiguration;
 use Neucore\Plugin\ServiceInterface;
@@ -70,11 +71,13 @@ class PluginServiceTest extends TestCase
             $repoFactory,
             $accountGroup,
             $config,
-            new Parser()
+            new Parser(),
+            new Factory()
         );
         $this->testService1Impl = new TestService1(
             $this->log,
-            new PluginConfiguration(0, [], '')
+            new PluginConfiguration(1, [], ''),
+            new Factory(),
         );
         TestService1::$getAccountException = false;
         TestService1::$moved = null;
@@ -228,9 +231,9 @@ class PluginServiceTest extends TestCase
         /* @var TestService $implementation */
         $implementation = $this->pluginService->getPluginImplementation($service);
 
-        $this->assertSame([PluginConfigurationFile::TYPE_SERVICE], $service->getConfigurationFile()->types);
+        $this->assertSame([PluginConfigurationFile::TYPE_SERVICE], $service->getConfigurationFile()?->types);
 
-        $this->assertNotInstanceOf(GeneralPluginInterface::class, $implementation);
+        $this->assertNotInstanceOf(GeneralInterface::class, $implementation);
         $this->assertInstanceOf(ServiceInterface::class, $implementation);
 
         /* @phan-suppress-next-line PhanUndeclaredMethod */
@@ -362,14 +365,14 @@ class PluginServiceTest extends TestCase
         $this->assertNull($actual[1]->getServiceImplementation());
         $this->assertInstanceOf(ServiceInterface::class, $actual[2]->getServiceImplementation());
         $this->assertNull($actual[0]->getGeneralPluginImplementation());
-        $this->assertInstanceOf(GeneralPluginInterface::class, $actual[1]->getGeneralPluginImplementation());
-        $this->assertInstanceOf(GeneralPluginInterface::class, $actual[2]->getGeneralPluginImplementation());
+        $this->assertInstanceOf(GeneralInterface::class, $actual[1]->getGeneralPluginImplementation());
+        $this->assertInstanceOf(GeneralInterface::class, $actual[2]->getGeneralPluginImplementation());
 
-        $this->assertSame([PluginConfigurationFile::TYPE_SERVICE], $actual[0]->getConfigurationFile()->types);
-        $this->assertSame([PluginConfigurationFile::TYPE_GENERAL], $actual[1]->getConfigurationFile()->types);
+        $this->assertSame([PluginConfigurationFile::TYPE_SERVICE], $actual[0]->getConfigurationFile()?->types);
+        $this->assertSame([PluginConfigurationFile::TYPE_GENERAL], $actual[1]->getConfigurationFile()?->types);
         $this->assertSame(
             [PluginConfigurationFile::TYPE_GENERAL, PluginConfigurationFile::TYPE_SERVICE],
-            $actual[2]->getConfigurationFile()->types
+            $actual[2]->getConfigurationFile()?->types
         );
     }
 

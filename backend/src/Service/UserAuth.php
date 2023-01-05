@@ -161,16 +161,20 @@ class UserAuth implements RoleProviderInterface
         return $this->objectManager->flush();
     }
 
-    public function hasRequiredGroups(Plugin $service): bool
+    public function hasRequiredGroups(Plugin $service, bool $allowAnonymous = false): bool
     {
+        $requiredGroups = $service->getConfigurationDatabase() ?
+            $service->getConfigurationDatabase()->requiredGroups :
+            [];
+
+        if ($allowAnonymous && empty($requiredGroups)) {
+            return true;
+        }
+
         $character = $this->getUser();
         if ($character === null) {
             return false;
         }
-
-        $requiredGroups = $service->getConfigurationDatabase() ?
-            $service->getConfigurationDatabase()->requiredGroups :
-            [];
 
         if (
             !empty($requiredGroups) &&

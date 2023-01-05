@@ -32,29 +32,20 @@ parameters:
 			message: '#Method (.*) has no return type specified.#'
 			path: %currentWorkingDirectory%/tests/*
 		-
-			message: '#(.*)has an unused parameter \$pluginConfiguration#'
+			message: '#(.*)has an unused parameter \$*#'
 			path: %currentWorkingDirectory%/tests/*
 		-
-			message: '#Cannot call method (.*) on (.*)\|null.#'
-			path: %currentWorkingDirectory%/tests/*
-		-
-			message: '#has an unused parameter \$logger#'
+			message: '#Cannot call method (.*) on (.*)#'
 			path: %currentWorkingDirectory%/tests/*
 		-
 			message: '#Class Tests\\Client extends @final class GuzzleHttp\\Client.#'
 			path: %currentWorkingDirectory%/tests/Client.php
 		-
-			message: '#Method (.*) should return (.*) but returns (.*)\|null.#'
-			path: %currentWorkingDirectory%/tests/Functional/Controller/User/PlayerControllerTest.php
-		-
-			message: '#Cannot call method (.*) on null.#'
-			path: %currentWorkingDirectory%/tests/Unit/*
+			message: '#Method (.*) should return (.*) but returns (.*)#'
+			path: %currentWorkingDirectory%/tests/*
 		-
 			message: '#Call to an undefined method #'
 			path: %currentWorkingDirectory%/tests/Unit/Service/PluginServiceTest.php
 		-
-			message: '#should return array(.*)but returns array#'
-			path: %currentWorkingDirectory%/tests/Unit/Service/PluginService/plugin-acc1/src/TestService1.php
-		-
-			message: '#Method (.*) should return (.*) but returns (.*)#'
-			path: %currentWorkingDirectory%/tests/Unit/Service/OAuthTokenTest.php
+			message: '#Offset 0 does not exist on array{}#'
+			path: %currentWorkingDirectory%/tests/Unit/Entity/PlayerTest.php

@@ -41,6 +41,7 @@ use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Plugin\Factory;
 use Neucore\Service\Account;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\AutoGroupAssignment;
@@ -168,7 +169,7 @@ class Helper
         $accountGroup = new AccountGroup($repoFactory, $this->getObjectManager());
         $autoGroups = new AutoGroupAssignment($repoFactory, $accountGroup);
         $token = new OAuthToken($this->getAuthenticationProvider($client), $objectManager, $logger);
-        $pluginService = new PluginService($logger, $repoFactory, $accountGroup, $config, new Parser());
+        $pluginService = new PluginService($logger, $repoFactory, $accountGroup, $config, new Parser(), new Factory());
         return new Account($logger, $objectManager, $repoFactory, $esiData, $autoGroups, $token, $pluginService);
     }
 

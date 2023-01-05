@@ -6,8 +6,10 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\PluginController;
 
+use Neucore\Plugin\CoreAccount;
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
+use Neucore\Plugin\FactoryInterface;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\PluginConfiguration;
 use Neucore\Plugin\ServiceInterface;
@@ -19,20 +21,23 @@ class TestService1 implements ServiceInterface
 {
     public static array $data = [];
 
-    public function __construct(LoggerInterface $logger, PluginConfiguration $pluginConfiguration)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        PluginConfiguration $pluginConfiguration,
+        FactoryInterface $factory,
+    ) {
         self::$data = [];
+    }
+
+    public function onConfigurationChange(): void
+    {
     }
 
     public function request(
         string $name,
         ServerRequestInterface $request,
         ResponseInterface $response,
-        CoreCharacter $main,
-        array $characters,
-        array $memberGroups,
-        array $managerGroups,
-        array $roles,
+        ?CoreAccount $coreAccount,
     ): ResponseInterface {
         if (($request->getQueryParams()['error'] ?? '') === '1') {
             throw new Exception('Exception from service plugin.');
@@ -40,11 +45,11 @@ class TestService1 implements ServiceInterface
 
         self::$data = [
             'name' => $name,
-            'main' => $main,
-            'characters' => $characters,
-            'memberGroups' => $memberGroups,
-            'managerGroups' => $managerGroups,
-            'roles' => $roles,
+            'main' => $coreAccount?->main,
+            'characters' => $coreAccount?->characters,
+            'memberGroups' => $coreAccount?->memberGroups,
+            'managerGroups' => $coreAccount?->managerGroups,
+            'roles' => $coreAccount?->roles,
         ];
 
         $response->getBody()->write('Response from plugin.');
@@ -91,10 +96,6 @@ class TestService1 implements ServiceInterface
     public function getAllPlayerAccounts(): array
     {
         throw new Exception();
-    }
-
-    public function onConfigurationChange(): void
-    {
     }
 
     public function search(string $query): array

@@ -13,7 +13,8 @@ use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Neucore\Plugin\Exception;
-use Neucore\Plugin\GeneralPluginInterface;
+use Neucore\Plugin\Factory;
+use Neucore\Plugin\GeneralInterface;
 use Neucore\Plugin\PluginInterface;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\PluginConfiguration;
@@ -34,18 +35,22 @@ class PluginService
 
     private Parser $parser;
 
+    private Factory $pluginFactory;
+
     public function __construct(
         LoggerInterface $log,
         RepositoryFactory $repositoryFactory,
         AccountGroup $accountGroup,
         Config $config,
         Parser $parser,
+        Factory $pluginFactory
     ) {
         $this->log = $log;
         $this->accountGroup = $accountGroup;
         $this->repositoryFactory = $repositoryFactory;
         $this->config = $config;
         $this->parser = $parser;
+        $this->pluginFactory = $pluginFactory;
     }
 
     public function getConfigurationFromConfigFile(string $pluginDirectory): ?PluginConfigurationFile
@@ -112,7 +117,7 @@ class PluginService
             if ($implementation instanceof ServiceInterface) {
                 $plugin->setServiceImplementation($implementation);
             }
-            if ($implementation instanceof GeneralPluginInterface) {
+            if ($implementation instanceof GeneralInterface) {
                 $plugin->setGeneralPluginImplementation($implementation);
             }
             $result[] = $plugin;
@@ -143,14 +148,15 @@ class PluginService
 
         // PluginInterface::__construct
         // ServiceInterface::__construct
-        // GeneralPluginInterface::__construct
+        // GeneralInterface::__construct
         $obj = new $phpClass(
             $this->log,
             new PluginConfiguration(
                 $plugin->getId(),
                 array_map('intval', $pluginConfigDb->requiredGroups),
                 $pluginConfigDb->configurationData
-            )
+            ),
+            $this->pluginFactory,
         );
 
         return $obj instanceof PluginInterface ? $obj : null;
@@ -192,7 +198,7 @@ class PluginService
 
         $implements = class_implements($phpClass);
         if (is_array($implements)) {
-            if (in_array(GeneralPluginInterface::class, $implements)) {
+            if (in_array(GeneralInterface::class, $implements)) {
                 $pluginConfigYaml->types[] = PluginConfigurationFile::TYPE_GENERAL;
             }
             if (in_array(ServiceInterface::class, $implements)) {

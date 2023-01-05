@@ -35,14 +35,6 @@ class PluginControllerTest extends WebTestCase
         unset($_SESSION['character_id']);
     }
 
-    public function testRequest_403_NotLoggedIn()
-    {
-        $response = $this->runApp('GET', '/plugin/1/auth');
-        $this->assertStringStartsWith('Not logged in.', $response->getBody()->__toString());
-        $this->assertSame('Not logged in.<br><br><a href="/">Home</a>', $response->getBody()->__toString());
-        $this->assertSame(403, $response->getStatusCode());
-    }
-
     public function testRequest_404_NoPlugin()
     {
         $this->helper->addCharacterMain('User 100', 100);
@@ -98,33 +90,6 @@ class PluginControllerTest extends WebTestCase
         $this->assertSame(404, $response->getStatusCode());
     }
 
-    public function testRequest404_NoPlayer()
-    {
-        $character = $this->helper->addCharacterMain('User 100', 100);
-        $character->setMain(false);
-        $this->loginUser(100);
-        $configuration = new PluginConfigurationDatabase();
-        $configuration->directoryName = 'plugin1';
-        $plugin = (new Plugin())->setName('Plugin 1')->setConfigurationDatabase($configuration);
-        $this->om->persist($character);
-        $this->om->persist($plugin);
-        $this->om->flush();
-
-        $response = $this->runApp(
-            'GET',
-            '/plugin/'.$plugin->getId().'/auth',
-            null,
-            null,
-            [],
-            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginController']],
-        );
-        $this->assertStringStartsWith(
-            'Player or main character account not found.',
-            $response->getBody()->__toString()
-        );
-        $this->assertSame(404, $response->getStatusCode());
-    }
-
     public function testRequest_Success()
     {
         $character = $this->helper->addCharacterMain('User 100', 100, [Role::USER], ['Group 1', 'Group 2']);
@@ -175,6 +140,29 @@ class PluginControllerTest extends WebTestCase
         $this->assertSame(1, count(TestService1::$data['roles']));
         $this->assertInstanceOf(CoreRole::class, TestService1::$data['roles'][0]);
         $this->assertSame(Role::USER, TestService1::$data['roles'][0]->name);
+    }
+
+    public function testRequest_Success_NotLoggedIn()
+    {
+        $configuration = new PluginConfigurationDatabase();
+        $configuration->directoryName = 'plugin1';
+        $plugin = (new Plugin())->setName('Plugin 1')->setConfigurationDatabase($configuration);
+        $this->om->persist($plugin);
+        $this->om->flush();
+
+        $response = $this->runApp(
+            'GET',
+            '/plugin/'.$plugin->getId().'/test',
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginController']],
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringStartsWith('Response from plugin.', $response->getBody()->__toString());
+        $this->assertSame('test', TestService1::$data['name']);
+        $this->assertNull(TestService1::$data['main']);
     }
 
     public function testRequest302_Exception_ServicePlugin()

@@ -17,6 +17,7 @@ use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
+use Neucore\Plugin\CoreAccount;
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\CoreGroup;
 use Neucore\Plugin\CoreRole;
@@ -602,5 +603,40 @@ class PlayerTest extends TestCase
 
         $play->addIncomingCharacters($rc1);
         $this->assertSame([$rc1], $play->getIncomingCharacters());
+    }
+
+    public function testGetCoreAccount()
+    {
+        $player = new Player();
+        $this->assertNull($player->getCoreAccount());
+
+        $character = (new Character())->setId(100);
+        $player->addCharacter($character);
+        $character->setPlayer($player);
+        $this->assertNull($player->getCoreAccount());
+
+        $character->setMain(true);
+        $this->assertInstanceOf(CoreAccount::class, $player->getCoreAccount());
+        $this->assertInstanceOf(CoreCharacter::class, $player->getCoreAccount()->main);
+        $this->assertSame(100, $player->getCoreAccount()->main->id);
+        $this->assertSame(1, count($player->getCoreAccount()->characters));
+        $this->assertInstanceOf(CoreCharacter::class, $player->getCoreAccount()->characters[0]);
+        $this->assertSame(100, $player->getCoreAccount()->characters[0]->id);
+        $this->assertSame([], $player->getCoreAccount()->memberGroups);
+        $this->assertSame([], $player->getCoreAccount()->managerGroups);
+        $this->assertSame([], $player->getCoreAccount()->roles);
+
+        $player->addGroup((new Group())->setName('one'));
+        $player->addManagerGroup((new Group())->setName('two'));
+        $player->addRole(new Role(1));
+        $this->assertSame(1, count($player->getCoreAccount()->memberGroups));
+        $this->assertSame(1, count($player->getCoreAccount()->managerGroups));
+        $this->assertSame(1, count($player->getCoreAccount()->roles));
+        $this->assertInstanceOf(CoreGroup::class, $player->getCoreAccount()->memberGroups[0]);
+        $this->assertInstanceOf(CoreGroup::class, $player->getCoreAccount()->managerGroups[0]);
+        $this->assertInstanceOf(CoreRole::class, $player->getCoreAccount()->roles[0]);
+        $this->assertSame('one', $player->getCoreAccount()->memberGroups[0]->name);
+        $this->assertSame('two', $player->getCoreAccount()->managerGroups[0]->name);
+        $this->assertSame(1, $player->getCoreAccount()->roles[0]->identifier);
     }
 }
