@@ -42,13 +42,13 @@ class MemberTrackingTest extends TestCase
         $this->helper = new Helper();
         $this->helper->emptyDb();
         $this->om = $this->helper->getObjectManager();
-        $logger = new Logger('test');
+        $logger = new Logger();
         $this->client = new Client();
         $objectManager = new ObjectManager($this->om, $logger);
         $this->repositoryFactory = new RepositoryFactory($this->om);
         $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
         $esiApiFactory = new EsiApiFactory($this->client, $config);
-        $authProvider = $this->helper->getAuthenticationProvider($this->client);
+        $authProvider = Helper::getAuthenticationProvider($this->client);
         $this->memberTracking = new MemberTracking(
             $logger,
             $esiApiFactory,

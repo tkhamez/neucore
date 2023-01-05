@@ -31,7 +31,7 @@ class EsiHeadersTest extends TestCase
         $this->helper->emptyDb();
         $om = $this->helper->getObjectManager();
 
-        $this->logger = new Logger('test');
+        $this->logger = new Logger();
 
         $this->storage = new SystemVariableStorage(new RepositoryFactory($om), new ObjectManager($om, $this->logger));
         #apcu_clear_cache();

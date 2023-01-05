@@ -6,12 +6,18 @@ namespace Neucore\Plugin;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
+use Neucore\Plugin\Core\EsiClientInterface;
+use Neucore\Plugin\Core\FactoryInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Symfony\Component\Yaml\Parser;
 
 class Factory implements FactoryInterface
 {
+    public function __construct(private EsiClient $esiClient)
+    {
+    }
+
     public function createHttpClient(string $userAgent = ''): ClientInterface
     {
         $headers = [];
@@ -39,5 +45,10 @@ class Factory implements FactoryInterface
     public function createSymfonyYamlParser(): Parser
     {
         return new Parser();
+    }
+
+    public function getEsiClient(): EsiClientInterface
+    {
+        return $this->esiClient;
     }
 }

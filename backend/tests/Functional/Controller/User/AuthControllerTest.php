@@ -48,7 +48,7 @@ class AuthControllerTest extends WebTestCase
         $this->client = new Client();
         $this->helper = new Helper();
         $this->helper->emptyDb();
-        $this->log = new Logger('Test');
+        $this->log = new Logger();
     }
 
     public function tearDown(): void

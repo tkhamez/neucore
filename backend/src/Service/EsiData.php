@@ -40,9 +40,9 @@ class EsiData
 
     private \Neucore\Service\Character $characterService;
 
-    private ?int $lastErrorCode = null;
+    private Config $config;
 
-    private string $datasource;
+    private ?int $lastErrorCode = null;
 
     /**
      * @var int[]
@@ -60,15 +60,14 @@ class EsiData
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         CharacterService $characterService,
-        Config $config
+        Config $config,
     ) {
         $this->log = $log;
         $this->esiApiFactory = $esiApiFactory;
         $this->objectManager = $objectManager;
         $this->repositoryFactory = $repositoryFactory;
         $this->characterService = $characterService;
-
-        $this->datasource = $config['eve']['datasource'];
+        $this->config = $config;
     }
 
     public function getLastErrorCode(): ?int
@@ -144,7 +143,8 @@ class EsiData
         try {
             // ESI cache = 24 hours.
             // But maybe faster than /characters/affiliation/ if character was deleted.
-            $eveChar = $this->esiApiFactory->getCharacterApi()->getCharactersCharacterId($id, $this->datasource);
+            $eveChar = $this->esiApiFactory->getCharacterApi()
+                ->getCharactersCharacterId($id, $this->config['eve']['datasource']);
         } catch (ApiException $e) {
             // Do not log and continue if character was deleted/biomassed
             $body = $e->getResponseBody();
@@ -220,7 +220,7 @@ class EsiData
             $checkIds = array_splice($ids, 0, 1000);
             try {
                 $result = $this->esiApiFactory->getCharacterApi()
-                    ->postCharactersAffiliation($checkIds, $this->datasource);
+                    ->postCharactersAffiliation($checkIds, $this->config['eve']['datasource']);
                 if (is_array($result)) { // should always be the case here
                     $affiliations = array_merge($affiliations, $result);
                 }
@@ -254,7 +254,8 @@ class EsiData
         // get data from ESI
         $this->lastErrorCode = null;
         try {
-            $eveCorp = $this->esiApiFactory->getCorporationApi()->getCorporationsCorporationId($id, $this->datasource);
+            $eveCorp = $this->esiApiFactory->getCorporationApi()
+                ->getCorporationsCorporationId($id, $this->config['eve']['datasource']);
         } catch (\Exception $e) {
             $this->lastErrorCode = $e->getCode();
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
@@ -316,7 +317,8 @@ class EsiData
         // get data from ESI
         $this->lastErrorCode = null;
         try {
-            $eveAlli = $this->esiApiFactory->getAllianceApi()->getAlliancesAllianceId($id, $this->datasource);
+            $eveAlli = $this->esiApiFactory->getAllianceApi()
+                ->getAlliancesAllianceId($id, $this->config['eve']['datasource']);
         } catch (\Exception $e) {
             $this->lastErrorCode = $e->getCode();
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
@@ -363,7 +365,8 @@ class EsiData
             $checkIds = array_splice($ids, 0, 1000);
             try {
                 // it's possible that postUniverseNames() returns null
-                $result = $this->esiApiFactory->getUniverseApi()->postUniverseNames($checkIds, $this->datasource);
+                $result = $this->esiApiFactory->getUniverseApi()
+                    ->postUniverseNames($checkIds, $this->config['eve']['datasource']);
                 if (is_array($result)) {
                     $names = array_merge($names, $result);
                 }
@@ -464,7 +467,7 @@ class EsiData
         $authError = false;
         try {
             $result = $this->esiApiFactory->getUniverseApi($accessToken)
-                ->getUniverseStructuresStructureId($id, $this->datasource);
+                ->getUniverseStructuresStructureId($id, $this->config['eve']['datasource']);
         } catch (\Exception $e) {
             if ((int)$e->getCode() === 403) {
                 $this->log->info("EsiData::fetchStructure: ". $e->getCode() . " Unauthorized/Forbidden: $id");
@@ -510,7 +513,7 @@ class EsiData
 
         try {
             $members = $this->esiApiFactory->getCorporationApi($accessToken)
-                ->getCorporationsCorporationIdMembers($id, $this->datasource);
+                ->getCorporationsCorporationIdMembers($id, $this->config['eve']['datasource']);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             $members = [];
@@ -532,7 +535,7 @@ class EsiData
 
         $characterApi = $this->esiApiFactory->getCharacterApi($accessToken);
         try {
-            $charRoles = $characterApi->getCharactersCharacterIdRoles($characterId, $this->datasource);
+            $charRoles = $characterApi->getCharactersCharacterIdRoles($characterId, $this->config['eve']['datasource']);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return false;

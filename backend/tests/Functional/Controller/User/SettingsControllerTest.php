@@ -213,7 +213,7 @@ class SettingsControllerTest extends WebTestCase
 
         $this->em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
 
-        $log = new Logger('Test');
+        $log = new Logger();
         $log->pushHandler(new TestHandler());
 
         $response = $this->runApp(

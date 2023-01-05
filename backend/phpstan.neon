@@ -44,6 +44,9 @@ parameters:
 			message: '#Method (.*) should return (.*) but returns (.*)#'
 			path: %currentWorkingDirectory%/tests/*
 		-
+			message: '#expects Doctrine\\Persistence\\ObjectManager#'
+			path: %currentWorkingDirectory%/tests/Helper.php
+		-
 			message: '#Call to an undefined method #'
 			path: %currentWorkingDirectory%/tests/Unit/Service/PluginServiceTest.php
 		-

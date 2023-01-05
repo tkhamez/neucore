@@ -54,7 +54,7 @@ class EveMailTest extends TestCase
         $this->eveMail = new EveMail(
             $this->repoFactory,
             $objManager,
-            $helper->getAuthenticationProvider($this->client),
+            Helper::getAuthenticationProvider($this->client),
             $logger,
             $esiFactory,
             $config

@@ -8,9 +8,9 @@ use Monolog\Handler\TestHandler;
 
 class Logger extends \Neucore\Log\Logger
 {
-    public function __construct(string $name, $handlers = array(), $processors = array())
+    public function __construct($handlers = array(), $processors = array())
     {
-        parent::__construct($name, $handlers, $processors);
+        parent::__construct('Test', $handlers, $processors);
 
         $this->pushHandler(new TestHandler());
     }

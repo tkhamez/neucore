@@ -58,7 +58,7 @@ class EsiDataTest extends TestCase
         $this->testHelper = new Helper();
         $this->em = $this->testHelper->getEm();
 
-        $this->log = new Logger('Test');
+        $this->log = new Logger();
         $this->log->pushHandler(new TestHandler());
 
         $this->config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);

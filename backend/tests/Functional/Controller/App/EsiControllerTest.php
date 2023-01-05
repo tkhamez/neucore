@@ -37,7 +37,7 @@ class EsiControllerTest extends WebTestCase
         $this->helper = new Helper();
         $this->helper->emptyDb();
         $om = $this->helper->getObjectManager();
-        $this->logger = new Logger('test');
+        $this->logger = new Logger();
 
         $this->storage = new SystemVariableStorage(new RepositoryFactory($om), new ObjectManager($om, $this->logger));
         #apcu_clear_cache();
@@ -532,7 +532,7 @@ class EsiControllerTest extends WebTestCase
         );
         $this->assertSame(
             'App\EsiController: (application ' . $appId . ' "A1") ' .
-            'https://esi.evetech.net/latest/universe/structures/1/?page=1&datasource=tranquility: '  .
+            '/latest/universe/structures/1/?page=1: '  .
             '{"error": "not a potential structure_id (id < 100000000)"}',
             $this->logger->getHandler()->getRecords()[0]['message']
         );
@@ -591,7 +591,7 @@ class EsiControllerTest extends WebTestCase
         // create client with middleware
         $httpClient = new Client();
         $httpClient->setMiddleware(
-            new EsiHeaders(new Logger('test'), $this->storage)
+            new EsiHeaders(new Logger(), $this->storage)
         );
         $httpClient->setResponse(new Response(
             200,

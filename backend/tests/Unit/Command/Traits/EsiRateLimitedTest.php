@@ -27,7 +27,7 @@ class EsiRateLimitedTest extends TestCase
         $helper->emptyDb();
         $om = $helper->getObjectManager();
 
-        $this->testLogger = new Logger('Test');
+        $this->testLogger = new Logger();
         $this->testStorage = new SystemVariableStorage(
             new RepositoryFactory($om),
             new ObjectManager($om, $this->testLogger)

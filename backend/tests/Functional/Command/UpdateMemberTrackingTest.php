@@ -75,7 +75,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('update-member-tracking', ['--sleep' => 0], [
             ClientInterface::class => $this->client,
-            LoggerInterface::class => new Logger('test') // ignore the log entry
+            LoggerInterface::class => new Logger() // ignore the log entry
         ]);
 
         $actual = explode("\n", $output);

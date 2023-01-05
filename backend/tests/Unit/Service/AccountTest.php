@@ -120,7 +120,7 @@ class AccountTest extends TestCase
             ]);
         $this->om = $this->helper->getObjectManager();
 
-        $this->log = new Logger('Test');
+        $this->log = new Logger();
         $this->log->pushHandler(new TestHandler());
 
         $this->client = new Client();

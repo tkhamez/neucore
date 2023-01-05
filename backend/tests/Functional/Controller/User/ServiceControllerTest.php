@@ -17,8 +17,8 @@ use Neucore\Entity\Role;
 use Neucore\Entity\Plugin;
 use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\SystemVariable;
-use Neucore\Plugin\CoreGroup;
-use Neucore\Plugin\ServiceAccountData;
+use Neucore\Plugin\Data\CoreGroup;
+use Neucore\Plugin\Data\ServiceAccountData;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\Controller\User\ServiceController\TestService1;
 use Tests\Functional\WebTestCase;
@@ -52,7 +52,7 @@ class ServiceControllerTest extends WebTestCase
         $this->helper = new Helper();
         $this->helper->emptyDb();
         $this->em = $this->helper->getEm();
-        $this->log = new Logger('Test');
+        $this->log = new Logger();
     }
 
     protected function tearDown(): void

@@ -9,10 +9,8 @@ namespace Neucore\Controller\User;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\EveLogin;
 use Neucore\Exception\RuntimeException;
-use Neucore\Factory\HttpClientFactoryInterface;
-use Neucore\Service\Config;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Service\OAuthToken;
+use Neucore\Service\EsiClient;
 use Neucore\Service\ObjectManager;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -28,25 +26,17 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class EsiController extends BaseController
 {
-    private OAuthToken $tokenService;
-
-    private HttpClientFactoryInterface $httpClientFactory;
-
-    private Config $config;
+    private EsiClient $esiClient;
 
     public function __construct(
         ResponseInterface $response,
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
-        OAuthToken $tokenService,
-        HttpClientFactoryInterface $httpFactory,
-        Config $config
+        EsiClient $esiClient,
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
 
-        $this->tokenService = $tokenService;
-        $this->httpClientFactory = $httpFactory;
-        $this->config = $config;
+        $this->esiClient = $esiClient;
     }
 
     /**
@@ -123,7 +113,6 @@ class EsiController extends BaseController
         }
 
         // replace placeholders
-        $baseUri = $this->config['eve']['esi_host'];
         $corp = $character->getCorporation();
         $path = str_replace(
             ['{character_id}', '{corporation_id}', '{alliance_id}'],
@@ -134,27 +123,20 @@ class EsiController extends BaseController
             ],
             $route
         );
-        $path .= (strpos($path, '?') ? '&' : '?') . 'datasource=' . $this->config['eve']['datasource'];
 
-        if ($debug) {
-            $httpClient = $this->httpClientFactory->get(null);
-        } else {
-            $httpClient = $this->httpClientFactory->get($eveLoginName);
-        }
-
-        // make request
-        $token = $this->tokenService->getToken($character, $eveLoginName);
-        if ($token === '') {
-            return $this->withJson('Character has no valid token.', 400);
-        }
-        $request = $this->httpClientFactory->createRequest(
-            $method,
-            $baseUri . $path,
-            ['Authorization' => 'Bearer ' . $token],
-            $body
-        );
+        // Send request and handle errors.
         try {
-            $response = $httpClient->sendRequest($request);
+            $response = $this->esiClient->request($path, $method, $body, (int)$charId, $eveLoginName, $debug);
+        } catch (RuntimeException $e) {
+            if ($e->getCode() === 568420) {
+                // should not happen because that was already checked above
+                return $this->withJson('Character not found.', 400);
+            } elseif ($e->getCode() === 568421) {
+                return $this->withJson('Character has no valid token.', 400);
+            } else {
+                // should not happen
+                return $this->withJson('Unknown error.', 400);
+            }
         } catch (ClientExceptionInterface $e) {
             return $this->prepareResponse($e->getMessage(), $debug, null, 500);
         }

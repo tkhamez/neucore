@@ -90,7 +90,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
             throw new RuntimeException("'error_label': 'ContactCostNotApproved'", 520);
         });
         $client->setResponse(new Response());
-        $log = new Logger('Test');
+        $log = new Logger();
 
         $output = $this->runConsoleApp('send-missing-character-mail', ['--sleep' => 0], [
             ClientInterface::class => $client,

@@ -27,7 +27,7 @@ class CharacterTest extends TestCase
     protected function setUp(): void
     {
         $this->helper = new Helper();
-        $logger = new Logger('test');
+        $logger = new Logger();
         $om = $this->helper->getObjectManager();
         $this->om = new ObjectManager($om, $logger);
         $repositoryFactory = RepositoryFactory::getInstance($om);

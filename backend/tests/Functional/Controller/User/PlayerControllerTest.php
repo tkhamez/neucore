@@ -22,7 +22,7 @@ use Neucore\Entity\Plugin;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Plugin\ServiceAccountData;
+use Neucore\Plugin\Data\ServiceAccountData;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationRepository;
 use Neucore\Repository\GroupApplicationRepository;
@@ -103,7 +103,7 @@ class PlayerControllerTest extends WebTestCase
         $this->groupAppRepo = $rf->getGroupApplicationRepository();
         $this->groupRepo = $rf->getGroupRepository();
 
-        $this->log = new Logger('test');
+        $this->log = new Logger();
     }
 
     public function tearDown(): void

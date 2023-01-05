@@ -91,7 +91,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
             throw new RuntimeException("'error_label': 'ContactCostNotApproved'", 520);
         });
         $client->setResponse(new Response());
-        $log = new Logger('Test');
+        $log = new Logger();
 
         $output = $this->runConsoleApp('send-invalid-token-mail', ['--sleep' => 0], [
             ClientInterface::class => $client,

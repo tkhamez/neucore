@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Api;
-use Neucore\Plugin\CoreCharacter;
+use Neucore\Plugin\Data\CoreCharacter;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 

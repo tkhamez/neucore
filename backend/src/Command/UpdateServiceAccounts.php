@@ -7,7 +7,7 @@ namespace Neucore\Command;
 use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Plugin\CoreCharacter;
+use Neucore\Plugin\Data\CoreCharacter;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceInterface;
 use Neucore\Repository\CharacterRepository;

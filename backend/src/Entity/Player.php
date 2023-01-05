@@ -8,10 +8,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
-use Neucore\Plugin\CoreAccount;
-use Neucore\Plugin\CoreCharacter;
-use Neucore\Plugin\CoreGroup;
-use Neucore\Plugin\CoreRole;
+use Neucore\Plugin\Data\CoreAccount;
+use Neucore\Plugin\Data\CoreCharacter;
+use Neucore\Plugin\Data\CoreGroup;
+use Neucore\Plugin\Data\CoreRole;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 

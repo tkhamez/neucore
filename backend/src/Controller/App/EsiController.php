@@ -8,11 +8,11 @@ use Neucore\Application;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\App;
 use Neucore\Entity\EveLogin;
+use Neucore\Exception\RuntimeException;
 use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AppAuth;
-use Neucore\Service\Config;
-use Neucore\Service\OAuthToken;
+use Neucore\Service\EsiClient;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\StorageInterface;
 use Neucore\Storage\Variables;
@@ -66,13 +66,11 @@ class EsiController extends BaseController
 
     private LoggerInterface $log;
 
-    private OAuthToken $tokenService;
-
-    private Config $config;
-
     private HttpClientFactoryInterface $httpClientFactory;
 
     private AppAuth $appAuth;
+
+    private EsiClient $esiClient;
 
     private ?App $app = null;
 
@@ -86,19 +84,17 @@ class EsiController extends BaseController
         RepositoryFactory $repositoryFactory,
         StorageInterface $storage,
         LoggerInterface $log,
-        OAuthToken $tokenService,
-        Config $config,
         HttpClientFactoryInterface $httpClientFactory,
-        AppAuth $appAuth
+        AppAuth $appAuth,
+        EsiClient $esiClient,
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
 
         $this->storage = $storage;
         $this->log = $log;
-        $this->tokenService = $tokenService;
-        $this->config = $config;
         $this->httpClientFactory = $httpClientFactory;
         $this->appAuth = $appAuth;
+        $this->esiClient = $esiClient;
     }
 
     /**
@@ -615,28 +611,41 @@ class EsiController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        // get character
-        $character = $this->repositoryFactory->getCharacterRepository()->find($characterId);
-        if ($character === null) {
-            $errorMessage = 'Character not found.';
-            if ($version === 1) {
-                return $this->response->withStatus(400, $errorMessage);
-            }
-            return $this->withJson($errorMessage, 400);
-        }
-
-        // Get the token - This executes an ESI request to refresh the token as needed.
-        $token = $this->tokenService->getToken($character, $eveLoginName);
-        if ($token === '') {
-            $errorMessage = 'Character has no valid token.';
-            if ($version === 1) {
-                return $this->response->withStatus(400, $errorMessage);
-            }
-            return $this->withJson($errorMessage, 400);
-        }
-
         $body = $method === 'POST' ? $request->getBody()->__toString() : null;
-        $esiResponse = $this->sendRequest($esiPath, $token, $eveLoginName, $method, $body);
+
+        // Send request and handle errors.
+        try {
+            $esiResponse = $this->esiClient->request($esiPath, $method, $body, (int)$characterId, $eveLoginName);
+        } catch (RuntimeException $e) {
+            if ($e->getCode() === 568420) {
+                $errorMessage = 'Character not found.';
+                if ($version === 1) {
+                    return $this->response->withStatus(400, $errorMessage);
+                }
+                return $this->withJson($errorMessage, 400);
+            } elseif ($e->getCode() === 568421) {
+                $errorMessage = 'Character has no valid token.';
+                if ($version === 1) {
+                    return $this->response->withStatus(400, $errorMessage);
+                }
+                return $this->withJson($errorMessage, 400);
+            } else {
+                // should not happen
+                return $this->withJson('Unknown error.', 400);
+            }
+        } catch (ClientExceptionInterface $e) {
+            $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . '): ' . $e->getMessage());
+            $esiResponse = $this->httpClientFactory->createResponse(
+                500, // status
+                [], // header
+                $e->getMessage() // body
+            );
+        }
+
+        if ($esiResponse->getStatusCode() < 200 || $esiResponse->getStatusCode() > 299) {
+            $message = $esiResponse->getBody()->getContents();
+            $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . ') ' . "$esiPath: $message");
+        }
 
         return $this->buildResponse($esiResponse);
     }
@@ -743,43 +752,6 @@ class EsiController extends BaseController
         }
 
         return false;
-    }
-
-    private function sendRequest(
-        string $esiPath,
-        string $token,
-        string $cacheKey,
-        string $method,
-        string $body = null
-    ): ResponseInterface {
-        $eveConfig = $this->config['eve'];
-        $url = $eveConfig['esi_host'] . $esiPath.
-            (strpos($esiPath, '?') ? '&' : '?') .
-            self::PARAM_DATASOURCE . '=' . $eveConfig['datasource'];
-
-        $request = $this->httpClientFactory->createRequest(
-            $method,
-            $url,
-            ['Authorization' => 'Bearer ' . $token],
-            $body
-        );
-        try {
-            $esiResponse = $this->httpClientFactory->get($cacheKey)->sendRequest($request);
-        } catch (ClientExceptionInterface $e) {
-            $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . '): ' . $e->getMessage());
-            $esiResponse =  $this->httpClientFactory->createResponse(
-                500, // status
-                [], // header
-                $e->getMessage() // body
-            );
-        }
-
-        if ($esiResponse->getStatusCode() < 200 || $esiResponse->getStatusCode() > 299) {
-            $message = $esiResponse->getBody()->getContents();
-            $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . ') ' . "$url: $message");
-        }
-
-        return $esiResponse;
     }
 
     private function buildResponse(ResponseInterface $esiResponse): ResponseInterface

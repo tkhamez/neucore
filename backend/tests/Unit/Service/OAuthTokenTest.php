@@ -56,10 +56,10 @@ class OAuthTokenTest extends TestCase
 
         $this->em = $this->helper->getEm();
 
-        $this->log = new Logger('Test');
+        $this->log = new Logger();
         $this->client = new Client();
         $this->es = new OAuthToken(
-            $this->helper->getAuthenticationProvider($this->client),
+            Helper::getAuthenticationProvider($this->client),
             new ObjectManager($this->em, $this->log),
             $this->log
         );

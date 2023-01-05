@@ -8,7 +8,7 @@ use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Plugin\CoreGroup;
+use Neucore\Plugin\Data\CoreGroup;
 
 class AccountGroup
 {

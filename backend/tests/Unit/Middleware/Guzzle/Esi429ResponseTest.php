@@ -29,7 +29,7 @@ class Esi429ResponseTest extends TestCase
         $this->helper->emptyDb();
         $om = $this->helper->getObjectManager();
 
-        $logger = new Logger('test');
+        $logger = new Logger();
 
         $this->storage = new SystemVariableStorage(new RepositoryFactory($om), new ObjectManager($om, $logger));
         #apcu_clear_cache();

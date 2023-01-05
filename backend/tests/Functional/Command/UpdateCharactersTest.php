@@ -32,7 +32,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->helper->emptyDb();
         $this->om = $this->helper->getObjectManager();
 
-        $this->log = new Logger('Test');
+        $this->log = new Logger();
         $this->client = new Client();
     }
 

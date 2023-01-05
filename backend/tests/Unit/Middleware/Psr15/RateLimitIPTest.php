@@ -45,7 +45,7 @@ class RateLimitIPTest extends TestCase
         $storage = new ApcuStorage();
         $storage->set(self::$key, (string)\json_encode((object)['remaining' => 0, 'created' => time() - 5]));
 
-        $logger = new Logger('Test');
+        $logger = new Logger();
         $request = RequestFactory::createRequest();
 
         $config1 = new Config(['rate_limit' => ['max' => 0, 'time' => 0]]);
@@ -69,7 +69,7 @@ class RateLimitIPTest extends TestCase
         $storage = new ApcuStorage();
         $storage->set(self::$key, (string)\json_encode((object)['remaining' => 0, 'created' => time() - 5]));
 
-        $logger = new Logger('Test');
+        $logger = new Logger();
         $request = RequestFactory::createRequest();
 
         $config = new Config(['rate_limit' => ['max' => 50, 'time' => 10]]);

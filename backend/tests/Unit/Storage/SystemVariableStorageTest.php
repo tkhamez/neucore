@@ -25,7 +25,7 @@ class SystemVariableStorageTest extends TestCase
         $helper->emptyDb();
         $om = $helper->getObjectManager();
         $this->repoFactory = new RepositoryFactory($om);
-        $this->storage = new SystemVariableStorage($this->repoFactory, new ObjectManager($om, new Logger('Test')));
+        $this->storage = new SystemVariableStorage($this->repoFactory, new ObjectManager($om, new Logger()));
     }
 
     public function testSetException1()

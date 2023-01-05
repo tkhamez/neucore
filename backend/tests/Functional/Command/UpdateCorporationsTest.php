@@ -29,7 +29,7 @@ class UpdateCorporationsTest extends ConsoleTestCase
         $helper->emptyDb();
         $this->om = $helper->getObjectManager();
 
-        $this->log = new Logger('Test');
+        $this->log = new Logger();
         $this->client = new Client();
     }
 

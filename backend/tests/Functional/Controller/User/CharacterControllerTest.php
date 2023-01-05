@@ -44,7 +44,7 @@ class CharacterControllerTest extends WebTestCase
         $_SESSION = null;
         $this->helper = new Helper();
         $this->client = new Client();
-        $this->log = new Logger('Test');
+        $this->log = new Logger();
         $this->repoFactory = (new RepositoryFactory($this->helper->getObjectManager()));
     }
 

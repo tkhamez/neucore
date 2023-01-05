@@ -29,7 +29,7 @@ class PluginAdminControllerTest extends WebTestCase
     {
         $this->helper = new Helper();
         $this->repository = RepositoryFactory::getInstance($this->helper->getObjectManager())->getPluginRepository();
-        $this->log = new Logger('test');
+        $this->log = new Logger();
 
         $_SESSION = null;
         $this->setupDb();

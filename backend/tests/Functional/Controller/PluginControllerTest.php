@@ -8,9 +8,9 @@ use Doctrine\Persistence\ObjectManager;
 use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\Plugin;
 use Neucore\Entity\Role;
-use Neucore\Plugin\CoreCharacter;
-use Neucore\Plugin\CoreGroup;
-use Neucore\Plugin\CoreRole;
+use Neucore\Plugin\Data\CoreCharacter;
+use Neucore\Plugin\Data\CoreGroup;
+use Neucore\Plugin\Data\CoreRole;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\Controller\PluginController\TestService1;
 use Tests\Functional\WebTestCase;
@@ -201,7 +201,7 @@ class PluginControllerTest extends WebTestCase
         $this->om->persist($plugin);
         $this->om->flush();
 
-        $logger = new Logger('Test');
+        $logger = new Logger();
         $response = $this->runApp(
             'GET',
             '/plugin/'.$plugin->getId().'/auth?error=1',
@@ -230,7 +230,7 @@ class PluginControllerTest extends WebTestCase
         $this->om->persist($plugin);
         $this->om->flush();
 
-        $logger = new Logger('Test');
+        $logger = new Logger();
         $response = $this->runApp(
             'GET',
             '/plugin/'.$plugin->getId().'/test',

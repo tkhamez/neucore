@@ -8,7 +8,7 @@ use Neucore\Controller\BaseController;
 use Neucore\Entity\Group;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
-use Neucore\Plugin\NavigationItem;
+use Neucore\Plugin\Data\NavigationItem;
 use Neucore\Service\Config;
 use Neucore\Service\EveMail;
 use Neucore\Service\PluginService;

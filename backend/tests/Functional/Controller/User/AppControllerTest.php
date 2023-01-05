@@ -126,7 +126,7 @@ class AppControllerTest extends WebTestCase
         $this->setupDb([]); // do not add any roles to DB
         $this->loginUser(8);
 
-        $log = new Logger('test');
+        $log = new Logger();
 
         $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new\n app"], [
             'Content-Type' => 'application/x-www-form-urlencoded'
@@ -561,7 +561,7 @@ class AppControllerTest extends WebTestCase
 
         $this->em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
 
-        $log = new Logger('Test');
+        $log = new Logger();
         $log->pushHandler(new TestHandler());
 
         $res = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-group/'.$this->gid, null, null, [

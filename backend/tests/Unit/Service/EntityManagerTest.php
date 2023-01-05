@@ -31,7 +31,7 @@ class EntityManagerTest extends TestCase
 
     public function testFlush()
     {
-        $em = new EntityManager(self::$em, new Logger('Test'));
+        $em = new EntityManager(self::$em, new Logger());
 
         $this->assertTrue($em->flush());
     }
@@ -40,7 +40,7 @@ class EntityManagerTest extends TestCase
     {
         self::$em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
 
-        $log = new Logger('Test');
+        $log = new Logger();
 
         $om = new EntityManager(self::$em, $log);
 

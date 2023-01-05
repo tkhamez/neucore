@@ -17,10 +17,10 @@ use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
-use Neucore\Plugin\CoreAccount;
-use Neucore\Plugin\CoreCharacter;
-use Neucore\Plugin\CoreGroup;
-use Neucore\Plugin\CoreRole;
+use Neucore\Plugin\Data\CoreAccount;
+use Neucore\Plugin\Data\CoreCharacter;
+use Neucore\Plugin\Data\CoreGroup;
+use Neucore\Plugin\Data\CoreRole;
 use PHPUnit\Framework\TestCase;
 
 class PlayerTest extends TestCase

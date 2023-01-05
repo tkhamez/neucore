@@ -95,7 +95,7 @@ class MakeAdminTest extends ConsoleTestCase
     {
         self::$em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
 
-        $log = new Logger('Test');
+        $log = new Logger();
 
         $output = $this->runConsoleApp('make-admin', ['id' => self::$playerId], [
             ObjectManager::class => self::$em,

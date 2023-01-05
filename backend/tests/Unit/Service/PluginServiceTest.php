@@ -19,10 +19,9 @@ use Neucore\Entity\Player;
 use Neucore\Entity\Plugin;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
-use Neucore\Plugin\Factory;
 use Neucore\Plugin\GeneralInterface;
-use Neucore\Plugin\ServiceAccountData;
-use Neucore\Plugin\PluginConfiguration;
+use Neucore\Plugin\Data\ServiceAccountData;
+use Neucore\Plugin\Data\PluginConfiguration;
 use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\Config;
@@ -60,7 +59,7 @@ class PluginServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->log = new Logger('Test');
+        $this->log = new Logger();
         $this->helper = new Helper();
         $this->om = $this->helper->getObjectManager();
         $repoFactory = RepositoryFactory::getInstance($this->om);
@@ -72,12 +71,12 @@ class PluginServiceTest extends TestCase
             $accountGroup,
             $config,
             new Parser(),
-            new Factory()
+            Helper::getPluginFactory(),
         );
         $this->testService1Impl = new TestService1(
             $this->log,
             new PluginConfiguration(1, [], ''),
-            new Factory(),
+            Helper::getPluginFactory(),
         );
         TestService1::$getAccountException = false;
         TestService1::$moved = null;

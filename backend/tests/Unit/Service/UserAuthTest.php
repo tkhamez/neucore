@@ -70,7 +70,7 @@ class UserAuthTest extends TestCase
         $this->helper->resetSessionData();
         $_SESSION = []; // "start" session for SessionData object and reset data
 
-        $this->log = new Logger('test');
+        $this->log = new Logger();
         $this->om = $this->helper->getObjectManager();
         $repoFactory = new RepositoryFactory($this->om);
         $this->client = new Client();

@@ -46,6 +46,7 @@ use Neucore\Service\Account;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\AutoGroupAssignment;
 use Neucore\Service\Config;
+use Neucore\Service\EsiClient;
 use Neucore\Service\EsiData;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\PluginService;
@@ -119,6 +120,50 @@ class Helper
         return [$token, $keySet];
     }
 
+    public static function getAuthenticationProvider(Client $client): AuthenticationProvider {
+        $authProvider = new AuthenticationProvider([
+            'clientId' => '123',
+            'clientSecret' => 'abc',
+            'redirectUri' => 'http',
+            'urlAuthorize' => 'http',
+            'urlAccessToken' => 'http',
+            'urlResourceOwnerDetails' => '',
+            'urlKeySet' => '',
+            'urlRevoke' => 'http',
+        ]);
+        $authProvider->getProvider()->setHttpClient($client);
+        return $authProvider;
+    }
+
+    public static function getPluginFactory(Client $client = null, Logger $logger = null): Factory
+    {
+        if (!$client) {
+            $client = new Client();
+        }
+        if (!$logger) {
+            $logger = new Logger();
+        }
+        return new Factory(
+            new \Neucore\Plugin\EsiClient(
+                self::getEsiClient($client, $logger),
+                new HttpClientFactory($client)
+            )
+        );
+    }
+
+    public static function getEsiClient(Client $client, Logger $logger): EsiClient
+    {
+        /* @phan-suppress-next-line PhanTypeMismatchArgumentNullable */
+        $objectManager = new \Neucore\Service\ObjectManager(self::$em, $logger);
+        return new EsiClient(
+            /* @phan-suppress-next-line PhanTypeMismatchArgumentNullable */
+            RepositoryFactory::getInstance(self::$em),
+            self::getConfig(),
+            new OAuthToken(self::getAuthenticationProvider($client), $objectManager, $logger),
+            new HttpClientFactory($client)
+        );
+    }
+
     public function resetSessionData(): void
     {
         unset($_SESSION);
@@ -143,21 +188,6 @@ class Helper
         return self::$em;
     }
 
-    public function getAuthenticationProvider(Client $client): AuthenticationProvider {
-        $authProvider = new AuthenticationProvider([
-            'clientId' => '123',
-            'clientSecret' => 'abc',
-            'redirectUri' => 'http',
-            'urlAuthorize' => 'http',
-            'urlAccessToken' => 'http',
-            'urlResourceOwnerDetails' => '',
-            'urlKeySet' => '',
-            'urlRevoke' => 'http',
-        ]);
-        $authProvider->getProvider()->setHttpClient($client);
-        return $authProvider;
-    }
-
     public function getAccountService(Logger $logger, Client $client, ?Config $config): Account
     {
         $config = $config ?: $this->getConfig();
@@ -168,8 +198,15 @@ class Helper
         $esiData = new EsiData($logger, $esiApiFactory, $objectManager, $repoFactory, $characterService, $config);
         $accountGroup = new AccountGroup($repoFactory, $this->getObjectManager());
         $autoGroups = new AutoGroupAssignment($repoFactory, $accountGroup);
-        $token = new OAuthToken($this->getAuthenticationProvider($client), $objectManager, $logger);
-        $pluginService = new PluginService($logger, $repoFactory, $accountGroup, $config, new Parser(), new Factory());
+        $token = new OAuthToken(self::getAuthenticationProvider($client), $objectManager, $logger);
+        $pluginService = new PluginService(
+            $logger,
+            $repoFactory,
+            $accountGroup,
+            $config,
+            new Parser(),
+            $this->getPluginFactory($client, $logger),
+        );
         return new Account($logger, $objectManager, $repoFactory, $esiData, $autoGroups, $token, $pluginService);
     }
 
@@ -489,6 +526,11 @@ class Helper
         return (new Character())->setCorporation($corporation)->addEsiToken((new EsiToken())->setValidToken(false));
     }
 
+    private static function getConfig(): config
+    {
+        return new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
+    }
+
     private function addEveLogin(string $name): EveLogin
     {
         $om = $this->getObjectManager();
@@ -501,10 +543,5 @@ class Helper
         }
 
         return $eveLogin;
-    }
-
-    private function getConfig(): config
-    {
-        return new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
     }
 }

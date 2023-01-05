@@ -2,12 +2,12 @@
 
 namespace Tests\Unit\Entity;
 
-use Neucore\Plugin\CoreAccount;
-use Neucore\Plugin\CoreCharacter;
+use Neucore\Plugin\Core\FactoryInterface;
+use Neucore\Plugin\Data\CoreAccount;
+use Neucore\Plugin\Data\CoreCharacter;
+use Neucore\Plugin\Data\PluginConfiguration;
+use Neucore\Plugin\Data\ServiceAccountData;
 use Neucore\Plugin\Exception;
-use Neucore\Plugin\FactoryInterface;
-use Neucore\Plugin\ServiceAccountData;
-use Neucore\Plugin\PluginConfiguration;
 use Neucore\Plugin\ServiceInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

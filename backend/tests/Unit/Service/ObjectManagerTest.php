@@ -31,7 +31,7 @@ class ObjectManagerTest extends TestCase
 
     public function testFlush()
     {
-        $om = new ObjectManager(self::$em, new Logger('Test'));
+        $om = new ObjectManager(self::$em, new Logger());
 
         $this->assertTrue($om->flush());
     }
@@ -40,7 +40,7 @@ class ObjectManagerTest extends TestCase
     {
         self::$em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
 
-        $log = new Logger('Test');
+        $log = new Logger();
 
         $om = new ObjectManager(self::$em, $log);
 

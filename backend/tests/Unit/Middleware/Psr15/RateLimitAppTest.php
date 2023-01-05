@@ -52,7 +52,7 @@ class RateLimitAppTest extends TestCase
         $this->om->flush();
         $this->appId = $app->getId();
 
-        $this->logger = new Logger('Test');
+        $this->logger = new Logger();
         $this->repoFactory = new RepositoryFactory($this->om);
         $this->storage = new SystemVariableStorage($this->repoFactory, new ObjectManager($this->om, $this->logger));
         $this->storage->set(

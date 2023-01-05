@@ -23,7 +23,7 @@ class UpdateServiceAccountsTest extends ConsoleTestCase
         $output = $this->runConsoleApp(
             'update-service-accounts',
             ['--sleep' => 0],
-            [LoggerInterface::class => new Logger('test')],
+            [LoggerInterface::class => new Logger()],
             [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/UpdateServiceAccounts']],
         );
 

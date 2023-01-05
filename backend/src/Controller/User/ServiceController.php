@@ -11,7 +11,7 @@ use Neucore\Entity\Character;
 use Neucore\Entity\Plugin;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
-use Neucore\Plugin\ServiceAccountData;
+use Neucore\Plugin\Data\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\ObjectManager;
