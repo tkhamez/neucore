@@ -83,6 +83,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
             ['name' => 'navigationShowGroups', 'value' => '0'],
             ['name' => 'navigationServices', 'value' => \json_encode([])],
+            ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([])],
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
             ['name' => 'discord', 'value' => 'https://discord.gg/memUh56u8z'],
         ], $this->parseJsonBody($response));
@@ -112,6 +113,12 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'navigationServices', 'value' => \json_encode([
                 $this->service1->jsonSerialize(),
                 $this->service2->jsonSerialize(),
+            ])],
+            ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service1->getId().'/test',
+                    'target' => '_blank'],
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service2->getId().'/test',
+                    'target' => '_blank'],
             ])],
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
             ['name' => 'discord', 'value' => 'https://discord.gg/memUh56u8z'],
@@ -144,6 +151,10 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
             ['name' => 'navigationShowGroups', 'value' => '1'],
             ['name' => 'navigationServices', 'value' => \json_encode([$this->service1->jsonSerialize()])],
+            ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service1->getId().'/test',
+                    'target' => '_blank'],
+            ])],
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
             ['name' => 'discord', 'value' => 'https://discord.gg/memUh56u8z'],
         ], $this->parseJsonBody($response));

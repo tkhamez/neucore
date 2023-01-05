@@ -10,6 +10,8 @@ use Neucore\Plugin\CoreAccount;
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\FactoryInterface;
+use Neucore\Plugin\GeneralInterface;
+use Neucore\Plugin\NavigationItem;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\PluginConfiguration;
 use Neucore\Plugin\ServiceInterface;
@@ -17,7 +19,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class TestService implements ServiceInterface
+class TestService implements GeneralInterface, ServiceInterface
 {
     public function __construct(
         LoggerInterface $logger,
@@ -37,6 +39,13 @@ class TestService implements ServiceInterface
         ?CoreAccount $coreAccount,
     ): ResponseInterface {
         throw new Exception();
+    }
+
+    public function getNavigationItems(): array
+    {
+        return [
+            new NavigationItem(NavigationItem::PARENT_ROOT, 'Test', '/test', '_blank'),
+        ];
     }
 
     public function getAccounts(array $characters): array

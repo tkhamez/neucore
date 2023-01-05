@@ -40,6 +40,11 @@ class TestBoth implements GeneralInterface, ServiceInterface
         throw new Exception();
     }
 
+    public function getNavigationItems(): array
+    {
+        return [];
+    }
+
     public function getAccounts(array $characters): array
     {
         return [];

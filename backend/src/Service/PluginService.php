@@ -118,7 +118,7 @@ class PluginService
                 $plugin->setServiceImplementation($implementation);
             }
             if ($implementation instanceof GeneralInterface) {
-                $plugin->setGeneralPluginImplementation($implementation);
+                $plugin->setGeneralImplementation($implementation);
             }
             $result[] = $plugin;
         }

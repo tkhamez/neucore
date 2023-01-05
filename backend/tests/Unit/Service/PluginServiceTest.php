@@ -364,9 +364,9 @@ class PluginServiceTest extends TestCase
         $this->assertInstanceOf(ServiceInterface::class, $actual[0]->getServiceImplementation());
         $this->assertNull($actual[1]->getServiceImplementation());
         $this->assertInstanceOf(ServiceInterface::class, $actual[2]->getServiceImplementation());
-        $this->assertNull($actual[0]->getGeneralPluginImplementation());
-        $this->assertInstanceOf(GeneralInterface::class, $actual[1]->getGeneralPluginImplementation());
-        $this->assertInstanceOf(GeneralInterface::class, $actual[2]->getGeneralPluginImplementation());
+        $this->assertNull($actual[0]->getGeneralImplementation());
+        $this->assertInstanceOf(GeneralInterface::class, $actual[1]->getGeneralImplementation());
+        $this->assertInstanceOf(GeneralInterface::class, $actual[2]->getGeneralImplementation());
 
         $this->assertSame([PluginConfigurationFile::TYPE_SERVICE], $actual[0]->getConfigurationFile()?->types);
         $this->assertSame([PluginConfigurationFile::TYPE_GENERAL], $actual[1]->getConfigurationFile()?->types);

@@ -36,4 +36,9 @@ class TestPlugin implements GeneralInterface
     ): ResponseInterface {
         throw new Exception();
     }
+
+    public function getNavigationItems(): array
+    {
+        return [];
+    }
 }

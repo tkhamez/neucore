@@ -52,7 +52,7 @@ class Plugin implements \JsonSerializable
 
     private ?ServiceInterface $serviceImplementation = null;
 
-    private ?GeneralInterface $generalPluginImplementation = null;
+    private ?GeneralInterface $generalImplementation = null;
 
     public function jsonSerialize(
         bool $onlyRequired = true,
@@ -128,14 +128,14 @@ class Plugin implements \JsonSerializable
         return $this;
     }
 
-    public function getGeneralPluginImplementation(): ?GeneralInterface
+    public function getGeneralImplementation(): ?GeneralInterface
     {
-        return $this->generalPluginImplementation;
+        return $this->generalImplementation;
     }
 
-    public function setGeneralPluginImplementation(?GeneralInterface $implementation): self
+    public function setGeneralImplementation(?GeneralInterface $implementation): self
     {
-        $this->generalPluginImplementation = $implementation;
+        $this->generalImplementation = $implementation;
         return $this;
     }
 }

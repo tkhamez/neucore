@@ -32,4 +32,9 @@ class ServiceTest_GeneralPluginImplementation implements GeneralInterface
     ): ResponseInterface {
         throw new Exception();
     }
+
+    public function getNavigationItems(): array
+    {
+        return [];
+    }
 }

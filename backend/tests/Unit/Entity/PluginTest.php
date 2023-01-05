@@ -196,14 +196,14 @@ class PluginTest extends TestCase
         $this->assertSame($impl, $actual);
     }
 
-    public function testSetGetGeneralPluginImplementation()
+    public function testSetGetGeneralImplementation()
     {
         $impl = new ServiceTest_GeneralPluginImplementation(
             new Logger(''),
             new PluginConfiguration(1, [], ''),
             new Factory(),
         );
-        $actual = (new Plugin())->setGeneralPluginImplementation($impl)->getGeneralPluginImplementation();
+        $actual = (new Plugin())->setGeneralImplementation($impl)->getGeneralImplementation();
         $this->assertSame($impl, $actual);
     }
 }

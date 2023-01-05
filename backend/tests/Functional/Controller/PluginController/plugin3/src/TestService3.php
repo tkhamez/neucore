@@ -36,4 +36,9 @@ class TestService3 implements GeneralInterface
     ): ResponseInterface {
         throw new Exception('Exception from general plugin.');
     }
+
+    public function getNavigationItems(): array
+    {
+        return [];
+    }
 }

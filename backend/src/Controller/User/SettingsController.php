@@ -8,6 +8,7 @@ use Neucore\Controller\BaseController;
 use Neucore\Entity\Group;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
+use Neucore\Plugin\NavigationItem;
 use Neucore\Service\Config;
 use Neucore\Service\EveMail;
 use Neucore\Service\PluginService;
@@ -60,10 +61,30 @@ class SettingsController extends BaseController
             $scopes = [SystemVariable::SCOPE_PUBLIC];
         }
 
+        // Read plugin navigation items
         $services = [];
+        $navigationItems = [];
         foreach ($pluginService->getPluginWithImplementation() as $plugin) {
             if ($plugin->getServiceImplementation() && $userAuth->hasRequiredGroups($plugin)) {
                 $services[] = $plugin;
+            }
+            if ($plugin->getGeneralImplementation() && $userAuth->hasRequiredGroups($plugin)) {
+                $validPositions = [
+                    NavigationItem::PARENT_ROOT,
+                    NavigationItem::PARENT_MANAGEMENT,
+                    NavigationItem::PARENT_ADMINISTRATION,
+                    NavigationItem::PARENT_MEMBER_DATA,
+                ];
+                foreach ($plugin->getGeneralImplementation()->getNavigationItems() as $item) {
+                    if (in_array($item->getParent(), $validPositions) && str_starts_with($item->getUrl(), '/')) {
+                        $navigationItems[] = new NavigationItem(
+                            $item->getParent(),
+                            $item->getName(),
+                            '/plugin/' . $plugin->getId() . $item->getUrl(),
+                            $item->getTarget(),
+                        );
+                    }
+                }
             }
         }
 
@@ -82,6 +103,9 @@ class SettingsController extends BaseController
             ], [
                 self::COLUMN_NAME => 'navigationServices',
                 self::COLUMN_VALUE => \json_encode($services)
+            ], [
+                self::COLUMN_NAME => 'navigationGeneralPlugins',
+                self::COLUMN_VALUE => \json_encode($navigationItems)
             ], [
                 self::COLUMN_NAME => 'repository',
                 self::COLUMN_VALUE => $config['repository']

@@ -36,4 +36,9 @@ class TestServiceOK implements GeneralInterface
     ): ResponseInterface {
         throw new Exception();
     }
+
+    public function getNavigationItems(): array
+    {
+        return [];
+    }
 }
