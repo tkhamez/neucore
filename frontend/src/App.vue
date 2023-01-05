@@ -311,7 +311,8 @@ export default {
                 }
                 const settings = {};
                 for (const variable of data) {
-                    settings[variable.name] = variable.name === 'navigationServices' ?
+                    settings[variable.name] =
+                        ['navigationGeneralPlugins', 'navigationServices'].indexOf(variable.name) !== -1 ?
                         JSON.parse(variable.value) :
                         variable.value;
                 }

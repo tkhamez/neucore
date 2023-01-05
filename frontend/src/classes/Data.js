@@ -76,4 +76,11 @@ export default class Data {
         'watchlist-admin',
         'watchlist-manager',
     ]
+
+    static navigationParent = {
+        root: 'root',
+        management: 'management',
+        administration: 'administration',
+        member_data: 'member_data',
+    }
 }

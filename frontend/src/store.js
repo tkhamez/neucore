@@ -75,6 +75,7 @@ const state = reactive({
 
         navigationShowGroups: '',
         navigationServices: [],
+        navigationGeneralPlugins: [],
     },
 
     loadingCount: 0,

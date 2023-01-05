@@ -46,6 +46,8 @@
                         <a v-if="h.hasRole('user-manager')"
                            class="dropdown-item" :class="{ active: page === 'PlayerManagement' }"
                            href="#PlayerManagement">Player</a>
+                        <a v-for="item in getNavigationItems(this.navigationParent.management)" class="dropdown-item"
+                           :href="backendHost + item.url" :target="item.target">{{ item.name }}</a>
                     </div>
                 </li>
                 <li v-if="h.hasAnyRole([
@@ -86,6 +88,9 @@
                         <a v-if="h.hasRole('statistics')"
                            class="dropdown-item" :class="{ active: page === 'Statistics' }"
                            href="#Statistics">Statistics</a>
+                        <a v-for="item in getNavigationItems(this.navigationParent.administration)"
+                           class="dropdown-item"
+                           :href="backendHost + item.url" :target="item.target">{{ item.name }}</a>
                     </div>
                 </li>
                 <li v-if="h.hasAnyRole(['tracking', 'watchlist', 'watchlist-manager', 'esi', 'user-chars'])"
@@ -107,7 +112,12 @@
                         <a v-if="h.hasRole('esi')"
                            class="dropdown-item" :class="{ active: page === 'Esi' }"
                            href="#Esi">ESI</a>
+                        <a v-for="item in getNavigationItems(this.navigationParent.member_data)" class="dropdown-item"
+                           :href="backendHost + item.url" :target="item.target">{{ item.name }}</a>
                     </div>
+                </li>
+                <li v-for="item in getNavigationItems(this.navigationParent.root)" class="nav-item">
+                    <a class="nav-link" :href="backendHost + item.url" :target="item.target">{{ item.name }}</a>
                 </li>
             </ul>
 
@@ -154,6 +164,8 @@ export default {
         return {
             h: new Helper(this),
             settings: toRef(this.store.state, 'settings'),
+            navigationParent: Data.navigationParent,
+            backendHost: Data.envVars.backendHost,
             managePages: ['GroupManagement', 'AppManagement', 'PlayerManagement'],
             adminPages: [
                 'GroupAdmin', 'PluginAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings',
@@ -202,7 +214,11 @@ export default {
                 link.setAttribute('rel', 'alternate stylesheet');
             });
             enable.setAttribute('rel', 'stylesheet');
-        }
+        },
+
+        getNavigationItems(parent) {
+            return this.settings.navigationGeneralPlugins.filter(item => item.parent === parent);
+        },
     },
 }
 
