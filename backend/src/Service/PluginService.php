@@ -81,7 +81,7 @@ class PluginService
         return $pluginConfigFile;
     }
 
-    public function getPlugin(int $id): ?Plugin
+    public function getPlugin(int $id, $ignoreFileError = false): ?Plugin
     {
         $plugin = $this->repositoryFactory->getPluginRepository()->find($id);
         if (!$plugin) {
@@ -91,7 +91,9 @@ class PluginService
         try {
             $this->addConfigurationFromFile($plugin);
         } catch (RuntimeException) {
-            return null;
+            if (!$ignoreFileError) {
+                return null;
+            }
         }
 
         return $plugin;

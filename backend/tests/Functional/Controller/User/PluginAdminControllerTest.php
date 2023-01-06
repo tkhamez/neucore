@@ -53,7 +53,6 @@ class PluginAdminControllerTest extends WebTestCase
 
     public function testGet404()
     {
-        $this->setupDb();
         $this->loginUser(1);
 
         $response = $this->runApp('GET', '/api/user/plugin-admin/'.($this->serviceId + 100).'/get');
@@ -62,8 +61,6 @@ class PluginAdminControllerTest extends WebTestCase
 
     public function testGet200_WithoutYamlConfig()
     {
-        $this->setupDb();
-
         $service5 = (new Plugin())->setName('S5');
         $this->helper->getEm()->persist($service5);
         $this->helper->getEm()->flush();
@@ -77,15 +74,52 @@ class PluginAdminControllerTest extends WebTestCase
             null,
             null,
             [],
-            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginAdminController']],
         );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(['id' => $service5->getId(), 'name' => 'S5'], $this->parseJsonBody($response));
     }
 
+    public function testGet200_InvalidYamlConfig()
+    {
+        $config = new PluginConfigurationDatabase();
+        $config->directoryName = 'plugin-name';
+        $service5 = (new Plugin())->setName('S5')->setConfigurationDatabase($config);
+        $this->helper->getEm()->persist($service5);
+        $this->helper->getEm()->flush();
+        $this->helper->getEm()->clear();
+
+        $this->loginUser(1);
+
+        $response = $this->runApp(
+            'GET',
+            "/api/user/plugin-admin/{$service5->getId()}/get",
+            null,
+            null,
+            [LoggerInterface::class => $this->log], // ignore log
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginAdminController/Error']],
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([
+            'id' => $service5->getId(),
+            'name' => 'S5',
+            'configurationDatabase' => [
+                'active' => false,
+                'requiredGroups' => [],
+                'directoryName' => 'plugin-name',
+                'URLs' => [],
+                'textTop' => '',
+                'textAccount' => '',
+                'textRegister' => '',
+                'textPending' => '',
+                'configurationData' => '',
+            ],
+            'configurationFile' => null,
+        ], $this->parseJsonBody($response));
+    }
+
     public function testGet200()
     {
-        $this->setupDb();
         $this->loginUser(1);
 
         $response = $this->runApp(

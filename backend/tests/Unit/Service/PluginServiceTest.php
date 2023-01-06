@@ -153,6 +153,22 @@ class PluginServiceTest extends TestCase
         $this->assertNull($this->pluginService->getPlugin(1));
     }
 
+    public function testGetPlugin_IgnoreFileError()
+    {
+        $this->helper->emptyDb();
+        $conf = new PluginConfigurationDatabase();
+        $conf->directoryName = 'plugin-parse-error';
+        $service = (new Plugin())->setName('S1')->setConfigurationDatabase($conf);
+        $this->om->persist($service);
+        $this->om->flush();
+
+        $actual = $this->pluginService->getPlugin($service->getId(), true);
+
+        $this->assertSame('S1', $actual->getName());
+        $this->assertSame('plugin-parse-error', $actual->getConfigurationDatabase()?->directoryName);
+        $this->assertNull($actual->getConfigurationFile());
+    }
+
     public function testGetPlugin_WithoutConfigurations()
     {
         $service = (new Plugin())->setName('S1');
