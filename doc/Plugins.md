@@ -16,7 +16,7 @@ tokens from any character that is available on Neucore.
 
 **General plugins**
 
-They can add items to the Neucore navigation menu that point to their own URL.
+They can have their own frontend and add items to the Neucore navigation menu that point to their own URL.
 
 See this [example plugin](https://github.com/tkhamez/neucore-example-plugin) for a simple demo.
 
@@ -38,8 +38,9 @@ user interface and implement a couple methods to create and update external serv
 - Create a new PHP class that implements `Neucore\Plugin\ServiceInterface` or `Neucore\Plugin\GeneralInterface`,
   depending on what kind of plugin (general or service) you want to create. It is also possible to implement both
   in the same class.
-- Place all frontend files in their own directory so that they can be deployed below `web/plugin/{name}/`. Mention 
-  the name of the {name} directory in your documentation, it must be unique among all Neucore plugins.
+- If you have a frontend, place all frontend files in their own directory so that they can be deployed below
+  `web/plugin/{name}/`. Mention the name of the {name} directory in your 
+  documentation, it must be unique among all installed Neucore plugins.
 
 Neucore automatically loads all classes from the namespace that is configured with the `psr4_prefix` and 
 `psr4_path` values from the `plugin.yml` file.
@@ -57,7 +58,8 @@ be removed without notice.
 - Set the `NEUCORE_PLUGINS_INSTALL_DIR` environment variable (e.g. `/plugins`).
 - Copy the plugin into that directory within its own subdirectory (so that the plugin.yml file is e.g. 
   at `/plugins/discord/plugin.yml`).
-- If the plugin contains frontend files, make them available below `web/plugin/{name}/`, e.g. by creating a symlink.
+- If the plugin contains frontend files, make them available below `web/plugin/{name}/` (Docker: 
+  `/var/www/html/plugin/{name}/`), e.g. by creating a symlink or by mounting the directory in the Docker container. 
   See the plugin documentation for the name of the directory {name}.
 - In Neucore, go to Administration -> Plugins and add a new plugin.
 - Configure the plugin, at the very least choose a plugin from the dropdown list.

@@ -41,7 +41,7 @@ Main features:
 * **Groups** and **apps** with managers.
 * **Automatic group assignment** for players based on corporations and alliances from all of their characters.
 * An **API for applications** to query group membership of characters, ESI data and more.
-* General purpose [plugins](https://github.com/tkhamez/neucore-plugin) with their own frontend and 
+* General purpose [plugins](Plugins.md) with their own frontend and 
   plugins for **service registration** (e.g. Discord, Mumble).
 * Configurable **watchlists** with accounts that have characters in other alliances or corporations.
 * Corporation **member tracking**.

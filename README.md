@@ -34,7 +34,7 @@ Main features:
 
 - Management of group memberships, manually and with various ways to automate membership.
 - API for various data including an [ESI](http://esi.evetech.net) proxy for all characters.
-- [Plugins](https://github.com/tkhamez/neucore-plugin), e.g. for service registration (Discord, Mumble etc.).
+- [Plugin](doc/Plugins.md) system, e.g. for service registration (Discord, Mumble etc.).
 - Corporation member tracking and character watchlists.
 - ... [and much more](doc/Documentation.md#features)
 

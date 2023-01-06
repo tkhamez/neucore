@@ -110,12 +110,11 @@ mkdir docker-logs && sudo chown 33 docker-logs
   --volume="$(pwd)/docker-logs":/var/www/backend/var/logs \
 ```
 
-To use a custom [theme.js](../frontend/public/theme.js) file or another favicon.ico, add the following arguments, 
+To use a custom [theme.js](../frontend/public/theme.js) file, add the following argument, 
 for example:
 
 ```
   --volume="$(pwd)/theme.js":/var/www/html/dist/theme.js \
-  --volume="$(pwd)/favicon.ico":/var/www/html/favicon.ico \
 ```
 
 To add a service plugin, for example the [Discord Plugin](https://github.com/tkhamez/neucore-discord-plugin), add
@@ -273,8 +272,6 @@ The output is logged to backend/var/logs.
 
 Adjust `web/dist/theme.js` if you want another default theme or add additional JavaScript code, e.g. for
 analytics software. 
-
-Replace the favicon icon in `web/favicon.ico` if you want to use a different one.
 
 ### Security
 
