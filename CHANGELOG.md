@@ -2,7 +2,9 @@
 
 ## 1.42.0
 
-dd mm yyyy
+6 Jan 2023
+
+This release introduces general purpose plugins, see also [doc/Plugins.md](doc/Plugins.md).
 
 - **BC Break**: Updated [Neucore plugin](https://github.com/tkhamez/neucore-plugin) to 0.10.0.
 - **BC Break**: `Neucore\Plugin\ServiceInterface::request` is now also called if no user is logged in 
