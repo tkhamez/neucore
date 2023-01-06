@@ -24,6 +24,7 @@ rm -r "${DIR}"/../../neucore/doc/API.md.tpl
 rm -r "${DIR}"/../../neucore/doc/er-model.mwb
 mv "${DIR}"/../web "${DIR}"/../../neucore/web
 rm -f "${DIR}"/../../neucore/web/.gitignore
+rm -f "${DIR}"/../../neucore/web/plugin/.gitignore
 mv "${DIR}"/../CHANGELOG.md "${DIR}"/../../neucore/CHANGELOG.md
 mv "${DIR}"/../LICENSE "${DIR}"/../../neucore/LICENSE
 mv "${DIR}"/../README.md "${DIR}"/../../neucore/README.md

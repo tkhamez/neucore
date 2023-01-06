@@ -1,12 +1,30 @@
 # Plugins
 
-The following is valid for Neucore 1.42.0 and [neucore-plugin](https://github.com/tkhamez/neucore-plugin)
-0.10.0 and above.
+_The following is valid for Neucore 1.42.0 and [neucore-plugin](https://github.com/tkhamez/neucore-plugin)
+0.10.0 and above._
 
-**Service plugins** are available to users from the "Services" menu. For an example see e.g.
-[Neucore Discord Plugin](https://github.com/tkhamez/neucore-discord-plugin).
+A plugin can be added multiple times to Neucore with different configuration data. For example the
+[Neucore Discord Plugin](https://github.com/tkhamez/neucore-discord-plugin) is added once for every Discord
+server that should be available to users.
 
-**General plugins** can add menu items to their own URL.
+For each plugin that was created in Neucore there is one distinct URL `/plugin/{plugin_id}/{name}`.
+The {name} part can be anything and is passed to the method that implements the request. This method will also 
+get information about the logged-in user.
+
+All plugins have access to a couple object from Neucore, e.g. to parse YAML files or make ESI requests with
+tokens from any character that is available on Neucore.
+
+**General plugins**
+
+They can add items to the Neucore navigation menu that point to their own URL.
+
+See this [example plugin](https://github.com/tkhamez/neucore-example-plugin) for a simple demo.
+
+**Service plugins**
+
+They are available to users from the "Services" menu. They provide configuration data to customize the 
+user interface and implement a couple methods to create and update external service accounts via Neucore.
+
 
 ## Create a plugin
 
@@ -20,6 +38,8 @@ The following is valid for Neucore 1.42.0 and [neucore-plugin](https://github.co
 - Create a new PHP class that implements `Neucore\Plugin\ServiceInterface` or `Neucore\Plugin\GeneralInterface`,
   depending on what kind of plugin (general or service) you want to create. It is also possible to implement both
   in the same class.
+- Place all frontend files in their own directory so that they can be deployed below `web/plugin/{name}/`. Mention 
+  the name of the {name} directory in your documentation, it must be unique among all Neucore plugins.
 
 Neucore automatically loads all classes from the namespace that is configured with the `psr4_prefix` and 
 `psr4_path` values from the `plugin.yml` file.
@@ -31,10 +51,13 @@ with each Neucore release.
 Besides that, **do not use** any class from Neucore or any library that Neucore provides. Those can change or
 be removed without notice.
 
+
 ## Install a plugin
 
 - Set the `NEUCORE_PLUGINS_INSTALL_DIR` environment variable (e.g. `/plugins`).
 - Copy the plugin into that directory within its own subdirectory (so that the plugin.yml file is e.g. 
   at `/plugins/discord/plugin.yml`).
+- If the plugin contains frontend files, make them available below `web/plugin/{name}/`, e.g. by creating a symlink.
+  See the plugin documentation for the name of the directory {name}.
 - In Neucore, go to Administration -> Plugins and add a new plugin.
 - Configure the plugin, at the very least choose a plugin from the dropdown list.

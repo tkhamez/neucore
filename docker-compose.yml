@@ -50,7 +50,7 @@ services:
     depends_on: [neucore_db]
     volumes: [
         ".:/app",
-        #"/path/to/service-plugin:/plugins/plugin-name",
+        #"/path/to/plugin:/plugins/plugin-name",
     ]
     environment:
       PHP_IDE_CONFIG: serverName=docker # for PhpStorm
@@ -63,7 +63,10 @@ services:
     container_name: neucore_dev_http
     image: nginx:1
     depends_on: [neucore_php]
-    volumes: [".:/app", "./setup/docker-nginx.conf:/etc/nginx/conf.d/default.conf"]
+    volumes: [
+      ".:/app", "./setup/docker-nginx.conf:/etc/nginx/conf.d/default.conf",
+      #"/path/to/plugin/frontend:/app/web/plugin/plugin-name",
+    ]
     ports: ["8080:80"]
     networks: [neucore]
 
