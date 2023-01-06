@@ -4,33 +4,70 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
+use Neucore\Data\EsiErrorLimit;
 use Neucore\Entity\EveLogin;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Storage\StorageInterface;
+use Neucore\Storage\Variables;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class EsiClient
 {
-    private RepositoryFactory $repositoryFactory;
-
-    private Config $config;
-
-    private OAuthToken $tokenService;
-
-    private HttpClientFactoryInterface $httpClientFactory;
-
     public function __construct(
-        RepositoryFactory $repositoryFactory,
-        Config $config,
-        OAuthToken $tokenService,
-        HttpClientFactoryInterface $httpClientFactory,
+        private RepositoryFactory $repositoryFactory,
+        private Config $config,
+        private OAuthToken $tokenService,
+        private HttpClientFactoryInterface $httpClientFactory,
     ) {
-        $this->repositoryFactory = $repositoryFactory;
-        $this->httpClientFactory = $httpClientFactory;
-        $this->config = $config;
-        $this->tokenService = $tokenService;
+    }
+
+    /**
+     * Returns the time (Unix timestamp) to wait until when the error limit was reached.
+     *
+     * Returns 0 if the error limit is not yet reached.
+     *
+     * @param int $limitRemain Number of errors that should remain.
+     * @return int Unix timestamp up to which must be waited.
+     * @see https://developers.eveonline.com/blog/article/esi-error-limits-go-live
+     */
+    public static function getErrorLimitWaitTime(StorageInterface $storage, int $limitRemain): int
+    {
+        $data = EsiErrorLimit::fromJson((string)$storage->get(Variables::ESI_ERROR_LIMIT));
+
+        if (!$data->updated || !$data->remain || !$data->reset) {
+            return 0;
+        }
+
+        $resetTime = $data->updated + $data->reset;
+
+        if ($resetTime < time()) {
+            return 0;
+        }
+
+        if ($data->remain <= $limitRemain) {
+            return $resetTime;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Returns the time (Unix timestamp) to wait until when the ESI rate limit was reached.
+     */
+    public static function getRateLimitWaitTime(StorageInterface $storage): int
+    {
+        return (int)$storage->get(Variables::ESI_RATE_LIMIT);
+    }
+
+    /**
+     * Returns the time (Unix timestamp) to wait until when temporarily throttled.
+     */
+    public static function getThrottledWaitTime(StorageInterface $storage): int
+    {
+        return (int)$storage->get(Variables::ESI_THROTTLED);
     }
 
     /**

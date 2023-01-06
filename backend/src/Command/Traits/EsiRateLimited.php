@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Neucore\Command\Traits;
 
+use Neucore\Service\EsiClient;
 use Neucore\Storage\StorageInterface;
-use Neucore\Storage\Variables;
 use Psr\Log\LoggerInterface;
 
 trait EsiRateLimited
@@ -17,6 +17,12 @@ trait EsiRateLimited
     private bool $simulate;
 
     private ?int $sleepInSeconds = null;
+
+    /**
+     * @see EsiController::$errorLimitRemain
+     * @see \Neucore\Plugin\Core\EsiClient::$errorLimitRemaining
+     */
+    private int $errorLimitRemaining = 10;
 
     protected function esiRateLimited(StorageInterface $storage, LoggerInterface $logger, bool $simulate = false): void
     {
@@ -39,9 +45,8 @@ trait EsiRateLimited
 
     protected function checkRateLimit(): void
     {
-        $timestamp = (int) $this->storage->get(Variables::ESI_RATE_LIMIT);
-        if ($timestamp > time()) {
-            $sleep = (int) max(1, $timestamp - time());
+        if (($retryAt = EsiClient::getRateLimitWaitTime($this->storage)) > time()) {
+            $sleep = (int) max(1, $retryAt - time());
             $this->logger->info("EsiRateLimited: rate limit hit, sleeping $sleep second(s).");
             $this->sleep($sleep);
         }
@@ -49,9 +54,8 @@ trait EsiRateLimited
 
     private function checkThrottled(): void
     {
-        $timestamp = (int) $this->storage->get(Variables::ESI_THROTTLED);
-        if ($timestamp > time()) {
-            $sleep = (int) max(1, $timestamp - time());
+        if (($retryAt = EsiClient::getThrottledWaitTime($this->storage)) > time()) {
+            $sleep = (int) max(1, $retryAt - time());
             $this->logger->info("EsiRateLimited: hit 'throttled', sleeping $sleep seconds");
             $this->sleep($sleep);
         }
@@ -62,22 +66,9 @@ trait EsiRateLimited
      */
     private function checkErrorLimit(): void
     {
-        $var = $this->storage->get(Variables::ESI_ERROR_LIMIT);
-        if ($var === null) {
-            return;
-        }
-
-        $data = \json_decode($var);
-        if (!$data instanceof \stdClass) {
-            return;
-        }
-
-        if ((int) $data->updated + $data->reset < time()) {
-            return;
-        }
-
-        if ($data->remain < 10) {
-            $sleep = (int) min(60, $data->reset + time() - $data->updated);
+        $retryAt = EsiClient::getErrorLimitWaitTime($this->storage, $this->errorLimitRemaining);
+        if ($retryAt > 0) {
+            $sleep = (int) min(60, $retryAt - time());
             $this->logger->info("EsiRateLimited: hit error limit, sleeping $sleep seconds");
             $this->sleep($sleep);
         }

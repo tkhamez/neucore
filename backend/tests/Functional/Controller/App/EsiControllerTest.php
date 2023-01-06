@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Tests\Functional\Controller\App;
 
 use GuzzleHttp\Exception\TransferException;
+use Neucore\Data\EsiErrorLimit;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
@@ -316,7 +317,7 @@ class EsiControllerTest extends WebTestCase
         // add var
         $this->storage->set(
             Variables::ESI_ERROR_LIMIT,
-            (string) \json_encode(['updated' => time(), 'remain' => 20, 'reset' => 86])
+            (string)\json_encode(new EsiErrorLimit(time(), 20, 86))
         );
 
         $response = $this->runApp(
@@ -339,7 +340,7 @@ class EsiControllerTest extends WebTestCase
         // add var
         $this->storage->set(
             Variables::ESI_ERROR_LIMIT,
-            (string) \json_encode(['updated' => time(), 'remain' => 20, 'reset' => 86])
+            (string)\json_encode(new EsiErrorLimit(time(), 20, 86))
         );
 
         $response = $this->runApp(
@@ -371,7 +372,7 @@ class EsiControllerTest extends WebTestCase
         // add var
         $this->storage->set(
             Variables::ESI_ERROR_LIMIT,
-            (string) \json_encode(['updated' => time(), 'remain' => 21, 'reset' => 86])
+            (string)\json_encode(new EsiErrorLimit(time(), 21, 86))
         );
 
         $response = $this->runApp(
@@ -392,7 +393,7 @@ class EsiControllerTest extends WebTestCase
         // add var
         $this->storage->set(
             Variables::ESI_ERROR_LIMIT,
-            (string) \json_encode(['updated' => time() - 87, 'remain' => 20, 'reset' => 86])
+            (string)\json_encode(new EsiErrorLimit(time() - 87, 20, 86))
         );
 
         $response = $this->runApp(
@@ -615,8 +616,7 @@ class EsiControllerTest extends WebTestCase
             'X-Esi-Error-Limit-Reset' => ['60'],
         ], $response->getHeaders());
 
-        $esiErrorVar = $this->storage->get(Variables::ESI_ERROR_LIMIT);
-        $esiErrorValues = \json_decode((string) $esiErrorVar);
+        $esiErrorValues = EsiErrorLimit::fromJson((string)$this->storage->get(Variables::ESI_ERROR_LIMIT));
         $this->assertLessThanOrEqual(time(), $esiErrorValues->updated);
         $this->assertSame(100, $esiErrorValues->remain);
         $this->assertSame(60, $esiErrorValues->reset);

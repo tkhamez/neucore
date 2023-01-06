@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Command\Traits;
 
 use Neucore\Command\Traits\EsiRateLimited;
+use Neucore\Data\EsiErrorLimit;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\Variables;
@@ -75,11 +76,7 @@ class EsiRateLimitedTest extends TestCase
 
     public function testCheckForErrors_ErrorLimit()
     {
-        $this->testStorage->set(Variables::ESI_ERROR_LIMIT, (string) \json_encode([
-            'updated' => time(),
-            'remain' => 9,
-            'reset' => 20,
-        ]));
+        $this->testStorage->set(Variables::ESI_ERROR_LIMIT, (string)json_encode(new EsiErrorLimit(time(), 9, 20)));
 
         $this->esiRateLimited($this->testStorage, $this->testLogger, true);
 

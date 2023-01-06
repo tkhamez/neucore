@@ -6,6 +6,7 @@ namespace Tests\Unit\Middleware\Guzzle;
 
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Neucore\Data\EsiErrorLimit;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Guzzle\EsiHeaders;
 use Neucore\Service\ObjectManager;
@@ -50,8 +51,7 @@ class EsiHeadersTest extends TestCase
         $function = $this->obj->__invoke($this->helper->getGuzzleHandler($response));
         $function(new Request('GET', 'https://local.host/esi/path'), []);
 
-        $var = $this->storage->get(Variables::ESI_ERROR_LIMIT);
-        $val = \json_decode((string) $var);
+        $val = EsiErrorLimit::fromJson((string)$this->storage->get(Variables::ESI_ERROR_LIMIT));
 
         $this->assertSame(100, $val->remain);
         $this->assertSame(60, $val->reset);

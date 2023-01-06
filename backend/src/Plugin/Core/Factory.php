@@ -2,12 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Neucore\Plugin;
+namespace Neucore\Plugin\Core;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
-use Neucore\Plugin\Core\EsiClientInterface;
-use Neucore\Plugin\Core\FactoryInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Symfony\Component\Yaml\Parser;

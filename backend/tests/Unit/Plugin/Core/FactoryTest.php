@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Plugin;
+namespace Tests\Unit\Plugin\Core;
 
 use Neucore\Plugin\Core\EsiClientInterface;
 use PHPUnit\Framework\TestCase;
@@ -13,7 +13,6 @@ use Tests\Helper;
 
 class FactoryTest extends TestCase
 {
-
     public function testCreateHttpClient()
     {
         $factory = Helper::getPluginFactory();

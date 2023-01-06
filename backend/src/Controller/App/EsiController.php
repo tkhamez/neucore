@@ -15,7 +15,6 @@ use Neucore\Service\AppAuth;
 use Neucore\Service\EsiClient;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\StorageInterface;
-use Neucore\Storage\Variables;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -76,6 +75,10 @@ class EsiController extends BaseController
 
     private ?EveLogin $eveLogin = null;
 
+    /**
+     * @see \Neucore\Plugin\Core\EsiClient::$errorLimitRemaining
+     * @see \Neucore\Command\Traits\EsiRateLimited::$errorLimitRemaining
+     */
     private int $errorLimitRemain = 20;
 
     public function __construct(
@@ -653,7 +656,7 @@ class EsiController extends BaseController
     private function checkErrors(int $version): bool
     {
         // Check error limit.
-        if (($retryAt1 = $this->errorLimitRemaining()) > 0) {
+        if (($retryAt1 = EsiClient::getErrorLimitWaitTime($this->storage, $this->errorLimitRemain)) > 0) {
             $errorMessage = 'Maximum permissible ESI error limit reached';
             $this->build429Response(
                 "$errorMessage (X-Esi-Error-Limit-Remain <= $this->errorLimitRemain).",
@@ -665,13 +668,13 @@ class EsiController extends BaseController
         }
 
         // Check 429 rate limit.
-        if (($retryAt2 = (int)$this->storage->get(Variables::ESI_RATE_LIMIT)) > time()) {
+        if (($retryAt2 = EsiClient::getRateLimitWaitTime($this->storage)) > time()) {
             $this->build429Response('ESI rate limit reached.', $retryAt2, $version);
             return true;
         }
 
         // Check throttled.
-        if (($retryAt3 = (int)$this->storage->get(Variables::ESI_THROTTLED)) > time()) {
+        if (($retryAt3 = EsiClient::getThrottledWaitTime($this->storage)) > time()) {
             $this->build429Response(
                 'Undefined 429 response. You have been temporarily throttled.',
                 $retryAt3,
@@ -681,28 +684,6 @@ class EsiController extends BaseController
         }
 
         return false;
-    }
-
-    private function errorLimitRemaining(): int
-    {
-        $var = $this->storage->get(Variables::ESI_ERROR_LIMIT);
-        $values = \json_decode((string) $var);
-
-        if (! $values instanceof \stdClass) {
-            return 0;
-        }
-
-        $resetTime = (int)$values->updated + (int)$values->reset;
-
-        if ($resetTime < time()) {
-            return 0;
-        }
-
-        if ($values->remain <= $this->errorLimitRemain) {
-            return $resetTime;
-        }
-
-        return 0;
     }
 
     private function build429Response(string $message, int $retryAfter, int $version, ?string $messageV1 = null): void

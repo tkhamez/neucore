@@ -13,7 +13,7 @@ use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Neucore\Plugin\Exception;
-use Neucore\Plugin\Factory;
+use Neucore\Plugin\Core\Factory;
 use Neucore\Plugin\GeneralInterface;
 use Neucore\Plugin\PluginInterface;
 use Neucore\Plugin\Data\ServiceAccountData;

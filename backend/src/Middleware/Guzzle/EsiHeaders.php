@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Middleware\Guzzle;
 
+use Neucore\Data\EsiErrorLimit;
 use Neucore\Storage\StorageInterface;
 use Neucore\Storage\Variables;
 use Psr\Http\Message\RequestInterface;
@@ -42,11 +43,9 @@ class EsiHeaders
         if ($response->hasHeader('X-Esi-Error-Limit-Remain') && $response->hasHeader('X-Esi-Error-Limit-Reset')) {
             $remain = (int) $response->getHeader('X-Esi-Error-Limit-Remain')[0];
             $reset = (int) $response->getHeader('X-Esi-Error-Limit-Reset')[0];
-            $this->storage->set(Variables::ESI_ERROR_LIMIT, (string) \json_encode([
-                'updated' => time(),
-                'remain' => $remain,
-                'reset' => $reset,
-            ]));
+            $this->storage->set(Variables::ESI_ERROR_LIMIT, (string)\json_encode(
+                new EsiErrorLimit(time(), $remain, $reset)
+            ));
         }
 
         // Log deprecated warnings

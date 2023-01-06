@@ -41,7 +41,7 @@ use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Plugin\Factory;
+use Neucore\Plugin\Core\Factory;
 use Neucore\Service\Account;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\AutoGroupAssignment;
@@ -52,6 +52,8 @@ use Neucore\Service\OAuthToken;
 use Neucore\Service\PluginService;
 use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
+use Neucore\Storage\StorageInterface;
+use Neucore\Storage\SystemVariableStorage;
 use Symfony\Component\Yaml\Parser;
 
 class Helper
@@ -135,33 +137,47 @@ class Helper
         return $authProvider;
     }
 
-    public static function getPluginFactory(Client $client = null, Logger $logger = null): Factory
-    {
+    public static function getPluginFactory(
+        Client $client = null,
+        Logger $logger = null,
+        StorageInterface $storage = null
+    ): Factory {
         if (!$client) {
             $client = new Client();
         }
         if (!$logger) {
             $logger = new Logger();
         }
+        if (!$storage) {
+            $storage = new SystemVariableStorage(
+                new RepositoryFactory(self::getOm()),
+                new \Neucore\Service\ObjectManager(self::getOm(), $logger)
+            );
+        }
         return new Factory(
-            new \Neucore\Plugin\EsiClient(
-                self::getEsiClient($client, $logger),
-                new HttpClientFactory($client)
+            new \Neucore\Plugin\Core\EsiClient(
+                self::getEsiClientService($client, $logger),
+                new HttpClientFactory($client),
+                $storage,
             )
         );
     }
 
-    public static function getEsiClient(Client $client, Logger $logger): EsiClient
+    public static function getEsiClientService(Client $client, Logger $logger): EsiClient
     {
-        /* @phan-suppress-next-line PhanTypeMismatchArgumentNullable */
-        $objectManager = new \Neucore\Service\ObjectManager(self::$em, $logger);
+        $objectManager = new \Neucore\Service\ObjectManager(self::getOm(), $logger);
         return new EsiClient(
-            /* @phan-suppress-next-line PhanTypeMismatchArgumentNullable */
-            RepositoryFactory::getInstance(self::$em),
+            RepositoryFactory::getInstance(self::getOm()),
             self::getConfig(),
             new OAuthToken(self::getAuthenticationProvider($client), $objectManager, $logger),
             new HttpClientFactory($client)
         );
+    }
+
+    private static function getOm(): EntityManagerInterface
+    {
+        /* @phan-suppress-next-line PhanTypeMismatchReturnNullable */
+        return self::$em;
     }
 
     public function resetSessionData(): void
