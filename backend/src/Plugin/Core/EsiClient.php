@@ -6,7 +6,6 @@ namespace Neucore\Plugin\Core;
 
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\HttpClientFactoryInterface;
-use Neucore\Plugin\Exception;
 use Neucore\Service\EsiClient as EsiClientService;
 use Neucore\Storage\StorageInterface;
 use Psr\Http\Client\ClientExceptionInterface;

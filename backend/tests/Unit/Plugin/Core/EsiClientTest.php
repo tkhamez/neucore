@@ -10,7 +10,7 @@ use Neucore\Data\EsiErrorLimit;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Core\EsiClient;
 use Neucore\Plugin\Core\EsiClientInterface;
-use Neucore\Plugin\Exception;
+use Neucore\Plugin\Core\Exception;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\StorageInterface;
 use Neucore\Storage\SystemVariableStorage;
