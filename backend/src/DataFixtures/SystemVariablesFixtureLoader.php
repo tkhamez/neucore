@@ -15,7 +15,7 @@ class SystemVariablesFixtureLoader
     {
         $repository = RepositoryFactory::getInstance($manager)->getSystemVariableRepository();
 
-        $pathToImages = Application::ROOT_DIR . '/var';
+        $pathToImages = Application::ROOT_DIR . '/../setup';
         $imagePrefix = 'data:image/png;base64,';
         $vars = [
             SystemVariable::GROUPS_REQUIRE_VALID_TOKEN          => ['0',  SystemVariable::SCOPE_SETTINGS],
@@ -49,7 +49,7 @@ class SystemVariablesFixtureLoader
             ],
             SystemVariable::CUSTOMIZATION_NAV_TITLE             => ['Neucore', SystemVariable::SCOPE_PUBLIC],
             SystemVariable::CUSTOMIZATION_NAV_LOGO              => [
-                $imagePrefix . base64_encode((string) file_get_contents($pathToImages . '/logo_29.png')),
+                $imagePrefix . base64_encode((string) file_get_contents($pathToImages . '/logo-small.png')),
                 SystemVariable::SCOPE_PUBLIC
             ],
             SystemVariable::CUSTOMIZATION_HOME_HEADLINE         => ['Core Services', SystemVariable::SCOPE_PUBLIC],
@@ -58,7 +58,7 @@ class SystemVariablesFixtureLoader
                 SystemVariable::SCOPE_PUBLIC
             ],
             SystemVariable::CUSTOMIZATION_HOME_LOGO             => [
-                $imagePrefix . base64_encode((string) file_get_contents($pathToImages . '/logo_300.png')),
+                $imagePrefix . base64_encode((string) file_get_contents($pathToImages . '/logo.png')),
                 SystemVariable::SCOPE_PUBLIC
             ],
             SystemVariable::CUSTOMIZATION_LOGIN_TEXT            => ['', SystemVariable::SCOPE_PUBLIC],

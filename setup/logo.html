@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.1/dist/echarts.min.js"></script>
+    <title>Logo</title>
+</head>
+<body>
+    <div id="main" style="width: 600px; height:400px;"></div>
+    <script type="text/javascript">
+        echarts.init(document.getElementById('main'), null, { renderer: 'svg' }).setOption({
+            color: ['#fff', '#fac858'],
+            series: [
+                {
+                    type: 'pie',
+                    radius: ['90%', '85%'],
+                    itemStyle: {
+                    },
+                    labelLine: { show: false },
+                    data: [
+                        { value: 10 },
+                        { value: 30 },
+                        { value: 10 },
+                        { value: 30 },
+                        { value: 10 },
+                        { value: 30 },
+                    ],
+                },
+                {
+                    type: 'pie',
+                    radius: ['75%', '70%'],
+                    labelLine: { show: false },
+                    data: [
+                        { value: 10 },
+                        { value: 30 },
+                        { value: 10 },
+                        { value: 30 },
+                        { value: 10 },
+                        { value: 30 },
+                    ],
+                },
+                {
+                    type: 'pie',
+                    radius: ['40%', '30%'],
+                    itemStyle: {
+                        color: ['#fac858'],
+                    },
+                    labelLine: { show: false },
+                    data: [
+                        { value: 100 },
+                    ]
+                }
+            ]
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="6.8791647mm"
+   height="6.8791647mm"
+   viewBox="0 0 6.8791646 6.8791647"
+   version="1.1"
+   id="svg1925"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   sodipodi:docname="logo-small.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1927"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="2"
+     inkscape:cx="134"
+     inkscape:cy="150.5"
+     inkscape:window-width="1640"
+     inkscape:window-height="998"
+     inkscape:window-x="2200"
+     inkscape:window-y="1"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1922" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-23.907047,-18.897196)">
+    <g
+       id="g2059"
+       transform="matrix(0.01126512,0,0,0.01126512,23.929042,21.224268)">
+      <rect
+         width="600"
+         height="400"
+         x="0"
+         y="0"
+         id="0"
+         fill="none" />
+      <g
+         id="g2036"
+         transform="matrix(2.0355354,0,0,2.0355354,-307.2828,-308.35)">
+        <path
+           d="M 375,70.0962 A 150,150 0 0 1 429.9038,275 l -8.6602,-5 A 140,140 0 0 0 370,78.7564 Z"
+           fill="#fac858"
+           id="path2024" />
+        <path
+           d="M 375,329.9038 A 150,150 0 0 1 170.0962,275 l 8.6602,-5 A 140,140 0 0 0 370,321.2436 Z"
+           fill="#fac858"
+           id="path2028" />
+        <path
+           d="M 150,200 A 150,150 0 0 1 300,50 V 60 A 140,140 0 0 0 160,200 Z"
+           fill="#fac858"
+           id="path2032" />
+        <path
+           d="m 300,120 a 80,80 0 1 1 -0.008,0 M 300,140 a 60,60 0 1 0 0.006,0 z"
+           fill="#fac858"
+           id="path2034" />
+      </g>
+    </g>
+  </g>
+</svg>
