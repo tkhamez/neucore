@@ -77,8 +77,11 @@
             <a class="external" href="https://github.com/markdown-it/markdown-it-ins"
                target="_blank" rel="noopener noreferrer">ins</a>,
             <a class="external" href="https://github.com/markdown-it/markdown-it-abbr"
-               target="_blank" rel="noopener noreferrer">abbr</a>.
-        </div><br>
+               target="_blank" rel="noopener noreferrer">abbr</a>.<br>
+            Tip: You can create external links with an icon like this:
+            <code>[Neucore](https://github.com/tkhamez/neucore){target="_blank" rel="noopener noreferrer" class="external"}</code>
+        </div>
+        <br>
         <hr>
         <label class="col-form-label" for="customizationFooterText">Footer Text</label>
         <input id="customizationFooterText" type="text" class="form-control"

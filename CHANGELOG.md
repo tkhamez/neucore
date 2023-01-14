@@ -1,5 +1,12 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- New logo
+- UI/docu improvements.
+
 ## 1.42.0
 
 6 Jan 2023
