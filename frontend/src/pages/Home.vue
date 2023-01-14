@@ -165,7 +165,7 @@
                                    v-on:click.prevent="showEsiTokens(char, char.validToken === false)"
                                    :class="{
                                           'btn btn-success nc-btn-xs': char.validToken,
-                                          'btn btn-info nc-btn-xs': char.validToken === null,
+                                          'btn btn-info nc-btn-xs mt-1': char.validToken === null,
                                           'btn btn-danger btn-sm mt-1': char.validToken === false,
                                    }"
                                    :title="char.validToken ? 'Valid default ESI token' :
@@ -174,9 +174,12 @@
                                 >
                                     ESI tokens
                                 </a>
-                                <a v-if="char.validToken === false" :href="`${loginHost}/login/${loginNames.default}`"
+                                <a v-if="!char.validToken" :href="`${loginHost}/login/${loginNames.default}`"
                                    class="char-login-button" :title="`Login in with: ${char.name}`">
-                                    <img src="../../public/img/eve_sso-short.png" alt="LOG IN with EVE Online">
+                                    <img v-if="char.validToken === false" src="../../public/img/eve_sso-short.png"
+                                         alt="LOG IN with EVE Online">
+                                    <img v-else src="../../public/img/eve_sso-short-small.png"
+                                         alt="LOG IN with EVE Online">
                                 </a>
                             </div>
                         </div>
