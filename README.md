@@ -76,6 +76,7 @@ Official plugins:
 
 - Discord auth: [neucore-discord-plugin](https://github.com/tkhamez/neucore-discord-plugin)
 - Mumble auth: [neucore-mumble-plugin](https://github.com/tkhamez/neucore-mumble-plugin)
+- General plugin example [neucore-example-plugin](https://github.com/tkhamez/neucore-example-plugin)
 
 Other plugins:
 
