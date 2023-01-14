@@ -40,7 +40,7 @@ class SystemVariablesFixtureLoader
             SystemVariable::MAIL_CHARACTER                      => ['',   SystemVariable::SCOPE_SETTINGS],
             SystemVariable::MAIL_TOKEN                          => ['',   SystemVariable::SCOPE_BACKEND],
             SystemVariable::CUSTOMIZATION_DOCUMENT_TITLE        => [
-                'Alliance Core Services',
+                'Neucore - Alliance Core Services',
                 SystemVariable::SCOPE_PUBLIC
             ],
             SystemVariable::CUSTOMIZATION_WEBSITE               => [
@@ -52,9 +52,13 @@ class SystemVariablesFixtureLoader
                 $imagePrefix . base64_encode((string) file_get_contents($pathToImages . '/logo-small.png')),
                 SystemVariable::SCOPE_PUBLIC
             ],
-            SystemVariable::CUSTOMIZATION_HOME_HEADLINE         => ['Core Services', SystemVariable::SCOPE_PUBLIC],
+            SystemVariable::CUSTOMIZATION_HOME_HEADLINE         => [
+                'Neucore - Alliance Core Services',
+                SystemVariable::SCOPE_PUBLIC
+            ],
             SystemVariable::CUSTOMIZATION_HOME_DESCRIPTION      => [
-                'An application to manage access for EVE Online players to external services.',
+                'An application for EVE Online communities to organise their members into groups, monitor them and ' .
+                    'provide access to external services.',
                 SystemVariable::SCOPE_PUBLIC
             ],
             SystemVariable::CUSTOMIZATION_HOME_LOGO             => [
