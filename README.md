@@ -15,7 +15,7 @@
   * [Installation](#installation)
   * [First Login and Customization](#first-login-and-customization)
   * [Setting up Member Tracking and Watchlists](#setting-up-member-tracking-and-watchlists)
-- [Related Software](#related-software)
+- [Plugins and other related software](#plugins-and-other-related-software)
 - [Final Notes](#final-notes)
 
 <!-- tocstop -->
@@ -70,24 +70,35 @@ Watchlist
 - Go to Administration -> Watchlist and add a new watchlist. Open the "View" and "Manage" tabs and add your group.
 - Go to Member Data -> Watchlist -> Settings and add alliances and/or corporations for watching.
 
-## Related Software
+## Plugins and other related software
 
-- Plugin package: [neucore-plugin](https://github.com/tkhamez/neucore-plugin).
-- Discord auth plugin: [neucore-discord-plugin](https://github.com/tkhamez/neucore-discord-plugin).
-- Plugins from Brave Collective for [Slack](https://github.com/bravecollective/neucore-plugin-slack),
-  [Mumble](https://github.com/bravecollective/neucore-plugin-mumble) and
-  [phpBB forum](https://github.com/bravecollective/neucore-plugin-forum).
-- OpenAPI clients: [PHP](https://github.com/tkhamez/neucore-api),
-  [Python](https://github.com/tkhamez/neucore-api-python), [Go](https://github.com/tkhamez/neucore-api-go).
-- [slack-channel-manage](https://github.com/tkhamez/slack-channel-manage) A Slack app to
+Official plugins:
+
+- Discord auth: [neucore-discord-plugin](https://github.com/tkhamez/neucore-discord-plugin)
+- Mumble auth: [neucore-mumble-plugin](https://github.com/tkhamez/neucore-mumble-plugin)
+
+Other plugins:
+
+- Brave Collective [Slack](https://github.com/bravecollective/neucore-plugin-slack)
+- Brave Collective [phpBB forum](https://github.com/bravecollective/neucore-plugin-forum)
+
+OpenAPI clients for the Neucore API:
+
+- [PHP](https://github.com/bravecollective/neucore-api)
+- [Python](https://github.com/bravecollective/neucore-api-python)
+- [Go](https://github.com/bravecollective/neucore-api-go)
+
+Other software that use the Neucore API:
+
+- [slack-channel-manage](https://github.com/bravecollective/slack-channel-manage) A Slack app to
   manage channel members based on Neucore groups.
 - [Eve Overseer](https://github.com/1adog1/eve-overseer) A fleet participation tracking application.
 - [Eve Pingboard](https://github.com/cmd-johnson/eve-pingboard) Pings/Timers/Calendar.
+- [EVE-SRP](https://github.com/bravecollective/evesrp/tree/eb-deploy) integration.
 - [Neucore connector boilerplate](https://github.com/bravecollective/neucore-connector-boilerplate)
-  An example application that uses EVE SSO and Neucore groups for access control.
+  An example PHP application that uses EVE SSO and Neucore groups for access control.
 - A [TimerBoard](https://github.com/tkhamez/neucore-timerboard) (based on the boilerplate).
 - A [Ping](https://github.com/bravecollective/ping-app) app for Slack.
-- [EVE-SRP](https://github.com/bravecollective/evesrp/tree/feature/braveneucore) integration.
 
 ## Final Notes
 
