@@ -47,7 +47,8 @@ class TestService1 implements ServiceInterface
             'name' => $name,
             'main' => $coreAccount?->main,
             'characters' => $coreAccount?->characters,
-            'memberGroups' => $coreAccount?->memberGroups,
+            'memberGroups' => $coreAccount?->getMemberGroups(),
+            'groupsDeactivated' => $coreAccount?->groupsDeactivated,
             'managerGroups' => $coreAccount?->managerGroups,
             'roles' => $coreAccount?->roles,
         ];

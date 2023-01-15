@@ -7,6 +7,7 @@ namespace Neucore\Controller;
 use Neucore\Log\Context;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceInterface;
+use Neucore\Service\AccountGroup;
 use Neucore\Service\PluginService;
 use Neucore\Service\UserAuth;
 use Psr\Http\Message\ResponseInterface;
@@ -26,7 +27,8 @@ class PluginController extends BaseController
         ServerRequestInterface $request,
         PluginService          $pluginService,
         UserAuth               $userAuth,
-        LoggerInterface        $logger
+        LoggerInterface        $logger,
+        AccountGroup           $accountGroup,
     ): ResponseInterface {
         $plugin = $this->repositoryFactory->getPluginRepository()->find((int) $id);
         if ($plugin === null) {
@@ -52,8 +54,13 @@ class PluginController extends BaseController
             return $this->response->withStatus(404);
         }
 
+        $coreAccount = $player?->getCoreAccount();
+        if ($coreAccount) {
+            $coreAccount->groupsDeactivated = $accountGroup->groupsDeactivated($player);
+        }
+
         try {
-            return $implementation->request($name, $request, $this->response, $player?->getCoreAccount());
+            return $implementation->request($name, $request, $this->response, $coreAccount);
         } catch (Exception $e) {
             $logger->error($e->getMessage(), [Context::EXCEPTION => $e]);
             if ($implementation instanceof ServiceInterface) {

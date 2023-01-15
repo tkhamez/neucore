@@ -6,8 +6,10 @@ namespace Tests\Functional\Controller;
 
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Data\PluginConfigurationDatabase;
+use Neucore\Entity\Corporation;
 use Neucore\Entity\Plugin;
 use Neucore\Entity\Role;
+use Neucore\Entity\SystemVariable;
 use Neucore\Plugin\Data\CoreCharacter;
 use Neucore\Plugin\Data\CoreGroup;
 use Neucore\Plugin\Data\CoreRole;
@@ -157,6 +159,8 @@ class PluginControllerTest extends WebTestCase
         $this->assertSame('Group 1', TestService1::$data['memberGroups'][0]->name);
         $this->assertSame('Group 2', TestService1::$data['memberGroups'][1]->name);
 
+        $this->assertFalse(TestService1::$data['groupsDeactivated']);
+
         $this->assertSame(1, count(TestService1::$data['managerGroups']));
         $this->assertInstanceOf(CoreGroup::class, TestService1::$data['managerGroups'][0]);
         $this->assertSame('Group 2', TestService1::$data['managerGroups'][0]->name);
@@ -164,6 +168,39 @@ class PluginControllerTest extends WebTestCase
         $this->assertSame(1, count(TestService1::$data['roles']));
         $this->assertInstanceOf(CoreRole::class, TestService1::$data['roles'][0]);
         $this->assertSame(Role::USER, TestService1::$data['roles'][0]->name);
+    }
+
+    public function testRequest_Success_GroupsDeactivated()
+    {
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
+        $corp = (new Corporation())->setId(101);
+        $this->helper->addCharacterMain('U1000', 1000, [], ['Group 1'], true, null, 123456, false)
+            ->setCorporation($corp);
+        $this->loginUser(1000);
+        $configuration = new PluginConfigurationDatabase();
+        $configuration->directoryName = 'plugin1';
+        $configuration->active = true;
+        $plugin = (new Plugin())->setName('Plugin 1')->setConfigurationDatabase($configuration);
+        $this->om->persist($setting1);
+        $this->om->persist($setting2);
+        $this->om->persist($corp);
+        $this->om->persist($plugin);
+        $this->om->flush();
+
+        $response = $this->runApp(
+            'GET',
+            '/plugin/'.$plugin->getId().'/auth',
+            null,
+            null,
+            [],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginController']],
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+
+        $this->assertSame(0, count(TestService1::$data['memberGroups']));
+        $this->assertTrue(TestService1::$data['groupsDeactivated']);
     }
 
     public function testRequest_Success_NotLoggedIn()

@@ -5,6 +5,7 @@
 dd mm yyyy
 
 - New logo
+- Update [neucore-plugin](https://github.com/tkhamez/neucore-plugin) to 0.11.0 (no breaking changes).
 - UI/docu improvements.
 
 ## 1.42.0

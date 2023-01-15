@@ -36,7 +36,7 @@ class AccountGroup
         $requireToken = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN]
         );
-        if (! $requireToken || $requireToken->getValue() === '0') {
+        if (!$requireToken || $requireToken->getValue() === '0') {
             return false;
         }
 
@@ -44,15 +44,15 @@ class AccountGroup
         $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
         $allianceVar = $sysVarRepo->find(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES);
         $corporationVar = $sysVarRepo->find(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS);
-        if ($allianceVar === null || $corporationVar === null) {
+        if ($allianceVar === null && $corporationVar === null) {
             // Alliance and/or Corporation settings variable not found
             return false;
         }
-        $alliances = array_map('intval', explode(',', $allianceVar->getValue()));
-        $corporations = array_map('intval', explode(',', $corporationVar->getValue()));
+        $alliances = array_map('intval', explode(',', $allianceVar ? $allianceVar->getValue() : ''));
+        $corporations = array_map('intval', explode(',', $corporationVar ? $corporationVar->getValue() : ''));
 
         // check if player account has at least one character in one of the configured alliances or corporations
-        if (! $player->hasCharacterInAllianceOrCorporation($alliances, $corporations)) {
+        if (!$player->hasCharacterInAllianceOrCorporation($alliances, $corporations)) {
             return false;
         }
 
