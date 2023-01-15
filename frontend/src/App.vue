@@ -21,17 +21,17 @@
         <footer class="footer border-top text-muted small">
             <div class="container-fluid">
                 <span v-cloak>{{ settings.customization_footer_text }}</span>
-                <a v-cloak :href="settings.repository" class="icon-link text-dark text-muted"
-                   target="_blank" rel="noopener noreferrer"
-                   title="GitHub"><span class="fa-brands fa-github"></span></a>
-                <a v-cloak :href="settings.discord" class="icon-link text-dark text-muted"
-                   target="_blank" rel="noopener noreferrer"
-                   title="Discord"><span class="fa-brands fa-discord"></span></a>
             </div>
             <div class="container-fluid small">
-                "EVE", "EVE Online", "CCP" and all related logos and images are trademarks or registered trademarks of
+                EVE and related materials are trademarks of
                 <a class="external" href="https://www.ccpgames.com/" target="_blank"
-                   rel="noopener noreferrer">CCP hf</a>.
+                   rel="noopener noreferrer">CCP</a>.
+                <span class="brand">
+                    <a :href="settings.repository" class="text-dark text-muted"
+                       target="_blank" rel="noopener noreferrer" title="Neucore on GitHub">
+                        <img :src="logo" alt=""> Neucore
+                    </a>
+                </span>
             </div>
         </footer>
     </div>
@@ -67,6 +67,7 @@ import Tracking   from './pages/MemberData/Tracking.vue';
 import Watchlist  from './pages/MemberData/Watchlist.vue';
 import Characters from './pages/MemberData/Characters.vue';
 import Esi        from './pages/MemberData/Esi.vue';
+import logo from "../../setup/logo-small.svg";
 
 export default {
     name: 'app',
@@ -102,6 +103,7 @@ export default {
     data() {
         return {
             h: new Helper(this),
+            logo: logo,
 
             loadingCount: toRef(this.store.state, 'loadingCount'),
             settings: toRef(this.store.state, 'settings'),
@@ -366,7 +368,7 @@ function getCsrfHeader(vm) {
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     .alert.app-alert {
         position: fixed;
         top: 60px;
@@ -404,8 +406,15 @@ function getCsrfHeader(vm) {
     .footer .container-fluid {
         text-align: center;
     }
-    .footer .icon-link {
+
+    .footer .brand {
         float: right;
-        margin-left: 4px;
+        white-space: nowrap;
+        img {
+            height: 12.25px;
+        }
+        a {
+            text-decoration: none;
+        }
     }
 </style>
