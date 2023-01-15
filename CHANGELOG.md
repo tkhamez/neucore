@@ -6,6 +6,7 @@ dd mm yyyy
 
 - New logo
 - Update [neucore-plugin](https://github.com/tkhamez/neucore-plugin) to 0.11.0 (no breaking changes).
+- SVG images are now allowed in settings.
 - Footer: Replaced GitHub icon with Neucore logo and text, removed Discord link.
 - UI/docu improvements.
 

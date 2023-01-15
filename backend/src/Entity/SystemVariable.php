@@ -372,7 +372,7 @@ class SystemVariable implements \JsonSerializable
                 break;
             case self::CUSTOMIZATION_HOME_LOGO:
             case self::CUSTOMIZATION_NAV_LOGO:
-                if (preg_match('#^data:image/[a-z]+;base64,[a-zA-Z\d+/]+={0,2}$#', $value)) {
+                if (preg_match('#^data:image/[a-z+]+;base64,[a-zA-Z\d+/]+={0,2}$#', $value)) {
                     $this->value = $value;
                 }
                 break;
