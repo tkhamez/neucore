@@ -84,7 +84,10 @@ class UpdateMemberTracking extends Command
 
         $corporationRepository = $this->repositoryFactory->getCorporationRepository();
         $processedCorporations = [];
-        foreach ($this->getValidDirectorTokens() as $esiToken) {
+        foreach ($this->getValidDirectorTokenIds() as $esiTokenId) {
+            // Note: the previous loop may have cleared the object manager
+            $esiToken = $this->repositoryFactory->getEsiTokenRepository()->find($esiTokenId);
+
             $this->checkForErrors();
 
             $character = $esiToken->getCharacter();
@@ -127,15 +130,16 @@ class UpdateMemberTracking extends Command
             if (in_array(EveLogin::SCOPE_STRUCTURES, $this->oauthToken->getScopesFromToken($esiToken))) {
                 $directorTokenWithStructureScope = $esiToken;
             }
+
+            // Note: processData() may have cleared the object manager
             $this->processData($corporation->getId(), $trackingData, $directorTokenWithStructureScope);
 
-            // set last update date - get corp again because "processData" may clear the ObjectManager
+            // Set last update date.
             $corporation = $corporationRepository->find($corporationId);
             if ($corporation === null) {
                 $this->writeLine('  Corporation not found for ' . $character->getName(), false);
                 continue;
             }
-
             $corporation->setTrackingLastUpdate(new \DateTime());
             $this->entityManager->flush();
 
@@ -155,20 +159,24 @@ class UpdateMemberTracking extends Command
     }
 
     /**
-     * @return EsiToken[]
+     * @return int[]
      */
-    private function getValidDirectorTokens(): array
+    private function getValidDirectorTokenIds(): array
     {
         $eveLogin = $this->repositoryFactory->getEveLoginRepository()->findOneBy(['name' => EveLogin::NAME_TRACKING]);
         if (!$eveLogin) {
             return [];
         }
 
-        return $this->repositoryFactory->getEsiTokenRepository()->findBy([
+        $tokens = $this->repositoryFactory->getEsiTokenRepository()->findBy([
             'eveLogin' => $eveLogin,
             'validToken' => true,
             'hasRoles' => true,
         ]);
+
+        return array_map(function (EsiToken $token) {
+            return $token->getId();
+        }, $tokens);
     }
 
     /**
@@ -210,14 +218,17 @@ class UpdateMemberTracking extends Command
         // delete members that left
         $this->repositoryFactory->getCorporationMemberRepository()->removeFormerMembers($corporationId, $charIds);
 
+        // Note: updateNames() may have cleared the object manager
         $this->memberTracking->updateNames($typeIds, $systemIds, $stationIds, $this->sleep);
         $this->writeLine('  Updated ship/system/station names');
 
+        // Note: updateNames() may have cleared the object manager
         $this->updateStructures($structures, $esiToken);
         $this->writeLine('  Updated structure names');
 
         $charNames = $this->memberTracking->fetchCharacterNames($charIds);
 
+        // Note: updateNames() may have cleared the object manager
         $this->memberTracking->storeMemberData($corporationId, $trackingData, $charNames, $this->sleep);
     }
 
