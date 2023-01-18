@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 1.42.1
 
-dd mm yyyy
+18 Jan 2023
 
 - Fix: Member tracking updates (command was broken).
 - New logo
