@@ -43,6 +43,11 @@ class ApplicationController extends BaseController
      *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */

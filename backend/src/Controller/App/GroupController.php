@@ -89,6 +89,11 @@ class GroupController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="Character not found. (default reason phrase)"
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -132,6 +137,11 @@ class GroupController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="Reason phrase: Character not found."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -177,6 +187,11 @@ class GroupController extends BaseController
      *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -213,6 +228,11 @@ class GroupController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="Corporation not found. (default reason phrase)"
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -249,6 +269,11 @@ class GroupController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="Reason phrase: Corporation not found."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -294,6 +319,11 @@ class GroupController extends BaseController
      *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -330,6 +360,11 @@ class GroupController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="Alliance not found. (default reason phrase)"
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -366,6 +401,11 @@ class GroupController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="Reason phrase: Alliance not found."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -411,6 +451,11 @@ class GroupController extends BaseController
      *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -458,6 +503,11 @@ class GroupController extends BaseController
      *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -535,6 +585,11 @@ class GroupController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="Group was not found or app may not see it."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */

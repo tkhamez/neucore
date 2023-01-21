@@ -129,6 +129,11 @@ class EsiController extends BaseController
      *         response="404",
      *         description="EVE login not found.",
      *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -174,6 +179,11 @@ class EsiController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="EVE login not found.",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
      *         @OA\JsonContent(type="string")
      *     )
      * )

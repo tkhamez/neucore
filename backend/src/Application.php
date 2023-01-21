@@ -205,6 +205,9 @@ class Application
             $this->getApp()->run();
         } catch (Throwable $e) {
             $this->logException($e);
+            if (!headers_sent()) {
+                header('HTTP/1.1 500 Internal Server Error');
+            }
         }
     }
 

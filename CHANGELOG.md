@@ -7,6 +7,7 @@ dd mm yyyy
 - Improvement: When updating service accounts by the cronjob, the service implementation object is now
   directly destroyed when it is no longer needed. This allows plugins to free up resources.
 - Fix: Apps could not be deleted if there were entries for them in the statistics table.
+- Fix: The API returned status code 200 (without data) instead of 500 for certain errors.
 
 ## 1.42.1
 

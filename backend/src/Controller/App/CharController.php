@@ -55,6 +55,11 @@ class CharController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="Character not found. (default reason phrase)"
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -104,6 +109,11 @@ class CharController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="Reason phrase: Character not found."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -145,6 +155,11 @@ class CharController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="Character not found."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -185,6 +200,11 @@ class CharController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="Character not found."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -226,6 +246,11 @@ class CharController extends BaseController
      *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -275,6 +300,11 @@ class CharController extends BaseController
      *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -323,6 +353,11 @@ class CharController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="Player not found."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -363,6 +398,11 @@ class CharController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="Character not found."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -410,6 +450,11 @@ class CharController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="Character not found."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -456,6 +501,11 @@ class CharController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="Character not found."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -497,6 +547,11 @@ class CharController extends BaseController
      *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -532,6 +587,11 @@ class CharController extends BaseController
      *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
