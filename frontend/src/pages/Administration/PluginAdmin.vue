@@ -415,6 +415,10 @@ function getPlugin(vm) {
                 vm.isService = vm.activePlugin.configurationFile.types.indexOf('service') !== -1
             } else {
                 vm.activePlugin.configurationFile = {};
+
+                // Set "isService" to true to show all input fields, so values already stored in the database are
+                // visible. This is needed when updating old services from before there was a plugin.yml file.
+                vm.isService = true;
             }
             if (vm.activePlugin.configurationDatabase) {
                 vm.requiredGroups = findSelectedGroups(vm, vm.activePlugin.configurationDatabase.requiredGroups);
