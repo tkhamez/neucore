@@ -30,7 +30,7 @@ class AppRequests
 
     /**
      * @ORM\ManyToOne(targetEntity="App")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
     private ?App $app = null;
 
