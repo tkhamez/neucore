@@ -26,6 +26,8 @@ class OAuthToken
 
     public const OPTION_EXPIRES = 'expires';
 
+    private const TOKEN_INVALID = '__invalid__';
+
     private AuthenticationProvider $oauth;
 
     private ObjectManager $objectManager;
@@ -145,7 +147,17 @@ class OAuthToken
     {
         $existingToken = $this->createAccessToken($esiToken);
         if ($existingToken === null) {
-            return null;
+            if (empty($esiToken->getRefreshToken())) {
+                return null;
+            }
+            // Refresh token may still be valid even if it failed before. For example, when EVE app client
+            // configuration was temporarily wrong. In such a case the "valid_token" flag can manually be set to 1
+            // in the database to try again.
+            $existingToken = new AccessToken([
+                'access_token' => self::TOKEN_INVALID,
+                'refresh_token' => $esiToken->getRefreshToken(),
+                'expires' => time() - 1000,
+            ]);
         }
 
         try {
@@ -161,6 +173,10 @@ class OAuthToken
         } catch (\RuntimeException $e) {
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             $token = $existingToken;
+        }
+
+        if ($token->getToken() === self::TOKEN_INVALID) {
+            return null;
         }
 
         if ($token->getToken() !== $existingToken->getToken()) {
