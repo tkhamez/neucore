@@ -90,7 +90,7 @@ class UpdateMemberTracking extends Command
 
             $this->checkForErrors();
 
-            $character = $esiToken->getCharacter();
+            $character = $esiToken?->getCharacter();
             if ($character === null) { // Should not be possible
                 continue;
             }
@@ -175,7 +175,7 @@ class UpdateMemberTracking extends Command
         ]);
 
         return array_map(function (EsiToken $token) {
-            return $token->getId();
+            return (int)$token->getId();
         }, $tokens);
     }
 

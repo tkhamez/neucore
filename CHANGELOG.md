@@ -9,6 +9,7 @@ dd mm yyyy
 - Fix: Apps could not be deleted if there were entries for them in the statistics table.
 - Fix: The API returned status code 200 (without data) instead of 500 for certain errors.
 - Small layout improvement.
+- Update dependencies.
 
 ## 1.42.1
 

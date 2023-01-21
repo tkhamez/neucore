@@ -56,6 +56,7 @@ class PluginController extends BaseController
 
         $coreAccount = $player?->getCoreAccount();
         if ($coreAccount) {
+            /* @phan-suppress-next-line PhanTypeMismatchArgumentNullable */
             $coreAccount->groupsDeactivated = $accountGroup->groupsDeactivated($player);
         }
 

@@ -81,7 +81,7 @@ class PluginService
         return $pluginConfigFile;
     }
 
-    public function getPlugin(int $id, $ignoreFileError = false): ?Plugin
+    public function getPlugin(int $id, bool $ignoreFileError = false): ?Plugin
     {
         $plugin = $this->repositoryFactory->getPluginRepository()->find($id);
         if (!$plugin) {
