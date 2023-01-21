@@ -333,49 +333,39 @@ class PluginServiceTest extends TestCase
         );
     }
 
-    public function testGetPluginWithImplementation()
+    public function testGetActivePlugins()
     {
-        $conf1 = new PluginConfigurationDatabase();
-        $conf1->directoryName = 'plugin-name';
-        $conf1->active = true;
-        $service1 = (new Plugin())->setName('S1')->setConfigurationDatabase($conf1);
+        $pluginIds = $this->setupPlugins();
 
-        $conf2 = new PluginConfigurationDatabase();
-        $conf2->directoryName = 'plugin-name';
-        $conf2->active = false;
-        $service2 = (new Plugin())->setName('S2')->setConfigurationDatabase($conf2);
+        $actual = $this->pluginService->getActivePlugins([$pluginIds[0], $pluginIds[1], $pluginIds[3], $pluginIds[4]]);
 
-        $conf3 = new PluginConfigurationDatabase();
-        $conf3->directoryName = 'plugin-name';
-        $conf3->active = true;
-        $service3 = (new Plugin())->setName('S3')->setConfigurationDatabase($conf3);
+        $this->assertSame(3, count($actual));
+        $this->assertSame($pluginIds[0], $actual[0]->getId());
+        $this->assertSame($pluginIds[3], $actual[1]->getId());
+        $this->assertSame($pluginIds[4], $actual[2]->getId());
+        $this->assertNull($actual[0]->getServiceImplementation());
+        $this->assertNull($actual[1]->getServiceImplementation());
+        $this->assertNull($actual[2]->getServiceImplementation());
+        $this->assertNull($actual[0]->getGeneralImplementation());
+        $this->assertNull($actual[1]->getGeneralImplementation());
+        $this->assertNull($actual[2]->getGeneralImplementation());
+        $this->assertNull($actual[0]->getConfigurationFile());
+        $this->assertNull($actual[1]->getConfigurationFile());
+        $this->assertNull($actual[2]->getConfigurationFile());
+    }
 
-        $conf4 = new PluginConfigurationDatabase();
-        $conf4->directoryName = 'plugin-general';
-        $conf4->active = true;
-        $service4 = (new Plugin())->setName('S4')->setConfigurationDatabase($conf4);
+    public function testGetActivePluginsWithImplementation()
+    {
+        $pluginIds = $this->setupPlugins();
 
-        $conf5 = new PluginConfigurationDatabase();
-        $conf5->directoryName = 'plugin-both';
-        $conf5->active = true;
-        $service5 = (new Plugin())->setName('S5')->setConfigurationDatabase($conf5);
-
-        $this->om->persist($service1);
-        $this->om->persist($service2);
-        $this->om->persist($service3);
-        $this->om->persist($service4);
-        $this->om->persist($service5);
-        $this->om->flush();
-        $this->om->clear();
-
-        $actual = $this->pluginService->getPluginWithImplementation(
-            [$service1->getId(), $service2->getId(), $service4->getId(), $service5->getId()]
+        $actual = $this->pluginService->getActivePluginsWithImplementation(
+            [$pluginIds[0], $pluginIds[1], $pluginIds[3], $pluginIds[4]]
         );
 
         $this->assertSame(3, count($actual));
-        $this->assertSame($service1->getId(), $actual[0]->getId());
-        $this->assertSame($service4->getId(), $actual[1]->getId());
-        $this->assertSame($service5->getId(), $actual[2]->getId());
+        $this->assertSame($pluginIds[0], $actual[0]->getId());
+        $this->assertSame($pluginIds[3], $actual[1]->getId());
+        $this->assertSame($pluginIds[4], $actual[2]->getId());
         $this->assertInstanceOf(ServiceInterface::class, $actual[0]->getServiceImplementation());
         $this->assertNull($actual[1]->getServiceImplementation());
         $this->assertInstanceOf(ServiceInterface::class, $actual[2]->getServiceImplementation());
@@ -544,5 +534,49 @@ class PluginServiceTest extends TestCase
         $char->setId(102);
         $result2 = $this->pluginService->updateServiceAccount($char, $this->testService1Impl);
         $this->assertSame('Test error', $result2);
+    }
+
+    private function setupPlugins(): array
+    {
+        $conf1 = new PluginConfigurationDatabase();
+        $conf1->directoryName = 'plugin-name';
+        $conf1->active = true;
+        $service1 = (new Plugin())->setName('S1')->setConfigurationDatabase($conf1);
+
+        $conf2 = new PluginConfigurationDatabase();
+        $conf2->directoryName = 'plugin-name';
+        $conf2->active = false;
+        $service2 = (new Plugin())->setName('S2')->setConfigurationDatabase($conf2);
+
+        $conf3 = new PluginConfigurationDatabase();
+        $conf3->directoryName = 'plugin-name';
+        $conf3->active = true;
+        $service3 = (new Plugin())->setName('S3')->setConfigurationDatabase($conf3);
+
+        $conf4 = new PluginConfigurationDatabase();
+        $conf4->directoryName = 'plugin-general';
+        $conf4->active = true;
+        $service4 = (new Plugin())->setName('S4')->setConfigurationDatabase($conf4);
+
+        $conf5 = new PluginConfigurationDatabase();
+        $conf5->directoryName = 'plugin-both';
+        $conf5->active = true;
+        $service5 = (new Plugin())->setName('S5')->setConfigurationDatabase($conf5);
+
+        $this->om->persist($service1);
+        $this->om->persist($service2);
+        $this->om->persist($service3);
+        $this->om->persist($service4);
+        $this->om->persist($service5);
+        $this->om->flush();
+        $this->om->clear();
+
+        return [
+            $service1->getId(),
+            $service2->getId(),
+            $service3->getId(),
+            $service4->getId(),
+            $service5->getId(),
+        ];
     }
 }

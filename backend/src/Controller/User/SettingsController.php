@@ -64,7 +64,7 @@ class SettingsController extends BaseController
         // Read plugin navigation items
         $services = [];
         $navigationItems = [];
-        foreach ($pluginService->getPluginWithImplementation() as $plugin) {
+        foreach ($pluginService->getActivePluginsWithImplementation() as $plugin) {
             if ($plugin->getServiceImplementation() && $userAuth->hasRequiredGroups($plugin)) {
                 $services[] = $plugin;
             }

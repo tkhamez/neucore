@@ -1,5 +1,12 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Improvement: When updating service accounts by the cronjob, the service implementation object is now
+  directly destroyed when it is no longer needed. This allows plugins to free up resources.
+
 ## 1.42.1
 
 18 Jan 2023

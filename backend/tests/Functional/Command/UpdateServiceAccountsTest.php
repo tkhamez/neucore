@@ -28,7 +28,7 @@ class UpdateServiceAccountsTest extends ConsoleTestCase
         );
 
         $actual = explode("\n", $output);
-        $this->assertSame(9, count($actual));
+        $this->assertSame(7, count($actual));
         $this->assertStringEndsWith('Started "update-service-accounts"', $actual[0]);
         $this->assertStringEndsWith('  Updating S1 ...', $actual[1]);
         $this->assertStringEndsWith('  Test exception.', $actual[2]);
@@ -37,10 +37,8 @@ class UpdateServiceAccountsTest extends ConsoleTestCase
             '  Updated S1: 2 accounts updated, 2 updates failed, 2 characters or players not found.',
             $actual[4]
         );
-        $this->assertStringEndsWith('  Updating S2 ...', $actual[5]);
-        $this->assertStringEndsWith('Service implementation not found for S2', $actual[6]);
-        $this->assertStringEndsWith('Finished "update-service-accounts"', $actual[7]);
-        $this->assertSame('', $actual[8]);
+        $this->assertStringEndsWith('Finished "update-service-accounts"', $actual[5]);
+        $this->assertSame('', $actual[6]);
     }
 
     private function setUpDb(): void

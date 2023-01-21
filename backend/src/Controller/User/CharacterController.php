@@ -379,7 +379,7 @@ class CharacterController extends BaseController
      */
     private function searchPlugins(string $name, array $result, PluginService $pluginService): array
     {
-        foreach ($pluginService->getPluginWithImplementation() as $plugin) {
+        foreach ($pluginService->getActivePluginsWithImplementation() as $plugin) {
             if (!$plugin->getServiceImplementation()) {
                 continue;
             }

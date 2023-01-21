@@ -100,12 +100,12 @@ class PluginService
     }
 
     /**
-     * Returns active plugins with implementation, if available.
+     * Returns active plugins without file configuration, without implementation.
      *
      * @param int[] $limitToIds
-     * @return Plugin[] Contains the implementation if it could be found.
+     * @return Plugin[]
      */
-    public function getPluginWithImplementation(array $limitToIds = []): array
+    public function getActivePlugins(array $limitToIds = []): array
     {
         $result = [];
         foreach ($this->repositoryFactory->getPluginRepository()->findBy([], ['name' => 'asc']) as $plugin) {
@@ -115,6 +115,21 @@ class PluginService
             if (!empty($limitToIds) && !in_array($plugin->getId(), $limitToIds)) {
                 continue;
             }
+            $result[] = $plugin;
+        }
+        return $result;
+    }
+
+    /**
+     * Returns active plugins with implementation, if available.
+     *
+     * @param int[] $limitToIds
+     * @return Plugin[] Contains the implementation if it could be found.
+     */
+    public function getActivePluginsWithImplementation(array $limitToIds = []): array
+    {
+        $result = [];
+        foreach ($this->getActivePlugins($limitToIds) as $plugin) {
             $implementation = $this->getPluginImplementation($plugin);
             if ($implementation instanceof ServiceInterface) {
                 $plugin->setServiceImplementation($implementation);

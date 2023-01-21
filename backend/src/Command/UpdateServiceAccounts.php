@@ -82,14 +82,13 @@ class UpdateServiceAccounts extends Command
         $this->writeLine('Started "update-service-accounts"', false);
 
         $limit = $serviceId ? [$serviceId] : [];
-        foreach ($this->pluginService->getPluginWithImplementation($limit) as $service) {
-            $this->writeLine('  Updating '. $service->getName() . ' ...', false);
-            $implementation = $service->getServiceImplementation();
-            if ($implementation === null) {
-                $this->writeLine('  Service implementation not found for ' . $service->getName());
-                continue;
+        foreach ($this->pluginService->getActivePlugins($limit) as $plugin) {
+            $implementation = $this->pluginService->getPluginImplementation($plugin);
+            if ($implementation instanceof ServiceInterface) {
+                $this->writeLine('  Updating '. $plugin->getName() . ' ...', false);
+                $this->updateService($plugin->getName(), $implementation, $sleep);
             }
-            $this->updateService($service->getName(), $implementation, $sleep);
+            unset($implementation); // Allows the plugin to free up resources.
         }
 
         $this->writeLine('Finished "update-service-accounts"', false);
