@@ -23,15 +23,17 @@
                 <span v-cloak>{{ settings.customization_footer_text }}</span>
             </div>
             <div class="container-fluid small">
-                EVE and related materials are trademarks of
-                <a class="external" href="https://www.ccpgames.com/" target="_blank"
-                   rel="noopener noreferrer">CCP</a>.
-                <span class="brand">
-                    <a :href="settings.repository" class="text-dark text-muted"
-                       target="_blank" rel="noopener noreferrer" title="Neucore on GitHub">
-                        <img :src="logo" alt=""> Neucore
-                    </a>
-                </span>
+                <div class="second-row">
+                    EVE and related materials are trademarks of
+                    <a class="external" href="https://www.ccpgames.com/" target="_blank"
+                       rel="noopener noreferrer">CCP</a>.
+                    <span class="brand">
+                        <a :href="settings.repository" class="text-dark text-muted"
+                           target="_blank" rel="noopener noreferrer" title="Neucore on GitHub">
+                            <img :src="logo" alt=""> Neucore
+                        </a>
+                    </span>
+                </div>
             </div>
         </footer>
     </div>
@@ -402,19 +404,22 @@ function getCsrfHeader(vm) {
         width: 100%;
         max-height: 75px;
         overflow-y: auto;
-    }
-    .footer .container-fluid {
         text-align: center;
-    }
 
-    .footer .brand {
-        float: right;
-        white-space: nowrap;
-        img {
-            height: 12.25px;
-        }
-        a {
-            text-decoration: none;
+        .second-row {
+            position: relative;
+            .brand {
+                position: absolute;
+                right: 0;
+                background-color: var(--bs-body-bg);
+                white-space: nowrap;
+                img {
+                    height: 12.25px;
+                }
+                a {
+                    text-decoration: none;
+                }
+            }
         }
     }
 </style>
