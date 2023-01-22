@@ -19,6 +19,7 @@ use OpenApi\Annotations as OA;
  * @ORM\Entity
  * @ORM\Table(
  *     name="group_applications",
+ *     options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"},
  *     uniqueConstraints={@ORM\UniqueConstraint(name="player_group_idx", columns={"player_id", "group_id"})}
  * )
  */

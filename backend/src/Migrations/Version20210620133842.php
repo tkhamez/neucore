@@ -36,7 +36,7 @@ final class Version20210620133842 extends AbstractMigration
                 INDEX IDX_1CCBCAB17E063B60 (eve_login_id), 
                 UNIQUE INDEX character_eve_login_idx (character_id, eve_login_id), 
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB'
+            ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_520_ci` ENGINE = InnoDB'
         );
         $this->addSql(
             'CREATE TABLE eve_logins (
@@ -47,7 +47,7 @@ final class Version20210620133842 extends AbstractMigration
                 eve_roles VARCHAR(1024) NOT NULL, 
                 UNIQUE INDEX UNIQ_ADBA5C9B5E237E06 (name), 
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB'
+            ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_520_ci` ENGINE = InnoDB'
         );
         $this->addSql(
             'ALTER TABLE esi_tokens ADD CONSTRAINT FK_1CCBCAB11136BE75 FOREIGN KEY (character_id) 
@@ -80,9 +80,9 @@ final class Version20210620133842 extends AbstractMigration
         // Create columns
         $this->addSql(
             'ALTER TABLE characters 
-            ADD access_token TEXT CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci`, 
+            ADD access_token TEXT CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_520_ci`, 
             ADD expires INT DEFAULT NULL,
-            ADD refresh_token TEXT CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci`'
+            ADD refresh_token TEXT CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_520_ci`'
         );
 
         // Copy data

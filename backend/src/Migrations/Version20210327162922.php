@@ -22,7 +22,7 @@ final class Version20210327162922 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE character_name_changes (id INT AUTO_INCREMENT NOT NULL, character_id BIGINT NOT NULL, old_name VARCHAR(255) NOT NULL, change_date DATETIME NOT NULL, INDEX IDX_F72F78EA1136BE75 (character_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE character_name_changes (id INT AUTO_INCREMENT NOT NULL, character_id BIGINT NOT NULL, old_name VARCHAR(255) NOT NULL, change_date DATETIME NOT NULL, INDEX IDX_F72F78EA1136BE75 (character_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_520_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE character_name_changes ADD CONSTRAINT FK_F72F78EA1136BE75 FOREIGN KEY (character_id) REFERENCES characters (id)');
     }
 

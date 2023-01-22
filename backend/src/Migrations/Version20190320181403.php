@@ -35,6 +35,6 @@ final class Version20190320181403 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('ALTER TABLE removed_characters CHANGE reason action VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci');
+        $this->addSql('ALTER TABLE removed_characters CHANGE reason action VARCHAR(255) NOT NULL COLLATE `utf8mb4_unicode_520_ci`');
     }
 }

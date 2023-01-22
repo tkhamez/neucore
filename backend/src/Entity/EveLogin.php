@@ -16,7 +16,7 @@ use OpenApi\Annotations as OA;
  *     required={"id", "name", "description", "esiScopes", "eveRoles"}
  * )
  * @ORM\Entity
- * @ORM\Table(name="eve_logins")
+ * @ORM\Table(name="eve_logins", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
 class EveLogin implements \JsonSerializable
 {

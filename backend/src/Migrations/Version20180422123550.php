@@ -19,9 +19,9 @@ class Version20180422123550 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('CREATE TABLE alliances (id BIGINT NOT NULL, name VARCHAR(255) NOT NULL, ticker VARCHAR(16) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE corporations (id BIGINT NOT NULL, alliance_id BIGINT DEFAULT NULL, name VARCHAR(255) NOT NULL, ticker VARCHAR(16) NOT NULL, INDEX IDX_6F3B37C710A0EA3F (alliance_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE corporation_group (corporation_id BIGINT NOT NULL, group_id INT NOT NULL, INDEX IDX_E13C0842B2685369 (corporation_id), INDEX IDX_E13C0842FE54D947 (group_id), PRIMARY KEY(corporation_id, group_id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE alliances (id BIGINT NOT NULL, name VARCHAR(255) NOT NULL, ticker VARCHAR(16) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_520_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE corporations (id BIGINT NOT NULL, alliance_id BIGINT DEFAULT NULL, name VARCHAR(255) NOT NULL, ticker VARCHAR(16) NOT NULL, INDEX IDX_6F3B37C710A0EA3F (alliance_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_520_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE corporation_group (corporation_id BIGINT NOT NULL, group_id INT NOT NULL, INDEX IDX_E13C0842B2685369 (corporation_id), INDEX IDX_E13C0842FE54D947 (group_id), PRIMARY KEY(corporation_id, group_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_520_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE corporations ADD CONSTRAINT FK_6F3B37C710A0EA3F FOREIGN KEY (alliance_id) REFERENCES alliances (id)');
         $this->addSql('ALTER TABLE corporation_group ADD CONSTRAINT FK_E13C0842B2685369 FOREIGN KEY (corporation_id) REFERENCES corporations (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE corporation_group ADD CONSTRAINT FK_E13C0842FE54D947 FOREIGN KEY (group_id) REFERENCES `groups` (id) ON DELETE CASCADE');

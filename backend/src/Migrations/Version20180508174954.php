@@ -29,6 +29,6 @@ final class Version20180508174954 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('ALTER TABLE characters CHANGE character_owner_hash character_owner_hash TEXT NOT NULL COLLATE utf8_unicode_ci, CHANGE access_token access_token TEXT NOT NULL COLLATE utf8_unicode_ci');
+        $this->addSql('ALTER TABLE characters CHANGE character_owner_hash character_owner_hash TEXT NOT NULL COLLATE `utf8mb4_unicode_520_ci`, CHANGE access_token access_token TEXT NOT NULL COLLATE `utf8mb4_unicode_520_ci`');
     }
 }

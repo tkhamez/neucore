@@ -25,7 +25,7 @@ final class Version20190502125338 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('ALTER TABLE system_variables CHANGE value value MEDIUMTEXT DEFAULT NULL COLLATE utf8_unicode_ci');
+        $this->addSql('ALTER TABLE system_variables CHANGE value value MEDIUMTEXT DEFAULT NULL COLLATE `utf8mb4_unicode_520_ci`');
 
         $this->addSql('SET FOREIGN_KEY_CHECKS = 0;');
         $this->addSql('ALTER TABLE removed_characters DROP FOREIGN KEY FK_2987D70C99E6F5DF');
@@ -43,7 +43,7 @@ final class Version20190502125338 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
 
         // this fails if data is too long:
-        //$this->addSql('ALTER TABLE system_variables CHANGE value value TEXT DEFAULT NULL COLLATE utf8_unicode_ci');
+        //$this->addSql('ALTER TABLE system_variables CHANGE value value TEXT DEFAULT NULL COLLATE `utf8mb4_unicode_520_ci`');
 
         $this->addSql('SET FOREIGN_KEY_CHECKS = 0;');
         $this->addSql('ALTER TABLE removed_characters DROP FOREIGN KEY FK_129104F799E6F5DF');

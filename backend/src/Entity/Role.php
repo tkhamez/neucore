@@ -22,7 +22,7 @@ use OpenApi\Annotations as OA;
  * )
  *
  * @ORM\Entity
- * @ORM\Table(name="roles")
+ * @ORM\Table(name="roles", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  *
  * @see doc/API.md for role descriptions
  */

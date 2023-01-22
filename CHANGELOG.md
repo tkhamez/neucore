@@ -9,6 +9,8 @@ dd mm yyyy
 - Fix: Apps could not be deleted if there were entries for them in the statistics table.
 - Fix: The API returned status code 200 (without data) instead of 500 for certain errors.
 - Small layout improvement.
+- The database table character set was changed from utf8mb3 to utf8mb4. (Dev: Drop tables in test database to 
+  recreate them with the new character set)
 - Update dependencies.
 
 ## 1.42.1

@@ -16,7 +16,7 @@ use OpenApi\Annotations as OA;
  *     required={"id", "name"}
  * )
  * @ORM\Entity
- * @ORM\Table(name="apps")
+ * @ORM\Table(name="apps", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
 class App implements \JsonSerializable
 {

@@ -17,7 +17,7 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(property="player", ref="#/components/schemas/Player", nullable=true)
  * )
  * @ORM\Entity
- * @ORM\Table(name="corporation_members")
+ * @ORM\Table(name="corporation_members", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
 class CorporationMember implements \JsonSerializable
 {

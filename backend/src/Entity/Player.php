@@ -44,7 +44,7 @@ use OpenApi\Annotations as OA;
  * )
  *
  * @ORM\Entity
- * @ORM\Table(name="players")
+ * @ORM\Table(name="players", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
 class Player implements \JsonSerializable
 {

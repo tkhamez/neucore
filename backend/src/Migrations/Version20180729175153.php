@@ -30,7 +30,7 @@ final class Version20180729175153 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('ALTER TABLE alliances DROP last_update, CHANGE name name VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci, CHANGE ticker ticker VARCHAR(16) NOT NULL COLLATE utf8_unicode_ci');
-        $this->addSql('ALTER TABLE corporations DROP last_update, CHANGE name name VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci, CHANGE ticker ticker VARCHAR(16) NOT NULL COLLATE utf8_unicode_ci');
+        $this->addSql('ALTER TABLE alliances DROP last_update, CHANGE name name VARCHAR(255) NOT NULL COLLATE `utf8mb4_unicode_520_ci`, CHANGE ticker ticker VARCHAR(16) NOT NULL COLLATE `utf8mb4_unicode_520_ci`');
+        $this->addSql('ALTER TABLE corporations DROP last_update, CHANGE name name VARCHAR(255) NOT NULL COLLATE `utf8mb4_unicode_520_ci`, CHANGE ticker ticker VARCHAR(16) NOT NULL COLLATE `utf8mb4_unicode_520_ci`');
     }
 }

@@ -19,7 +19,7 @@ final class Version20181126190310 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('CREATE TABLE removed_characters (id INT AUTO_INCREMENT NOT NULL, player_id INT DEFAULT NULL, character_id BIGINT NOT NULL, character_name VARCHAR(255) NOT NULL, removed_date DATETIME NOT NULL, INDEX IDX_2987D70C99E6F5DF (player_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE removed_characters (id INT AUTO_INCREMENT NOT NULL, player_id INT DEFAULT NULL, character_id BIGINT NOT NULL, character_name VARCHAR(255) NOT NULL, removed_date DATETIME NOT NULL, INDEX IDX_2987D70C99E6F5DF (player_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_520_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE removed_characters ADD CONSTRAINT FK_2987D70C99E6F5DF FOREIGN KEY (player_id) REFERENCES players (id)');
     }
 

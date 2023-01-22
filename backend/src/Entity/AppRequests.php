@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(
  *     name="app_requests",
+ *     options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"},
  *     indexes={
  *         @ORM\Index(name="ar_year_idx", columns={"request_year"}),
  *         @ORM\Index(name="ar_month_idx", columns={"request_month"}),

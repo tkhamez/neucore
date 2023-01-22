@@ -20,7 +20,7 @@ use OpenApi\Annotations as OA;
  *     required={"name", "value"}
  * )
  * @ORM\Entity
- * @ORM\Table(name="system_variables")
+ * @ORM\Table(name="system_variables", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
 class SystemVariable implements \JsonSerializable
 {

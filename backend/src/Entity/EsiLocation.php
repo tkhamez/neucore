@@ -16,7 +16,7 @@ use OpenApi\Annotations as OA;
  *     required={"id", "name", "category"}
  * )
  * @ORM\Entity
- * @ORM\Table(name="esi_locations")
+ * @ORM\Table(name="esi_locations", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
 class EsiLocation implements \JsonSerializable
 {

@@ -17,7 +17,7 @@ use OpenApi\Annotations as OA;
  * )
  *
  * @ORM\Entity
- * @ORM\Table(name="watchlists")
+ * @ORM\Table(name="watchlists", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
 class Watchlist implements \JsonSerializable
 {

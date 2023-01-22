@@ -17,7 +17,7 @@ use OpenApi\Annotations as OA;
  *     required={"oldName", "changeDate"}
  * )
  * @ORM\Entity
- * @ORM\Table(name="character_name_changes")
+ * @ORM\Table(name="character_name_changes", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
 class CharacterNameChange implements \JsonSerializable
 {

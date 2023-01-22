@@ -18,7 +18,7 @@ use OpenApi\Annotations as OA;
  *     required={"id", "name"}
  * )
  * @ORM\Entity
- * @ORM\Table(name="groups_tbl")
+ * @ORM\Table(name="groups_tbl", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
 class Group implements \JsonSerializable
 {

@@ -19,7 +19,7 @@ final class Version20181105182238 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('CREATE TABLE settings (name VARCHAR(255) NOT NULL, value TEXT DEFAULT NULL, PRIMARY KEY(name)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE settings (name VARCHAR(255) NOT NULL, value TEXT DEFAULT NULL, PRIMARY KEY(name)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_520_ci` ENGINE = InnoDB');
     }
 
     /**

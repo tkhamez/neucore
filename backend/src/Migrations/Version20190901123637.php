@@ -23,7 +23,7 @@ final class Version20190901123637 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('CREATE TABLE esi_locations (id BIGINT NOT NULL, category VARCHAR(16) NOT NULL, name VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE esi_locations (id BIGINT NOT NULL, category VARCHAR(16) NOT NULL, name VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_520_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE corporation_members DROP FOREIGN KEY FK_4E085D3457A0D84');
         $this->addSql('DROP INDEX IDX_4E085D3457A0D84 ON corporation_members');
         $this->addSql('ALTER TABLE corporation_members CHANGE shiptype_id esi_type_id BIGINT DEFAULT NULL');

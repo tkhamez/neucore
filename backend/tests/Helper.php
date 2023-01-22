@@ -37,6 +37,7 @@ use Neucore\Entity\PlayerLogins;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\Plugin;
+use Neucore\Entity\Session;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\EsiApiFactory;
@@ -83,6 +84,7 @@ class Helper
         SystemVariable::class,
         EsiType::class,
         EsiLocation::class,
+        Session::class,
     ];
 
     /**

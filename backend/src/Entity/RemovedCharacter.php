@@ -19,7 +19,7 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(property="newPlayerName", type="string")
  * )
  * @ORM\Entity
- * @ORM\Table(name="removed_characters")
+ * @ORM\Table(name="removed_characters", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
 class RemovedCharacter implements \JsonSerializable
 {

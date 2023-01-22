@@ -17,7 +17,7 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(required={"id", "name"})
  *
  * @ORM\Entity()
- * @ORM\Table(name="plugins")
+ * @ORM\Table(name="plugins", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
 class Plugin implements \JsonSerializable
 {

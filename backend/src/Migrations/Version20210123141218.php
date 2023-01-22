@@ -46,7 +46,7 @@ final class Version20210123141218 extends AbstractMigration
         $this->addSql('DROP INDEX ar_year_idx ON app_requests');
         $this->addSql('DROP INDEX ar_month_idx ON app_requests');
         $this->addSql(
-            'ALTER TABLE app_requests ADD day VARCHAR(10) CHARACTER SET utf8 NOT NULL COLLATE `utf8_unicode_ci`'
+            'ALTER TABLE app_requests ADD day VARCHAR(10) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_520_ci`'
         );
 
         /** @noinspection SqlWithoutWhere */

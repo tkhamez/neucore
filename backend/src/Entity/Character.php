@@ -42,7 +42,7 @@ use OpenApi\Annotations as OA;
  *     )
  * )
  * @ORM\Entity
- * @ORM\Table(name="characters")
+ * @ORM\Table(name="characters", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
 class Character implements \JsonSerializable
 {

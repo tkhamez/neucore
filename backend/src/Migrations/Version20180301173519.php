@@ -29,6 +29,6 @@ class Version20180301173519 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('ALTER TABLE characters CHANGE expires expires INT NOT NULL, CHANGE refresh_token refresh_token TEXT NOT NULL COLLATE utf8_unicode_ci');
+        $this->addSql('ALTER TABLE characters CHANGE expires expires INT NOT NULL, CHANGE refresh_token refresh_token TEXT NOT NULL COLLATE `utf8mb4_unicode_520_ci`');
     }
 }

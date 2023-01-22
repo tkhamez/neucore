@@ -22,7 +22,7 @@ final class Version20220814112010 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE role_required_group (role_id INT NOT NULL, group_id INT NOT NULL, INDEX IDX_D21A6C44D60322AC (role_id), INDEX IDX_D21A6C44FE54D947 (group_id), PRIMARY KEY(role_id, group_id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE role_required_group (role_id INT NOT NULL, group_id INT NOT NULL, INDEX IDX_D21A6C44D60322AC (role_id), INDEX IDX_D21A6C44FE54D947 (group_id), PRIMARY KEY(role_id, group_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_520_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE role_required_group ADD CONSTRAINT FK_D21A6C44D60322AC FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE role_required_group ADD CONSTRAINT FK_D21A6C44FE54D947 FOREIGN KEY (group_id) REFERENCES groups_tbl (id) ON DELETE CASCADE');
     }
