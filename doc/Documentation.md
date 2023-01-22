@@ -232,6 +232,10 @@ The permissions are managed via groups, one for viewing and one for administrati
 
 ## Mail Notifications
 
+Note: The ESI refresh token used to send the mails is not automatically refreshed when no mails are sent. This is 
+relevant should CCP add refresh token rotation for web based applications. See also 
+[esi-docs - Refreshing tokens](https://docs.esi.evetech.net/docs/sso/refreshing_access_tokens.html).
+
 ### Invalid ESI Token
 
 An EVE mail can be sent for accounts with characters with an invalid ESI token.
@@ -264,7 +268,7 @@ See `backend/bin/run-jobs.sh` for a script that runs them all in a sensible orde
 
 ## Data Structure (Backend)
 
- (partial representation)
+(partial representation)
  
 ![Entity–relationship model](er-model.png)
 
