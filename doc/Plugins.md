@@ -38,8 +38,8 @@ user interface and implement a couple methods to create and update external serv
 - Create a new PHP class that implements `Neucore\Plugin\ServiceInterface` or `Neucore\Plugin\GeneralInterface`,
   depending on what kind of plugin (general or service) you want to create. It is also possible to implement both
   in the same class.
-- If you have a frontend, place all frontend files in their own directory so that they can be deployed below
-  `web/plugin/{name}/`. Mention the name of the {name} directory in your 
+- If you have a frontend, place all frontend files in a dedicated directory so that they can be deployed below
+  `plugin/{name}` in the document root of the Neucore installation. Mention the name of the {name} directory in your 
   documentation, it must be unique among all installed Neucore plugins.
 
 Neucore automatically loads all classes from the namespace that is configured with the `psr4_prefix` and 
@@ -58,8 +58,8 @@ be removed without notice.
 - Set the `NEUCORE_PLUGINS_INSTALL_DIR` environment variable (e.g. `/plugins`).
 - Copy the plugin into that directory within its own subdirectory (so that the plugin.yml file is e.g. 
   at `/plugins/discord/plugin.yml`).
-- If the plugin contains frontend files, make them available below `web/plugin/{name}/` (Docker: 
-  `/var/www/html/plugin/{name}/`), e.g. by creating a symlink or by mounting the directory in the Docker container. 
+- If the plugin contains frontend files, make them available below `web/plugin/{name}` (Docker: 
+  `/var/www/html/plugin/{name}`), e.g. by creating a symlink or by mounting the directory in the Docker container. 
   See the plugin documentation for the name of the directory {name}.
 - In Neucore, go to Administration -> Plugins and add a new plugin.
 - Configure the plugin, at the very least choose a plugin from the dropdown list.
