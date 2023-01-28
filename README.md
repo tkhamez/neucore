@@ -85,7 +85,7 @@ Other plugins:
 
 OpenAPI clients for the Neucore API:
 
-- [PHP](https://github.com/bravecollective/neucore-api)
+- [PHP](https://github.com/bravecollective/neucore-api-php)
 - [Python](https://github.com/bravecollective/neucore-api-python)
 - [Go](https://github.com/bravecollective/neucore-api-go)
 
