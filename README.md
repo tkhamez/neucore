@@ -95,6 +95,7 @@ Other software that use the Neucore API:
   manage channel members based on Neucore groups.
 - [Eve Overseer](https://github.com/1adog1/eve-overseer) A fleet participation tracking application.
 - [Eve Pingboard](https://github.com/cmd-johnson/eve-pingboard) Pings/Timers/Calendar.
+- [finance-check](https://github.com/tkhamez/finance-check)
 - [EVE-SRP](https://github.com/bravecollective/evesrp/tree/eb-deploy) integration.
 - [Neucore connector boilerplate](https://github.com/bravecollective/neucore-connector-boilerplate)
   An example PHP application that uses EVE SSO and Neucore groups for access control.
