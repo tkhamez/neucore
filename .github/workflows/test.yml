@@ -18,7 +18,7 @@ jobs:
             db-version: '10.6'
           - php-version: '8.1'
             db-image: mariadb
-            db-version: '10.8'
+            db-version: '10.10'
           - php-version: '8.2'
             db-image: mysql
             db-version: '8.0'

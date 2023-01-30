@@ -7,11 +7,11 @@ services:
     container_name: neucore_dev_db
     #image: mariadb:10.2
     image: mariadb:10.6 # LTS
-    #image: mariadb:10.8
+    #image: mariadb:10.10
     #image: mysql:8.0
     #volumes: ["./.db/10.2:/var/lib/mysql"]
     volumes: ["./.db/10.6:/var/lib/mysql"]
-    #volumes: ["./.db/10.8:/var/lib/mysql"]
+    #volumes: ["./.db/10.10:/var/lib/mysql"]
     #volumes: ["./.db/8.0:/var/lib/mysql"]
     environment:
       MYSQL_ROOT_PASSWORD: neucore
