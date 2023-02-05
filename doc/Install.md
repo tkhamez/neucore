@@ -88,6 +88,8 @@ Now login at http://localhost:8080/ and then make yourself an admin:
 docker exec -u www-data neucore_prod_http bin/console make-admin 1
 ```
 
+Continue reading [Getting started](..%2FREADME.md#getting-started).
+
 #### Further Configuration
 
 To access the database from the host, add the following argument when running the database container, for example:

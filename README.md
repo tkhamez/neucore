@@ -6,7 +6,9 @@
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/4573/badge)](https://bestpractices.coreinfrastructure.org/projects/4573)
 [![Open Hub](https://www.openhub.net/p/neucore/widgets/project_thin_badge?format=gif)](https://www.openhub.net/p/neucore/)
 
-# ![](setup/logo-small.svg) Neucore - Alliance Core Services
+<img align="right" width="35%" src="setup/logo.svg" alt="logo">
+
+# Neucore - Alliance Core Services
 
 <!-- toc -->
 
