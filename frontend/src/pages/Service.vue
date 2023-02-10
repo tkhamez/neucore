@@ -60,8 +60,8 @@
                        aria-describedby="Account data">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col" v-if="hasProperty('username')">Username</th>
                             <th scope="col" v-if="hasProperty('name')">Name</th>
+                            <th scope="col" v-if="hasProperty('username')">Username</th>
                             <th scope="col" v-if="hasProperty('password') && service.configurationFile.showPassword">
                                 Password
                             </th>
@@ -73,8 +73,8 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td v-if="hasProperty('username')">{{ account.username }}</td>
                             <td v-if="hasProperty('name')">{{ account.name }}</td>
+                            <td v-if="hasProperty('username')">{{ account.username }}</td>
                             <td v-if="hasProperty('password') &&
                                       service.configurationFile.showPassword">{{ account.password }}</td>
                             <td v-if="hasProperty('email')">{{ account.email }}</td>

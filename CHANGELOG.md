@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- Small UI improvements.
+
 ## 1.43.0
 
 22 Jan 2023
