@@ -4,6 +4,8 @@
 
 - Fix: Member tracking admin displayed characters as directors with valid tokens but without the required role.
 - Fix: No longer updating accounts from deactivated services when manually updating an account.
+- Change: No longer show accounts from deactivated plugins in the player modal window (but still on the user admin 
+  page).
 - Small UI improvements.
 
 ## 1.43.0

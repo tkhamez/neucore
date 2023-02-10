@@ -418,7 +418,7 @@
                         </tbody>
                     </table>
 
-                    <h4>Service Accounts</h4>
+                    <h4>Service Accounts *</h4>
                     <div class="table-responsive">
                         <table class="table table-hover nc-table-sm" aria-describedby="Manager of apps">
                             <thead class="table-light">
@@ -444,6 +444,7 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="small">* This includes accounts from deactivated plugins.</div>
 
                 </div> <!-- card-body -->
             </div> <!-- card -->

@@ -864,7 +864,7 @@ class PlayerController extends BaseController
         $json = $player->jsonSerialize(false, true, true); // with character name changes and ESI tokens
         $json['removedCharacters'] = $player->getRemovedCharacters();
         $json['incomingCharacters'] = $player->getIncomingCharacters();
-        $json['serviceAccounts'] = $this->getServiceAccounts($player, $pluginService);
+        $json['serviceAccounts'] = $this->getServiceAccounts($player, $pluginService, false);
 
         return $this->withJson($json);
     }
@@ -931,7 +931,7 @@ class PlayerController extends BaseController
             'groups' => $player->getGroups(),
             'removedCharacters' => $player->getRemovedCharacters(),
             'incomingCharacters' => $player->getIncomingCharacters(),
-            'serviceAccounts' => $this->getServiceAccounts($player, $pluginService),
+            'serviceAccounts' => $this->getServiceAccounts($player, $pluginService, true),
         ]);
     }
 
@@ -1217,11 +1217,15 @@ class PlayerController extends BaseController
         return false;
     }
 
-    private function getServiceAccounts(Player $player, PluginService $pluginService): array
+    private function getServiceAccounts(Player $player, PluginService $pluginService, bool $onlyActive): array
     {
         $result = [];
 
-        $plugins = $this->repositoryFactory->getPluginRepository()->findBy([], ['name' => 'ASC']);
+        if ($onlyActive) {
+            $plugins = $pluginService->getActivePlugins();
+        } else {
+            $plugins = $this->repositoryFactory->getPluginRepository()->findBy([], ['name' => 'ASC']);
+        }
         foreach ($plugins as $plugin) {
             $implementation = $pluginService->getPluginImplementation($plugin);
             $accounts = [];
