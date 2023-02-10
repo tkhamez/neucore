@@ -500,7 +500,7 @@ class CorporationControllerTest extends WebTestCase
         $char1a = (new Character())->setId(1020301)->setName('Dir 1')->setPlayer($player)->setCorporation($corp);
         $char1b = (new Character())->setId(1020302)->setName('Dir 2')->setPlayer($player)->setCorporation($corp);
         $token1a = (new EsiToken())->setEveLogin($login1)->setCharacter($char1a)->setValidToken(true)
-            ->setRefreshToken('rt')->setAccessToken('at')->setExpires(time());
+            ->setRefreshToken('rt')->setAccessToken('at')->setExpires(time())->setHasRoles(true);
         $token1b = (new EsiToken())->setEveLogin($login1)->setCharacter($char1b)
             ->setRefreshToken('rt')->setAccessToken('at')->setExpires(time());
         $token2 = (new EsiToken())->setEveLogin($login2)->setCharacter($char1a)

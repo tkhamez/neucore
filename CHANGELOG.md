@@ -2,6 +2,7 @@
 
 ## next
 
+- Fix: Member tracking admin displayed characters as directors with valid tokens but without the required role.
 - Small UI improvements.
 
 ## 1.43.0

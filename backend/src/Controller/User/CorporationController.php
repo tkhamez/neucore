@@ -383,7 +383,7 @@ class CorporationController extends BaseController
 
         $directors = [];
         foreach ($repository->findByLoginAndCorporation(EveLogin::NAME_TRACKING, (int)$id) as $esiToken) {
-            if ($esiToken->getValidToken() && $esiToken->getCharacter()) {
+            if ($esiToken->getValidToken() && $esiToken->getHasRoles() !== false && $esiToken->getCharacter()) {
                 $directors[] = [
                     'id' => $esiToken->getCharacter()->getId(),
                     'name' => $esiToken->getCharacter()->getName(),
