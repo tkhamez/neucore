@@ -75,7 +75,7 @@ class PluginServiceTest extends TestCase
         );
         $this->testService1Impl = new TestService1(
             $this->log,
-            new PluginConfiguration(1, [], ''),
+            new PluginConfiguration(1, true, [], ''),
             Helper::getPluginFactory(),
         );
         TestService1::$getAccountException = false;
@@ -239,6 +239,7 @@ class PluginServiceTest extends TestCase
         $service = new Plugin();
         $conf = new PluginConfigurationDatabase();
         $conf->directoryName = 'plugin-name';
+        $conf->active = true;
         $conf->requiredGroups = [1, 2];
         $conf->configurationData = 'other: data';
         $service->setConfigurationDatabase($conf);
@@ -254,6 +255,7 @@ class PluginServiceTest extends TestCase
         /* @phan-suppress-next-line PhanUndeclaredMethod */
         $configuration = $implementation->getPluginConfiguration();
         $this->assertSame(0, $configuration->id);
+        $this->assertTrue($configuration->active);
         $this->assertSame([1, 2], $configuration->requiredGroups);
         $this->assertSame('other: data', $configuration->configurationData);
 

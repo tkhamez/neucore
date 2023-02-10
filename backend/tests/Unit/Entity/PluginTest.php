@@ -189,7 +189,7 @@ class PluginTest extends TestCase
     {
         $impl = new ServiceTest_ServiceImplementation(
             new Logger(),
-            new PluginConfiguration(1, [], ''),
+            new PluginConfiguration(1, true, [], ''),
             Helper::getPluginFactory(),
         );
         $actual = (new Plugin())->setServiceImplementation($impl)->getServiceImplementation();
@@ -200,7 +200,7 @@ class PluginTest extends TestCase
     {
         $impl = new ServiceTest_GeneralPluginImplementation(
             new Logger(),
-            new PluginConfiguration(1, [], ''),
+            new PluginConfiguration(1, true, [], ''),
             Helper::getPluginFactory(),
         );
         $actual = (new Plugin())->setGeneralImplementation($impl)->getGeneralImplementation();
