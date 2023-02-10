@@ -1221,7 +1221,7 @@ class PlayerController extends BaseController
     {
         $result = [];
 
-        $plugins = $this->repositoryFactory->getPluginRepository()->findBy([]);
+        $plugins = $this->repositoryFactory->getPluginRepository()->findBy([], ['name' => 'ASC']);
         foreach ($plugins as $plugin) {
             $implementation = $pluginService->getPluginImplementation($plugin);
             $accounts = [];
