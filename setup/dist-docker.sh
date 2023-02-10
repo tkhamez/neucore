@@ -20,13 +20,13 @@ docker-compose exec neucore_php sh -c "cd ../dist/build/backend && composer open
 # OpenAPI JS client
 cd "${DIR}"/.. || exit
 docker-compose run neucore_java /app/dist/build/frontend/openapi.sh
-docker-compose run neucore_node sh -c "cd ../dist/build/frontend/neucore-js-client && npm install"
-docker-compose run neucore_node sh -c "cd ../dist/build/frontend/neucore-js-client && npm run build"
+docker-compose exec neucore_node sh -c "cd ../dist/build/frontend/neucore-js-client && npm install"
+docker-compose exec neucore_node sh -c "cd ../dist/build/frontend/neucore-js-client && npm run build"
 
 # Frontend
 cd "${DIR}"/.. || exit
-docker-compose run neucore_node sh -c "cd ../dist/build/frontend && npm install"
-docker-compose run neucore_node sh -c "cd ../dist/build/frontend && npm run build"
+docker-compose exec neucore_node sh -c "cd ../dist/build/frontend && npm install"
+docker-compose exec neucore_node sh -c "cd ../dist/build/frontend && npm run build"
 
 # Collect files and create archive
 "${DIR}"/../dist/build/setup/dist-collect-files.sh

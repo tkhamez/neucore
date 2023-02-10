@@ -33,6 +33,7 @@ services:
     build:
       context: setup
       dockerfile: Dockerfile-node
+    tty: true
     volumes: [".:/app"]
     environment:
       BACKEND_HOST: http://localhost:8080

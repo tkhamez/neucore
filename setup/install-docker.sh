@@ -14,14 +14,14 @@ fi
 
 # Generate and build OpenAPI JavaScript client
 docker-compose run neucore_java /app/frontend/openapi.sh
-docker-compose run neucore_node npm install --prefix /app/frontend/neucore-js-client
-docker-compose run neucore_node npm run build --prefix /app/frontend/neucore-js-client
+docker-compose exec neucore_node npm install --prefix /app/frontend/neucore-js-client
+docker-compose exec neucore_node npm run build --prefix /app/frontend/neucore-js-client
 
 
 # Build frontend
-docker-compose run neucore_node npm install
+docker-compose exec neucore_node npm install
 if [[ $1 = prod ]]; then
-    docker-compose run neucore_node npm run build
+    docker-compose exec neucore_node npm run build
 fi
 
 # Create database for unit tests

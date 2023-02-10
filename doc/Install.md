@@ -247,10 +247,10 @@ the database host is `neucore_db` and the database name also `neucore`.
   `export UID && docker-compose up`
 - Install the app:  
   `export UID && setup/install-docker.sh`  
-  `docker-compose run neucore_node npm run build`
+  `docker-compose exec neucore_node npm run build`
 - Run tests and other commands in the php and node containers:  
   `export UID && docker-compose exec neucore_php /bin/sh`  
-  `export UID && docker-compose run --service-ports neucore_node /bin/sh`
+  `export UID && docker-compose exec neucore_node /bin/sh`
 
 The web application is available at http://localhost:8080, the frontend development server at http://localhost:3000.
 The database is also available at `127.0.0.1:30306` and it's data is stored in the `.db` subdirectory.
