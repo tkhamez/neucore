@@ -439,14 +439,17 @@ class PluginServiceTest extends TestCase
 
         $conf1 = new PluginConfigurationDatabase();
         $conf1->directoryName = 'plugin-acc1'; // with action
+        $conf1->active = true;
         $service1 = (new Plugin())->setName('S1')->setConfigurationDatabase($conf1);
 
         $conf2 = new PluginConfigurationDatabase();
         $conf2->directoryName = 'plugin-acc2'; // no action
+        $conf2->active = true;
         $service2 = (new Plugin())->setName('S2')->setConfigurationDatabase($conf2);
 
         $conf3 = (new PluginConfigurationDatabase());
         $conf3->directoryName = 'plugin-missing-class-with-action'; // with action
+        $conf3->active = true;
         $service3 = (new Plugin())->setName('S3')->setConfigurationDatabase($conf3);
 
         $player1 = (new Player())->setName('P1');
@@ -478,6 +481,7 @@ class PluginServiceTest extends TestCase
 
         $conf = new PluginConfigurationDatabase();
         $conf->directoryName = 'plugin-error-string';
+        $conf->active = true;
         $service = (new Plugin())->setName('S1')->setConfigurationDatabase($conf);
 
         $player = (new Player())->setName('P1');
@@ -501,6 +505,7 @@ class PluginServiceTest extends TestCase
 
         $conf1 = new PluginConfigurationDatabase();
         $conf1->directoryName = 'plugin-acc1'; // with action
+        $conf1->active = true;
         $service1 = (new Plugin())->setName('S1')->setConfigurationDatabase($conf1);
 
         $player2 = (new Player())->setName('P2');

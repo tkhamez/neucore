@@ -695,6 +695,7 @@ class AccountTest extends TestCase
     {
         $conf1 = new PluginConfigurationDatabase();
         $conf1->directoryName = 'plugin';
+        $conf1->active = true;
         $service1 = (new Plugin())->setName('S1')->setConfigurationDatabase($conf1);
 
         $player1 = (new Player())->setName('player 1');
