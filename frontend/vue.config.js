@@ -82,6 +82,14 @@ module.exports = defineConfig(() => {
                 }
                 return args;
             });
+            config.plugin('copy').tap((entries) => {
+                // Copy app logo
+                entries[0].patterns.push({
+                    from: path.resolve(__dirname, '../setup/logo.svg'),
+                    to: path.resolve(__dirname, '../web/dist/img/logo.svg'),
+                })
+                return entries
+            })
             if (production) {
                 config.plugin('copy').tap(args => {
                     // This favicon.ico is only used for dev mode to prevent 404 errors.
