@@ -71,5 +71,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: sonar-scanner
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+          -Dsonar.projectKey=tkhamez_neucore
           -Dsonar.organization=tkhamez
+          -Dsonar.sources=backend/src,frontend/src
+          -Dsonar.tests=backend/tests
+          -Dsonar.php.coverage.reportPaths=backend/var/logs/clover.xml
+          -Dsonar.coverage.exclusions=backend/src/Migrations/*,frontend/src/**
+          -Dsonar.cpd.exclusions=backend/src/Migrations/*
           -Dsonar.host.url=https://sonarcloud.io/
