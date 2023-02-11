@@ -7,7 +7,7 @@
                  :src="settings.customization_nav_logo">
             {{ settings.customization_nav_title }}
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+        <button v-if="h.hasRole('user')" v-cloak class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbar01" aria-controls="navbar01"
                 aria-expanded="true" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
