@@ -124,9 +124,8 @@ the following arguments, for example:
 
 ```
   --volume=$(pwd)/neucore-discord-plugin:/var/www/plugins/discord \
-  --env=NEUCORE_DISCORD_PLUGIN_DB_DSN="mysql:dbname=neucore_discord;host=192.168.1.2" \
-  --env=NEUCORE_DISCORD_PLUGIN_DB_USERNAME=neucore \
-  --env=NEUCORE_DISCORD_PLUGIN_DB_PASSWORD=neucore \
+  --env=NEUCORE_PLUGINS_INSTALL_DIR=/var/www/plugins \
+  --env=NEUCORE_DISCORD_PLUGIN_DB_DSN="mysql:dbname=neucore_discord;host=192.168.1.2;user=neucore;password=neucore" \
 ```
 
 In a real production environment you want to set up a reverse proxy server with SSL and remove the 
