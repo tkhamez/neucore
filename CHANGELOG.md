@@ -1,6 +1,8 @@
 # Changelog
 
-## next
+## 1.44.0
+
+11 Feb 2023
 
 - **BC Break**: Update to [Neucore plugin](https://github.com/tkhamez/neucore-plugin) version 1.0.0:
   - Menu items from plugins can now require roles.
