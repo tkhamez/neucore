@@ -42,6 +42,7 @@ class ConsoleTestCase extends TestCase
         $command = $console->find($name);
         if (in_array(Argv::class, class_uses($command))) {
             /** @noinspection PhpUndefinedMethodInspection */
+            /* @phan-suppress-next-line PhanUndeclaredMethod */
             $command->setArgv($argv);
         }
         $commandTester = new CommandTester($command);

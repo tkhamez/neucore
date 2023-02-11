@@ -52,3 +52,6 @@ parameters:
 		-
 			message: '#Offset 0 does not exist on array{}#'
 			path: %currentWorkingDirectory%/tests/Unit/Entity/PlayerTest.php
+		-
+			message: '#Call to an undefined method#'
+			path: %currentWorkingDirectory%/tests/Functional/ConsoleTestCase.php
