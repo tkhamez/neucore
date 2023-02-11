@@ -97,7 +97,7 @@
                                         Update Account
                                     </button>
                                     <br>
-                                    <small class="text-muted">Update the account permissions, for example.</small>
+                                    <small class="text-muted">Update permissions etc.</small>
                                 </span>
                                 <span v-if="hasAction('update-account') &&
                                             hasAction('reset-password') &&
