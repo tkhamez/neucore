@@ -1,6 +1,10 @@
 <?php
+/** @noinspection PhpUnused */
+/** @noinspection PhpIllegalPsrClassPathInspection */
 
-namespace Tests\Unit\Entity;
+declare(strict_types=1);
+
+namespace Tests\Functional\Command\PluginTest;
 
 use Neucore\Plugin\Core\FactoryInterface;
 use Neucore\Plugin\Core\OutputInterface;
@@ -12,8 +16,12 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class ServiceTest_GeneralPluginImplementation implements GeneralInterface
+class TestService1 implements GeneralInterface
 {
+    public static array $arguments = [];
+
+    public static array $options = [];
+
     public function __construct(
         LoggerInterface $logger,
         PluginConfiguration $pluginConfiguration,
@@ -41,5 +49,8 @@ class ServiceTest_GeneralPluginImplementation implements GeneralInterface
 
     public function command(array $arguments, array $options, OutputInterface $output): void
     {
+        self::$arguments = $arguments;
+        self::$options = $options;
+        $output->write('Test done.');
     }
 }

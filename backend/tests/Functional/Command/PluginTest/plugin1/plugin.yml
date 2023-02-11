@@ -1,0 +1,3 @@
+phpClass: Tests\Functional\Command\PluginTest\TestService1
+psr4Prefix: Tests\Functional\Command\PluginTest
+psr4Path: src

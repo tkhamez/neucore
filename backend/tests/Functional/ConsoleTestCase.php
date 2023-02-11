@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Functional;
 
 use Neucore\Application;
+use Neucore\Command\Traits\Argv;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tests\Helper;
@@ -19,7 +20,8 @@ class ConsoleTestCase extends TestCase
         array $input = [],
         array $mocks = [],
         array $envVars = [],
-        bool $forceDevMode = false
+        bool $forceDevMode = false,
+        array $argv = [],
     ): string {
         $app = new Application();
         $app->loadSettings(true, $forceDevMode);
@@ -38,6 +40,10 @@ class ConsoleTestCase extends TestCase
         }
 
         $command = $console->find($name);
+        if (in_array(Argv::class, class_uses($command))) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            $command->setArgv($argv);
+        }
         $commandTester = new CommandTester($command);
         $commandTester->execute($input);
 

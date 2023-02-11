@@ -275,7 +275,7 @@ class PluginService
     {
         $updated = [];
 
-        $plugins =  $this->getActivePlugins();
+        $plugins = $this->getActivePlugins();
         foreach ($plugins as $plugin) {
             try {
                 $this->addConfigurationFromFile($plugin);

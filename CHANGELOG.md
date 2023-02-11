@@ -2,8 +2,9 @@
 
 ## next
 
-- Update to [Neucore plugin](https://github.com/tkhamez/neucore-plugin) version [next]: Menu items from plugins
-  can now require roles.
+- Update to [Neucore plugin](https://github.com/tkhamez/neucore-plugin) version [next]:
+  - Menu items from plugins can now require roles.
+  - Added "plugin" command (cron jobs for plugins).
 - Change: No longer show accounts from deactivated plugins in the player modal window (but still on the user admin 
   page).
 - Fix: No longer updating accounts from deactivated services when manually updating an account.

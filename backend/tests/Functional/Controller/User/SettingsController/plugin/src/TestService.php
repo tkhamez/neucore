@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User\SettingsController;
 
+use Neucore\Plugin\Core\OutputInterface;
 use Neucore\Plugin\Data\CoreAccount;
 use Neucore\Plugin\Data\CoreCharacter;
 use Neucore\Plugin\Data\CoreRole;
@@ -49,6 +50,10 @@ class TestService implements GeneralInterface, ServiceInterface
         return [
             new NavigationItem(NavigationItem::PARENT_ROOT, 'Test', '/test', '_blank', [CoreRole::GROUP_MANAGER]),
         ];
+    }
+
+    public function command(array $arguments, array $options, OutputInterface $output): void
+    {
     }
 
     public function getAccounts(array $characters): array

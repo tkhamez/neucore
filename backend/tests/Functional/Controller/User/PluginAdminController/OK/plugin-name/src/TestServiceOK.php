@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace Tests\Functional\Controller\User\PluginAdminController;
 
 use Neucore\Plugin\Core\FactoryInterface;
+use Neucore\Plugin\Core\OutputInterface;
 use Neucore\Plugin\Data\CoreAccount;
 use Neucore\Plugin\Data\PluginConfiguration;
 use Neucore\Plugin\Exception;
@@ -40,5 +41,9 @@ class TestServiceOK implements GeneralInterface
     public function getNavigationItems(): array
     {
         return [];
+    }
+
+    public function command(array $arguments, array $options, OutputInterface $output): void
+    {
     }
 }

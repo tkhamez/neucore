@@ -18,6 +18,7 @@ use Neucore\Command\ClearCache;
 use Neucore\Command\DBVerifySSL;
 use Neucore\Command\DoctrineFixturesLoad;
 use Neucore\Command\MakeAdmin;
+use Neucore\Command\Plugin;
 use Neucore\Command\RevokeToken;
 use Neucore\Command\SendInvalidTokenMail;
 use Neucore\Command\SendMissingCharacterMail;
@@ -417,6 +418,7 @@ class Application
      */
     private function addCommands(ConsoleApplication $console): void
     {
+        $console->add($this->container->get(Plugin::class));
         $console->add($this->container->get(MakeAdmin::class));
         $console->add($this->container->get(UpdateCharacters::class));
         $console->add($this->container->get(UpdateCorporations::class));
