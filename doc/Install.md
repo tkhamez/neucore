@@ -88,7 +88,7 @@ Now login at http://localhost:8080/ and then make yourself an admin:
 docker exec -u www-data neucore_prod_http bin/console make-admin 1
 ```
 
-Continue reading [Getting started](..%2FREADME.md#getting-started).
+Continue reading [Getting started](../README.md#getting-started).
 
 #### Further Configuration
 

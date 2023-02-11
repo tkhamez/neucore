@@ -33,5 +33,6 @@ RUN echo 'Header always set Strict-Transport-Security "max-age=31536000"' > /etc
 
 COPY --from=build /var/www/neucore/web /var/www/html
 COPY --from=build /var/www/neucore/backend /var/www/backend
+COPY --from=build /var/www/neucore/setup /var/www/setup
 RUN chown www-data /var/www/backend/var/cache && \
     chown www-data /var/www/backend/var/logs
