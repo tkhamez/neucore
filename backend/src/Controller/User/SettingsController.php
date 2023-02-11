@@ -54,8 +54,9 @@ class SettingsController extends BaseController
     {
         $settingsRepository = $this->repositoryFactory->getSystemVariableRepository();
         $groupRepository = $this->repositoryFactory->getGroupRepository();
+        $playerRoles = $userAuth->getRoles();
 
-        if (in_array(Role::SETTINGS, $userAuth->getRoles())) {
+        if (in_array(Role::SETTINGS, $playerRoles)) {
             $scopes = self::VALID_SCOPES;
         } else {
             $scopes = [SystemVariable::SCOPE_PUBLIC];
@@ -68,7 +69,7 @@ class SettingsController extends BaseController
             if ($plugin->getServiceImplementation() && $userAuth->hasRequiredGroups($plugin)) {
                 $services[] = $plugin;
             }
-            if ($plugin->getGeneralImplementation() && $userAuth->hasRequiredGroups($plugin)) {
+            if ($plugin->getGeneralImplementation() && $userAuth->hasRequiredGroups($plugin, true)) {
                 $validPositions = [
                     NavigationItem::PARENT_ROOT,
                     NavigationItem::PARENT_MANAGEMENT,
@@ -76,12 +77,17 @@ class SettingsController extends BaseController
                     NavigationItem::PARENT_MEMBER_DATA,
                 ];
                 foreach ($plugin->getGeneralImplementation()->getNavigationItems() as $item) {
-                    if (in_array($item->getParent(), $validPositions) && str_starts_with($item->getUrl(), '/')) {
+                    if (
+                        (empty($item->getRoles()) || !empty(array_intersect($item->getRoles(), $playerRoles))) &&
+                        in_array($item->getParent(), $validPositions) &&
+                        str_starts_with($item->getUrl(), '/')
+                    ) {
                         $navigationItems[] = new NavigationItem(
                             $item->getParent(),
                             $item->getName(),
                             '/plugin/' . $plugin->getId() . $item->getUrl(),
                             $item->getTarget(),
+                            $item->getRoles(),
                         );
                     }
                 }

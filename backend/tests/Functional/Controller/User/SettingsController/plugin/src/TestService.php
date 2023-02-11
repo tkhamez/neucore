@@ -8,6 +8,7 @@ namespace Tests\Functional\Controller\User\SettingsController;
 
 use Neucore\Plugin\Data\CoreAccount;
 use Neucore\Plugin\Data\CoreCharacter;
+use Neucore\Plugin\Data\CoreRole;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\Core\FactoryInterface;
 use Neucore\Plugin\GeneralInterface;
@@ -46,7 +47,7 @@ class TestService implements GeneralInterface, ServiceInterface
     public function getNavigationItems(): array
     {
         return [
-            new NavigationItem(NavigationItem::PARENT_ROOT, 'Test', '/test', '_blank'),
+            new NavigationItem(NavigationItem::PARENT_ROOT, 'Test', '/test', '_blank', [CoreRole::GROUP_MANAGER]),
         ];
     }
 

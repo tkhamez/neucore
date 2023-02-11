@@ -2,11 +2,12 @@
 
 ## next
 
-- Fix: Member tracking admin displayed characters as directors with valid tokens but without the required role.
-- Fix: No longer updating accounts from deactivated services when manually updating an account.
+- Update to [Neucore plugin](https://github.com/tkhamez/neucore-plugin) version [next]: Menu items from plugins
+  can now require roles.
 - Change: No longer show accounts from deactivated plugins in the player modal window (but still on the user admin 
   page).
-- Update to [Neucore plugin](https://github.com/tkhamez/neucore-plugin) version [next].
+- Fix: No longer updating accounts from deactivated services when manually updating an account.
+- Fix: Member tracking admin displayed characters as directors with valid tokens but without the required role.
 - Small UI improvements.
 
 ## 1.43.0

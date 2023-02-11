@@ -7,22 +7,22 @@
                  :src="settings.customization_nav_logo">
             {{ settings.customization_nav_title }}
         </a>
-        <button v-if="h.hasRole('user')" v-cloak class="navbar-toggler" type="button" data-bs-toggle="collapse"
+        <button v-if="hasNavigation()" v-cloak class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbar01" aria-controls="navbar01"
                 aria-expanded="true" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div v-if="h.hasRole('user')" v-cloak class="navbar-collapse collapse" id="navbar01">
+        <div v-if="hasNavigation()" v-cloak class="navbar-collapse collapse" id="navbar01">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item">
+                <li v-if="h.hasRole('user')" class="nav-item">
                     <a class="nav-link" :class="{ active: page === 'Home' }" href="#Home">Home</a>
                 </li>
-                <li v-if="settings.navigationShowGroups === '1'" class="nav-item">
+                <li v-if="h.hasRole('user') && settings.navigationShowGroups === '1'" class="nav-item">
                     <a class="nav-link" :class="{ active: page === 'Groups' }" href="#Groups">Groups</a>
                 </li>
                 <li v-if="settings.navigationServices.length > 0" class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" :class="{ active: page === 'Service' }" href="#" role="button"
-                       data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" :class="{ active: isActiveDropdownMenu('Service') }"
+                       href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Services
                     </a>
                     <div class="dropdown-menu">
@@ -31,93 +31,44 @@
                            :href="`#Service/${service.id}`">{{ service.name }}</a>
                     </div>
                 </li>
-                <li v-if="h.hasAnyRole(['group-manager', 'app-manager', 'user-manager'])" class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" :class="{ active: managePages.indexOf(page) !== -1 }"
+                <li v-if="hasNavigationItem(navigationParent.management)" class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle"
+                       :class="{ active: isActiveDropdownMenu(navigationParent.management) }"
                        href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Management
                     </a>
                     <div class="dropdown-menu">
-                        <a v-if="h.hasRole('group-manager')"
-                           class="dropdown-item" :class="{ active: page === 'GroupManagement' }"
-                           href="#GroupManagement">Groups</a>
-                        <a v-if="h.hasRole('app-manager')"
-                           class="dropdown-item" :class="{ active: page === 'AppManagement' }"
-                           href="#AppManagement">Apps</a>
-                        <a v-if="h.hasRole('user-manager')"
-                           class="dropdown-item" :class="{ active: page === 'PlayerManagement' }"
-                           href="#PlayerManagement">Player</a>
-                        <a v-for="item in getNavigationItems(this.navigationParent.management)" class="dropdown-item"
-                           :href="backendHost + item.url" :target="item.target">{{ item.name }}</a>
+                        <a v-for="item in getNavigationItems(navigationParent.management)"
+                           class="dropdown-item" :class="{ active: page === item.active }"
+                           :href="item.href" :target="item.target">{{ item.name }}</a>
                     </div>
                 </li>
-                <li v-if="h.hasAnyRole([
-                        'group-admin', 'app-admin', 'user-admin', 'tracking-admin', 'settings', 'statistics'
-                    ])" class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" :class="{ active: adminPages.indexOf(page) !== -1 }"
+                <li v-if="hasNavigationItem(navigationParent.administration)" class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle"
+                       :class="{ active: isActiveDropdownMenu(navigationParent.administration) }"
                        href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Administration
                     </a>
                     <div class="dropdown-menu">
-                        <a v-if="h.hasRole('group-admin')"
-                            class="dropdown-item" :class="{ active: page === 'GroupAdmin' }"
-                            href="#GroupAdmin">Groups</a>
-                        <a v-if="h.hasRole('app-admin')"
-                            class="dropdown-item" :class="{ active: page === 'AppAdmin' }"
-                            href="#AppAdmin">Apps</a>
-                        <a v-if="h.hasRole('user-admin')"
-                           class="dropdown-item" :class="{ active: page === 'UserAdmin' }"
-                           href="#UserAdmin">Users</a>
-                        <a v-if="h.hasRole('user-admin')"
-                           class="dropdown-item" :class="{ active: page === 'RoleAdmin' }"
-                           href="#RoleAdmin">Roles</a>
-                        <a v-if="h.hasRole('plugin-admin')"
-                           class="dropdown-item" :class="{ active: page === 'PluginAdmin' }"
-                           href="#PluginAdmin">Plugins</a>
-                        <a v-if="h.hasRole('tracking-admin')"
-                           class="dropdown-item" :class="{ active: page === 'TrackingAdmin' }"
-                           href="#TrackingAdmin">Tracking</a>
-                        <a v-if="h.hasRole('watchlist-admin')"
-                           class="dropdown-item" :class="{ active: page === 'WatchlistAdmin' }"
-                           href="#WatchlistAdmin">Watchlist</a>
-                        <a v-if="h.hasRole('settings')"
-                           class="dropdown-item" :class="{ active: page === 'SystemSettings' }"
-                           href="#SystemSettings">Settings</a>
-                        <a v-if="h.hasRole('settings')"
-                           class="dropdown-item" :class="{ active: page === 'EVELoginAdmin' }"
-                           href="#EVELoginAdmin">EVE Logins</a>
-                        <a v-if="h.hasRole('statistics')"
-                           class="dropdown-item" :class="{ active: page === 'Statistics' }"
-                           href="#Statistics">Statistics</a>
-                        <a v-for="item in getNavigationItems(this.navigationParent.administration)"
-                           class="dropdown-item"
-                           :href="backendHost + item.url" :target="item.target">{{ item.name }}</a>
+                        <a v-for="item in getNavigationItems(navigationParent.administration)"
+                           class="dropdown-item" :class="{ active: page === item.active }"
+                           :href="item.href" :target="item.target">{{ item.name }}</a>
                     </div>
                 </li>
-                <li v-if="h.hasAnyRole(['tracking', 'watchlist', 'watchlist-manager', 'esi', 'user-chars'])"
-                    class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" :class="{ active: memberDataPages.indexOf(page) !== -1 }"
+                <li v-if="hasNavigationItem(navigationParent.member_data)" class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle"
+                       :class="{ active: isActiveDropdownMenu(navigationParent.member_data) }"
                        href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Member Data
                     </a>
                     <div class="dropdown-menu">
-                        <a v-if="h.hasRole('tracking')"
-                           class="dropdown-item" :class="{ active: page === 'Tracking' }"
-                           href="#Tracking">Member Tracking</a>
-                        <a v-if="h.hasAnyRole(['watchlist', 'watchlist-manager'])"
-                           class="dropdown-item" :class="{ active: page === 'Watchlist' }"
-                           href="#Watchlist">Watchlist</a>
-                        <a v-if="h.hasRole('user-chars')"
-                           class="dropdown-item" :class="{ active: page === 'Characters' }"
-                           href="#Characters">Characters</a>
-                        <a v-if="h.hasRole('esi')"
-                           class="dropdown-item" :class="{ active: page === 'Esi' }"
-                           href="#Esi">ESI</a>
-                        <a v-for="item in getNavigationItems(this.navigationParent.member_data)" class="dropdown-item"
-                           :href="backendHost + item.url" :target="item.target">{{ item.name }}</a>
+                        <a v-for="item in getNavigationItems(navigationParent.member_data)"
+                           class="dropdown-item" :class="{ active: page === item.active }"
+                           :href="item.href" :target="item.target">{{ item.name }}</a>
                     </div>
                 </li>
-                <li v-for="item in getNavigationItems(this.navigationParent.root)" class="nav-item">
-                    <a class="nav-link" :href="backendHost + item.url" :target="item.target">{{ item.name }}</a>
+                <li v-for="item in getNavigationItems(navigationParent.root)" class="nav-item">
+                    <a class="nav-link" :href="item.href" :target="item.target">{{ item.name }}</a>
                 </li>
             </ul>
 
@@ -166,12 +117,31 @@ export default {
             settings: toRef(this.store.state, 'settings'),
             navigationParent: Data.navigationParent,
             backendHost: Data.envVars.backendHost,
-            managePages: ['GroupManagement', 'AppManagement', 'PlayerManagement'],
-            adminPages: [
-                'GroupAdmin', 'PluginAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings',
-                'EVELoginAdmin', 'Statistics'
-            ],
-            memberDataPages: ['Tracking', 'Watchlist', 'Esi', 'Characters'],
+            navigationItems: {
+                management: [
+                    {path: 'GroupManagement', name: 'Groups', roles: ['group-manager']},
+                    {path: 'AppManagement', name: 'Apps', roles: ['app-manager']},
+                    {path: 'PlayerManagement', name: 'Player', roles: ['user-manager']},
+                ],
+                administration: [
+                    {path: 'GroupAdmin', name: 'Groups', roles: ['group-admin']},
+                    {path: 'AppAdmin', name: 'Apps', roles: ['app-admin']},
+                    {path: 'UserAdmin', name: 'Users', roles: ['user-admin']},
+                    {path: 'RoleAdmin', name: 'Roles', roles: ['user-admin']},
+                    {path: 'PluginAdmin', name: 'Plugins', roles: ['plugin-admin']},
+                    {path: 'TrackingAdmin', name: 'Tracking', roles: ['tracking-admin']},
+                    {path: 'WatchlistAdmin', name: 'Watchlist', roles: ['watchlist-admin']},
+                    {path: 'SystemSettings', name: 'Settings', roles: ['settings']},
+                    {path: 'EVELoginAdmin', name: 'EVE Logins', roles: ['settings']},
+                    {path: 'Statistics', name: 'Statistics', roles: ['statistics']},
+                ],
+                member_data: [
+                    {path: 'Tracking', name: 'Member Tracking', roles: ['tracking']},
+                    {path: 'Watchlist', name: 'Watchlist', roles: ['watchlist', 'watchlist-manager']},
+                    {path: 'Characters', name: 'Characters', roles: ['user-chars']},
+                    {path: 'Esi', name: 'ESI', roles: ['esi']},
+                ],
+            },
             page: '',
             themes: Data.themes,
             selectedTheme: '',
@@ -216,8 +186,54 @@ export default {
             enable.setAttribute('rel', 'stylesheet');
         },
 
+        hasNavigation() {
+            return (
+                this.h.hasRole('user') ||
+                this.getNavigationItems(this.navigationParent.root).length > 0
+            );
+        },
+
+        hasNavigationItem(parent) {
+            return this.getNavigationItems(parent).length > 0;
+        },
+
+        isActiveDropdownMenu(menu) {
+            if (menu === 'Service') {
+                return this.page === menu;
+            } else if (this.navigationItems[menu]) {
+                for (const menuItem of this.navigationItems[menu]) {
+                    if (menuItem.path === this.page) {
+                        return true;
+                    }
+                }
+            }
+        },
+
         getNavigationItems(parent) {
-            return this.settings.navigationGeneralPlugins.filter(item => item.parent === parent);
+            let items = [];
+
+            Object.entries(this.navigationItems)
+                .filter(entry => entry[0] === parent)
+                .map(entry => entry[1]
+                    .filter(coreItem => this.h.hasAnyRole(coreItem.roles))
+                    .map(coreItem => items.push({
+                        active: coreItem.path,
+                        href: `#${coreItem.path}`,
+                        name: coreItem.name,
+                        target: ''
+                    }))
+                );
+
+            this.settings.navigationGeneralPlugins
+                .filter(item => item.parent === parent)
+                .map(pluginItem => items.push({
+                    active: '',
+                    href: this.backendHost + pluginItem.url,
+                    name: pluginItem.name,
+                    target: pluginItem.target,
+                }))
+
+            return items;
         },
     },
 }

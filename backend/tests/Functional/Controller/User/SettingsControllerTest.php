@@ -16,6 +16,7 @@ use Neucore\Entity\Plugin;
 use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Plugin\Data\CoreRole;
 use Neucore\Repository\SystemVariableRepository;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
@@ -92,7 +93,7 @@ class SettingsControllerTest extends WebTestCase
     public function testSystemList200Authenticated()
     {
         $this->setupDb();
-        $this->loginUser(5); // role: USER
+        $this->loginUser(5); // role: USER, GROUP_MANAGER; groups: g1
 
         // Note: the list of variables is not complete
 
@@ -116,9 +117,9 @@ class SettingsControllerTest extends WebTestCase
             ])],
             ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([
                 ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service1->getId().'/test',
-                    'target' => '_blank'],
+                    'target' => '_blank', 'roles' => [CoreRole::GROUP_MANAGER]],
                 ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service2->getId().'/test',
-                    'target' => '_blank'],
+                    'target' => '_blank', 'roles' => [CoreRole::GROUP_MANAGER]],
             ])],
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
             ['name' => 'discord', 'value' => 'https://discord.gg/memUh56u8z'],
@@ -128,7 +129,7 @@ class SettingsControllerTest extends WebTestCase
     public function testSystemList200RoleSetting()
     {
         $this->setupDb();
-        $this->loginUser(6); // roles: USER, SETTINGS
+        $this->loginUser(6); // roles: USER, GROUP_MANAGER, SETTINGS; groups: none
 
         // Note: the list of variables is not complete
 
@@ -153,7 +154,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'navigationServices', 'value' => \json_encode([$this->service1->jsonSerialize()])],
             ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([
                 ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service1->getId().'/test',
-                    'target' => '_blank'],
+                    'target' => '_blank', 'roles' => [CoreRole::GROUP_MANAGER]],
             ])],
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
             ['name' => 'discord', 'value' => 'https://discord.gg/memUh56u8z'],
@@ -371,8 +372,8 @@ class SettingsControllerTest extends WebTestCase
         $this->em->persist($group);
         $this->em->flush();
 
-        $this->helper->addCharacterMain('User', 5, [Role::USER], ['g1']);
-        $admin = $this->helper->addCharacterMain('Admin', 6, [Role::USER, Role::SETTINGS]);
+        $this->helper->addCharacterMain('User', 5, [Role::USER, Role::GROUP_MANAGER], ['g1']);
+        $admin = $this->helper->addCharacterMain('Admin', 6, [Role::USER, Role::GROUP_MANAGER, Role::SETTINGS]);
 
         $conf1 = new PluginConfigurationDatabase();
         $conf1->directoryName = 'plugin';
