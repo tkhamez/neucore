@@ -20,4 +20,3 @@
 
 # Docker
 /.db/*
-!/.db/.gitkeep
