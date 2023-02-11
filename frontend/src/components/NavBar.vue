@@ -74,21 +74,26 @@
 
             <img v-if="authChar" :src="h.characterPortrait(authChar.id, 32)"
                  class="d-inline-block align-top me-2" alt="portrait">
+
             <div v-if="authChar" class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
-                    {{ authChar.name }}
-                </button>
-                <div class="dropdown-menu dropdown-menu-end scrollable-menu">
-                    <a href="#" @click.prevent="logout()" class="dropdown-item">
-                        <span role="img" class="fas fa-sign-out"></span>
-                        Sign out
-                    </a>
-                    <h6 class="dropdown-header">Themes</h6>
-                    <a v-for="theme in themes" class="dropdown-item" href="#"
-                       :class="{ 'active': selectedTheme === theme }"
-                       v-on:click.prevent="selectTheme(theme)">{{ theme }}</a>
-                </div>
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            {{ authChar.name }}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end scrollable-menu">
+                            <a href="#" @click.prevent="logout()" class="dropdown-item">
+                                <span role="img" class="fas fa-sign-out"></span>
+                                Sign out
+                            </a>
+                            <h6 class="dropdown-header">Themes</h6>
+                            <a v-for="theme in themes" class="dropdown-item" href="#"
+                               :class="{ 'active': selectedTheme === theme }"
+                               v-on:click.prevent="selectTheme(theme)">{{ theme }}</a>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
@@ -316,11 +321,13 @@ function addNavBehaviour() {
     .sketchy .dropdown-menu {
         margin: -3px;
     }
-    .scrollable-menu {
-        height: auto;
-        max-height: calc(100vh - 80px);
-        overflow-x: hidden;
-        overflow-y: scroll;
+    @media (min-width: 992px) {
+        .scrollable-menu {
+            height: auto;
+            max-height: calc(100vh - 80px);
+            overflow-x: hidden;
+            overflow-y: scroll;
+        }
     }
     .navbar-brand img {
         max-height: 100px;
