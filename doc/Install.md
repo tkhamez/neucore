@@ -157,7 +157,7 @@ You can also create the image yourself. Clone the repository and build a distrib
 the following:
 
 ```shell
-docker build --no-cache -t neucore .
+docker build -f setup/Dockerfile --no-cache -t neucore dist
 ```
 
 ### Manual Installation

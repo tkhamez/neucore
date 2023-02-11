@@ -70,8 +70,7 @@ jobs:
       - name: Build Docker image
         if: ${{ github.repository_owner == 'tkhamez' }}
         run: |
-          cp dist/build/Dockerfile Dockerfile
-          docker build --no-cache -t tkhamez/neucore:${{ steps.get_version.outputs.VERSION }} .
+          docker build -f dist/build/setup/Dockerfile --no-cache -t tkhamez/neucore:${{ steps.get_version.outputs.VERSION }} dist
           docker tag tkhamez/neucore:${{ steps.get_version.outputs.VERSION }} tkhamez/neucore:latest
       - name: Publish Docker image
         if: ${{ github.repository_owner == 'tkhamez' }}
