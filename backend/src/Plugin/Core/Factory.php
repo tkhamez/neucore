@@ -12,8 +12,10 @@ use Symfony\Component\Yaml\Parser;
 
 class Factory implements FactoryInterface
 {
-    public function __construct(private EsiClient $esiClient)
-    {
+    public function __construct(
+        private EsiClient $esiClient,
+        private Account $account,
+    ) {
     }
 
     public function createHttpClient(string $userAgent = ''): ClientInterface
@@ -48,5 +50,10 @@ class Factory implements FactoryInterface
     public function getEsiClient(): EsiClientInterface
     {
         return $this->esiClient;
+    }
+
+    public function getAccount(): AccountInterface
+    {
+        return $this->account;
     }
 }

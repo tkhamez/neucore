@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Plugin\Core;
 
+use Neucore\Plugin\Core\AccountInterface;
 use Neucore\Plugin\Core\EsiClientInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
@@ -38,5 +39,11 @@ class FactoryTest extends TestCase
     {
         $factory = Helper::getPluginFactory();
         $this->assertInstanceOf(EsiClientInterface::class, $factory->getEsiClient());
+    }
+
+    public function testGetAccount()
+    {
+        $factory = Helper::getPluginFactory();
+        $this->assertInstanceOf(AccountInterface::class, $factory->getAccount());
     }
 }

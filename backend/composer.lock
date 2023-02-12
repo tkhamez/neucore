@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b44bd98bd24d5bf3c00ba4a65db70b6d",
+    "content-hash": "1329c81ee5f90256b1a4990d0c11a330",
     "packages": [
         {
             "name": "brick/math",
@@ -4842,16 +4842,16 @@
         },
         {
             "name": "tkhamez/neucore-plugin",
-            "version": "1.0.0",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/neucore-plugin.git",
-                "reference": "e222f3f8f8ab1c46b9f6374570bf563bab970956"
+                "reference": "a8f97776ece819eb10d5a7709b22fc823d6714f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/neucore-plugin/zipball/e222f3f8f8ab1c46b9f6374570bf563bab970956",
-                "reference": "e222f3f8f8ab1c46b9f6374570bf563bab970956",
+                "url": "https://api.github.com/repos/tkhamez/neucore-plugin/zipball/a8f97776ece819eb10d5a7709b22fc823d6714f6",
+                "reference": "a8f97776ece819eb10d5a7709b22fc823d6714f6",
                 "shasum": ""
             },
             "require": {
@@ -4865,6 +4865,7 @@
             "require-dev": {
                 "phpunit/phpunit": "^9.5"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -4879,9 +4880,9 @@
             "description": "Necessary classes to write a Neucore plugin.",
             "support": {
                 "issues": "https://github.com/tkhamez/neucore-plugin/issues",
-                "source": "https://github.com/tkhamez/neucore-plugin/tree/1.0.0"
+                "source": "https://github.com/tkhamez/neucore-plugin/tree/main"
             },
-            "time": "2023-02-11T20:00:18+00:00"
+            "time": "2023-02-12T15:30:11+00:00"
         },
         {
             "name": "tkhamez/slim-role-auth",
@@ -9106,7 +9107,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "tkhamez/neucore-plugin": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

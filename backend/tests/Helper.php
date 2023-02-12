@@ -150,9 +150,10 @@ class Helper
         if (!$logger) {
             $logger = new Logger();
         }
+        $repositoryFactory = new RepositoryFactory(self::getOm());
         if (!$storage) {
             $storage = new SystemVariableStorage(
-                new RepositoryFactory(self::getOm()),
+                $repositoryFactory,
                 new \Neucore\Service\ObjectManager(self::getOm(), $logger)
             );
         }
@@ -161,6 +162,10 @@ class Helper
                 self::getEsiClientService($client, $logger),
                 new HttpClientFactory($client),
                 $storage,
+            ),
+            new \Neucore\Plugin\Core\Account(
+                $repositoryFactory,
+                new AccountGroup($repositoryFactory, self::getOm())
             )
         );
     }
@@ -531,8 +536,13 @@ class Helper
         };
     }
 
-    public function setupDeactivateAccount(): Character
-    {
+    public function setupDeactivateAccount(
+        Player $player = null,
+        int $charId = 100200,
+        string $charName = 'Char',
+        int $corpId = 101,
+        string $corpName = 'Corp',
+    ): Character {
         $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
@@ -540,8 +550,24 @@ class Helper
         $this->getEm()->persist($setting2);
         $this->getEm()->persist($setting3);
         $this->getEm()->flush();
-        $corporation = (new Corporation())->setId(101);
-        return (new Character())->setCorporation($corporation)->addEsiToken((new EsiToken())->setValidToken(false));
+        $corporation = (new Corporation())->setId($corpId);
+        $login = (new EveLogin())->setId(1);
+        $token = (new EsiToken())->setValidToken(false)->setEveLogin($login)
+            ->setRefreshToken('')->setAccessToken('')->setExpires(time() - 1000);
+        $char = (new Character())->setCorporation($corporation)->addEsiToken($token);
+
+        if ($player) { // persist everything
+            $token->setCharacter($char);
+            $char->setPlayer($player);
+            $corporation->setName($corpName);
+            $char->setId($charId)->setName($charName);
+            $this->getEm()->persist($corporation);
+            $this->getEm()->persist($login);
+            $this->getEm()->persist($token);
+            $this->getEm()->persist($char);
+        }
+
+        return $char;
     }
 
     private static function getConfig(): config
