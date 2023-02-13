@@ -1,5 +1,15 @@
 # Plugins
 
+<!-- toc -->
+
+- [Overview](#overview)
+- [Create a plugin](#create-a-plugin)
+- [Install a plugin](#install-a-plugin)
+
+<!-- tocstop -->
+
+## Overview
+
 _The following is valid for Neucore 1.42.0 and [neucore-plugin](https://github.com/tkhamez/neucore-plugin)
 0.10.0 and above._
 
