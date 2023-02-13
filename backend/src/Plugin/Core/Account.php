@@ -17,20 +17,6 @@ class Account implements AccountInterface
     ) {
     }
 
-    public function getCharacter(int $characterId): ?CoreCharacter
-    {
-        $character = $this->repositoryFactory->getCharacterRepository()->find($characterId);
-
-        return $character?->toCoreCharacter();
-    }
-
-    public function getPlayerId(int $characterId): ?int
-    {
-        $character = $this->repositoryFactory->getCharacterRepository()->find($characterId);
-
-        return $character?->getPlayer()->getId();
-    }
-
     public function getAccount(int $playerId): ?CoreAccount
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);

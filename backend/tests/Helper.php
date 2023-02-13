@@ -42,6 +42,7 @@ use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Plugin\Core\Data;
 use Neucore\Plugin\Core\Factory;
 use Neucore\Service\Account;
 use Neucore\Service\AccountGroup;
@@ -166,7 +167,8 @@ class Helper
             new \Neucore\Plugin\Core\Account(
                 $repositoryFactory,
                 new AccountGroup($repositoryFactory, self::getOm())
-            )
+            ),
+            new Data($repositoryFactory),
         );
     }
 

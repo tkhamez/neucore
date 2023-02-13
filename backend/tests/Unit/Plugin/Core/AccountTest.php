@@ -51,19 +51,6 @@ class AccountTest extends TestCase
         );
     }
 
-    public function testGetCharacter()
-    {
-        $this->assertInstanceOf(CoreCharacter::class, $this->account->getCharacter(102031));
-        $this->assertNull($this->account->getCharacter(908070));
-    }
-
-    public function testGetPlayerId()
-    {
-        $this->assertSame(self::$playerId, $this->account->getPlayerId(102030));
-        $this->assertSame(self::$playerId, $this->account->getPlayerId(102031));
-        $this->assertNull($this->account->getPlayerId(908070));
-    }
-
     public function testGetAccount()
     {
         $this->assertInstanceOf(CoreAccount::class, $this->account->getAccount(self::$playerId));

@@ -15,6 +15,7 @@ class Factory implements FactoryInterface
     public function __construct(
         private EsiClient $esiClient,
         private Account $account,
+        private Data $data,
     ) {
     }
 
@@ -55,5 +56,10 @@ class Factory implements FactoryInterface
     public function getAccount(): AccountInterface
     {
         return $this->account;
+    }
+
+    public function getData(): DataInterface
+    {
+        return $this->data;
     }
 }
