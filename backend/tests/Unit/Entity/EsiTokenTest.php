@@ -6,8 +6,11 @@ namespace Tests\Unit\Entity;
 
 use Neucore\Api;
 use Neucore\Entity\Character;
+use Neucore\Entity\Corporation;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
+use Neucore\Entity\Player;
+use Neucore\Plugin\Data\CoreEsiToken;
 use PHPUnit\Framework\TestCase;
 
 class EsiTokenTest extends TestCase
@@ -150,5 +153,58 @@ class EsiTokenTest extends TestCase
         $this->assertTrue($token->setHasRoles(true)->getHasRoles());
         $this->assertFalse($token->setHasRoles(false)->getHasRoles());
         $this->assertNull($token->setHasRoles()->getHasRoles());
+    }
+
+    public function testToCoreEsiToken()
+    {
+        $this->assertNull((new EsiToken())->toCoreEsiToken(true));
+        $this->assertNull((new EsiToken())->setCharacter(new Character())->toCoreEsiToken(true));
+        $this->assertNull((new EsiToken())->setEveLogin(new EveLogin())->toCoreEsiToken(true));
+
+        $token = (new EsiToken())
+            ->setCharacter(
+                (new Character())
+                    ->setId(102030)
+                    ->setName('char')
+                    ->setPlayer((new Player())->setId(14)->setName('play'))
+                    ->setCorporation((new Corporation())->setId(131)->setName('corp'))
+            )
+            ->setEveLogin(
+                (new EveLogin())
+                    ->setName('login.one')
+                    ->setEsiScopes('scope.one scope.two')
+                    ->setEveRoles(['role1', 'role2'])
+            )
+            ->setValidToken(true)
+            ->setHasRoles(false)
+            ->setLastChecked(new \DateTime())
+        ;
+
+        $result1 = $token->toCoreEsiToken(true);
+        $this->assertInstanceOf(CoreEsiToken::class, $result1);
+        $this->assertSame(102030, $result1->character->id);
+        $this->assertSame(14, $result1->character->playerId);
+        $this->assertFalse($result1->character->main);
+        $this->assertSame('char', $result1->character->name);
+        $this->assertSame('play', $result1->character->playerName);
+        $this->assertSame(131, $result1->character->corporationId);
+        $this->assertSame('corp', $result1->character->corporationName);
+        $this->assertSame('login.one', $result1->eveLoginName);
+        $this->assertSame(['scope.one', 'scope.two'], $result1->esiScopes);
+        $this->assertSame(['role1', 'role2'], $result1->eveRoles);
+        $this->assertTrue($result1->valid);
+        $this->assertFalse($result1->hasRoles);
+        $this->assertInstanceOf(\DateTime::class, $result1->lastChecked);
+
+        $result2 = $token->toCoreEsiToken(false);
+        $this->assertInstanceOf(CoreEsiToken::class, $result2);
+        $this->assertSame(102030, $result2->character->id);
+        $this->assertNull($result2->character->corporationName);
+        $this->assertSame(14, $result2->character->playerId);
+        $this->assertNull($result2->character->main);
+        $this->assertNull($result2->character->name);
+        $this->assertNull($result2->character->playerName);
+        $this->assertNull($result2->character->corporationId);
+        $this->assertNull($result2->character->corporationName);
     }
 }

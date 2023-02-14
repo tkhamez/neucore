@@ -24,7 +24,7 @@ class Account implements AccountInterface
             return null;
         }
 
-        $coreAccount = $player->getCoreAccount();
+        $coreAccount = $player->toCoreAccount();
         if (!$coreAccount) {
             return null;
         }

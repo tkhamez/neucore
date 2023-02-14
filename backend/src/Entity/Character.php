@@ -353,6 +353,7 @@ class Character implements \JsonSerializable
             $this->getPlayer()->getId(),
             $this->getMain(),
             $this->getName() !== '' ? $this->getName() : null,
+            $this->getPlayer()->getName(),
             $this->getCharacterOwnerHash(),
             $this->getCorporation()?->getId(),
             $this->getCorporation()?->getName(),

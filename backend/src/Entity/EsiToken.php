@@ -9,6 +9,8 @@ namespace Neucore\Entity;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Api;
+use Neucore\Plugin\Data\CoreCharacter;
+use Neucore\Plugin\Data\CoreEsiToken;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 
@@ -243,5 +245,26 @@ class EsiToken implements \JsonSerializable
     public function getLastChecked(): ?\DateTime
     {
         return $this->lastChecked;
+    }
+
+    public function toCoreEsiToken(bool $fullCharacter): ?CoreEsiToken
+    {
+        if (!$this->character || !$this->eveLogin) {
+            return null;
+        }
+
+        return new CoreEsiToken(
+            $fullCharacter ?
+                $this->character->toCoreCharacter() :
+                new CoreCharacter($this->character->getId(), $this->character->getPlayer()->getId()),
+            $this->getEveLogin()->getName(),
+            !empty($this->getEveLogin()->getEsiScopes()) ?
+                array_map('trim', explode(' ', $this->getEveLogin()->getEsiScopes())) :
+                [],
+            $this->getEveLogin()->getEveRoles(),
+            $this->getValidToken(),
+            $this->getHasRoles(),
+            $this->getLastChecked(),
+        );
     }
 }

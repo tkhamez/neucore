@@ -465,16 +465,26 @@ class Helper
         Character $character,
         int $expires = 123456,
         string $accessToken = 'at',
-        ?bool $valid = null
+        ?bool $valid = null,
+        string $loginName = EveLogin::NAME_DEFAULT,
+        array $scopes = [], // only added if EveLogin does not already exist
+        array $roles = [], // only added if EveLogin does not already exist
+        \DateTime $lastChecked = null,
     ): EsiToken {
         $om = $this->getObjectManager();
 
-        $esiToken = $character->getEsiToken(EveLogin::NAME_DEFAULT);
+        $esiToken = $character->getEsiToken($loginName);
         if ($esiToken === null) {
-            $eveLogin = $this->addEveLogin(EveLogin::NAME_DEFAULT);
+            $eveLogin = $this->addEveLogin($loginName, $scopes, $roles);
             $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setRefreshToken('rt');
             $character->addEsiToken($esiToken);
             $esiToken->setCharacter($character);
+            if (!empty($roles)) {
+                $esiToken->setHasRoles(false);
+            }
+            if ($lastChecked) {
+                $esiToken->setLastChecked($lastChecked);
+            }
         }
 
         $esiToken->setExpires($expires);
@@ -510,7 +520,7 @@ class Helper
         }
 
         if ($eveLoginName) {
-            $eveLogin = $this->addEveLogin($eveLoginName);
+            $eveLogin = $this->addEveLogin($eveLoginName, [], []);
             $app->addEveLogin($eveLogin);
         }
 
@@ -577,14 +587,15 @@ class Helper
         return new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
     }
 
-    private function addEveLogin(string $name): EveLogin
+    private function addEveLogin(string $name, array $scopes, array $roles): EveLogin
     {
         $om = $this->getObjectManager();
 
-        $eveLogin = RepositoryFactory::getInstance($om)->getEveLoginRepository()
-            ->findOneBy(['name' => $name]);
+        $eveLogin = RepositoryFactory::getInstance($om)->getEveLoginRepository()->findOneBy(['name' => $name]);
         if ($eveLogin === null) {
-            $eveLogin = (new EveLogin())->setName($name);
+            $eveLogin = (new EveLogin())->setName($name)
+                ->setEsiScopes(implode(' ', $scopes))
+                ->setEveRoles($roles);
             $om->persist($eveLogin);
         }
 

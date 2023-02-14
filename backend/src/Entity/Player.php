@@ -667,7 +667,7 @@ class Player implements \JsonSerializable
         return array_values($this->incomingCharacters->toArray());
     }
 
-    public function getCoreAccount(): ?CoreAccount
+    public function toCoreAccount(): ?CoreAccount
     {
         $coreAccount = null;
         if ($this->getMain()) {
