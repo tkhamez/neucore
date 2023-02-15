@@ -27,15 +27,15 @@
 A web application for [EVE Online](https://www.eveonline.com) communities to organise their members into groups,
 monitor them and provide access to external services.
 
-This application focuses on providing core functionality related to player identities and an API that other
-applications can build upon.
+This application focuses on providing core functionality related to player identities, [ESI](http://esi.evetech.net)
+access and an API that other applications can build upon.
 
 Demo: https://neucore.tian-space.net.
 
 Main features:
 
 - Management of group memberships, manually and with various ways to automate membership.
-- API for various data including an [ESI](http://esi.evetech.net) proxy for all characters.
+- API for various data including an ESI proxy for all characters.
 - [Plugin](doc/Plugins.md) system, e.g. for service registration (Discord, Mumble etc.).
 - Corporation member tracking and character watchlists.
 - ... [and much more](doc/Documentation.md#features)

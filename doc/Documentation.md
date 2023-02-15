@@ -31,9 +31,6 @@
 
 ## Features
 
-This application focuses on providing core functionality related to player identities and an
-API that other applications can build upon.
-
 Main features:
 
 * **EVE SSO** login with configurable permission scopes.
