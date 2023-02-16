@@ -26,7 +26,8 @@ tokens from any character that is available on Neucore.
 
 **General plugins**
 
-They can have their own frontend and add items to the Neucore navigation menu that point to their own URL.
+They can have their own frontend, add items to the navigation menu that point to their own URL and
+implement console commands via Neucore (`backend/bin/console plugin {plugin_id} [args] [--opts]`).
 
 See this [example plugin](https://github.com/tkhamez/neucore-example-plugin) for a simple demo.
 
