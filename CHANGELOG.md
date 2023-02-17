@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- **BC Break**: Update to [Neucore plugin](https://github.com/tkhamez/neucore-plugin) version 2.0.0:
+
 ## 1.44.0
 
 11 Feb 2023

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Neucore\Plugin\Core;
 
+use Neucore\Entity\Player;
+use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Data\CoreAccount;
 use Neucore\Plugin\Data\CoreCharacter;
@@ -15,6 +17,46 @@ class Account implements AccountInterface
         private RepositoryFactory $repositoryFactory,
         private AccountGroup $accountGroup,
     ) {
+    }
+
+    public function getAccountsByGroup(int $groupId): array
+    {
+        $group = $this->repositoryFactory->getGroupRepository()->find($groupId);
+        if (!$group) {
+            return [];
+        }
+
+        return array_map(function (Player $player) {
+            return new CoreAccount($player->getId(), $player->getName());
+        }, $group->getPlayers());
+    }
+
+    public function getAccountsByGroupManager(int $groupId): array
+    {
+        $group = $this->repositoryFactory->getGroupRepository()->find($groupId);
+        if (!$group) {
+            return [];
+        }
+
+        return array_map(function (Player $player) {
+            return new CoreAccount($player->getId(), $player->getName());
+        }, $group->getManagers());
+    }
+
+    public function getAccountsByRole(string $roleName): array
+    {
+        if ($roleName === Role::USER) {
+            return [];
+        }
+
+        $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $roleName]);
+        if (!$role) {
+            return [];
+        }
+
+        return array_map(function (Player $player) {
+            return new CoreAccount($player->getId(), $player->getName());
+        }, $role->getPlayers());
     }
 
     public function getAccount(int $playerId): ?CoreAccount

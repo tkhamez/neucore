@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
+use Neucore\Plugin\Data\CoreGroup;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 
@@ -410,5 +411,10 @@ class Group implements \JsonSerializable
     public function getForbiddenGroups(): array
     {
         return array_values($this->forbiddenGroups->toArray());
+    }
+
+    public function toCoreGroup(): CoreGroup
+    {
+        return new CoreGroup($this->getId(), $this->getName());
     }
 }

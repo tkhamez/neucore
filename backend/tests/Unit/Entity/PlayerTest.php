@@ -607,7 +607,7 @@ class PlayerTest extends TestCase
 
     public function testToCoreAccount()
     {
-        $player = new Player();
+        $player = (new Player())->setId(1)->setName('p');
         $this->assertNull($player->toCoreAccount());
 
         $character = (new Character())->setId(100);
@@ -617,6 +617,8 @@ class PlayerTest extends TestCase
 
         $character->setMain(true);
         $this->assertInstanceOf(CoreAccount::class, $player->toCoreAccount());
+        $this->assertSame(1, $player->toCoreAccount()->playerId);
+        $this->assertSame('p', $player->toCoreAccount()->playerName);
         $this->assertInstanceOf(CoreCharacter::class, $player->toCoreAccount()->main);
         $this->assertSame(100, $player->toCoreAccount()->main->id);
         $this->assertSame(1, count($player->toCoreAccount()->characters));
@@ -628,7 +630,7 @@ class PlayerTest extends TestCase
 
         $player->addGroup((new Group())->setName('one'));
         $player->addManagerGroup((new Group())->setName('two'));
-        $player->addRole(new Role(1));
+        $player->addRole((new Role(1))->setName('r'));
         $this->assertSame(1, count($player->toCoreAccount()->memberGroups));
         $this->assertSame(1, count($player->toCoreAccount()->managerGroups));
         $this->assertSame(1, count($player->toCoreAccount()->roles));
@@ -637,6 +639,6 @@ class PlayerTest extends TestCase
         $this->assertInstanceOf(CoreRole::class, $player->toCoreAccount()->roles[0]);
         $this->assertSame('one', $player->toCoreAccount()->memberGroups[0]->name);
         $this->assertSame('two', $player->toCoreAccount()->managerGroups[0]->name);
-        $this->assertSame(1, $player->toCoreAccount()->roles[0]->identifier);
+        $this->assertSame('r', $player->toCoreAccount()->roles[0]->name);
     }
 }

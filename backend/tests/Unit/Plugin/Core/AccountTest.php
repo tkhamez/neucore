@@ -22,6 +22,10 @@ class AccountTest extends TestCase
 
     private static int $playerId;
 
+    private static int $group1Id;
+
+    private static int $group3Id;
+
     private AccountInterface $account;
 
     public static function setUpBeforeClass(): void
@@ -34,8 +38,11 @@ class AccountTest extends TestCase
         self::$helper->addCharacterToPlayer('Alt 1', 102031, $player);
         self::$helper->setupDeactivateAccount($player, 102032, 'Alt 2');
         self::$playerId = $player->getId();
+        self::$group1Id = $groups[0]->getId();
+        self::$group3Id = $groups[2]->getId();
         $player->addGroup($groups[0]);
         $player->addGroup($groups[1]);
+        $player->addManagerGroup($groups[1]);
         $groups[2]->addManager($player);
 
         self::$helper->getEm()->flush();
@@ -49,6 +56,38 @@ class AccountTest extends TestCase
             $repositoryFactory,
             new AccountGroup($repositoryFactory, self::$helper->getEm())
         );
+    }
+
+    public function testGetAccountsByGroup()
+    {
+        $result = $this->account->getAccountsByGroup(self::$group1Id);
+
+        $this->assertSame(1, count($result));
+        $this->assertSame(self::$playerId, $result[0]->playerId);
+        $this->assertSame('Main', $result[0]->playerName);
+        $this->assertNull($result[0]->main);
+        $this->assertNull($result[0]->characters);
+        $this->assertNull($result[0]->memberGroups);
+        $this->assertNull($result[0]->managerGroups);
+        $this->assertNull($result[0]->roles);
+    }
+
+    public function testGetAccountsByGroupManager()
+    {
+        $this->assertSame(0, count($this->account->getAccountsByGroupManager(self::$group1Id)));
+
+        $result = $this->account->getAccountsByGroupManager(self::$group3Id);
+        $this->assertSame(1, count($result));
+        $this->assertSame(self::$playerId, $result[0]->playerId);
+    }
+
+    public function testGetAccountsByRole()
+    {
+        $this->assertSame(0, count($this->account->getAccountsByRole(CoreRole::USER)));
+
+        $result = $this->account->getAccountsByRole(CoreRole::GROUP_MANAGER);
+        $this->assertSame(1, count($result));
+        $this->assertSame(self::$playerId, $result[0]->playerId);
     }
 
     public function testGetAccount()

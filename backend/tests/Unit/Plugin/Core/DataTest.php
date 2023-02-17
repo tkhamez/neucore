@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Plugin\Core;
 
+use Neucore\Entity\Corporation;
 use Neucore\Entity\EveLogin;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Core\Data;
@@ -26,7 +27,10 @@ class DataTest extends TestCase
         self::$helper = new Helper();
         self::$helper->emptyDb();
 
-        $char = self::$helper->addCharacterMain('Main', 102030);
+        $corp = (new Corporation())->setId(1020)->setName('C1');
+        self::$helper->getEm()->persist($corp);
+        $char = self::$helper->addCharacterMain('Main', 102030, [], ['G1'])->setCorporation($corp);
+        $corp->addCharacter($char);
         $player = $char->getPlayer();
         self::$helper->addCharacterToPlayer('Alt 1', 102031, $player);
         self::$helper->createOrUpdateEsiToken(
@@ -42,6 +46,14 @@ class DataTest extends TestCase
     {
         $repositoryFactory = new RepositoryFactory(self::$helper->getEm());
         $this->data = new Data($repositoryFactory);
+    }
+
+    public function testGetCharactersByCorporation()
+    {
+        $result = $this->data->getCharactersByCorporation(1020);
+
+        $this->assertSame(1, count($result));
+        $this->assertSame(self::$playerId, $result[0]->playerId);
     }
 
     public function testGetCharacter()
@@ -106,5 +118,13 @@ class DataTest extends TestCase
         $this->assertSame(102030, $result[0]->character->id);
         $this->assertSame('Main', $result[0]->character->name);
         $this->assertSame('test.login', $result[0]->eveLoginName);
+    }
+
+    public function testGetGroups()
+    {
+        $result = $this->data->getGroups();
+        $this->assertSame(1, count($result));
+        $this->assertGreaterThan(0, $result[0]->identifier);
+        $this->assertSame('G1', $result[0]->name);
     }
 }

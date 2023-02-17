@@ -11,6 +11,7 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
+use Neucore\Plugin\Data\CoreGroup;
 use PHPUnit\Framework\TestCase;
 
 class GroupTest extends TestCase
@@ -196,5 +197,14 @@ class GroupTest extends TestCase
 
         $group->removeForbiddenGroup($forbidden1);
         $this->assertSame([$forbidden2], $group->getForbiddenGroups());
+    }
+
+    public function testToCoreGroup()
+    {
+        $group = (new Group())->setName('G1');
+
+        $this->assertInstanceOf(CoreGroup::class, $group->toCoreGroup());
+        $this->assertSame(0, $group->toCoreGroup()->identifier);
+        $this->assertSame('G1', $group->toCoreGroup()->name);
     }
 }

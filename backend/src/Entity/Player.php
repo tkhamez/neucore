@@ -311,7 +311,7 @@ class Player implements \JsonSerializable
     public function getCoreRoles(): array
     {
         return array_map(function (Role $role) {
-            return new CoreRole($role->getId(), $role->getName());
+            return new CoreRole($role->getName());
         }, $this->getRoles());
     }
 
@@ -519,7 +519,7 @@ class Player implements \JsonSerializable
     public function getCoreGroups(): array
     {
         return array_map(function (Group $group) {
-            return new CoreGroup($group->getId(), $group->getName());
+            return $group->toCoreGroup();
         }, $this->getGroups());
     }
 
@@ -595,7 +595,7 @@ class Player implements \JsonSerializable
     public function getManagerCoreGroups(): array
     {
         return array_map(function (Group $group) {
-            return new CoreGroup($group->getId(), $group->getName());
+            return $group->toCoreGroup();
         }, $this->getManagerGroups());
     }
 
@@ -672,6 +672,8 @@ class Player implements \JsonSerializable
         $coreAccount = null;
         if ($this->getMain()) {
             $coreAccount = new CoreAccount(
+                (int)$this->id,
+                $this->name,
                 $this->getMain()->toCoreCharacter(),
                 $this->getCoreCharacters(),
                 $this->getCoreGroups(),

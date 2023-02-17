@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Neucore\Plugin\Core;
 
+use Neucore\Entity\Character;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
+use Neucore\Entity\Group;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Data\CoreCharacter;
 
@@ -13,6 +15,18 @@ class Data implements DataInterface
 {
     public function __construct(private RepositoryFactory $repositoryFactory)
     {
+    }
+
+    public function getCharactersByCorporation(int $corporationId): array
+    {
+        $corporation = $this->repositoryFactory->getCorporationRepository()->find($corporationId);
+        if (!$corporation) {
+            return [];
+        }
+
+        return array_map(function (Character $character) {
+            return new CoreCharacter($character->getId(), $character->getPlayer()->getId());
+        }, $corporation->getCharacters());
     }
 
     public function getCharacter(int $characterId): ?CoreCharacter
@@ -67,5 +81,12 @@ class Data implements DataInterface
         return array_map(function (EsiToken $esiToken) {
             return $esiToken->toCoreEsiToken(true);
         }, $this->repositoryFactory->getEsiTokenRepository()->findBy(['eveLogin' => $eveLogin]));
+    }
+
+    public function getGroups(): array
+    {
+        return array_map(function (Group $group) {
+            return $group->toCoreGroup();
+        }, $this->repositoryFactory->getGroupRepository()->findBy([]));
     }
 }
