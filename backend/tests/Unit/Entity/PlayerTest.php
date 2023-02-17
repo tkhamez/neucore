@@ -605,6 +605,10 @@ class PlayerTest extends TestCase
         $this->assertSame([$rc1], $play->getIncomingCharacters());
     }
 
+    /**
+     * @phan-suppress PhanTypeArraySuspiciousNullable
+     * @phan-suppress PhanTypeMismatchArgumentNullableInternal
+     */
     public function testToCoreAccount()
     {
         $player = (new Player())->setId(1)->setName('p');

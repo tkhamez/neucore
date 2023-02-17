@@ -249,7 +249,7 @@ class EsiToken implements \JsonSerializable
 
     public function toCoreEsiToken(bool $fullCharacter): ?CoreEsiToken
     {
-        if (!$this->character || !$this->eveLogin) {
+        if (!$this->character || !$this->getEveLogin()) {
             return null;
         }
 

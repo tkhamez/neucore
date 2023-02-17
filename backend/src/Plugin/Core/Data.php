@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Neucore\Plugin\Core;
 
 use Neucore\Entity\Character;
-use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Factory\RepositoryFactory;
@@ -45,8 +44,8 @@ class Data implements DataInterface
 
         $esiTokens = [];
         foreach ($character->getEsiTokens() as $token) {
-            if ($token->getEveLogin()) {
-                $esiTokens[] = $token->toCoreEsiToken(false);
+            if ($token->getEveLogin() && ($coreToken = $token->toCoreEsiToken(false))) {
+                $esiTokens[] = $coreToken;
             }
         }
 
@@ -78,9 +77,14 @@ class Data implements DataInterface
             return [];
         }
 
-        return array_map(function (EsiToken $esiToken) {
-            return $esiToken->toCoreEsiToken(true);
-        }, $this->repositoryFactory->getEsiTokenRepository()->findBy(['eveLogin' => $eveLogin]));
+        $result = [];
+        foreach ($this->repositoryFactory->getEsiTokenRepository()->findBy(['eveLogin' => $eveLogin]) as $esiToken) {
+            if ($coreToken = $esiToken->toCoreEsiToken(true)) {
+                $result[] = $coreToken;
+            }
+        }
+
+        return $result;
     }
 
     public function getGroups(): array
