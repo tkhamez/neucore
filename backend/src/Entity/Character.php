@@ -346,16 +346,23 @@ class Character implements \JsonSerializable
     public function toCoreCharacter(bool $fullCharacter = true): CoreCharacter
     {
         if (!$fullCharacter) {
-            return new CoreCharacter($this->getId(), $this->getPlayer()->getId());
+            return new CoreCharacter(
+                $this->getId(),
+                $this->player->getId(),
+                $this->main,
+                $this->name,
+                $this->player->getName(),
+                $this->characterOwnerHash,
+            );
         }
 
         return new CoreCharacter(
             $this->getId(),
-            $this->getPlayer()->getId(),
-            $this->getMain(),
-            $this->getName() !== '' ? $this->getName() : null,
-            $this->getPlayer()->getName(),
-            $this->getCharacterOwnerHash(),
+            $this->player->getId(),
+            $this->main,
+            $this->name,
+            $this->player->getName(),
+            $this->characterOwnerHash,
             $this->getCorporation()?->getId(),
             $this->getCorporation()?->getName(),
             $this->getCorporation()?->getTicker(),

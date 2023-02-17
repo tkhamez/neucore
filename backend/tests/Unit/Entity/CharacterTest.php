@@ -229,6 +229,8 @@ class CharacterTest extends TestCase
         $character = (new Character())
             ->setId(100)
             ->setName('char name')
+            ->setMain(true)
+            ->setCharacterOwnerHash('hash')
             ->setPlayer((new Player())->setId(1)->setName('player name'))
             ->setCorporation((new Corporation())
                 ->setId(10)
@@ -244,8 +246,10 @@ class CharacterTest extends TestCase
         $minCoreCharacter = $character->toCoreCharacter(false);
         $this->assertSame(100, $minCoreCharacter->id);
         $this->assertSame(1, $minCoreCharacter->playerId);
-        $this->assertNull($minCoreCharacter->name);
-        $this->assertNull($minCoreCharacter->playerName);
+        $this->assertTrue($minCoreCharacter->main);
+        $this->assertSame('char name', $minCoreCharacter->name);
+        $this->assertSame('player name', $minCoreCharacter->playerName);
+        $this->assertSame('hash', $minCoreCharacter->ownerHash);
         $this->assertNull($minCoreCharacter->corporationId);
         $this->assertNull($minCoreCharacter->corporationName);
         $this->assertNull($minCoreCharacter->corporationTicker);
@@ -256,8 +260,10 @@ class CharacterTest extends TestCase
         $coreCharacter = $character->toCoreCharacter();
         $this->assertSame(100, $coreCharacter->id);
         $this->assertSame(1, $coreCharacter->playerId);
+        $this->assertTrue($minCoreCharacter->main);
         $this->assertSame('char name', $coreCharacter->name);
         $this->assertSame('player name', $coreCharacter->playerName);
+        $this->assertSame('hash', $minCoreCharacter->ownerHash);
         $this->assertSame(10, $coreCharacter->corporationId);
         $this->assertSame('corp name', $coreCharacter->corporationName);
         $this->assertSame('-C-', $coreCharacter->corporationTicker);

@@ -54,6 +54,9 @@ class DataTest extends TestCase
 
         $this->assertSame(1, count($result));
         $this->assertSame(self::$playerId, $result[0]->playerId);
+        $this->assertSame(102030, $result[0]->id);
+        $this->assertNull($result[0]->corporationName);
+        $this->assertNull($result[0]->allianceName);
     }
 
     public function testGetCharacter()
@@ -73,6 +76,7 @@ class DataTest extends TestCase
         $this->assertInstanceOf(CoreEsiToken::class, $result[0]);
         $this->assertSame(102030, $result[0]->character->id);
         $this->assertNull($result[0]->character->corporationName);
+        $this->assertNull($result[0]->character->allianceName);
         $this->assertSame(EveLogin::NAME_DEFAULT, $result[0]->eveLoginName);
         $this->assertSame([], $result[0]->esiScopes);
         $this->assertSame([], $result[0]->eveRoles);
@@ -82,7 +86,6 @@ class DataTest extends TestCase
 
         $this->assertInstanceOf(CoreEsiToken::class, $result[1]);
         $this->assertSame(102030, $result[1]->character->id);
-        $this->assertNull($result[1]->character->corporationName);
         $this->assertSame('test.login', $result[1]->eveLoginName);
         $this->assertSame(['scope1'], $result[1]->esiScopes);
         $this->assertSame(['role1'], $result[1]->eveRoles);
