@@ -48,6 +48,13 @@ class DataTest extends TestCase
         $this->data = new Data($repositoryFactory);
     }
 
+    public function testGetCharacterIdsByCorporation()
+    {
+        $result = $this->data->getCharacterIdsByCorporation(1020);
+
+        $this->assertSame([102030], $result);
+    }
+
     public function testGetCharactersByCorporation()
     {
         $result = $this->data->getCharactersByCorporation(1020);

@@ -16,6 +16,18 @@ class Data implements DataInterface
     {
     }
 
+    public function getCharacterIdsByCorporation(int $corporationId): array
+    {
+        $corporation = $this->repositoryFactory->getCorporationRepository()->find($corporationId);
+        if (!$corporation) {
+            return [];
+        }
+
+        return array_map(function (Character $character) {
+            return $character->getId();
+        }, $corporation->getCharacters());
+    }
+
     public function getCharactersByCorporation(int $corporationId): array
     {
         $corporation = $this->repositoryFactory->getCorporationRepository()->find($corporationId);
