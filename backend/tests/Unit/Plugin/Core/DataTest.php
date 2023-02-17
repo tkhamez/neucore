@@ -27,10 +27,12 @@ class DataTest extends TestCase
         self::$helper = new Helper();
         self::$helper->emptyDb();
 
-        $corp = (new Corporation())->setId(1020)->setName('C1');
-        self::$helper->getEm()->persist($corp);
-        $char = self::$helper->addCharacterMain('Main', 102030, [], ['G1'])->setCorporation($corp);
-        $corp->addCharacter($char);
+        $corp1 = (new Corporation())->setId(1020)->setName('C1');
+        $corp2 = (new Corporation())->setId(2040)->setName('C2');
+        self::$helper->getEm()->persist($corp1);
+        self::$helper->getEm()->persist($corp2);
+        $char = self::$helper->addCharacterMain('Main', 102030, [], ['G1'])->setCorporation($corp1);
+        $corp1->addCharacter($char);
         $player = $char->getPlayer();
         self::$helper->addCharacterToPlayer('Alt 1', 102031, $player);
         self::$helper->createOrUpdateEsiToken(
@@ -50,15 +52,20 @@ class DataTest extends TestCase
 
     public function testGetCharacterIdsByCorporation()
     {
-        $result = $this->data->getCharacterIdsByCorporation(1020);
-
-        $this->assertSame([102030], $result);
+        $this->assertNull($this->data->getCharacterIdsByCorporation(9999));
+        $this->assertSame([], $this->data->getCharacterIdsByCorporation(2040));
+        $this->assertSame([102030], $this->data->getCharacterIdsByCorporation(1020));
     }
 
+    /**
+     * @phan-suppress PhanTypeArraySuspiciousNullable
+     */
     public function testGetCharactersByCorporation()
     {
-        $result = $this->data->getCharactersByCorporation(1020);
+        $this->assertNull($this->data->getCharactersByCorporation(9999));
+        $this->assertSame([], $this->data->getCharactersByCorporation(2040));
 
+        $result = $this->data->getCharactersByCorporation(1020);
         $this->assertSame(1, count($result));
         $this->assertSame(self::$playerId, $result[0]->playerId);
         $this->assertSame(102030, $result[0]->id);
@@ -68,15 +75,20 @@ class DataTest extends TestCase
 
     public function testGetCharacter()
     {
+        $this->assertNull($this->data->getCharacter(888999));
+
         $result = $this->data->getCharacter(102031);
         $this->assertInstanceOf(CoreCharacter::class, $result);
         $this->assertSame(102031, $result->id);
-
-        $this->assertNull($this->data->getCharacter(908070));
     }
 
+    /**
+     * @phan-suppress PhanTypeArraySuspiciousNullable
+     */
     public function testGetCharacterTokens()
     {
+        $this->assertNull($this->data->getCharacterTokens(888999));
+
         $result = $this->data->getCharacterTokens(102030);
         $this->assertSame(2, count($result));
 
@@ -99,15 +111,14 @@ class DataTest extends TestCase
         $this->assertTrue($result[1]->valid);
         $this->assertFalse($result[1]->hasRoles);
         $this->assertInstanceOf(\DateTime::class, $result[1]->lastChecked);
-
-        $this->assertNull($this->data->getCharacter(908070));
     }
 
     public function testGetPlayerId()
     {
+        $this->assertNull($this->data->getPlayerId(888999));
+
         $this->assertSame(self::$playerId, $this->data->getPlayerId(102030));
         $this->assertSame(self::$playerId, $this->data->getPlayerId(102031));
-        $this->assertNull($this->data->getPlayerId(908070));
     }
 
     public function testGetEveLoginNames()
@@ -118,9 +129,13 @@ class DataTest extends TestCase
         );
     }
 
+    /**
+     * @phan-suppress PhanTypeArraySuspiciousNullable
+     */
     public function testGetLoginTokens()
     {
-        $this->assertSame([], $this->data->getLoginTokens(EveLogin::NAME_DEFAULT));
+        $this->assertNull($this->data->getLoginTokens(EveLogin::NAME_DEFAULT));
+        $this->assertNull($this->data->getLoginTokens('invalid'));
 
         $result = $this->data->getLoginTokens('test.login');
         $this->assertSame(1, count($result));

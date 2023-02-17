@@ -20,7 +20,9 @@ class AccountTest extends TestCase
 {
     private static Helper $helper;
 
-    private static int $playerId;
+    private static int $player1Id;
+
+    private static int $player2Id;
 
     private static int $group1Id;
 
@@ -34,16 +36,17 @@ class AccountTest extends TestCase
         self::$helper->emptyDb();
 
         $groups = self::$helper->addGroups(['G1', 'G2', 'G3']);
-        $player = self::$helper->addCharacterMain('Main', 102030, [Role::USER, Role::GROUP_MANAGER])->getPlayer();
-        self::$helper->addCharacterToPlayer('Alt 1', 102031, $player);
-        self::$helper->setupDeactivateAccount($player, 102032, 'Alt 2');
-        self::$playerId = $player->getId();
+        $player1 = self::$helper->addCharacterMain('Main', 102030, [Role::USER, Role::GROUP_MANAGER])->getPlayer();
+        self::$helper->addCharacterToPlayer('Alt 1', 102031, $player1);
+        self::$helper->setupDeactivateAccount($player1, 102032, 'Alt 2');
+        self::$player1Id = $player1->getId();
+        self::$player2Id = self::$helper->addCharacterMain('Main', 405060)->setMain(false)->getPlayer()->getId();
         self::$group1Id = $groups[0]->getId();
         self::$group3Id = $groups[2]->getId();
-        $player->addGroup($groups[0]);
-        $player->addGroup($groups[1]);
-        $player->addManagerGroup($groups[1]);
-        $groups[2]->addManager($player);
+        $player1->addGroup($groups[0]);
+        $player1->addGroup($groups[1]);
+        $player1->addManagerGroup($groups[1]);
+        $groups[2]->addManager($player1);
 
         self::$helper->getEm()->flush();
         self::$helper->getEm()->clear();
@@ -58,12 +61,16 @@ class AccountTest extends TestCase
         );
     }
 
+    /**
+     * @phan-suppress PhanTypeArraySuspiciousNullable
+     */
     public function testGetAccountsByGroup()
     {
-        $result = $this->account->getAccountsByGroup(self::$group1Id);
+        $this->assertNull($this->account->getAccountsByGroup(99));
 
+        $result = $this->account->getAccountsByGroup(self::$group1Id);
         $this->assertSame(1, count($result));
-        $this->assertSame(self::$playerId, $result[0]->playerId);
+        $this->assertSame(self::$player1Id, $result[0]->playerId);
         $this->assertSame('Main', $result[0]->playerName);
         $this->assertNull($result[0]->main);
         $this->assertNull($result[0]->characters);
@@ -72,74 +79,102 @@ class AccountTest extends TestCase
         $this->assertNull($result[0]->roles);
     }
 
+    /**
+     * @phan-suppress PhanTypeArraySuspiciousNullable
+     */
     public function testGetAccountsByGroupManager()
     {
-        $this->assertSame(0, count($this->account->getAccountsByGroupManager(self::$group1Id)));
+        $this->assertNull($this->account->getAccountsByGroupManager(99));
 
+        $this->assertSame(0, count($this->account->getAccountsByGroupManager(self::$group1Id)));
         $result = $this->account->getAccountsByGroupManager(self::$group3Id);
         $this->assertSame(1, count($result));
-        $this->assertSame(self::$playerId, $result[0]->playerId);
+        $this->assertSame(self::$player1Id, $result[0]->playerId);
     }
 
+    /**
+     * @phan-suppress PhanTypeArraySuspiciousNullable
+     */
     public function testGetAccountsByRole()
     {
-        $this->assertSame(0, count($this->account->getAccountsByRole(CoreRole::USER)));
+        $this->assertNull($this->account->getAccountsByRole(Role::USER));
+        $this->assertNull($this->account->getAccountsByRole('invalid'));
 
         $result = $this->account->getAccountsByRole(CoreRole::GROUP_MANAGER);
         $this->assertSame(1, count($result));
-        $this->assertSame(self::$playerId, $result[0]->playerId);
+        $this->assertSame(self::$player1Id, $result[0]->playerId);
     }
 
     public function testGetAccount()
     {
-        $this->assertInstanceOf(CoreAccount::class, $this->account->getAccount(self::$playerId));
-        $this->assertTrue($this->account->getAccount(self::$playerId)->groupsDeactivated);
-        $this->assertNull($this->account->getAccount(self::$playerId + 2));
+        $this->assertNull($this->account->getAccount(self::$player1Id + 22));
+        $this->assertNull($this->account->getAccount(self::$player2Id)); // no main
+
+        $this->assertInstanceOf(CoreAccount::class, $this->account->getAccount(self::$player1Id));
+        $this->assertTrue($this->account->getAccount(self::$player1Id)->groupsDeactivated);
     }
 
     public function testGetMain()
     {
-        $this->assertInstanceOf(CoreCharacter::class, $this->account->getMain(self::$playerId));
-        $this->assertSame(102030, $this->account->getMain(self::$playerId)->id);
-        $this->assertNull($this->account->getMain(self::$playerId +2));
+        $this->assertNull($this->account->getMain(self::$player1Id + 22));
+
+        $this->assertInstanceOf(CoreCharacter::class, $this->account->getMain(self::$player1Id));
+        $this->assertSame(102030, $this->account->getMain(self::$player1Id)->id);
     }
 
+    /**
+     * @phan-suppress PhanTypeArraySuspiciousNullable
+     */
     public function testGetCharacters()
     {
-        $this->assertSame(3, count($this->account->getCharacters(self::$playerId)));
-        $this->assertInstanceOf(CoreCharacter::class, $this->account->getCharacters(self::$playerId)[0]);
-        $this->assertSame([], $this->account->getCharacters(self::$playerId +2));
+        $this->assertNull($this->account->getCharacters(self::$player1Id + 22));
+
+        $this->assertSame(3, count($this->account->getCharacters(self::$player1Id)));
+        $this->assertInstanceOf(CoreCharacter::class, $this->account->getCharacters(self::$player1Id)[0]);
     }
 
+    /**
+     * @phan-suppress PhanTypeArraySuspiciousNullable
+     */
     public function testGetMemberGroups()
     {
-        $this->assertSame(2, count($this->account->getMemberGroups(self::$playerId)));
-        $this->assertInstanceOf(CoreGroup::class, $this->account->getMemberGroups(self::$playerId)[0]);
-        $this->assertSame('G1', $this->account->getMemberGroups(self::$playerId)[0]->name);
-        $this->assertSame('G2', $this->account->getMemberGroups(self::$playerId)[1]->name);
-        $this->assertSame([], $this->account->getMemberGroups(self::$playerId + 2));
+        $this->assertNull($this->account->getMemberGroups(self::$player1Id + 22));
+
+        $this->assertSame(2, count($this->account->getMemberGroups(self::$player1Id)));
+        $this->assertInstanceOf(CoreGroup::class, $this->account->getMemberGroups(self::$player1Id)[0]);
+        $this->assertSame('G1', $this->account->getMemberGroups(self::$player1Id)[0]->name);
+        $this->assertSame('G2', $this->account->getMemberGroups(self::$player1Id)[1]->name);
     }
 
     public function testGroupsDeactivated()
     {
-        $this->assertTrue($this->account->groupsDeactivated(self::$playerId));
-        $this->assertFalse($this->account->groupsDeactivated(self::$playerId + 2));
+        $this->assertNull($this->account->groupsDeactivated(self::$player1Id + 2));
+
+        $this->assertTrue($this->account->groupsDeactivated(self::$player1Id));
     }
 
+    /**
+     * @phan-suppress PhanTypeArraySuspiciousNullable
+     */
     public function testManagerGroups()
     {
-        $this->assertSame(1, count($this->account->getManagerGroups(self::$playerId)));
-        $this->assertInstanceOf(CoreGroup::class, $this->account->getManagerGroups(self::$playerId)[0]);
-        $this->assertSame('G3', $this->account->getManagerGroups(self::$playerId)[0]->name);
-        $this->assertSame([], $this->account->getManagerGroups(self::$playerId + 2));
+        $this->assertNull($this->account->getManagerGroups(self::$player1Id + 2));
+
+        $this->assertSame(1, count($this->account->getManagerGroups(self::$player1Id)));
+        $this->assertInstanceOf(CoreGroup::class, $this->account->getManagerGroups(self::$player1Id)[0]);
+        $this->assertSame('G3', $this->account->getManagerGroups(self::$player1Id)[0]->name);
     }
 
+    /**
+     * @phan-suppress PhanTypeArraySuspiciousNullable
+     */
     public function testGetRoles()
     {
-        $this->assertSame(2, count($this->account->getRoles(self::$playerId)));
-        $this->assertInstanceOf(CoreRole::class, $this->account->getRoles(self::$playerId)[0]);
-        $this->assertSame(Role::GROUP_MANAGER, $this->account->getRoles(self::$playerId)[0]->name);
-        $this->assertSame(Role::USER, $this->account->getRoles(self::$playerId)[1]->name);
-        $this->assertSame([], $this->account->getRoles(self::$playerId + 2));
+        $this->assertNull($this->account->getRoles(self::$player1Id + 2));
+
+        $this->assertSame(2, count($this->account->getRoles(self::$player1Id)));
+        $this->assertInstanceOf(CoreRole::class, $this->account->getRoles(self::$player1Id)[0]);
+        $this->assertSame(Role::GROUP_MANAGER, $this->account->getRoles(self::$player1Id)[0]->name);
+        $this->assertSame(Role::USER, $this->account->getRoles(self::$player1Id)[1]->name);
     }
 }

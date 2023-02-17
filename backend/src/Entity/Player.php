@@ -667,20 +667,24 @@ class Player implements \JsonSerializable
         return array_values($this->incomingCharacters->toArray());
     }
 
-    public function toCoreAccount(): ?CoreAccount
+    public function toCoreAccount(bool $fullAccount = true): ?CoreAccount
     {
-        $coreAccount = null;
-        if ($this->getMain()) {
-            $coreAccount = new CoreAccount(
-                (int)$this->id,
-                $this->name,
-                $this->getMain()->toCoreCharacter(),
-                $this->getCoreCharacters(),
-                $this->getCoreGroups(),
-                $this->getManagerCoreGroups(),
-                $this->getCoreRoles(),
-            );
+        if (!$this->getMain()) {
+            return null;
         }
-        return $coreAccount;
+
+        if (!$fullAccount) {
+            return new CoreAccount($this->getId(), $this->getName());
+        }
+
+        return new CoreAccount(
+            $this->getId(),
+            $this->name,
+            $this->getMain()->toCoreCharacter(),
+            $this->getCoreCharacters(),
+            $this->getCoreGroups(),
+            $this->getManagerCoreGroups(),
+            $this->getCoreRoles(),
+        );
     }
 }

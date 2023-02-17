@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Neucore\Plugin\Core;
 
-use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Data\CoreAccount;
@@ -19,44 +18,56 @@ class Account implements AccountInterface
     ) {
     }
 
-    public function getAccountsByGroup(int $groupId): array
+    public function getAccountsByGroup(int $groupId): ?array
     {
         $group = $this->repositoryFactory->getGroupRepository()->find($groupId);
         if (!$group) {
-            return [];
+            return null;
         }
 
-        return array_map(function (Player $player) {
-            return new CoreAccount($player->getId(), $player->getName());
-        }, $group->getPlayers());
+        $result = [];
+        foreach ($group->getPlayers() as $player) {
+            if ($account = $player->toCoreAccount(false)) {
+                $result[] = $account;
+            }
+        }
+        return $result;
     }
 
-    public function getAccountsByGroupManager(int $groupId): array
+    public function getAccountsByGroupManager(int $groupId): ?array
     {
         $group = $this->repositoryFactory->getGroupRepository()->find($groupId);
         if (!$group) {
-            return [];
+            return null;
         }
 
-        return array_map(function (Player $player) {
-            return new CoreAccount($player->getId(), $player->getName());
-        }, $group->getManagers());
+        $result = [];
+        foreach ($group->getManagers() as $player) {
+            if ($account = $player->toCoreAccount(false)) {
+                $result[] = $account;
+            }
+        }
+        return $result;
     }
 
-    public function getAccountsByRole(string $roleName): array
+    public function getAccountsByRole(string $roleName): ?array
     {
         if ($roleName === Role::USER) {
-            return [];
+            return null;
         }
 
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $roleName]);
         if (!$role) {
-            return [];
+            return null;
         }
 
-        return array_map(function (Player $player) {
-            return new CoreAccount($player->getId(), $player->getName());
-        }, $role->getPlayers());
+        $result = [];
+        foreach ($role->getPlayers() as $player) {
+            if ($account = $player->toCoreAccount(false)) {
+                $result[] = $account;
+            }
+        }
+        return $result;
     }
 
     public function getAccount(int $playerId): ?CoreAccount
@@ -68,7 +79,7 @@ class Account implements AccountInterface
 
         $coreAccount = $player->toCoreAccount();
         if (!$coreAccount) {
-            return null;
+            return null; // no main
         }
 
         $coreAccount->groupsDeactivated = $this->accountGroup->groupsDeactivated($player);
@@ -78,58 +89,36 @@ class Account implements AccountInterface
 
     public function getMain(int $playerId): ?CoreCharacter
     {
-        $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);
-
-        return $player?->getMain()?->toCoreCharacter();
+        return $this->repositoryFactory->getPlayerRepository()->find($playerId)?->getMain()?->toCoreCharacter();
     }
 
-    public function getCharacters(int $playerId): array
+    public function getCharacters(int $playerId): ?array
+    {
+        return $this->repositoryFactory->getPlayerRepository()->find($playerId)?->getCoreCharacters();
+    }
+
+    public function getMemberGroups(int $playerId): ?array
+    {
+        return $this->repositoryFactory->getPlayerRepository()->find($playerId)?->getCoreGroups();
+    }
+
+    public function groupsDeactivated(int $playerId): ?bool
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);
         if (!$player) {
-            return [];
-        }
-
-        return $player->getCoreCharacters();
-    }
-
-    public function getMemberGroups(int $playerId): array
-    {
-        $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);
-        if (!$player) {
-            return [];
-        }
-
-        return $player->getCoreGroups();
-    }
-
-    public function groupsDeactivated(int $playerId): bool
-    {
-        $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);
-        if (!$player) {
-            return false;
+            return null;
         }
 
         return $this->accountGroup->groupsDeactivated($player);
     }
 
-    public function getManagerGroups(int $playerId): array
+    public function getManagerGroups(int $playerId): ?array
     {
-        $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);
-        if (!$player) {
-            return [];
-        }
-
-        return $player->getManagerCoreGroups();
+        return $this->repositoryFactory->getPlayerRepository()->find($playerId)?->getManagerCoreGroups();
     }
 
-    public function getRoles(int $playerId): array
+    public function getRoles(int $playerId): ?array
     {
-        $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);
-        if (!$player) {
-            return [];
-        }
-
-        return $player->getCoreRoles();
+        return $this->repositoryFactory->getPlayerRepository()->find($playerId)?->getCoreRoles();
     }
 }

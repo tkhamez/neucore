@@ -16,11 +16,11 @@ class Data implements DataInterface
     {
     }
 
-    public function getCharacterIdsByCorporation(int $corporationId): array
+    public function getCharacterIdsByCorporation(int $corporationId): ?array
     {
         $corporation = $this->repositoryFactory->getCorporationRepository()->find($corporationId);
         if (!$corporation) {
-            return [];
+            return null;
         }
 
         return array_map(function (Character $character) {
@@ -28,11 +28,11 @@ class Data implements DataInterface
         }, $corporation->getCharacters());
     }
 
-    public function getCharactersByCorporation(int $corporationId): array
+    public function getCharactersByCorporation(int $corporationId): ?array
     {
         $corporation = $this->repositoryFactory->getCorporationRepository()->find($corporationId);
         if (!$corporation) {
-            return [];
+            return null;
         }
 
         return array_map(function (Character $character) {
@@ -42,16 +42,14 @@ class Data implements DataInterface
 
     public function getCharacter(int $characterId): ?CoreCharacter
     {
-        $character = $this->repositoryFactory->getCharacterRepository()->find($characterId);
-
-        return $character?->toCoreCharacter();
+        return $this->repositoryFactory->getCharacterRepository()->find($characterId)?->toCoreCharacter();
     }
 
-    public function getCharacterTokens(int $characterId): array
+    public function getCharacterTokens(int $characterId): ?array
     {
         $character = $this->repositoryFactory->getCharacterRepository()->find($characterId);
         if (!$character) {
-            return [];
+            return null;
         }
 
         $esiTokens = [];
@@ -66,9 +64,7 @@ class Data implements DataInterface
 
     public function getPlayerId(int $characterId): ?int
     {
-        $character = $this->repositoryFactory->getCharacterRepository()->find($characterId);
-
-        return $character?->getPlayer()->getId();
+        return $this->repositoryFactory->getCharacterRepository()->find($characterId)?->getPlayer()->getId();
     }
 
     public function getEveLoginNames(): array
@@ -78,15 +74,15 @@ class Data implements DataInterface
         }, $this->repositoryFactory->getEveLoginRepository()->findBy([]));
     }
 
-    public function getLoginTokens(string $eveLoginName): array
+    public function getLoginTokens(string $eveLoginName): ?array
     {
         if ($eveLoginName === EveLogin::NAME_DEFAULT) {
-            return [];
+            return null;
         }
 
         $eveLogin = $this->repositoryFactory->getEveLoginRepository()->findOneBy(['name' => $eveLoginName]);
         if (!$eveLogin) {
-            return [];
+            return null;
         }
 
         $result = [];
