@@ -343,11 +343,12 @@ class Character implements \JsonSerializable
         return array_values($this->characterNameChanges->toArray());
     }
 
-    public function toCoreCharacter(): CoreCharacter
+    public function toCoreCharacter(bool $fullCharacter = true): CoreCharacter
     {
-        $alliance = $this->getCorporation() !== null && $this->getCorporation()->getAlliance() !== null ?
-            $this->getCorporation()->getAlliance() :
-            null;
+        if (!$fullCharacter) {
+            return new CoreCharacter($this->getId(), $this->getPlayer()->getId());
+        }
+
         return new CoreCharacter(
             $this->getId(),
             $this->getPlayer()->getId(),
@@ -358,9 +359,9 @@ class Character implements \JsonSerializable
             $this->getCorporation()?->getId(),
             $this->getCorporation()?->getName(),
             $this->getCorporation()?->getTicker(),
-            $alliance?->getId(),
-            $alliance?->getName(),
-            $alliance?->getTicker()
+            $this->getCorporation()?->getAlliance()?->getId(),
+            $this->getCorporation()?->getAlliance()?->getName(),
+            $this->getCorporation()?->getAlliance()?->getTicker()
         );
     }
 

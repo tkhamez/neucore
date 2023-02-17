@@ -9,7 +9,6 @@ namespace Neucore\Entity;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Api;
-use Neucore\Plugin\Data\CoreCharacter;
 use Neucore\Plugin\Data\CoreEsiToken;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -254,9 +253,7 @@ class EsiToken implements \JsonSerializable
         }
 
         return new CoreEsiToken(
-            $fullCharacter ?
-                $this->character->toCoreCharacter() :
-                new CoreCharacter($this->character->getId(), $this->character->getPlayer()->getId()),
+            $this->character->toCoreCharacter($fullCharacter),
             $this->getEveLogin()->getName(),
             !empty($this->getEveLogin()->getEsiScopes()) ?
                 array_map('trim', explode(' ', $this->getEveLogin()->getEsiScopes())) :

@@ -241,8 +241,19 @@ class CharacterTest extends TestCase
                 )
             );
 
-        $coreCharacter = $character->toCoreCharacter();
+        $minCoreCharacter = $character->toCoreCharacter(false);
+        $this->assertSame(100, $minCoreCharacter->id);
+        $this->assertSame(1, $minCoreCharacter->playerId);
+        $this->assertNull($minCoreCharacter->name);
+        $this->assertNull($minCoreCharacter->playerName);
+        $this->assertNull($minCoreCharacter->corporationId);
+        $this->assertNull($minCoreCharacter->corporationName);
+        $this->assertNull($minCoreCharacter->corporationTicker);
+        $this->assertNull($minCoreCharacter->allianceId);
+        $this->assertNull($minCoreCharacter->allianceName);
+        $this->assertNull($minCoreCharacter->allianceTicker);
 
+        $coreCharacter = $character->toCoreCharacter();
         $this->assertSame(100, $coreCharacter->id);
         $this->assertSame(1, $coreCharacter->playerId);
         $this->assertSame('char name', $coreCharacter->name);

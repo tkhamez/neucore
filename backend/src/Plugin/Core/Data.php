@@ -24,7 +24,7 @@ class Data implements DataInterface
         }
 
         return array_map(function (Character $character) {
-            return new CoreCharacter($character->getId(), $character->getPlayer()->getId());
+            return $character->toCoreCharacter(false);
         }, $corporation->getCharacters());
     }
 
