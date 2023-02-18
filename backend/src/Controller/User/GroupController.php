@@ -1083,7 +1083,11 @@ class GroupController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="Application not found."
-     *     )
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Player is not allowed to be a member of the group."
+     *     ),
      * )
      */
     public function acceptApplication(string $id): ResponseInterface
@@ -1392,17 +1396,23 @@ class GroupController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        if (!$this->checkManager($app->getGroup())) {
+        $group = $app->getGroup();
+
+        if (!$this->checkManager($group)) {
             return $this->response->withStatus(403);
         }
 
         if ($action === 'accept') {
+            $player = $app->getPlayer();
+            if (!$player->isAllowedMember($group)) {
+                return $this->response->withStatus(400);
+            }
             $app->setStatus(GroupApplication::STATUS_ACCEPTED);
-            if (!$app->getPlayer()->hasGroup($app->getGroup()->getId())) {
-                $app->getPlayer()->addGroup($app->getGroup());
-                $this->account->syncTrackingRole($app->getPlayer());
-                $this->account->syncWatchlistRole($app->getPlayer());
-                $this->account->syncWatchlistManagerRole($app->getPlayer());
+            if (!$player->hasGroup($group->getId())) {
+                $player->addGroup($group);
+                $this->account->syncTrackingRole($player);
+                $this->account->syncWatchlistRole($player);
+                $this->account->syncWatchlistManagerRole($player);
             }
         } elseif ($action === 'deny') {
             $app->setStatus(GroupApplication::STATUS_DENIED);

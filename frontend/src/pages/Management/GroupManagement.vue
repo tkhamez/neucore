@@ -279,7 +279,13 @@ export default {
         },
 
         accept(applicationId, playerId) {
-            new GroupApi().acceptApplication(applicationId, () => {
+            new GroupApi().acceptApplication(applicationId, (error, data, response) => {
+                if (response.statusCode === 400) {
+                    this.h.message(Data.messages.errorRequiredForbiddenGroup, 'warning');
+                }
+                if (error) {
+                    return;
+                }
                 getApplications(this);
                 if (playerId === this.player.id) {
                     this.emitter.emit('playerChange');

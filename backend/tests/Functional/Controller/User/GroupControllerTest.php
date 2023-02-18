@@ -53,7 +53,9 @@ class GroupControllerTest extends WebTestCase
 
     private int $pid2;
 
-    private ?int $groupAppID = null;
+    private ?int $groupApp1Id = null;
+
+    private ?int $groupApp2Id = null;
 
     public static function setupBeforeClass(): void
     {
@@ -989,7 +991,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertSame(
             [[
-                'id' => $this->groupAppID,
+                'id' => $this->groupApp1Id,
                 'player' => ['id' => $this->pid2, 'name' => 'Group'],
                 'group' => [
                     'id' => $this->gid2,
@@ -1010,11 +1012,11 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setupDb();
 
-        $response = $this->runApp('PUT', '/api/user/group/deny-application/'.$this->groupAppID);
+        $response = $this->runApp('PUT', '/api/user/group/deny-application/'.$this->groupApp1Id);
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->loginUser(7); // manager, but not of this group
-        $response = $this->runApp('PUT', '/api/user/group/deny-application/'.$this->groupAppID);
+        $response = $this->runApp('PUT', '/api/user/group/deny-application/'.$this->groupApp1Id);
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -1023,7 +1025,7 @@ class GroupControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/group/deny-application/' . ($this->groupAppID + 5));
+        $response = $this->runApp('PUT', '/api/user/group/deny-application/' . ($this->groupApp1Id + 5));
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -1037,8 +1039,8 @@ class GroupControllerTest extends WebTestCase
         $this->assertSame(GroupApplication::STATUS_PENDING, $appsBefore[0]->getStatus());
         $this->assertFalse($this->playerRepo->find($this->pid2)->hasGroup($this->gid2));
 
-        $response1 = $this->runApp('PUT', '/api/user/group/deny-application/'.$this->groupAppID);
-        $response2 = $this->runApp('PUT', '/api/user/group/deny-application/'.$this->groupAppID);
+        $response1 = $this->runApp('PUT', '/api/user/group/deny-application/'.$this->groupApp1Id);
+        $response2 = $this->runApp('PUT', '/api/user/group/deny-application/'.$this->groupApp1Id);
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
@@ -1054,11 +1056,11 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setupDb();
 
-        $response = $this->runApp('PUT', '/api/user/group/accept-application/'.$this->groupAppID);
+        $response = $this->runApp('PUT', '/api/user/group/accept-application/'.$this->groupApp1Id);
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->loginUser(7); // manager, but not of this group
-        $response = $this->runApp('PUT', '/api/user/group/accept-application/'.$this->groupAppID);
+        $response = $this->runApp('PUT', '/api/user/group/accept-application/'.$this->groupApp1Id);
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -1067,8 +1069,24 @@ class GroupControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/group/accept-application/' . ($this->groupAppID + 5));
+        $response = $this->runApp('PUT', '/api/user/group/accept-application/' . ($this->groupApp1Id + 5));
         $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testAcceptApplication400()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response = $this->runApp('PUT', '/api/user/group/accept-application/'.$this->groupApp2Id);
+        $this->assertEquals(400, $response->getStatusCode());
+
+        $this->em->clear();
+
+        $appsAfter = $this->groupAppRepo->findBy(['player' => $this->pid2, 'group' => $this->gid2]);
+        $this->assertSame(1, count($appsAfter));
+        $this->assertSame(GroupApplication::STATUS_PENDING, $appsAfter[0]->getStatus());
+        $this->assertFalse($this->playerRepo->find($this->pid2)->hasGroup($this->gid2));
     }
 
     public function testAcceptApplication204()
@@ -1081,8 +1099,8 @@ class GroupControllerTest extends WebTestCase
         $this->assertSame(GroupApplication::STATUS_PENDING, $appsBefore[0]->getStatus());
         $this->assertFalse($this->playerRepo->find($this->pid2)->hasGroup($this->gid2));
 
-        $response1 = $this->runApp('PUT', '/api/user/group/accept-application/'.$this->groupAppID);
-        $response2 = $this->runApp('PUT', '/api/user/group/accept-application/'.$this->groupAppID);
+        $response1 = $this->runApp('PUT', '/api/user/group/accept-application/'.$this->groupApp1Id);
+        $response2 = $this->runApp('PUT', '/api/user/group/accept-application/'.$this->groupApp1Id);
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
@@ -1321,6 +1339,7 @@ class GroupControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $this->groupAppID = $groupApp1->getId();
+        $this->groupApp1Id = $groupApp1->getId();
+        $this->groupApp2Id = $groupApp2->getId();
     }
 }
