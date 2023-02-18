@@ -259,9 +259,10 @@ class EsiToken implements \JsonSerializable
                 array_map('trim', explode(' ', $this->getEveLogin()->getEsiScopes())) :
                 [],
             $this->getEveLogin()->getEveRoles(),
-            $this->getValidToken(),
-            $this->getHasRoles(),
-            $this->getLastChecked(),
+            $this->validToken,
+            $this->validTokenTime,
+            $this->hasRoles,
+            $this->lastChecked,
         );
     }
 }

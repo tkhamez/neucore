@@ -4846,12 +4846,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/neucore-plugin.git",
-                "reference": "f10b1537a4f8d21856ad2d75a18922f1a9e1bf5a"
+                "reference": "e628d4ed6fde529ca179942ff592226c65a87590"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/neucore-plugin/zipball/f10b1537a4f8d21856ad2d75a18922f1a9e1bf5a",
-                "reference": "f10b1537a4f8d21856ad2d75a18922f1a9e1bf5a",
+                "url": "https://api.github.com/repos/tkhamez/neucore-plugin/zipball/e628d4ed6fde529ca179942ff592226c65a87590",
+                "reference": "e628d4ed6fde529ca179942ff592226c65a87590",
                 "shasum": ""
             },
             "require": {
@@ -4882,7 +4882,7 @@
                 "issues": "https://github.com/tkhamez/neucore-plugin/issues",
                 "source": "https://github.com/tkhamez/neucore-plugin/tree/main"
             },
-            "time": "2023-02-18T16:52:50+00:00"
+            "time": "2023-02-18T17:25:20+00:00"
         },
         {
             "name": "tkhamez/slim-role-auth",

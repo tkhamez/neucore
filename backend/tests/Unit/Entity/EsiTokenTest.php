@@ -188,6 +188,7 @@ class EsiTokenTest extends TestCase
         $this->assertSame(['scope.one', 'scope.two'], $result1->esiScopes);
         $this->assertSame(['role1', 'role2'], $result1->eveRoles);
         $this->assertTrue($result1->valid);
+        $this->assertInstanceOf(\DateTime::class, $result1->validStatusChanged);
         $this->assertFalse($result1->hasRoles);
         $this->assertInstanceOf(\DateTime::class, $result1->lastChecked);
 
