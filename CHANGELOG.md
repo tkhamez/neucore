@@ -3,6 +3,7 @@
 ## next
 
 - **BC Break**: Update to [Neucore plugin](https://github.com/tkhamez/neucore-plugin) version 2.0.0:
+- Change: Line breaks in the Base64-encoded authentication tokens of applications are removed.
 
 ## 1.44.0
 
