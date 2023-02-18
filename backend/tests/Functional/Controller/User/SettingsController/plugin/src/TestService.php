@@ -49,6 +49,8 @@ class TestService implements GeneralInterface, ServiceInterface
     {
         return [
             new NavigationItem(NavigationItem::PARENT_ROOT, 'Test', '/test', '_blank', [CoreRole::GROUP_MANAGER]),
+            new NavigationItem(NavigationItem::PARENT_ROOT, 'Test', 'http://invalid', '_blank', [CoreRole::USER]),
+            new NavigationItem('invalid', 'Test', '/test', '_blank', [CoreRole::USER]),
         ];
     }
 

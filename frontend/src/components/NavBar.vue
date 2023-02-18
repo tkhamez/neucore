@@ -20,54 +20,19 @@
                 <li v-if="h.hasRole('user') && settings.navigationShowGroups === '1'" class="nav-item">
                     <a class="nav-link" :class="{ active: page === 'Groups' }" href="#Groups">Groups</a>
                 </li>
-                <li v-if="settings.navigationServices.length > 0" class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" :class="{ active: isActiveDropdownMenu('Service') }"
-                       href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Services
-                    </a>
-                    <div class="dropdown-menu">
-                        <a v-for="service in settings.navigationServices" class="dropdown-item"
-                           :class="{ active: page === 'Service' && parseInt(route[1], 10) === service.id }"
-                           :href="`#Service/${service.id}`">{{ service.name }}</a>
-                    </div>
-                </li>
-                <li v-if="hasNavigationItem(navigationParent.management)" class="nav-item dropdown">
+                <li v-for="menu in getDropdownMenus()" class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle"
-                       :class="{ active: isActiveDropdownMenu(navigationParent.management) }"
+                       :class="{ active: isActiveDropdown(menu.id) }"
                        href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Management
+                        {{ menu.name }}
                     </a>
                     <div class="dropdown-menu">
-                        <a v-for="item in getNavigationItems(navigationParent.management)"
-                           class="dropdown-item" :class="{ active: page === item.active }"
+                        <a v-for="item in getNavigationItems(menu.id)"
+                           class="dropdown-item" :class="{ active: isActiveItem(item) }"
                            :href="item.href" :target="item.target">{{ item.name }}</a>
                     </div>
                 </li>
-                <li v-if="hasNavigationItem(navigationParent.administration)" class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle"
-                       :class="{ active: isActiveDropdownMenu(navigationParent.administration) }"
-                       href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Administration
-                    </a>
-                    <div class="dropdown-menu">
-                        <a v-for="item in getNavigationItems(navigationParent.administration)"
-                           class="dropdown-item" :class="{ active: page === item.active }"
-                           :href="item.href" :target="item.target">{{ item.name }}</a>
-                    </div>
-                </li>
-                <li v-if="hasNavigationItem(navigationParent.member_data)" class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle"
-                       :class="{ active: isActiveDropdownMenu(navigationParent.member_data) }"
-                       href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Member Data
-                    </a>
-                    <div class="dropdown-menu">
-                        <a v-for="item in getNavigationItems(navigationParent.member_data)"
-                           class="dropdown-item" :class="{ active: page === item.active }"
-                           :href="item.href" :target="item.target">{{ item.name }}</a>
-                    </div>
-                </li>
-                <li v-for="item in getNavigationItems(navigationParent.root)" class="nav-item">
+                <li v-for="item in getNavigationItems(navigationParent.root.id)" class="nav-item">
                     <a class="nav-link" :href="item.href" :target="item.target">{{ item.name }}</a>
                 </li>
             </ul>
@@ -120,9 +85,16 @@ export default {
         return {
             h: new Helper(this),
             settings: toRef(this.store.state, 'settings'),
-            navigationParent: Data.navigationParent,
+            navigationParent: {
+                root:           { id: 'root',           name: '' },
+                services:       { id: 'services',       name: 'Services' },
+                management:     { id: 'management',     name: 'Management' },
+                administration: { id: 'administration', name: 'Administration' },
+                member_data:    { id: 'member_data',    name: 'Member Data' },
+            },
             backendHost: Data.envVars.backendHost,
             navigationItems: {
+                services: [],
                 management: [
                     {path: 'GroupManagement', name: 'Groups', roles: ['group-manager']},
                     {path: 'AppManagement', name: 'Apps', roles: ['app-manager']},
@@ -161,6 +133,14 @@ export default {
         if (this.selectedTheme === '') {
             this.selectedTheme = window.APP_DEFAULT_THEME;
         }
+
+        for (const serviceItem of this.settings.navigationServices) {
+            this.navigationItems.services.push({
+                path: `Service/${serviceItem.id}`,
+                name: serviceItem.name,
+                roles: ['user'],
+            });
+        }
     },
 
     watch: {
@@ -194,24 +174,44 @@ export default {
         hasNavigation() {
             return (
                 this.h.hasRole('user') ||
-                this.getNavigationItems(this.navigationParent.root).length > 0
+                this.getNavigationItems(this.navigationParent.root.id).length > 0
             );
+        },
+
+        getDropdownMenus() {
+            return [
+                this.navigationParent.services,
+                this.navigationParent.management,
+                this.navigationParent.administration,
+                this.navigationParent.member_data,
+            ].filter(menu => this.hasNavigationItem(menu.id));
         },
 
         hasNavigationItem(parent) {
             return this.getNavigationItems(parent).length > 0;
         },
 
-        isActiveDropdownMenu(menu) {
-            if (menu === 'Service') {
-                return this.page === menu;
-            } else if (this.navigationItems[menu]) {
-                for (const menuItem of this.navigationItems[menu]) {
-                    if (menuItem.path === this.page) {
-                        return true;
-                    }
+        isActiveDropdown(menu) {
+            if (!this.navigationItems[menu]) {
+                return false;
+            }
+            for (const menuItem of this.navigationItems[menu]) {
+                let check = this.page;
+                if (menu === 'services') {
+                    check += '/' + parseInt(this.route[1], 10);
+                }
+                if (menuItem.path === check) {
+                    return true;
                 }
             }
+            return false;
+        },
+
+        isActiveItem(item) {
+            if (this.page === 'Service') {
+                return `${this.page}/` + parseInt(this.route[1], 10) === item.active;
+            }
+            return this.page === item.active;
         },
 
         getNavigationItems(parent) {

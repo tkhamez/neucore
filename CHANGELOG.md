@@ -3,6 +3,8 @@
 ## next
 
 - **BC Break**: Update to [Neucore plugin](https://github.com/tkhamez/neucore-plugin) version 2.0.0:
+  - Plugin now have access to much more data from Neucore.
+  - Plugins can now add menu items to the "Services" menu.
 - Change: Line breaks in the Base64-encoded authentication tokens of applications are removed.
 
 ## 1.44.0

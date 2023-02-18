@@ -17,6 +17,7 @@ use Neucore\Service\UserAuth;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Controller for system settings (and maybe user settings later).
@@ -50,8 +51,12 @@ class SettingsController extends BaseController
      *     )
      * )
      */
-    public function systemList(UserAuth $userAuth, Config $config, PluginService $pluginService): ResponseInterface
-    {
+    public function systemList(
+        UserAuth $userAuth,
+        Config $config,
+        PluginService $pluginService,
+        LoggerInterface $logger,
+    ): ResponseInterface {
         $settingsRepository = $this->repositoryFactory->getSystemVariableRepository();
         $groupRepository = $this->repositoryFactory->getGroupRepository();
         $playerRoles = $userAuth->getRoles();
@@ -72,16 +77,23 @@ class SettingsController extends BaseController
             if ($plugin->getGeneralImplementation() && $userAuth->hasRequiredGroups($plugin, true)) {
                 $validPositions = [
                     NavigationItem::PARENT_ROOT,
+                    NavigationItem::PARENT_SERVICE,
                     NavigationItem::PARENT_MANAGEMENT,
                     NavigationItem::PARENT_ADMINISTRATION,
                     NavigationItem::PARENT_MEMBER_DATA,
                 ];
                 foreach ($plugin->getGeneralImplementation()->getNavigationItems() as $item) {
-                    if (
-                        (empty($item->getRoles()) || !empty(array_intersect($item->getRoles(), $playerRoles))) &&
-                        in_array($item->getParent(), $validPositions) &&
-                        str_starts_with($item->getUrl(), '/')
-                    ) {
+                    if (!in_array($item->getParent(), $validPositions)) {
+                        $logger->warning(
+                            'Plugin navigation item: invalid position "' . $item->getParent() . '", plugin ID ' .
+                            $plugin->getId(),
+                        );
+                    } elseif (!str_starts_with($item->getUrl(), '/')) {
+                        $logger->warning(
+                            'Plugin navigation item: invalid URL "' . $item->getUrl() . '", plugin ID ' .
+                            $plugin->getId(),
+                        );
+                    } elseif (empty($item->getRoles()) || !empty(array_intersect($item->getRoles(), $playerRoles))) {
                         $navigationItems[] = new NavigationItem(
                             $item->getParent(),
                             $item->getName(),

@@ -38,6 +38,8 @@ class SettingsControllerTest extends WebTestCase
 
     private SystemVariableRepository $systemVariableRepository;
 
+    private Logger $logger;
+
     private Plugin $service1;
 
     private Plugin $service2;
@@ -56,6 +58,10 @@ class SettingsControllerTest extends WebTestCase
 
         $this->em = $this->helper->getEm();
         $this->systemVariableRepository = (new RepositoryFactory($this->em))->getSystemVariableRepository();
+
+        $this->logger = new Logger();
+        $this->logger->pushHandler(new TestHandler());
+
     }
 
     public function tearDown(): void
@@ -74,7 +80,7 @@ class SettingsControllerTest extends WebTestCase
             '/api/user/settings/system/list',
             null,
             null,
-            [],
+            [LoggerInterface::class => $this->logger],
             [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/SettingsController']],
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -102,7 +108,7 @@ class SettingsControllerTest extends WebTestCase
             '/api/user/settings/system/list',
             null,
             null,
-            [],
+            [LoggerInterface::class => $this->logger],
             [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/SettingsController']],
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -124,6 +130,12 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
             ['name' => 'discord', 'value' => 'https://discord.gg/memUh56u8z'],
         ], $this->parseJsonBody($response));
+        $this->assertSame([
+            'Plugin navigation item: invalid URL "http://invalid", plugin ID ' . $this->service1->getId(),
+            'Plugin navigation item: invalid position "invalid", plugin ID ' . $this->service1->getId(),
+            'Plugin navigation item: invalid URL "http://invalid", plugin ID ' . $this->service2->getId(),
+            'Plugin navigation item: invalid position "invalid", plugin ID ' . $this->service2->getId(),
+        ], $this->logger->getMessages());
     }
 
     public function testSystemList200RoleSetting()
@@ -138,7 +150,7 @@ class SettingsControllerTest extends WebTestCase
             '/api/user/settings/system/list',
             null,
             null,
-            [],
+            [LoggerInterface::class => $this->logger],
             [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/SettingsController']],
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -214,15 +226,12 @@ class SettingsControllerTest extends WebTestCase
 
         $this->em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
 
-        $log = new Logger();
-        $log->pushHandler(new TestHandler());
-
         $response = $this->runApp(
             'PUT',
             '/api/user/settings/system/change/'.SystemVariable::ALLOW_CHARACTER_DELETION,
             ['value' => '1'],
             null,
-            [ObjectManager::class => $this->em, LoggerInterface::class => $log]
+            [ObjectManager::class => $this->em, LoggerInterface::class => $this->logger]
         );
         $this->assertEquals(500, $response->getStatusCode());
     }
