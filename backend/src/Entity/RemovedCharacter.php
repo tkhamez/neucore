@@ -10,6 +10,9 @@ use Neucore\Api;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
+
+use Neucore\Plugin\Data\CoreCharacter;
+use Neucore\Plugin\Data\CoreMovedCharacter;
 use OpenApi\Annotations as OA;
 
 /**
@@ -236,5 +239,31 @@ class RemovedCharacter implements \JsonSerializable
     public function getDeletedBy(): ?Player
     {
         return $this->deletedBy;
+    }
+
+    public function toCoreMovedCharacter(): ?CoreMovedCharacter
+    {
+        if (
+            !$this->player ||
+            !$this->characterId ||
+            !$this->removedDate ||
+            !$this->reason ||
+            !($oldPlayer = $this->player->toCoreAccount(false))
+        ) {
+            return null;
+        }
+
+        return new CoreMovedCharacter(
+            $oldPlayer,
+            $this->newPlayer?->toCoreAccount(false),
+            new CoreCharacter(
+                id: $this->characterId,
+                playerId: 0,
+                name: $this->characterName,
+            ),
+            $this->removedDate,
+            $this->reason,
+            $this->deletedBy?->toCoreAccount(false),
+        );
     }
 }

@@ -593,14 +593,14 @@ class PlayerTest extends TestCase
         $this->assertSame([$rc1], $play->getRemovedCharacters());
     }
 
-    public function testAddGetIncomingCharacters()
+    public function testAddGetIncomingCharacter()
     {
         $play = new Player();
         $rc1 = new RemovedCharacter();
 
         $this->assertSame([], $play->getIncomingCharacters());
 
-        $play->addIncomingCharacters($rc1);
+        $play->addIncomingCharacter($rc1);
         $this->assertSame([$rc1], $play->getIncomingCharacters());
     }
 
@@ -612,6 +612,8 @@ class PlayerTest extends TestCase
     {
         $player = (new Player())->setId(1)->setName('p');
         $this->assertNull($player->toCoreAccount());
+        $this->assertSame(1, $player->toCoreAccount(false)->playerId);
+        $this->assertSame('p', $player->toCoreAccount(false)->playerName);
 
         $character = (new Character())->setId(100);
         $player->addCharacter($character);

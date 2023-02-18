@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Plugin\Core;
 
+use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Data\CoreAccount;
@@ -120,5 +121,29 @@ class Account implements AccountInterface
     public function getRoles(int $playerId): ?array
     {
         return $this->repositoryFactory->getPlayerRepository()->find($playerId)?->getCoreRoles();
+    }
+
+    public function getRemovedCharacters(int $playerId): ?array
+    {
+        $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);
+        if (!$player) {
+            return null;
+        }
+
+        return array_map(function (RemovedCharacter $char) {
+            return $char->toCoreMovedCharacter();
+        }, $player->getRemovedCharacters());
+    }
+
+    public function getIncomingCharacters(int $playerId): ?array
+    {
+        $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);
+        if (!$player) {
+            return null;
+        }
+
+        return array_map(function (RemovedCharacter $char) {
+            return $char->toCoreMovedCharacter();
+        }, $player->getIncomingCharacters());
     }
 }

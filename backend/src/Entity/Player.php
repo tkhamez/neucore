@@ -653,9 +653,9 @@ class Player implements \JsonSerializable
         return array_values($this->removedCharacters->toArray());
     }
 
-    public function addIncomingCharacters(RemovedCharacter $incomingCharacters): self
+    public function addIncomingCharacter(RemovedCharacter $incomingCharacter): self
     {
-        $this->incomingCharacters[] = $incomingCharacters;
+        $this->incomingCharacters[] = $incomingCharacter;
         return $this;
     }
 
@@ -669,12 +669,12 @@ class Player implements \JsonSerializable
 
     public function toCoreAccount(bool $fullAccount = true): ?CoreAccount
     {
-        if (!$this->getMain()) {
-            return null;
-        }
-
         if (!$fullAccount) {
             return new CoreAccount($this->getId(), $this->getName());
+        }
+
+        if (!$this->getMain()) {
+            return null;
         }
 
         return new CoreAccount(
