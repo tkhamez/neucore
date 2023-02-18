@@ -7,12 +7,11 @@ declare(strict_types=1);
 namespace Neucore\Entity;
 
 use Neucore\Api;
+use Neucore\Plugin\Data\CoreCharacter;
+use Neucore\Plugin\Data\CoreMovedCharacter;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
-
-use Neucore\Plugin\Data\CoreCharacter;
-use Neucore\Plugin\Data\CoreMovedCharacter;
 use OpenApi\Annotations as OA;
 
 /**

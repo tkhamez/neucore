@@ -65,8 +65,23 @@ parameters:
 			message: '#Offset (.*) does not exist on array<(.*)>\|null.#'
 			path: %currentWorkingDirectory%/tests/Unit/Plugin/Core/AccountTest.php
 		-
+			message: '#Cannot access property (.*) on (.*)null.#'
+			path: %currentWorkingDirectory%/tests/Unit/Plugin/Core/AccountTest.php
+		-
 			message: '#Parameter \#1 \$value of function count expects (.*) given.#'
 			path: %currentWorkingDirectory%/tests/Unit/Plugin/Core/DataTest.php
 		-
 			message: '#Offset (.*) does not exist on array<(.*)>\|null.#'
 			path: %currentWorkingDirectory%/tests/Unit/Plugin/Core/DataTest.php
+		-
+			message: '#Cannot access property (.*) on (.*)null.#'
+			path: %currentWorkingDirectory%/tests/Unit/Plugin/Core/DataTest.php
+		-
+			message: '#Cannot access property (.*) on (.*)null.#'
+			path: %currentWorkingDirectory%/tests/Unit/Entity/CorporationMemberTest.php
+		-
+			message: '#Cannot access property (.*) on (.*)null.#'
+			path: %currentWorkingDirectory%/tests/Unit/Entity/EsiTokenTest.php
+		-
+			message: '#Cannot access property (.*) on (.*)null.#'
+			path: %currentWorkingDirectory%/tests/Unit/Entity/RemovedCharacterTest.php

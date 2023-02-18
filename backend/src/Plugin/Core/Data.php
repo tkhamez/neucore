@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Neucore\Plugin\Core;
 
 use Neucore\Entity\Character;
-use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Factory\RepositoryFactory;
@@ -50,9 +49,13 @@ class Data implements DataInterface
             return null;
         }
 
-        return array_map(function (CorporationMember $data) {
-            return $data->toCoreMemberTracking();
-        }, $repo->findMatching($corporationId));
+        $result = [];
+        foreach ($repo->findMatching($corporationId) as $corpMember) {
+            if ($coreMember = $corpMember->toCoreMemberTracking()) {
+                $result[] = $coreMember;
+            }
+        }
+        return $result;
     }
 
     public function getCharacter(int $characterId): ?CoreCharacter
@@ -73,7 +76,6 @@ class Data implements DataInterface
                 $esiTokens[] = $coreToken;
             }
         }
-
         return $esiTokens;
     }
 

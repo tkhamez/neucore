@@ -197,6 +197,9 @@ class AccountTest extends TestCase
         $this->assertSame(Role::USER, $this->account->getRoles(self::$player1Id)[1]->name);
     }
 
+    /**
+     * @phan-suppress PhanTypeArraySuspiciousNullable
+     */
     public function testGetRemovedCharacters()
     {
         $this->assertNull($this->account->getRemovedCharacters(self::$player1Id + 22));
@@ -215,6 +218,9 @@ class AccountTest extends TestCase
         $this->assertSame('Main1', $chars[0]->deletedBy->playerName);
     }
 
+    /**
+     * @phan-suppress PhanTypeArraySuspiciousNullable
+     */
     public function testGetIncomingCharacters()
     {
         $this->assertNull($this->account->getIncomingCharacters(self::$player1Id + 22));

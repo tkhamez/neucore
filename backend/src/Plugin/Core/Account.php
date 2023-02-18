@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Neucore\Plugin\Core;
 
-use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Data\CoreAccount;
@@ -130,9 +129,13 @@ class Account implements AccountInterface
             return null;
         }
 
-        return array_map(function (RemovedCharacter $char) {
-            return $char->toCoreMovedCharacter();
-        }, $player->getRemovedCharacters());
+        $result = [];
+        foreach ($player->getRemovedCharacters() as $char) {
+            if ($remChar = $char->toCoreMovedCharacter()) {
+                $result[] = $remChar;
+            }
+        }
+        return $result;
     }
 
     public function getIncomingCharacters(int $playerId): ?array
@@ -142,8 +145,12 @@ class Account implements AccountInterface
             return null;
         }
 
-        return array_map(function (RemovedCharacter $char) {
-            return $char->toCoreMovedCharacter();
-        }, $player->getIncomingCharacters());
+        $result = [];
+        foreach ($player->getIncomingCharacters() as $char) {
+            if ($incChar = $char->toCoreMovedCharacter()) {
+                $result[] = $incChar;
+            }
+        }
+        return $result;
     }
 }

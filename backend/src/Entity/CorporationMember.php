@@ -295,7 +295,6 @@ class CorporationMember implements \JsonSerializable
     {
         if (
             !$this->character ||
-            !($player = $this->character->getPlayer()) ||
             !$this->logonDate ||
             !$this->logoffDate ||
             !$this->location ||
@@ -317,10 +316,10 @@ class CorporationMember implements \JsonSerializable
         return new CoreMemberTracking(
             new CoreCharacter(
                 $this->character->getId(),
-                $player->getId(),
+                $this->character->getPlayer()->getId(),
                 $this->character->getMain(),
                 $this->character->getName(),
-                $player->getName(),
+                $this->character->getPlayer()->getName(),
             ),
             $coreToken,
             $this->logonDate,
