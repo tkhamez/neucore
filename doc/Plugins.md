@@ -48,7 +48,7 @@ user interface and implement a couple methods to create and update external serv
   and adjust values.
 - Create a new PHP class that implements `Neucore\Plugin\ServiceInterface` or `Neucore\Plugin\GeneralInterface`,
   depending on what kind of plugin (general or service) you want to create. It is also possible to implement both
-  in the same class.
+  in the same class. Not all methods need to be implemented, most can throw an exception instead.
 - If you have a frontend, place all frontend files in a dedicated directory so that they can be deployed below
   `plugin/{name}` in the document root of the Neucore installation. Mention the name of the {name} directory in your 
   documentation, it must be unique among all installed Neucore plugins.
