@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Plugin\Core;
 
+use Neucore\Entity\Alliance;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\EveLogin;
 use Neucore\Factory\RepositoryFactory;
@@ -27,10 +28,15 @@ class DataTest extends TestCase
         self::$helper = new Helper();
         self::$helper->emptyDb();
 
+        $alliance = (new Alliance())->setId(10)->setName('A1');
         $corp1 = (new Corporation())->setId(1020)->setName('C1');
         $corp2 = (new Corporation())->setId(2040)->setName('C2');
+        self::$helper->getEm()->persist($alliance);
         self::$helper->getEm()->persist($corp1);
         self::$helper->getEm()->persist($corp2);
+        $groups = self::$helper->addGroups(['G1', 'G2']);
+        $corp1->addGroup($groups[0]);
+        $alliance->addGroup($groups[1]);
         $char = self::$helper->addCharacterMain('Main', 102030, [], ['G1'])->setCorporation($corp1);
         $corp1->addCharacter($char);
         $player = $char->getPlayer();
@@ -148,8 +154,30 @@ class DataTest extends TestCase
     public function testGetGroups()
     {
         $result = $this->data->getGroups();
+        $this->assertSame(2, count($result));
+        $this->assertGreaterThan(0, $result[0]->identifier);
+        $this->assertGreaterThan(0, $result[1]->identifier);
+        $this->assertSame('G1', $result[0]->name);
+        $this->assertSame('G2', $result[1]->name);
+    }
+
+    public function testGetCorporationGroups()
+    {
+        $this->assertNull($this->data->getCorporationGroups(99887778));
+
+        $result = $this->data->getCorporationGroups(1020);
         $this->assertSame(1, count($result));
         $this->assertGreaterThan(0, $result[0]->identifier);
         $this->assertSame('G1', $result[0]->name);
+    }
+
+    public function testGetAllianceGroups()
+    {
+        $this->assertNull($this->data->getAllianceGroups(99887778));
+
+        $result = $this->data->getAllianceGroups(10);
+        $this->assertSame(1, count($result));
+        $this->assertGreaterThan(0, $result[0]->identifier);
+        $this->assertSame('G2', $result[0]->name);
     }
 }

@@ -101,4 +101,28 @@ class Data implements DataInterface
             return $group->toCoreGroup();
         }, $this->repositoryFactory->getGroupRepository()->findBy([]));
     }
+
+    public function getCorporationGroups(int $corporationId): ?array
+    {
+        $corporation = $this->repositoryFactory->getCorporationRepository()->find($corporationId);
+        if (!$corporation) {
+            return null;
+        }
+
+        return array_map(function (Group $group) {
+            return $group->toCoreGroup();
+        }, $corporation->getGroups());
+    }
+
+    public function getAllianceGroups(int $allianceId): ?array
+    {
+        $alliance = $this->repositoryFactory->getAllianceRepository()->find($allianceId);
+        if (!$alliance) {
+            return null;
+        }
+
+        return array_map(function (Group $group) {
+            return $group->toCoreGroup();
+        }, $alliance->getGroups());
+    }
 }
