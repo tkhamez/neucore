@@ -6,6 +6,9 @@ namespace Tests\Unit\Plugin\Core;
 
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\CorporationMember;
+use Neucore\Entity\EsiLocation;
+use Neucore\Entity\EsiType;
 use Neucore\Entity\EveLogin;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Core\Data;
@@ -37,14 +40,43 @@ class DataTest extends TestCase
         $groups = self::$helper->addGroups(['G1', 'G2']);
         $corp1->addGroup($groups[0]);
         $alliance->addGroup($groups[1]);
-        $char = self::$helper->addCharacterMain('Main', 102030, [], ['G1'])->setCorporation($corp1);
+        $char = self::$helper->addCharacterMain('Play', 102030, [], ['G1'], true, null, 123, true)
+            ->setCorporation($corp1)->setName('Main');
+        $char->getEsiToken(EveLogin::NAME_DEFAULT)->setLastChecked(new \DateTime());
         $corp1->addCharacter($char);
         $player = $char->getPlayer();
-        self::$helper->addCharacterToPlayer('Alt 1', 102031, $player);
+        $char2 = self::$helper->addCharacterToPlayer('Alt 1', 102031, $player)->setCorporation($corp1);
         self::$helper->createOrUpdateEsiToken(
             $char, time(), 'at', true, 'test.login', ['scope1'], ['role1'], new \DateTime()
         );
         self::$playerId = $player->getId();
+
+        // member tracking
+        $location = (new EsiLocation())->setId(789)->setName('loc')->setCategory('station');
+        $ship = (new EsiType())->setId(987)->setName('ship');
+        $member1 = (new CorporationMember())
+            ->setId($char->getId())
+            ->setName($char->getName())
+            ->setCorporation($corp1)
+            ->setLogonDate(new \DateTime())
+            ->setLogoffDate(new \DateTime())
+            ->setLocation($location)
+            ->setShipType($ship)
+            ->setStartDate(new \DateTime());
+        $member2 = (new CorporationMember())
+            ->setId($char2->getId())
+            ->setName($char2->getName())
+            ->setCorporation($corp1)
+            ->setLogonDate(new \DateTime())
+            ->setLogoffDate(new \DateTime())
+            ->setLocation($location)
+            ->setShipType($ship)
+            ->setStartDate(new \DateTime());
+        self::$helper->getEm()->persist($member1);
+        self::$helper->getEm()->persist($member2);
+        self::$helper->getEm()->persist($location);
+        self::$helper->getEm()->persist($ship);
+
 
         self::$helper->getEm()->flush();
         self::$helper->getEm()->clear();
@@ -60,7 +92,7 @@ class DataTest extends TestCase
     {
         $this->assertNull($this->data->getCharacterIdsByCorporation(9999));
         $this->assertSame([], $this->data->getCharacterIdsByCorporation(2040));
-        $this->assertSame([102030], $this->data->getCharacterIdsByCorporation(1020));
+        $this->assertSame([102031, 102030], $this->data->getCharacterIdsByCorporation(1020));
     }
 
     /**
@@ -72,11 +104,55 @@ class DataTest extends TestCase
         $this->assertSame([], $this->data->getCharactersByCorporation(2040));
 
         $result = $this->data->getCharactersByCorporation(1020);
-        $this->assertSame(1, count($result));
+        $this->assertSame(2, count($result));
         $this->assertSame(self::$playerId, $result[0]->playerId);
-        $this->assertSame(102030, $result[0]->id);
+        $this->assertSame(102031, $result[0]->id);
         $this->assertNull($result[0]->corporationName);
         $this->assertNull($result[0]->allianceName);
+        $this->assertSame(102030, $result[1]->id);
+    }
+
+    public function testGetMemberTracking()
+    {
+        $this->assertNull($this->data->getMemberTracking(9999));
+
+        $result = $this->data->getMemberTracking(1020);
+        $this->assertSame(2, count($result));
+
+        $this->assertSame(102030, $result[0]->character->id);
+        $this->assertSame(self::$playerId, $result[0]->character->playerId);
+        $this->assertTrue($result[0]->character->main);
+        $this->assertSame('Main', $result[0]->character->name);
+        $this->assertSame('Play', $result[0]->character->playerName);
+        $this->assertTrue($result[0]->defaultToken->valid);
+        $this->assertInstanceOf(\DateTime::class, $result[0]->defaultToken->validStatusChanged);
+        $this->assertInstanceOf(\DateTime::class, $result[0]->defaultToken->lastChecked);
+        $this->assertInstanceOf(\DateTime::class, $result[0]->logonDate);
+        $this->assertInstanceOf(\DateTime::class, $result[0]->logoffDate);
+        $this->assertSame(789, $result[0]->locationId);
+        $this->assertSame('loc', $result[0]->locationName);
+        $this->assertSame('station', $result[0]->locationCategory);
+        $this->assertSame(987, $result[0]->shipTypeId);
+        $this->assertSame('ship', $result[0]->shipTypeName);
+        $this->assertInstanceOf(\DateTime::class, $result[0]->joinDate);
+
+        $this->assertSame(2, count($result));
+        $this->assertSame(102031, $result[1]->character->id);
+        $this->assertSame(self::$playerId, $result[1]->character->playerId);
+        $this->assertFalse($result[1]->character->main);
+        $this->assertSame('Alt 1', $result[1]->character->name);
+        $this->assertSame('Play', $result[1]->character->playerName);
+        $this->assertNull($result[1]->defaultToken->valid); // char does not have a token, but object exists here
+        $this->assertNull($result[1]->defaultToken->validStatusChanged);
+        $this->assertNull($result[1]->defaultToken->lastChecked);
+        $this->assertInstanceOf(\DateTime::class, $result[1]->logonDate);
+        $this->assertInstanceOf(\DateTime::class, $result[1]->logoffDate);
+        $this->assertSame(789, $result[1]->locationId);
+        $this->assertSame('loc', $result[1]->locationName);
+        $this->assertSame('station', $result[1]->locationCategory);
+        $this->assertSame(987, $result[1]->shipTypeId);
+        $this->assertSame('ship', $result[1]->shipTypeName);
+        $this->assertInstanceOf(\DateTime::class, $result[1]->joinDate);
     }
 
     public function testGetCharacter()
@@ -105,9 +181,9 @@ class DataTest extends TestCase
         $this->assertSame(EveLogin::NAME_DEFAULT, $result[0]->eveLoginName);
         $this->assertSame([], $result[0]->esiScopes);
         $this->assertSame([], $result[0]->eveRoles);
-        $this->assertNull($result[0]->valid);
+        $this->assertTrue($result[0]->valid);
         $this->assertNull($result[0]->hasRoles);
-        $this->assertNull($result[0]->lastChecked);
+        $this->assertInstanceOf(\DateTime::class, $result[0]->lastChecked);
 
         $this->assertInstanceOf(CoreEsiToken::class, $result[1]);
         $this->assertSame(102030, $result[1]->character->id);

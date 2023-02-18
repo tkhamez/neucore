@@ -9,7 +9,9 @@ use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
+use Neucore\Entity\EsiToken;
 use Neucore\Entity\EsiType;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use PHPUnit\Framework\TestCase;
 
@@ -203,5 +205,68 @@ class CorporationMemberTest extends TestCase
         $result = $member->setMissingCharacterMailSentNumber(2);
         $this->assertSame($member, $result);
         $this->assertSame(2, $member->getMissingCharacterMailSentNumber());
+    }
+
+    public function testToCoreMemberTracking()
+    {
+        $this->assertNull((new CorporationMember())->toCoreMemberTracking());
+
+        $member = (new CorporationMember())
+            ->setCharacter(
+                (new Character())
+                    ->setId(1020)
+                    ->setName('char')
+                    ->setMain(true)
+                    ->addEsiToken(
+                        (new EsiToken())
+                            ->setEveLogin((new EveLogin())->setName(EveLogin::NAME_DEFAULT))
+                            ->setValidToken(true)
+                            ->setValidTokenTime(new \DateTime())
+                            ->setLastChecked(new \DateTime())
+                    )
+                    ->setPlayer((new Player)->setId(1)->setName('player'))
+            )
+            ->setLogonDate(new \DateTime())
+            ->setLogoffDate(new \DateTime())
+            ->setLocation((new EsiLocation())->setId(10)->setName('loc')->setCategory('station'))
+            ->setShipType((new EsiType())->setId(20)->setName('ship'))
+            ->setStartDate(new \DateTime());
+
+        $cmt = $member->toCoreMemberTracking();
+        $this->assertSame(1020, $cmt->character->id);
+        $this->assertSame(1, $cmt->character->playerId);
+        $this->assertTrue($cmt->character->main);
+        $this->assertSame('char', $cmt->character->name);
+        $this->assertSame('player', $cmt->character->playerName);
+        $this->assertTrue($cmt->defaultToken->valid);
+        $this->assertInstanceOf(\DateTime::class, $cmt->defaultToken->validStatusChanged);
+        $this->assertInstanceOf(\DateTime::class, $cmt->defaultToken->lastChecked);
+        $this->assertInstanceOf(\DateTime::class, $cmt->logonDate);
+        $this->assertInstanceOf(\DateTime::class, $cmt->logoffDate);
+        $this->assertSame(10, $cmt->locationId);
+        $this->assertSame('loc', $cmt->locationName);
+        $this->assertSame('station', $cmt->locationCategory);
+        $this->assertSame(20, $cmt->shipTypeId);
+        $this->assertSame('ship', $cmt->shipTypeName);
+        $this->assertInstanceOf(\DateTime::class, $cmt->joinDate);
+
+
+        $member2 = (new CorporationMember())
+            ->setCharacter(
+                (new Character())
+                    ->setId(1020)
+                    ->setName('char')
+                    ->setMain(true)
+                    ->setPlayer((new Player)->setId(1)->setName('player'))
+            )
+            ->setLogonDate(new \DateTime())
+            ->setLogoffDate(new \DateTime())
+            ->setLocation((new EsiLocation())->setId(10)->setName('loc')->setCategory('station'))
+            ->setShipType((new EsiType())->setId(20)->setName('ship'))
+            ->setStartDate(new \DateTime());
+
+        $cmt = $member2->toCoreMemberTracking();
+        $this->assertSame(1020, $cmt->character->id);
+        $this->assertNull($cmt->defaultToken);
     }
 }

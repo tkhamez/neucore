@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Neucore\Entity;
 
 use Neucore\Api;
+use Neucore\Plugin\Data\CoreCharacter;
+use Neucore\Plugin\Data\CoreEsiToken;
+use Neucore\Plugin\Data\CoreMemberTracking;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
@@ -286,5 +289,48 @@ class CorporationMember implements \JsonSerializable
     public function getMissingCharacterMailSentNumber(): int
     {
         return $this->missingCharacterMailSentNumber;
+    }
+
+    public function toCoreMemberTracking(): ?CoreMemberTracking
+    {
+        if (
+            !$this->character ||
+            !($player = $this->character->getPlayer()) ||
+            !$this->logonDate ||
+            !$this->logoffDate ||
+            !$this->location ||
+            !$this->shipType ||
+            !$this->startDate
+        ) {
+            return null;
+        }
+
+        $coreToken = null;
+        if ($esiToken = $this->character->getEsiToken(EveLogin::NAME_DEFAULT)) {
+            $coreToken = new CoreEsiToken(
+                valid: $esiToken->getValidToken(),
+                validStatusChanged: $esiToken->getValidTokenTime(),
+                lastChecked: $esiToken->getLastChecked(),
+            );
+        }
+
+        return new CoreMemberTracking(
+            new CoreCharacter(
+                $this->character->getId(),
+                $player->getId(),
+                $this->character->getMain(),
+                $this->character->getName(),
+                $player->getName(),
+            ),
+            $coreToken,
+            $this->logonDate,
+            $this->logoffDate,
+            (int)$this->location->getId(),
+            $this->location->getName(),
+            $this->location->getCategory(),
+            (int)$this->shipType->getId(),
+            (string)$this->shipType->getName(),
+            $this->startDate,
+        );
     }
 }
