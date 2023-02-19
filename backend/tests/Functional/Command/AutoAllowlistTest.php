@@ -79,18 +79,21 @@ class AutoAllowlistTest extends ConsoleTestCase
         ]);
 
         $log = explode("\n", $output);
-        $this->assertSame(11, count($log));
+        $this->assertSame(14, count($log));
         $this->assertStringContainsString('Started "auto-allowlist"', $log[0]);
         $this->assertStringContainsString('  Processing watchlist '.$this->data['watchlist1Id'], $log[1]);
-        $this->assertStringContainsString("    Collected data from player {$this->data['player1Id']}.", $log[2]);
-        $this->assertStringContainsString('    Corporations to check: 1, checked: 0, allowlist: 0', $log[3]);
-        $this->assertStringContainsString('  Processing watchlist '.$this->data['watchlist2Id'], $log[4]);
-        $this->assertStringContainsString("    Collected data from player {$this->data['player1Id']}.", $log[5]);
-        $this->assertStringContainsString("    Collected data from player {$this->data['player2Id']}.", $log[6]);
-        $this->assertStringContainsString('    Checked corporation 2000102.', $log[7]);
-        $this->assertStringContainsString('    Corporations to check: 1, checked: 1, allowlist: 1', $log[8]);
-        $this->assertStringContainsString('Finished "auto-allowlist"', $log[9]);
-        $this->assertStringContainsString('', $log[10]);
+        $this->assertStringContainsString("    Collected data from player {$this->data['player1Id']}", $log[2]);
+        $this->assertStringContainsString("    No token for corporation 2000101", $log[3]);
+        $this->assertStringContainsString("    No token for corporation 2000103", $log[4]);
+        $this->assertStringContainsString('    Corporations to check: 2, checked: 0, allowlist: 0', $log[5]);
+        $this->assertStringContainsString('  Processing watchlist '.$this->data['watchlist2Id'], $log[6]);
+        $this->assertStringContainsString("    Collected data from player {$this->data['player1Id']}", $log[7]);
+        $this->assertStringContainsString("    Collected data from player {$this->data['player2Id']}", $log[8]);
+        $this->assertStringContainsString('    Checked corporation 2000102', $log[9]);
+        $this->assertStringContainsString("    No token for corporation 2000103", $log[10]);
+        $this->assertStringContainsString('    Corporations to check: 2, checked: 1, allowlist: 1', $log[11]);
+        $this->assertStringContainsString('Finished "auto-allowlist"', $log[12]);
+        $this->assertStringContainsString('', $log[13]);
 
         $this->om->clear();
 

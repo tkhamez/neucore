@@ -8,8 +8,6 @@ use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Repository\CorporationRepository;
-use Neucore\Repository\WatchlistRepository;
 use Neucore\Service\EsiData;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
@@ -28,9 +26,9 @@ class AutoAllowlist extends Command
     use LogOutput;
     use EsiRateLimited;
 
-    private const KEY_TOKEN = 'token';
+    private const KEY_TOKEN_ID = 'token_id';
 
-    private const KEY_IDS = 'ids';
+    private const KEY_CHAR_IDS = 'char_ids';
 
     private Watchlist $watchlistService;
 
@@ -40,9 +38,7 @@ class AutoAllowlist extends Command
 
     private OAuthToken $tokenService;
 
-    private WatchlistRepository $watchlistRepository;
-
-    private CorporationRepository $corporationRepository;
+    private RepositoryFactory $repositoryFactory;
 
     private int $sleep = 50;
 
@@ -69,8 +65,7 @@ class AutoAllowlist extends Command
         $this->esiData = $esiData;
         $this->objectManager = $objectManager;
         $this->tokenService = $tokenService;
-        $this->watchlistRepository = $repositoryFactory->getWatchlistRepository();
-        $this->corporationRepository = $repositoryFactory->getCorporationRepository();
+        $this->repositoryFactory = $repositoryFactory;
     }
 
     protected function configure(): void
@@ -101,7 +96,7 @@ class AutoAllowlist extends Command
         } else {
             $ids = array_map(function (\Neucore\Entity\Watchlist $watchlist) {
                 return $watchlist->getId();
-            }, $this->watchlistRepository->findBy([]));
+            }, $this->repositoryFactory->getWatchlistRepository()->findBy([]));
         }
 
         foreach ($ids as $watchlistId) {
@@ -118,7 +113,7 @@ class AutoAllowlist extends Command
 
     private function allow(int $id): void
     {
-        $watchlist = $this->watchlistRepository->find($id);
+        $watchlist = $this->repositoryFactory->getWatchlistRepository()->find($id);
         if ($watchlist === null) {
             $this->writeLine('    Watchlist not found.', false);
             return;
@@ -134,12 +129,12 @@ class AutoAllowlist extends Command
         $allowlist = $this->getAllowlist($accountsData);
 
         $this->writeLine(
-            "    Corporations to check: $this->numCorporations, checked: $this->numCorporationsChecked, ".
+            "    Corporations to check: $this->numCorporations, checked: $this->numCorporationsChecked, " .
             "allowlist: $this->numCorporationsAllowed",
             false
         );
 
-        $watchlist = $this->watchlistRepository->find($id); // read again because of "clear" above
+        $watchlist = $this->repositoryFactory->getWatchlistRepository()->find($id); // entity manager was cleared
         if ($watchlist === null) {
             $this->writeLine('    Watchlist not found.', false);
             return;
@@ -180,25 +175,28 @@ class AutoAllowlist extends Command
                 }
                 $corporations[$corporationId] = $player->getId();
 
-                if (! isset($accountsData[$playerId][$corporationId])) {
-                    $accountsData[$playerId][$corporationId] = [self::KEY_IDS => [], self::KEY_TOKEN => null];
+                if (!isset($accountsData[$playerId][$corporationId])) {
+                    $accountsData[$playerId][$corporationId] = [
+                        self::KEY_CHAR_IDS => [],
+                        self::KEY_TOKEN_ID => null,
+                    ];
                 }
-                $accountsData[$playerId][$corporationId][self::KEY_IDS][] = $character->getId();
+                $accountsData[$playerId][$corporationId][self::KEY_CHAR_IDS][] = $character->getId();
                 $esiToken = $character->getEsiToken(EveLogin::NAME_DEFAULT);
                 if (
-                    $accountsData[$playerId][$corporationId][self::KEY_TOKEN] === null &&
+                    $accountsData[$playerId][$corporationId][self::KEY_TOKEN_ID] === null &&
                     $esiToken !== null &&
                     $esiToken->getValidToken() &&
                     in_array(EveLogin::SCOPE_MEMBERSHIP, $this->tokenService->getScopesFromToken($esiToken))
                 ) {
-                    $accountsData[$playerId][$corporationId][self::KEY_TOKEN] = $esiToken;
+                    $accountsData[$playerId][$corporationId][self::KEY_TOKEN_ID] = $esiToken->getId();
                 }
             }
             if (empty($accountsData[$playerId])) {
                 unset($accountsData[$playerId]);
             }
 
-            $this->writeLine("    Collected data from player $playerId.");
+            $this->writeLine("    Collected data from player $playerId");
             usleep($this->sleep * 1000);
         }
 
@@ -215,33 +213,41 @@ class AutoAllowlist extends Command
     {
         $allowlist = [];
         foreach ($accountsData as $corporations) {
-            $this->numCorporations ++;
             foreach ($corporations as $corporationId => $characters) {
-                if ($characters[self::KEY_TOKEN] === null) {
+                $this->numCorporations ++;
+                if ($characters[self::KEY_TOKEN_ID] === null) {
+                    $this->writeLine("    No token for corporation $corporationId");
                     continue;
                 }
 
                 $this->checkForErrors();
 
-                $esiToken = $characters[self::KEY_TOKEN];
+                $tokenId = $characters[self::KEY_TOKEN_ID];
+                $esiToken = $this->repositoryFactory->getEsiTokenRepository()->find($tokenId);
+                if (!$esiToken) {
+                    continue;
+                }
                 $token = $this->tokenService->updateEsiToken($esiToken);
                 if (!$token) {
                     continue;
                 }
 
                 $members = $this->esiData->fetchCorporationMembers($corporationId, $token->getToken());
-
-                if (! empty($members)) { // <1 would be an ESI error
+                if (empty($members)) { // ESI error
+                    $this->writeLine(
+                        "    Invalid token for $corporationId from " . $esiToken->getCharacter()->getId()
+                    );
+                } else {
                     $this->numCorporationsChecked ++;
 
-                    if (empty(array_diff($members, $characters[self::KEY_IDS]))) {
+                    if (empty(array_diff($members, $characters[self::KEY_CHAR_IDS]))) {
                         // all members are on this account
                         $allowlist[] = $corporationId;
                         $this->numCorporationsAllowed ++;
                     }
                 }
 
-                $this->writeLine("    Checked corporation $corporationId.");
+                $this->writeLine("    Checked corporation $corporationId");
                 usleep($this->sleep * 1000);
             }
         }
@@ -258,14 +264,14 @@ class AutoAllowlist extends Command
         }
 
         foreach ($allowlist as $corporationId) {
-            $corporation = $this->corporationRepository->find($corporationId);
+            $corporation = $this->repositoryFactory->getCorporationRepository()->find($corporationId);
             if ($corporation) {
                 $corporation->setAutoAllowlist(true);
                 $watchlist->addAllowlistCorporation($corporation);
             }
         }
 
-        if (! $this->objectManager->flush()) {
+        if (!$this->objectManager->flush()) {
             $this->writeLine('    Failed to save list.', false);
         }
     }
