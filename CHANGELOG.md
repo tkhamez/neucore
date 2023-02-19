@@ -1,9 +1,11 @@
 # Changelog
 
-## next
+## 1.45.0
+
+19 Feb 2023
 
 - **BC Break**: Update to [Neucore plugin](https://github.com/tkhamez/neucore-plugin) version 2.0.0:
-  - Plugin now have access to much more data from Neucore.
+  - Plugins now have access to much more data from Neucore.
   - Plugins can now add menu items to the "Services" menu.
 - Change: Line breaks in the Base64-encoded authentication tokens of applications are removed.
 - Fix: It was possible to accept a group application even if the player was not allowed to be a member of that group.
