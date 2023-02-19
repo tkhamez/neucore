@@ -34,7 +34,8 @@ RUN echo 'Header always set Strict-Transport-Security "max-age=31536000"' > /etc
     echo 'ServerTokens Prod'                                             >> /etc/apache2/conf-enabled/x-neucore.conf && \
     echo 'AddOutputFilterByType DEFLATE text/plain text/html application/json font/ttf image/svg+xml image/x-icon' >> /etc/apache2/conf-enabled/x-neucore.conf
 
-COPY --from=build /var/www/neucore/web /var/www/html
+RUN ln -s /var/www/html /var/www/web
+COPY --from=build /var/www/neucore/web /var/www/web
 COPY --from=build /var/www/neucore/backend /var/www/backend
 COPY --from=build /var/www/neucore/setup /var/www/setup
 RUN chown www-data /var/www/backend/var/cache && \

@@ -69,8 +69,7 @@ be removed without notice.
 - Set the `NEUCORE_PLUGINS_INSTALL_DIR` environment variable (e.g. `/plugins`).
 - Copy the plugin into that directory within its own subdirectory (so that the plugin.yml file is e.g. 
   at `/plugins/discord/plugin.yml`).
-- If the plugin contains frontend files, make them available below `web/plugin/{name}` (Docker: 
-  `/var/www/html/plugin/{name}`), e.g. by creating a symlink or by mounting the directory in the Docker container. 
-  See the plugin documentation for the name of the directory {name}.
+- If the plugin contains frontend files, make them available below `web/plugin/{name}`, e.g. by creating a symlink or
+  by mounting the directory in the Docker container. See the plugin documentation for the name of the directory {name}.
 - In Neucore, go to Administration -> Plugins and add a new plugin.
 - Configure the plugin, at the very least choose a plugin from the dropdown list.

@@ -116,7 +116,7 @@ To use a custom [theme.js](../frontend/public/theme.js) file, add the following 
 for example:
 
 ```
-  --volume="$(pwd)/theme.js":/var/www/html/dist/theme.js \
+  --volume="$(pwd)/theme.js":/var/www/web/dist/theme.js \
 ```
 
 To add a service plugin, for example the [Discord Plugin](https://github.com/tkhamez/neucore-discord-plugin), add
