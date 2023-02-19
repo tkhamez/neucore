@@ -104,6 +104,8 @@ class AutoAllowlistTest extends ConsoleTestCase
         $this->assertSame(1, count($list->getAllowlistCorporations()));
         $this->assertSame(2000102, $list->getAllowlistCorporations()[0]->getId());
         $this->assertTrue($corp2->getAutoAllowlist());
-        $this->assertFalse($corp3->getAutoAllowlist());
+
+        // Not changed anymore because the flag is shared among all watchlists
+        $this->assertTrue($corp3->getAutoAllowlist());
     }
 }

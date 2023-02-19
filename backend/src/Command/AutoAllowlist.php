@@ -123,9 +123,7 @@ class AutoAllowlist extends Command
         $watchedCorporationIds = $this->watchlistService->getCorporationIds($id, 'alliance', 'corporation');
 
         $accountsData = $this->getAccountData($players, $watchedCorporationIds);
-
         $this->objectManager->clear(); // reduces memory usage a little bit
-
         $allowlist = $this->getAllowlist($accountsData);
 
         $this->writeLine(

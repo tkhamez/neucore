@@ -7,6 +7,9 @@
   - Plugins can now add menu items to the "Services" menu.
 - Change: Line breaks in the Base64-encoded authentication tokens of applications are removed.
 - Fix: It was possible to accept a group application even if the player was not allowed to be a member of that group.
+- Fix: The "auto" flag for watchlists of corporations was sometimes incorrectly set to false. [#34][i34]
+
+[i34]: https://github.com/tkhamez/neucore/issues/34
 
 ## 1.44.0
 

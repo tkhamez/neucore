@@ -150,7 +150,7 @@ class WatchlistTest extends TestCase
     public function testAddGetRemoveAllowlistCorporation()
     {
         $watchlist = new Watchlist();
-        $e1 = (new Corporation())->setAutoAllowlist(true);
+        $e1 = new Corporation();
         $e2 = new Corporation();
 
         $this->assertSame([], $watchlist->getAllowlistCorporations());
@@ -161,7 +161,6 @@ class WatchlistTest extends TestCase
 
         $watchlist->removeAllowlistCorporation($e1);
         $this->assertSame([$e2], $watchlist->getAllowlistCorporations());
-        $this->assertFalse($e1->getAutoAllowlist());
     }
 
     public function testAddGetRemoveAllowlistAlliance()

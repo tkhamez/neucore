@@ -376,7 +376,6 @@ class Watchlist implements \JsonSerializable
      */
     public function removeAllowlistCorporation(Corporation $allowlistCorporation): bool
     {
-        $allowlistCorporation->setAutoAllowlist(false);
         return $this->allowlistCorporations->removeElement($allowlistCorporation);
     }
 

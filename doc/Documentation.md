@@ -221,11 +221,13 @@ members are added or removed from these groups.
 
 ## Watchlist
 
+The permissions are managed via groups, one for viewing and one for administration, separately for each watch list.
+
 Corporations can be automatically added to the allowlist (and removed accordingly) if all their members 
 are on the same account using the `auto-allowlist` command. This only works if at least one character in
-that corporation has authorized the `esi-corporations.read_corporation_membership.v1` ESI scope.
-
-The permissions are managed via groups, one for viewing and one for administration, separately for each watch list.
+that corporation has authorized the `esi-corporations.read_corporation_membership.v1` ESI scope. Note that 
+the auto flag of a corporation is the same for all watchlists. This means that automatic additions and 
+removals have priority over manually adding and removing a corporation from the allow list.
 
 ## Mail Notifications
 
