@@ -21,8 +21,8 @@ For each plugin that was created in Neucore there is one distinct URL `/plugin/{
 The {name} part can be anything and is passed to the method that implements the request. This method will also 
 get information about the logged-in user.
 
-All plugins have access to a couple object from Neucore, e.g. to parse YAML files or make ESI requests with
-tokens from any character that is available on Neucore.
+All plugins have access to a couple object from Neucore, e.g. to parse YAML files, get various data like 
+group members or make ESI requests with tokens from any character that is available on Neucore.
 
 **General plugins**
 
@@ -50,18 +50,18 @@ user interface and implement a couple methods to create and update external serv
   depending on what kind of plugin (general or service) you want to create. It is also possible to implement both
   in the same class. Not all methods need to be implemented, most can throw an exception instead.
 - If you have a frontend, place all frontend files in a dedicated directory so that they can be deployed below
-  `plugin/{name}` in the document root of the Neucore installation. Mention the name of the {name} directory in your 
-  documentation, it must be unique among all installed Neucore plugins.
+  `web/plugin/{name}` in the document root of the Neucore installation. Mention the name of the {name} directory
+  in your documentation, it must be unique among all installed Neucore plugins with a frontend.
 
 Neucore automatically loads all classes from the namespace that is configured with the `psr4_prefix` and 
 `psr4_path` values from the `plugin.yml` file.
 
 You can also use all classes and libraries provided by the `neucore-plugin` package and by the `FactoryInterface`
-object that is provided by Neucore in the plugin class constructor. However, note that the libraries can be updated 
+object that is provided by Neucore in the plugin class constructor. However, note that libraries can be updated 
 with each Neucore release.
 
 Besides that, **do not use** any class from Neucore or any library that Neucore provides. Those can change or
-be removed without notice.
+be removed without notice. Also, do not access the database directly.
 
 
 ## Install a plugin
@@ -70,6 +70,7 @@ be removed without notice.
 - Copy the plugin into that directory within its own subdirectory (so that the plugin.yml file is e.g. 
   at `/plugins/discord/plugin.yml`).
 - If the plugin contains frontend files, make them available below `web/plugin/{name}`, e.g. by creating a symlink or
-  by mounting the directory in the Docker container. See the plugin documentation for the name of the directory {name}.
-- In Neucore, go to Administration -> Plugins and add a new plugin.
-- Configure the plugin, at the very least choose a plugin from the dropdown list.
+  by mounting the directory in the Docker container. See the documentation of the plugin for the name of the {name}
+  directory.
+- In Neucore, go to _Administration -> Plugins_ and add a new plugin.
+- Configure the plugin, at the very least choose the plugin from the dropdown list. Don't forget to save your changes.

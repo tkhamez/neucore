@@ -132,10 +132,9 @@ and that character is marked as the main character.
 After a successful login, additional characters (alts) can be added to the account. This
 is also done via EVE SSO.
 
-If a character to be added to an account already belongs to another account, both accounts will
-be merged by moving all characters from the newer account to the older. This can happen, for example,
-if someone has accidentally created two accounts by logging in with an alt that has not
-yet been added to the main account.
+If a character to be added to an account already belongs to another account, the two accounts will 
+be merged by moving all characters from the newer account to the older one, unless the character owner
+hash of the character being added has changed, which happens after a character transfer.
 
 ### Removing Characters
 
