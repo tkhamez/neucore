@@ -267,7 +267,10 @@ Set up necessary cron jobs, e.g. every 8 hours using a lock file (adjust user an
 0 4,12,20 * * * neucore /usr/bin/flock -n /tmp/neucore-run-jobs.lock /var/www/neucore/backend/bin/run-jobs.sh
 ```
 
-The output is logged to backend/var/logs.
+The output is logged to backend/var/logs. It can be filtered to see how long each job was running, e.g.:
+```
+cat app-cli-2022w36.log | grep -E 'Started|Finished|Guzzle' > app-cli-2022w36-filtered.log
+```
 
 ### Customization
 

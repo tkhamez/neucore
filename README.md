@@ -74,6 +74,8 @@ Watchlist
 
 ## Plugins and other related software
 
+See also [Plugin](doc/Plugins.md) documentation.
+
 Official plugins:
 
 - Discord auth: [neucore-discord-plugin](https://github.com/tkhamez/neucore-discord-plugin)

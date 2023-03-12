@@ -12,7 +12,7 @@
             </div>
             <div class="modal-body">
                 <p>
-                    <strong>Do not use these logins unless you were asked to do so</strong>.<br>
+                    Here you can add additional tokens to existing characters.<br>
                     If you want to add more characters to your account use the EVE login button on the main page.
                 </p>
                 <div class="table-responsive">
