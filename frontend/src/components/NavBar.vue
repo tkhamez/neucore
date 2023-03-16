@@ -174,7 +174,11 @@ export default {
         hasNavigation() {
             return (
                 this.h.hasRole('user') ||
-                this.getNavigationItems(this.navigationParent.root.id).length > 0
+                this.hasNavigationItem(this.navigationParent.root.id) ||
+                this.hasNavigationItem(this.navigationParent.services.id) ||
+                this.hasNavigationItem(this.navigationParent.management.id) ||
+                this.hasNavigationItem(this.navigationParent.administration.id) ||
+                this.hasNavigationItem(this.navigationParent.member_data.id)
             );
         },
 

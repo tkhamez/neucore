@@ -2,6 +2,7 @@
 
 ## next
 
+- Fix: Menu items from plugins were not always shown before login.
 - Text changes.
 
 ## 1.45.0
