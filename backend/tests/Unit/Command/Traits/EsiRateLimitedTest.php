@@ -82,7 +82,7 @@ class EsiRateLimitedTest extends TestCase
 
         $this->checkForErrors();
 
-        $this->assertGreaterThanOrEqual(20, $this->getSleepInSeconds());
+        $this->assertLessThanOrEqual(20, $this->getSleepInSeconds());
         $this->assertStringStartsWith(
             'EsiRateLimited: hit error limit, sleeping ',
             $this->testLogger->getHandler()->getRecords()[0]['message']
