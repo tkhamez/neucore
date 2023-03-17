@@ -23,6 +23,10 @@ use Psr\Log\LoggerInterface;
 
 class TestService implements GeneralInterface, ServiceInterface
 {
+    public static ?int $groupId = null;
+
+    public static ?int $managerGroupId = null;
+
     public function __construct(
         LoggerInterface     $logger,
         PluginConfiguration $pluginConfiguration,
@@ -48,9 +52,13 @@ class TestService implements GeneralInterface, ServiceInterface
     public function getNavigationItems(): array
     {
         return [
-            new NavigationItem(NavigationItem::PARENT_ROOT, 'Test', '/test', '_blank', [CoreRole::GROUP_MANAGER]),
+            new NavigationItem(NavigationItem::PARENT_ROOT, 'Test', '/t1', '_blank', [CoreRole::GROUP_MANAGER]),
             new NavigationItem(NavigationItem::PARENT_ROOT, 'Test', 'http://invalid', '_blank', [CoreRole::USER]),
-            new NavigationItem('invalid', 'Test', '/test', '_blank', [CoreRole::USER]),
+            new NavigationItem('invalid', 'Test', '/t2', '_blank', [CoreRole::USER]),
+            new NavigationItem(NavigationItem::PARENT_ROOT, 'Test', '/t3', groups: [-1]),
+            new NavigationItem(NavigationItem::PARENT_ROOT, 'Test', '/t4', groups: [self::$groupId]),
+            new NavigationItem(NavigationItem::PARENT_ROOT, 'Test', '/t5', managerGroups: [-1]),
+            new NavigationItem(NavigationItem::PARENT_ROOT, 'Test', '/t6', managerGroups: [self::$managerGroupId]),
         ];
     }
 

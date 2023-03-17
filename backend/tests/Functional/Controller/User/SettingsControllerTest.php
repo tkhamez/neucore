@@ -5,6 +5,8 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
+require_once __DIR__ . '/SettingsController/plugin/src/TestService.php';
+
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\ObjectManager;
@@ -16,13 +18,13 @@ use Neucore\Entity\Plugin;
 use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Plugin\Data\CoreRole;
 use Neucore\Repository\SystemVariableRepository;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
+use Tests\Functional\Controller\User\SettingsController\TestService;
 use Tests\Logger;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
@@ -85,6 +87,8 @@ class SettingsControllerTest extends WebTestCase
         );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
+            ['name' => SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES, 'value' => '11'],
+            ['name' => SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS, 'value' => '101'],
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
             ['name' => 'esiDataSource', 'value' => $_ENV['NEUCORE_EVE_DATASOURCE'] ?? 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
@@ -113,6 +117,8 @@ class SettingsControllerTest extends WebTestCase
         );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
+            ['name' => SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES, 'value' => '11'],
+            ['name' => SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS, 'value' => '101'],
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
             ['name' => 'esiDataSource', 'value' => $_ENV['NEUCORE_EVE_DATASOURCE'] ?? 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
@@ -122,10 +128,18 @@ class SettingsControllerTest extends WebTestCase
                 $this->service2->jsonSerialize(),
             ])],
             ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([
-                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service1->getId().'/test',
-                    'target' => '_blank', 'roles' => [CoreRole::GROUP_MANAGER]],
-                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service2->getId().'/test',
-                    'target' => '_blank', 'roles' => [CoreRole::GROUP_MANAGER]],
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service1->getId().'/t1',
+                    'target' => '_blank'],
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service1->getId().'/t4',
+                    'target' => '_self'],
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service1->getId().'/t6',
+                    'target' => '_self'],
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service2->getId().'/t1',
+                    'target' => '_blank'],
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service2->getId().'/t4',
+                    'target' => '_self'],
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service2->getId().'/t6',
+                    'target' => '_self'],
             ])],
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
             ['name' => 'discord', 'value' => 'https://discord.gg/memUh56u8z'],
@@ -136,6 +150,27 @@ class SettingsControllerTest extends WebTestCase
             'Plugin navigation item: invalid URL "http://invalid", plugin ID ' . $this->service2->getId(),
             'Plugin navigation item: invalid position "invalid", plugin ID ' . $this->service2->getId(),
         ], $this->logger->getMessages());
+    }
+
+    public function testSystemList200AuthenticatedGroupsDeactivated()
+    {
+        $this->setupDb();
+        $this->loginUser(51); // role: USER; groups: g1, but deactivated
+
+        $response = $this->runApp(
+            'GET',
+            '/api/user/settings/system/list',
+            null,
+            null,
+            [LoggerInterface::class => $this->logger],
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/SettingsController']],
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+        $parsedBody = $this->parseJsonBody($response);
+        $this->assertSame([
+            'name' => 'navigationGeneralPlugins', 'value' => \json_encode([]) // had t4 with active groups
+        ], $parsedBody[7]);
+
     }
 
     public function testSystemList200RoleSetting()
@@ -155,6 +190,8 @@ class SettingsControllerTest extends WebTestCase
         );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
+            ['name' => SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES, 'value' => '11'],
+            ['name' => SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS, 'value' => '101'],
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
             ['name' => SystemVariable::ALLOW_LOGIN_NO_SCOPES, 'value' => '0'],
             ['name' => SystemVariable::DISABLE_ALT_LOGIN, 'value' => '0'],
@@ -165,8 +202,8 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'navigationShowGroups', 'value' => '1'],
             ['name' => 'navigationServices', 'value' => \json_encode([$this->service1->jsonSerialize()])],
             ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([
-                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service1->getId().'/test',
-                    'target' => '_blank', 'roles' => [CoreRole::GROUP_MANAGER]],
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service1->getId().'/t1',
+                    'target' => '_blank']
             ])],
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
             ['name' => 'discord', 'value' => 'https://discord.gg/memUh56u8z'],
@@ -381,8 +418,14 @@ class SettingsControllerTest extends WebTestCase
         $this->em->persist($group);
         $this->em->flush();
 
-        $this->helper->addCharacterMain('User', 5, [Role::USER, Role::GROUP_MANAGER], ['g1']);
+        TestService::$groupId = $group->getId();
+        TestService::$managerGroupId = $group->getId();
+
+        $char = $this->helper->addCharacterMain('User', 5, [Role::USER, Role::GROUP_MANAGER], ['g1']);
+        $group->addManager($char->getPlayer());
         $admin = $this->helper->addCharacterMain('Admin', 6, [Role::USER, Role::GROUP_MANAGER, Role::SETTINGS]);
+
+        $char2 = $this->helper->addCharacterMain('User 2', 51, [Role::USER], ['g1']);
 
         $conf1 = new PluginConfigurationDatabase();
         $conf1->directoryName = 'plugin';
@@ -411,8 +454,6 @@ class SettingsControllerTest extends WebTestCase
         $admin->setCorporation($corp);
 
         $var1 = (new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION))->setValue("0");
-        $var2 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue("1")
-            ->setScope(SystemVariable::SCOPE_SETTINGS);
         $var4 = (new SystemVariable(SystemVariable::MAIL_CHARACTER))->setValue("The char")
             ->setScope(SystemVariable::SCOPE_SETTINGS);
         $var5 = (new SystemVariable(SystemVariable::MAIL_TOKEN))->setValue((string) \json_encode([
@@ -427,7 +468,6 @@ class SettingsControllerTest extends WebTestCase
             ->setScope(SystemVariable::SCOPE_SETTINGS);
 
         $this->em->persist($var1);
-        $this->em->persist($var2);
         $this->em->persist($var4);
         $this->em->persist($var5);
         $this->em->persist($var8);
@@ -439,6 +479,9 @@ class SettingsControllerTest extends WebTestCase
         $this->em->persist($alli);
         $this->em->persist($corp);
 
+        $this->helper->setupDeactivateAccount($char2->getPlayer());
+
         $this->em->flush();
+        $this->em->clear();
     }
 }

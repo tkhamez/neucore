@@ -6,9 +6,11 @@ namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Group;
+use Neucore\Entity\Plugin;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Plugin\Data\NavigationItem;
+use Neucore\Service\AccountGroup;
 use Neucore\Service\Config;
 use Neucore\Service\EveMail;
 use Neucore\Service\PluginService;
@@ -56,12 +58,12 @@ class SettingsController extends BaseController
         Config $config,
         PluginService $pluginService,
         LoggerInterface $logger,
+        AccountGroup $accountGroup,
     ): ResponseInterface {
         $settingsRepository = $this->repositoryFactory->getSystemVariableRepository();
         $groupRepository = $this->repositoryFactory->getGroupRepository();
-        $playerRoles = $userAuth->getRoles();
 
-        if (in_array(Role::SETTINGS, $playerRoles)) {
+        if (in_array(Role::SETTINGS, $userAuth->getRoles())) {
             $scopes = self::VALID_SCOPES;
         } else {
             $scopes = [SystemVariable::SCOPE_PUBLIC];
@@ -74,36 +76,7 @@ class SettingsController extends BaseController
             if ($plugin->getServiceImplementation() && $userAuth->hasRequiredGroups($plugin)) {
                 $services[] = $plugin;
             }
-            if ($plugin->getGeneralImplementation() && $userAuth->hasRequiredGroups($plugin, true)) {
-                $validPositions = [
-                    NavigationItem::PARENT_ROOT,
-                    NavigationItem::PARENT_SERVICE,
-                    NavigationItem::PARENT_MANAGEMENT,
-                    NavigationItem::PARENT_ADMINISTRATION,
-                    NavigationItem::PARENT_MEMBER_DATA,
-                ];
-                foreach ($plugin->getGeneralImplementation()->getNavigationItems() as $item) {
-                    if (!in_array($item->getParent(), $validPositions)) {
-                        $logger->warning(
-                            'Plugin navigation item: invalid position "' . $item->getParent() . '", plugin ID ' .
-                            $plugin->getId(),
-                        );
-                    } elseif (!str_starts_with($item->getUrl(), '/')) {
-                        $logger->warning(
-                            'Plugin navigation item: invalid URL "' . $item->getUrl() . '", plugin ID ' .
-                            $plugin->getId(),
-                        );
-                    } elseif (empty($item->getRoles()) || !empty(array_intersect($item->getRoles(), $playerRoles))) {
-                        $navigationItems[] = new NavigationItem(
-                            $item->getParent(),
-                            $item->getName(),
-                            '/plugin/' . $plugin->getId() . $item->getUrl(),
-                            $item->getTarget(),
-                            $item->getRoles(),
-                        );
-                    }
-                }
-            }
+            $navigationItems = $this->getNavigationItems($navigationItems, $plugin, $userAuth, $accountGroup, $logger);
         }
 
         $result = $settingsRepository->findBy(['scope' => $scopes], [self::COLUMN_NAME => 'ASC']);
@@ -274,5 +247,67 @@ class SettingsController extends BaseController
         }
 
         return $this->withJson($result);
+    }
+
+    /**
+     * @return NavigationItem[]
+     */
+    private function getNavigationItems(
+        array $navigationItems,
+        Plugin $plugin,
+        UserAuth $userAuth,
+        AccountGroup $accountGroup,
+        LoggerInterface $logger,
+    ): array {
+        if (!$plugin->getGeneralImplementation() || !$userAuth->hasRequiredGroups($plugin, true)) {
+            return $navigationItems;
+        }
+
+        $player = $this->getUser($userAuth)->getPlayer();
+
+        $validPositions = [
+            NavigationItem::PARENT_ROOT,
+            NavigationItem::PARENT_SERVICE,
+            NavigationItem::PARENT_MANAGEMENT,
+            NavigationItem::PARENT_ADMINISTRATION,
+            NavigationItem::PARENT_MEMBER_DATA,
+        ];
+
+        foreach ($plugin->getGeneralImplementation()->getNavigationItems() as $item) {
+            if (!in_array($item->getParent(), $validPositions)) {
+                $logger->warning(
+                    'Plugin navigation item: invalid position "' . $item->getParent() . '", plugin ID ' .
+                    $plugin->getId(),
+                );
+            } elseif (!str_starts_with($item->getUrl(), '/')) {
+                $logger->warning(
+                    'Plugin navigation item: invalid URL "' . $item->getUrl() . '", plugin ID ' .
+                    $plugin->getId(),
+                );
+            } else {
+                if (!empty($item->getRoles()) && empty(array_intersect($item->getRoles(), $player->getRoleNames()))) {
+                    continue;
+                }
+                $groupIds = $accountGroup->groupsDeactivated($player) ? [] : $player->getGroupIds();
+                if (!empty($item->getGroups()) && empty(array_intersect($item->getGroups(), $groupIds))) {
+                    continue;
+                }
+                if (
+                    !empty($item->getManagerGroups()) &&
+                    empty(array_intersect($item->getManagerGroups(), $player->getManagerGroupIds()))
+                ) {
+                    continue;
+                }
+
+                $navigationItems[] = [
+                    'parent' => $item->getParent(),
+                    'name' => $item->getName(),
+                    'url' => '/plugin/' . $plugin->getId() . $item->getUrl(),
+                    'target' => $item->getTarget(),
+                ];
+            }
+        }
+
+        return $navigationItems;
     }
 }

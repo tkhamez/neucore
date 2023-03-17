@@ -555,7 +555,8 @@ class Helper
         int $corpId = 101,
         string $corpName = 'Corp',
     ): Character {
-        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1')
+            ->setScope(SystemVariable::SCOPE_SETTINGS);
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
         $this->getEm()->persist($setting1);

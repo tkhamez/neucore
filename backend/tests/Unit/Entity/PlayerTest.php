@@ -545,6 +545,23 @@ class PlayerTest extends TestCase
         $this->assertSame('g2', $player->getManagerCoreGroups()[1]->name);
     }
 
+    public function testGetManagerGroupIds()
+    {
+        $group1 = new Group();
+        $group2 = new Group();
+
+        $rp = new \ReflectionProperty(Group::class, 'id');
+        $rp->setAccessible(true);
+        $rp->setValue($group1, 1);
+        $rp->setValue($group2, 2);
+
+        $player = new Player();
+        $player->addManagerGroup($group1);
+        $player->addManagerGroup($group2);
+
+        $this->assertSame([1, 2], $player->getManagerGroupIds());
+    }
+
     public function testHasManagerGroup()
     {
         $group1 = (new Group())->setName('g1');

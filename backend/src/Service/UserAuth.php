@@ -81,9 +81,7 @@ class UserAuth implements RoleProviderInterface
 
         $roles = [];
         if ($this->user !== null) {
-            foreach ($this->user->getPlayer()->getRoles() as $role) {
-                $roles[] = $role->getName();
-            }
+            $roles = $this->user->getPlayer()->getRoleNames();
         }
         if (empty($roles)) {
             $roles[] = Role::ANONYMOUS;

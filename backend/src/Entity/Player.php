@@ -599,6 +599,15 @@ class Player implements \JsonSerializable
         }, $this->getManagerGroups());
     }
 
+    public function getManagerGroupIds(): array
+    {
+        $groupIds = [];
+        foreach ($this->managerGroups as $group) {
+            $groupIds[] = $group->getId();
+        }
+        return $groupIds;
+    }
+
     public function hasManagerGroup(int $groupId): bool
     {
         foreach ($this->getManagerGroups() as $mg) {
