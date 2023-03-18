@@ -94,7 +94,10 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
             ['name' => 'navigationShowGroups', 'value' => '0'],
             ['name' => 'navigationServices', 'value' => \json_encode([])],
-            ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([])],
+            ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service1->getId().'/t7',
+                    'target' => '_self'],
+            ])],
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
         ], $this->parseJsonBody($response));
     }

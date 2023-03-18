@@ -258,7 +258,8 @@ class SettingsController extends BaseController
         AccountGroup $accountGroup,
         LoggerInterface $logger,
     ): array {
-        $player = $this->getUser($userAuth)->getPlayer();
+        $player = $this->getUser($userAuth)->getPlayer(); // There may not be a logged-in user.
+        $roles = $userAuth->getRoles(); // Contains Role::ANONYMOUS if there is no logged-in user.
 
         $validPositions = [
             NavigationItem::PARENT_ROOT,
@@ -280,7 +281,7 @@ class SettingsController extends BaseController
                     $plugin->getId(),
                 );
             } else {
-                if (!empty($item->getRoles()) && empty(array_intersect($item->getRoles(), $player->getRoleNames()))) {
+                if (!empty($item->getRoles()) &&  empty(array_intersect($item->getRoles(), $roles))) {
                     continue;
                 }
                 $groupIds = $accountGroup->groupsDeactivated($player) ? [] : $player->getGroupIds();

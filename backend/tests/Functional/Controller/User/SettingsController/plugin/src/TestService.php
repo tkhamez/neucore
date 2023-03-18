@@ -59,6 +59,7 @@ class TestService implements GeneralInterface, ServiceInterface
             new NavigationItem(NavigationItem::PARENT_ROOT, 'Test', '/t4', groups: [self::$groupId]),
             new NavigationItem(NavigationItem::PARENT_ROOT, 'Test', '/t5', managerGroups: [-1]),
             new NavigationItem(NavigationItem::PARENT_ROOT, 'Test', '/t6', managerGroups: [self::$managerGroupId]),
+            new NavigationItem(NavigationItem::PARENT_ROOT, 'Test', '/t7', roles: [CoreRole::ANONYMOUS]),
         ];
     }
 
