@@ -82,7 +82,7 @@
         </label>
         <div class="mt-3">
             <label class="col-form-label">
-                The mail is sent to characters from one of the following corporations<br>
+                The mail is only sent to characters from the following corporations:<br>
             </label>
             <multiselect v-model="mailMissingCharacterCorporations" :options="trackingCorporations"
                          label="name" track-by="id" :multiple="true"
