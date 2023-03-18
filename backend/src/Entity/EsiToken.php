@@ -40,7 +40,7 @@ class EsiToken implements \JsonSerializable
     private ?int $id = null;
 
     /**
-     * @OA\Property(ref="#/components/schemas/Character", nullable=true)
+     * @OA\Property(ref="#/components/schemas/Character", nullable=false)
      * @ORM\ManyToOne(targetEntity="Character", inversedBy="esiTokens")
      * @ORM\JoinColumn(nullable=false, name="character_id", onDelete="CASCADE")
      */

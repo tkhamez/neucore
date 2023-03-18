@@ -4,7 +4,7 @@ DIR=$(dirname "$(realpath "$0")")
 
 # generate the OpenAPI client
 
-VERSION=6.2.1
+VERSION=6.4.0
 FILENAME=openapi-generator-cli-${VERSION}.jar
 
 if [[ ! -f ${DIR}/${FILENAME} ]]; then

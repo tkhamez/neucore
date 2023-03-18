@@ -17,7 +17,7 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     required={"id", "name"},
  *     description="The player property contains only id and name, character does not contain corporation.",
- *     @OA\Property(property="player", ref="#/components/schemas/Player", nullable=true)
+ *     @OA\Property(property="player", ref="#/components/schemas/Player", nullable=false)
  * )
  * @ORM\Entity
  * @ORM\Table(name="corporation_members", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
@@ -43,7 +43,7 @@ class CorporationMember implements \JsonSerializable
     private ?string $name = null;
 
     /**
-     * @OA\Property(ref="#/components/schemas/EsiLocation", nullable=true)
+     * @OA\Property(ref="#/components/schemas/EsiLocation", nullable=false)
      * @ORM\ManyToOne(targetEntity="EsiLocation")
      * @ORM\JoinColumn(name="esi_location_id")
      */
@@ -62,7 +62,7 @@ class CorporationMember implements \JsonSerializable
     private ?\DateTime $logonDate = null;
 
     /**
-     * @OA\Property(ref="#/components/schemas/EsiType", nullable=true)
+     * @OA\Property(ref="#/components/schemas/EsiType", nullable=false)
      * @ORM\ManyToOne(targetEntity="EsiType")
      * @ORM\JoinColumn(name="esi_type_id")
      */
@@ -81,7 +81,7 @@ class CorporationMember implements \JsonSerializable
     private Corporation $corporation;
 
     /**
-     * @OA\Property(ref="#/components/schemas/Character", nullable=true)
+     * @OA\Property(ref="#/components/schemas/Character", nullable=false)
      */
     private ?Character $character = null;
     // *not* mapped to Character entity, this relation is via primary key, although not defined for Doctrine

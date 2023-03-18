@@ -71,7 +71,7 @@ class RemovedCharacter implements \JsonSerializable
     /**
      * The old player account.
      *
-     * @OA\Property(ref="#/components/schemas/Player", description="The old player account.")
+     * @OA\Property(ref="#/components/schemas/Player", description="The old player account.", nullable=false)
      * @ORM\ManyToOne(targetEntity="Player", inversedBy="removedCharacters")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -121,7 +121,7 @@ class RemovedCharacter implements \JsonSerializable
     /**
      * The player who deleted the character (only set if it was deleted via the API).
      *
-     * @OA\Property(ref="#/components/schemas/Player", nullable=true)
+     * @OA\Property(ref="#/components/schemas/Player", nullable=false)
      * @ORM\ManyToOne(targetEntity="Player")
      * @ORM\JoinColumn(name="deleted_by")
      */

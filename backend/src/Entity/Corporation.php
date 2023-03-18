@@ -58,7 +58,7 @@ class Corporation implements \JsonSerializable
 
     /**
      *
-     * @OA\Property(ref="#/components/schemas/Alliance", nullable=true)
+     * @OA\Property(ref="#/components/schemas/Alliance", nullable=false)
      * @ORM\ManyToOne(targetEntity="Alliance", inversedBy="corporations")
      */
     private ?Alliance $alliance = null;
