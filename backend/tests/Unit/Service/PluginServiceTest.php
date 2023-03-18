@@ -75,7 +75,7 @@ class PluginServiceTest extends TestCase
         );
         $this->testService1Impl = new TestService1(
             $this->log,
-            new PluginConfiguration(1, true, [], ''),
+            new PluginConfiguration(1, '', true, [], ''),
             Helper::getPluginFactory(),
         );
         TestService1::$getAccountException = false;

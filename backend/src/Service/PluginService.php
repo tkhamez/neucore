@@ -170,6 +170,7 @@ class PluginService
             $this->log,
             new PluginConfiguration(
                 $plugin->getId(),
+                $plugin->getName(),
                 $pluginConfigDb->active,
                 array_map('intval', $pluginConfigDb->requiredGroups),
                 $pluginConfigDb->configurationData
