@@ -5,6 +5,7 @@
             <h1>Watchlist</h1>
             <label class="watchlist-selection ms-3 mb-0">
                 <select class="form-select" v-model="selectedId">
+                    <option></option>
                     <option v-for="watchlist in watchlists" v-bind:value="watchlist.id">{{ watchlist.name }}</option>
                 </select>
             </label>
@@ -69,12 +70,7 @@ export default {
         window.scrollTo(0,0);
 
         getWatchlists(this, () => {
-            // auto select 1st if route does not have an ID
-            if (!this.route[1] && this.watchlists[0]) {
-                window.location.hash = `#Watchlist/${this.watchlists[0].id}`;
-            } else {
-                setTab(this);
-            }
+            setTab(this);
         });
     },
 

@@ -6,7 +6,7 @@
   - Menu items can now require the user to be a member or a manager of a group.
   - Added name of plugin to PluginConfiguration object.
 - Fix: Menu items from plugins were not always shown before login.
-- Text changes.
+- Small text changes and usability improvements.
 
 ## 1.45.0
 
