@@ -22,6 +22,7 @@ Modal windows to create, delete and edit entities
                             Names starting with '{{ Data.loginPrefixProtected }}' are reserved for internal use.
                         </span>
                     </span>
+                    <span v-if="type === 'Watchlist'" class="form-text">Maximum length: 32</span>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -66,10 +67,13 @@ Modal windows to create, delete and edit entities
                 <div class="modal-body">
                     <label class="form-label" for="entityEditEditName">{{ type }} name</label>
                     <input v-model="item.name" class="form-control" type="text" id="entityEditEditName">
-                    <span v-if="type === 'Group'" class="form-text">{{ Data.messages.itemNameAllowedCharsHelp }}</span>
+                    <span v-if="type === 'Watchlist'" class="form-text">Maximum length: 32</span>
+                    <span v-if="type === 'Group'" class="form-text">
+                        {{ Data.messages.itemNameAllowedCharsHelp }}<br>
+                        Maximum length: 64
+                    </span>
                     <p v-cloak v-if="type === 'Group'" class="text-warning">
-                        Please note, that renaming a group may break third party apps that rely on
-                        the name instead of the ID.
+                        Please note that renaming a group may break apps that rely on the name instead of the ID.
                     </p>
                     <button v-cloak v-if="type === 'Group'" type="button" class="btn btn-warning"
                             v-on:click="functionRename(item.id, item.name)">
