@@ -269,7 +269,8 @@ class SettingsController extends BaseController
             NavigationItem::PARENT_MEMBER_DATA,
         ];
 
-        foreach ($plugin->getGeneralImplementation()->getNavigationItems() as $item) {
+        $items = $plugin->getGeneralImplementation() ? $plugin->getGeneralImplementation()->getNavigationItems() : [];
+        foreach ($items as $item) {
             if (!in_array($item->getParent(), $validPositions)) {
                 $logger->warning(
                     'Plugin navigation item: invalid position "' . $item->getParent() . '", plugin ID ' .

@@ -23,9 +23,9 @@ use Psr\Log\LoggerInterface;
 
 class TestService implements GeneralInterface, ServiceInterface
 {
-    public static ?int $groupId = null;
+    public static int $groupId = -1;
 
-    public static ?int $managerGroupId = null;
+    public static int $managerGroupId = -1;
 
     public function __construct(
         LoggerInterface     $logger,

@@ -233,7 +233,7 @@ class AutoAllowlist extends Command
                 $members = $this->esiData->fetchCorporationMembers($corporationId, $token->getToken());
                 if (empty($members)) { // ESI error
                     $this->writeLine(
-                        "    Invalid token for $corporationId from " . $esiToken->getCharacter()->getId()
+                        "    Invalid token for $corporationId from " . $esiToken->getCharacter()?->getId()
                     );
                 } else {
                     $this->numCorporationsChecked ++;
