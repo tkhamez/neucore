@@ -176,7 +176,7 @@ class UserAuth implements RoleProviderInterface
 
         if (
             !empty($requiredGroups) &&
-            $this->accountGroupService->groupsDeactivated($character->getPlayer(), true) // true = ignore delay
+            $this->accountGroupService->groupsDeactivated($character->getPlayer()) // Do not ignore delay
         ) {
             return false;
         }

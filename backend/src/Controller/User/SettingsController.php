@@ -76,7 +76,9 @@ class SettingsController extends BaseController
             if ($plugin->getServiceImplementation() && $userAuth->hasRequiredGroups($plugin)) {
                 $services[] = $plugin;
             }
-            $navigationItems = $this->getNavigationItems($navigationItems, $plugin, $userAuth, $accountGroup, $logger);
+            if ($plugin->getGeneralImplementation() && $userAuth->hasRequiredGroups($plugin, true)) {
+                $navigationItems = $this->getNavigationItems($navigationItems, $plugin, $userAuth, $accountGroup, $logger);
+            }
         }
 
         $result = $settingsRepository->findBy(['scope' => $scopes], [self::COLUMN_NAME => 'ASC']);
@@ -259,10 +261,6 @@ class SettingsController extends BaseController
         AccountGroup $accountGroup,
         LoggerInterface $logger,
     ): array {
-        if (!$plugin->getGeneralImplementation() || !$userAuth->hasRequiredGroups($plugin, true)) {
-            return $navigationItems;
-        }
-
         $player = $this->getUser($userAuth)->getPlayer();
 
         $validPositions = [

@@ -598,5 +598,11 @@ class UserAuthTest extends TestCase
         $this->helper->getEm()->persist($corporation);
         $this->helper->getEm()->flush();
         $this->assertFalse($this->service->hasRequiredGroups($service));
+
+        // set deactivation delay
+        $setting4 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_DELAY))->setValue('60');
+        $this->helper->getEm()->persist($setting4);
+        $this->helper->getEm()->flush();
+        $this->assertTrue($this->service->hasRequiredGroups($service));
     }
 }

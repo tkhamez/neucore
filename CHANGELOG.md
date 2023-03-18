@@ -5,6 +5,7 @@
 - Update to [Neucore plugin](https://github.com/tkhamez/neucore-plugin) version 2.1.0:
   - Menu items can now require the user to be a member or a manager of a group.
   - Added name of plugin to PluginConfiguration object.
+- Change: The required groups check for plugins no longer ignores the delay from the "Groups Deactivation" feature.
 - Fix: Menu items from plugins were not always shown before login.
 - Small text changes, layout and usability improvements.
 
