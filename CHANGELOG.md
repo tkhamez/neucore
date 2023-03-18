@@ -1,6 +1,11 @@
 # Changelog
 
-## next
+## 2.0.0
+
+18 Mar 2023
+
+With this release, many things have now been completed that were added since version 1.0 and were not quite 
+finished yet.
 
 - Update to [Neucore plugin](https://github.com/tkhamez/neucore-plugin) version 2.1.0:
   - Menu items can now require the user to be a member or a manager of a group.
