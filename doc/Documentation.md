@@ -17,6 +17,7 @@
 - [Groups](#groups)
   * [Automatic Group Assignment](#automatic-group-assignment)
   * [Group Deactivation](#group-deactivation)
+  * [Prerequisite for roles](#prerequisite-for-roles)
   * [Required and Forbidden Groups](#required-and-forbidden-groups)
   * [Group Applications](#group-applications)
 - [Member Tracking](#member-tracking)
@@ -195,6 +196,11 @@ Deactivation means that the API for apps no longer returns groups for that accou
 account can be delayed, e.g. by 24 hours after a token became invalid.
 
 As soon as the token was updated by logging in with the appropriate character, the account will be reactivated.
+
+### Prerequisite for roles
+
+Roles can be limited to players with certain groups. If configured, roles will be removed when a player looses
+the group(s). This does _not_ take the "Groups Deactivation" feature into account.
 
 ### Required and Forbidden Groups
 
