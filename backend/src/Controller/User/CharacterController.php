@@ -226,8 +226,8 @@ class CharacterController extends BaseController
      */
     public function update(string $id, Account $accountService): ResponseInterface
     {
-        // Note that user with the role tracking or watchlist should only update characters from
-        // account from the respective lists, but there's no harm allowing them to update all as long as
+        // Note that users with the role tracking or watchlist should only update characters from
+        // accounts from the respective lists, but there's no harm allowing them to update all as long as
         // this does not return any data, otherwise this would need to check permissions like it's done
         // for /user/player/{id}/characters.
 

@@ -152,12 +152,12 @@ Modal window with all characters of one player.
             <div v-cloak v-if="selectedPlayer" class="modal-footer justify-content-between">
                 <span v-if="h.hasAnyRole(['user-admin', 'user-manager', 'group-admin', 'app-admin', 'user-chars',
                                           'tracking', 'watchlist'])">
-                    <button v-cloak type="button" class="btn btn-info" v-on:click="updatePlayer">
+                    <button v-cloak type="button" class="btn btn-info mb-1" v-on:click="updatePlayer">
                         <span role="img" class="fas fa-sync" title="Update characters"></span>
                         Update characters and groups
                     </button>
                     &nbsp;
-                    <button v-cloak type="button" class="btn btn-info" v-on:click="updateServices">
+                    <button v-cloak type="button" class="btn btn-info mb-1" v-on:click="updateServices">
                         <span role="img" class="fas fa-sync" title="Update services"></span>
                         Update service accounts
                     </button>
