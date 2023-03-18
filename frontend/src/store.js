@@ -32,7 +32,6 @@ const state = reactive({
         esiHost: '',
 
         repository: '',
-        discord: '',
 
         // Customization
         customization_document_title: '',

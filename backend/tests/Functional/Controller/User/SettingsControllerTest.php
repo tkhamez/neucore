@@ -96,7 +96,6 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'navigationServices', 'value' => \json_encode([])],
             ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([])],
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
-            ['name' => 'discord', 'value' => 'https://discord.gg/memUh56u8z'],
         ], $this->parseJsonBody($response));
     }
 
@@ -142,7 +141,6 @@ class SettingsControllerTest extends WebTestCase
                     'target' => '_self'],
             ])],
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
-            ['name' => 'discord', 'value' => 'https://discord.gg/memUh56u8z'],
         ], $this->parseJsonBody($response));
         $this->assertSame([
             'Plugin navigation item: invalid URL "http://invalid", plugin ID ' . $this->service1->getId(),
@@ -206,7 +204,6 @@ class SettingsControllerTest extends WebTestCase
                     'target' => '_blank']
             ])],
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
-            ['name' => 'discord', 'value' => 'https://discord.gg/memUh56u8z'],
         ], $this->parseJsonBody($response));
     }
 
