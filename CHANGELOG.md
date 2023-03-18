@@ -8,6 +8,7 @@
 - Change: The required groups check for plugins no longer ignores the delay from the "Groups Deactivation" feature.
 - Fix: Menu items from plugins were not always shown before login.
 - Small text changes, layout and usability improvements.
+- Updated dependencies.
 
 ## 1.45.0
 
