@@ -17,7 +17,7 @@
   * [Installation](#installation)
   * [First Login and Customization](#first-login-and-customization)
   * [Setting up Member Tracking and Watchlists](#setting-up-member-tracking-and-watchlists)
-- [Plugins and other related software](#plugins-and-other-related-software)
+- [Plugins and related Software](#plugins-and-related-software)
 - [Final Notes](#final-notes)
 
 <!-- tocstop -->
@@ -72,39 +72,35 @@ Watchlist
 - Go to Administration -> Watchlist and add a new watchlist. Open the "View" and "Manage" tabs and add your group.
 - Go to Member Data -> Watchlist -> Settings and add alliances and/or corporations for watching.
 
-## Plugins and other related software
+## Plugins and related Software
 
 See also [Plugin](doc/Plugins.md) documentation.
 
-Official plugins:
+Plugins:
 
 - Discord auth: [neucore-discord-plugin](https://github.com/tkhamez/neucore-discord-plugin)
 - Mumble auth: [neucore-mumble-plugin](https://github.com/tkhamez/neucore-mumble-plugin)
 - General plugin example [neucore-example-plugin](https://github.com/tkhamez/neucore-example-plugin)
-
-Other plugins:
-
 - Brave Collective [Slack](https://github.com/bravecollective/neucore-plugin-slack)
 - Brave Collective [phpBB forum](https://github.com/bravecollective/neucore-plugin-forum)
+
+Software that uses the Neucore API:
+
+- [EVE Recruitment](https://github.com/bravecollective/eve-recruitment) - EVE Online Recruitment App.
+- [Eve Overseer](https://github.com/1adog1/eve-overseer) A fleet participation tracking application.
+- [Eve Pingboard](https://github.com/cmd-johnson/eve-pingboard) Pings/Timers/Calendar.
+- [finance-check](https://github.com/tkhamez/finance-check) Tax information from corporation wallets.
+- [slack-channel-manage](https://github.com/bravecollective/slack-channel-manage) A Slack app to
+  manage channel members based on Neucore groups.
+- [EVE-SRP](https://github.com/bravecollective/evesrp/tree/eb-deploy) integration.
+- [Neucore connector boilerplate example](https://github.com/bravecollective/neucore-connector-boilerplate)
+  An example PHP application that uses EVE SSO and Neucore groups for access control.
 
 OpenAPI clients for the Neucore API:
 
 - [PHP](https://github.com/bravecollective/neucore-api-php)
 - [Python](https://github.com/bravecollective/neucore-api-python)
 - [Go](https://github.com/bravecollective/neucore-api-go)
-
-Other software that use the Neucore API:
-
-- [slack-channel-manage](https://github.com/bravecollective/slack-channel-manage) A Slack app to
-  manage channel members based on Neucore groups.
-- [Eve Overseer](https://github.com/1adog1/eve-overseer) A fleet participation tracking application.
-- [Eve Pingboard](https://github.com/cmd-johnson/eve-pingboard) Pings/Timers/Calendar.
-- [finance-check](https://github.com/tkhamez/finance-check)
-- [EVE-SRP](https://github.com/bravecollective/evesrp/tree/eb-deploy) integration.
-- [Neucore connector boilerplate](https://github.com/bravecollective/neucore-connector-boilerplate)
-  An example PHP application that uses EVE SSO and Neucore groups for access control.
-- A [TimerBoard](https://github.com/tkhamez/neucore-timerboard) (based on the boilerplate).
-- A [Ping](https://github.com/bravecollective/ping-app) app for Slack.
 
 ## Final Notes
 
