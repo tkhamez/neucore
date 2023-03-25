@@ -36,7 +36,7 @@ Main features:
 
 - Management of group memberships, manually and with various ways to automate membership.
 - API for various data including an ESI proxy for all characters.
-- [Plugin](doc/Plugins.md) system, e.g. for service registration (Discord, Mumble etc.).
+- [Plugin](doc/Plugins.md) system for service registration (e.g. Discord, Mumble) and general purposes.
 - Corporation member tracking and character watchlists.
 - ... [and much more](doc/Documentation.md#features)
 
