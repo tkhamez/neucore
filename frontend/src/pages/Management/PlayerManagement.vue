@@ -64,8 +64,8 @@
 
                         <h4>Account Status</h4>
                         <p>
-                            <strong>Standard</strong>: Automatic group assignments, requires valid ESI token for
-                            <a href="#SystemSettings/Features">Groups Deactivation</a> feature.<br>
+                            <strong>Standard</strong>: Automatic group assignments, requires valid ESI token with
+                            active <a href="#SystemSettings/Features">Groups Deactivation</a> feature.<br>
                             <strong>Manually managed</strong>: No automatic group assignments, does not require a valid ESI
                             token.<br>
                             See also Documentation
