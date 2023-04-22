@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Text changes.
+
 ## 2.0.0
 
 18 Mar 2023

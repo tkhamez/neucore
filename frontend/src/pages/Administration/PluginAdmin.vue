@@ -173,8 +173,8 @@
                             v-on:click.prevent="saveConfiguration">Save</button>
                     <span v-if="!formEnabled" class="small align-bottom"> Choose a plugin first</span>
                     <span class="form-text text-warning lh-sm d-block mt-1">
-                        If you have changed the plugin, make sure that this does not delete any configuration
-                        values that you still need.
+                        If you have changed the plugin in the drop down menu above, make sure that this
+                        did not remove any configuration values that you still need.
                     </span>
                 </div> <!-- card-body -->
             </div> <!-- card -->
