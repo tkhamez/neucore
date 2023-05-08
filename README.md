@@ -86,13 +86,13 @@ Plugins:
 
 Software that uses the Neucore API:
 
-- [EVE Recruitment](https://github.com/bravecollective/eve-recruitment) - EVE Online Recruitment App.
+- [EVE Recruitment](https://github.com/bravecollective/eve-recruitment) - EVE Online Recruitment application.
+- [EVE-SRP](https://github.com/tkhamez/eve-srp) A ship replacement program application with a provider for Neucore.
 - [Eve Overseer](https://github.com/1adog1/eve-overseer) A fleet participation tracking application.
 - [Eve Pingboard](https://github.com/cmd-johnson/eve-pingboard) Pings/Timers/Calendar.
 - [finance-check](https://github.com/tkhamez/finance-check) Tax information from corporation wallets.
 - [slack-channel-manage](https://github.com/bravecollective/slack-channel-manage) A Slack app to
   manage channel members based on Neucore groups.
-- [EVE-SRP](https://github.com/bravecollective/evesrp/tree/eb-deploy) integration.
 - [DokuWiki auth plugin](https://github.com/bravecollective/wiki-authneucore).
 - [Neucore connector boilerplate example](https://github.com/bravecollective/neucore-connector-boilerplate)
   An example PHP application that uses EVE SSO and Neucore groups for access control.
