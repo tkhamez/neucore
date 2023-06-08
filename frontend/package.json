@@ -4,8 +4,7 @@
   "scripts": {
     "postinstall": "node bin/install-swagger-ui.js",
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "watch": "vue-cli-service build --watch"
+    "build": "vue-cli-service build"
   },
   "dependencies": {
     "@fontsource/cabin-sketch": "^4.5.7",
