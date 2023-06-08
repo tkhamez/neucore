@@ -8,23 +8,28 @@
     <div class="row">
         <div class="col-lg-12">
             Until <input v-model="untilPlayerLogins" type="text" class="until">,
-            Periods <input v-model="periodsPlayerLogins" type="text" class="periods"> months
+            Periods <input v-model="periodsPlayerLogins" type="text" class="periods"> months,
+            <a href="#" @click.prevent="csvPlayerLogins">Download CSV</a>
             <div id="statisticsPlayerLogins"></div>
 
             Until <input v-model="untilTotalMonthlyApp" type="text" class="until">,
-            Periods <input v-model="periodsTotalMonthlyApp" type="text" class="periods"> months
+            Periods <input v-model="periodsTotalMonthlyApp" type="text" class="periods"> months,
+            <a href="#" @click.prevent="csvTotalMonthlyApp">Download CSV</a>
             <div id="statisticsTotalMonthlyApp"></div>
 
             Until <input v-model="untilMonthlyAppRequests" type="text" class="until">,
-            Periods <input v-model="periodsMonthlyAppRequests" type="text" class="periods"> months
+            Periods <input v-model="periodsMonthlyAppRequests" type="text" class="periods"> months,
+            <a href="#" @click.prevent="csvMonthlyAppRequests">Download CSV</a>
             <div id="statisticsMonthlyAppRequests"></div>
 
             Until <input v-model="untilTotalDailyApp" type="text" class="until">,
-            Periods <input v-model="periodsTotalDailyApp" type="text" class="periods"> weeks
+            Periods <input v-model="periodsTotalDailyApp" type="text" class="periods"> weeks,
+            <a href="#" @click.prevent="csvTotalDailyApp">Download CSV</a>
             <div id="statisticsTotalDailyApp"></div>
 
             Until <input v-model="untilHourlyAppRequests" type="text" class="until">,
-            Periods <input v-model="periodsHourlyAppRequests" type="text" class="periods"> days
+            Periods <input v-model="periodsHourlyAppRequests" type="text" class="periods"> days,
+            <a href="#" @click.prevent="csvHourlyAppRequests">Download CSV</a>
             <div id="statisticsHourlyAppRequests"></div>
         </div>
     </div>
@@ -50,6 +55,13 @@ export default {
             untilMonthlyAppRequests: null,
             untilTotalDailyApp: null,
             untilHourlyAppRequests: null,
+            csvData: {
+                playerLogins: [],
+                totalMonthlyApp: [],
+                monthlyAppRequests: [],
+                totalDailyApp: [],
+                hourlyAppRequests: [],
+            },
         }
     },
 
@@ -109,6 +121,24 @@ export default {
             getHourlyAppRequestsData(this)
         },
     },
+
+    methods: {
+        csvPlayerLogins() {
+            csvDownload(this.csvData.playerLogins, 'player-logins');
+        },
+        csvTotalMonthlyApp() {
+            csvDownload(this.csvData.totalMonthlyApp, 'app-requests-monthly-total');
+        },
+        csvMonthlyAppRequests() {
+            csvDownload(this.csvData.monthlyAppRequests, 'app-requests-monthly');
+        },
+        csvTotalDailyApp() {
+            csvDownload(this.csvData.totalDailyApp, 'app-requests-daily-total');
+        },
+        csvHourlyAppRequests() {
+            csvDownload(this.csvData.hourlyAppRequests, 'app-requests-hourly');
+        },
+    }
 }
 
 function getPlayerLoginsData(vm) {
@@ -166,9 +196,7 @@ const chartOption = {
     tooltip: {
         backgroundColor: 'rgba(50, 50, 50, 0.9)',
         borderColor: 'rgba(50, 50, 50, 0.9)',
-        textStyle: {
-            color: 'rgb(205, 205, 205)',
-        },
+        textStyle: { color: 'rgb(205, 205, 205)' },
         trigger: 'axis',
         renderMode: 'richText',
     },
@@ -186,9 +214,7 @@ const chartOption = {
         type: 'category',
         data: [],
     },
-    yAxis: {
-        type: 'value',
-    },
+    yAxis: { type: 'value' },
     series: [],
     backgroundColor: '#1e1d23' // rgba(16, 12, 42, 0.2), #100C2A
 };
@@ -204,31 +230,49 @@ function copyObjectData(object) {
 }
 
 function chartPlayerLogins(vm, items) {
+    const totalLogins = 'Total logins';
+    const uniqueLogins = 'Unique logins';
+
     const options = copyObjectData(chartOption);
     options.title.text = 'Player logins';
     options.series.push(copyObjectData(chartSeries));
     options.series.push(copyObjectData(chartSeries));
-    options.legend.data = ['total logins', 'unique logins'];
-    options.series[0].name = 'total logins';
-    options.series[1].name = 'unique logins';
+    options.legend.data = [totalLogins, uniqueLogins];
+    options.series[0].name = totalLogins;
+    options.series[1].name = uniqueLogins;
+
+    vm.csvData.playerLogins = [['Month', totalLogins, uniqueLogins]];
 
     for (const data of items) {
-        options.xAxis.data.push(`${data.year}-${data.month}`);
+        const yearMonth = `${data.year}-${data.month}`;
+
+        options.xAxis.data.push(yearMonth);
         options.series[0].data.push(data.total_logins);
         options.series[1].data.push(data.unique_logins);
+
+        vm.csvData.playerLogins.push([yearMonth, data.total_logins, data.unique_logins]);
     }
 
     initChart(vm, 'statisticsPlayerLogins', options);
 }
 
 function chartTotalMonthlyApp(vm, items) {
+    const requests = 'Requests';
+
     const options = JSON.parse(JSON.stringify(chartOption));
     options.title.text = 'App requests, monthly total';
     options.series.push(copyObjectData(chartSeries));
+    options.series[0].name = requests;
+
+    vm.csvData.totalMonthlyApp = [['Month', requests]];
 
     for (const data of items) {
-        options.xAxis.data.push(`${data.year}-${data.month}`);
+        const yearMonth = `${data.year}-${data.month}`;
+
+        options.xAxis.data.push(yearMonth);
         options.series[0].data.push(data.requests);
+
+        vm.csvData.totalMonthlyApp.push([yearMonth, data.requests]);
     }
 
     initChart(vm, 'statisticsTotalMonthlyApp', options);
@@ -238,6 +282,15 @@ function chartAppRequests(vm, items, title, ticks, charId) {
     const options = JSON.parse(JSON.stringify(chartOption));
     options.title.text = title;
     options.grid.bottom = 81; // more space for legend (2 rows)
+
+    const csvRowOne = [];
+    if (ticks === 'months') {
+        csvRowOne[0] = 'Month';
+    } else {
+        csvRowOne[0] = 'Hour';
+    }
+    const csvDataColOne = [];
+    const csvDataRequests = [];
 
     const appToSeries = {};
     const ticksToData = {};
@@ -277,25 +330,52 @@ function chartAppRequests(vm, items, title, ticks, charId) {
             options.series.push(copyObjectData(chartSeries));
             options.legend.data.push(data.app_name);
             options.series[seriesIndex].name = data.app_name;
+            csvRowOne[seriesIndex+1] = data.app_name;
         }
         if (options.series[seriesIndex].data.length + 1 < dataIndex) {
             options.series[seriesIndex].data.push(null);
         }
 
         options.series[seriesIndex].data[dataIndex] = data.requests;
+
+        csvDataColOne[dataIndex] = ident;
+        if (!csvDataRequests[dataIndex]) {
+            csvDataRequests[dataIndex] = [];
+        }
+        csvDataRequests[dataIndex][seriesIndex] = data.requests;
+    }
+
+    const csvRows = [csvRowOne];
+    for (let idx = 0; idx < csvDataColOne.length; idx++) {
+        csvRows.push([csvDataColOne[idx]].concat(csvDataRequests[idx]));
+    }
+    if (ticks === 'months') {
+        vm.csvData.monthlyAppRequests = csvRows;
+    } else {
+        vm.csvData.hourlyAppRequests = csvRows;
     }
 
     initChart(vm, charId, options);
 }
 
 function chartTotalDailyApp(vm, items) {
+    const requests = 'Requests';
+
     const options = JSON.parse(JSON.stringify(chartOption));
 
     options.title.text = 'App requests, daily total';
     options.series.push(copyObjectData(chartSeries));
+    options.series[0].name = requests;
+
+    vm.csvData.totalDailyApp = [['Day', requests]];
+
     for (const data of items) {
-        options.xAxis.data.push(`${data.year}-${data.month}-${data.day_of_month}`);
+        const yearMonthDay = `${data.year}-${data.month}-${data.day_of_month}`;
+
+        options.xAxis.data.push(yearMonthDay);
         options.series[0].data.push(data.requests);
+
+        vm.csvData.totalDailyApp.push([yearMonthDay, data.requests]);
     }
 
     initChart(vm, 'statisticsTotalDailyApp', options);
@@ -312,6 +392,30 @@ function initChart(vm, id, options) {
     );
     chart.setOption(options, true);
     vm.charts[id] = chart;
+}
+
+function csvDownload(data, name) {
+    const csvRows = [];
+    for (const dataRow of data) {
+        const csvRow = [];
+        for (let dataCell of dataRow) {
+            if (dataCell === undefined) {
+                dataCell = '';
+            }
+            csvRow.push('"' + dataCell.toString().replaceAll('"', '""') + '"');
+        }
+        csvRows.push(csvRow.join(','))
+    }
+    const csvString = csvRows.join('\r\n');
+
+    const a = document.createElement('a');
+    a.href = 'data:attachment/csv,' + encodeURI(csvString);
+    a.target = '_blank';
+    a.download = `${name}.csv`;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
 }
 </script>
 
