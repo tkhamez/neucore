@@ -35,7 +35,7 @@ All installation methods share the same configuration via environment variables,
 You can run Neucore using the [Docker](https://www.docker.com/) image from 
 https://hub.docker.com/r/tkhamez/neucore.
 
-First start a database, for example:
+If you don't have a database you can also use Docker to create one, for example:
 
 ```shell
 docker network create neucore_prod
@@ -48,8 +48,8 @@ docker run \
   --env=MARIADB_ROOT_PASSWORD=neucore \
   --network=neucore_prod \
   --name=neucore_db_prod \
+  --restart=always \
   --detach=true \
-  --rm \
   mariadb:10.6
 
 # to stop it again:
@@ -71,8 +71,22 @@ docker run \
   --publish=127.0.0.1:8080:80 \
   --network=neucore_prod \
   --name=neucore_prod_http \
-  --rm \
+  --restart=always \
+  --detach=true \
   tkhamez/neucore
+```
+
+The above will automatically start the container when the server is started if the Docker daemon is running.
+
+This is how you stop and restart the container or remove it completely:
+
+```shell
+# stop and restart:
+docker stop neucore_prod_http
+docker start neucore_prod_http
+
+# Remove the container to be able to use "docker run" again
+docker rm neucore_prod_http
 ```
 
 Then create the database schema and add the initial data:
@@ -82,13 +96,41 @@ docker exec -u www-data neucore_prod_http vendor/bin/doctrine-migrations migrati
 docker exec -u www-data neucore_prod_http bin/console doctrine-fixtures-load
 ```
 
-Now login at http://localhost:8080/ and then make yourself an admin:
+Now login at http://localhost:8080/ (if you run it on a remote host see "Production environment" below) 
+and make yourself an admin:
 
 ```shell
 docker exec -u www-data neucore_prod_http bin/console make-admin 1
 ```
 
 Continue reading [Getting started](../README.md#getting-started).
+
+#### Production environment
+
+In a production environment you want to set up a reverse proxy server with SSL and remove the
+`NEUCORE_SESSION_SECURE=0` environment variable.
+
+Example reverse proxy configuration for Apache, including necessary setup on Ubuntu 22.04:
+
+```
+sudo apt install apache2 certbot python3-certbot-apache
+sudo a2enmod ssl proxy proxy_http
+sudo a2ensite default-ssl
+
+sudo nano /etc/apache2/sites-available/z-neucore.conf
+  <VirtualHost *:443>
+    ServerName neucore.tian-space.net
+    ProxyPreserveHost On
+    ProxyRequests off
+    ProxyPass / http://localhost:8080/
+    ProxyPassReverse / http://localhost:8080/
+  </VirtualHost>
+
+sudo a2ensite z-neucore
+sudo certbot --apache
+
+sudo systemctl restart apache2
+```
 
 #### Further Configuration
 
@@ -101,14 +143,12 @@ To access the database from the host, add the following argument when running th
 If you are not using a database via Docker, you can remove the `--network` argument (and obviously change 
 NEUCORE_DATABASE_URL).
 
-To store the logs on the host, create a directory, change its permission, and add the following argument
+To store the logs on the host, create a directory, change its permission, and add a "volume" argument
 when running the Neucore container, for example:
 
 ```shell
 mkdir docker-logs && sudo chown 33 docker-logs
-```
 
-```
   --volume="$(pwd)/docker-logs":/var/www/backend/var/logs \
 ```
 
@@ -126,26 +166,6 @@ the following arguments, for example:
   --volume=$(pwd)/neucore-discord-plugin:/var/www/plugins/discord \
   --env=NEUCORE_PLUGINS_INSTALL_DIR=/var/www/plugins \
   --env=NEUCORE_DISCORD_PLUGIN_DB_DSN="mysql:dbname=neucore_discord;host=192.168.1.2;user=neucore;password=neucore" \
-```
-
-In a real production environment you want to set up a reverse proxy server with SSL and remove the 
-`NEUCORE_SESSION_SECURE=0` environment variable. Also, remove `--rm` and add instead:
-
-```
-  --restart=always \
-  --detach=true \
-```
-
-Example reverse proxy configuration for Apache (without SSL):
-
-```
-<VirtualHost *:80>
-	ServerName neucore.tian-space.net
-	ProxyPreserveHost On
-	ProxyRequests off
-	ProxyPass / http://localhost:8080/
-	ProxyPassReverse / http://localhost:8080/
-</VirtualHost>
 ```
 
 #### Create the Image

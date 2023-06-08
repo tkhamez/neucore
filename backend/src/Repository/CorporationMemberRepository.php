@@ -317,7 +317,7 @@ class CorporationMemberRepository extends EntityRepository
             ->andWhere('m.logonDate > :minLoginDate')
             ->setParameter('minLoginDate', $minLoginDate->format(self::DATE_FORMAT))
             ->orderBy('m.name')
-            ->setMaxResults($dbResultLimit) // don't use with JOIN
+            ->setMaxResults($dbResultLimit) // don't use this with JOIN
             ->setFirstResult($offset);
 
         return $qb->getQuery()->getResult();

@@ -89,7 +89,7 @@ class CharacterRepository extends EntityRepository
             ->where($qb->expr()->in('c.player', ':ids'))
             ->setParameter('ids', $playerIds)
             ->addOrderBy('c.id')
-            ->setMaxResults($dbResultLimit)
+            ->setMaxResults($dbResultLimit) // don't use this with JOIN
             ->setFirstResult($offset);
 
         return array_map(function (array $row) {
@@ -104,7 +104,7 @@ class CharacterRepository extends EntityRepository
             ->where($qb->expr()->notIn('c.player', ':ids'))
             ->setParameter('ids', $playerIds)
             ->addOrderBy('c.id')
-            ->setMaxResults($dbResultLimit)
+            ->setMaxResults($dbResultLimit) // don't use this with JOIN
             ->setFirstResult($offset);
 
         return array_map(function (array $row) {
