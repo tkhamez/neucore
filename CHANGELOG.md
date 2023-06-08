@@ -5,6 +5,7 @@
 dd mm yyyy
 
 - Text changes.
+- Bugfix when adding a new EVE login.
 
 ## 2.0.0
 

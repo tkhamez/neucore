@@ -323,7 +323,7 @@ function getLogin(vm) {
         }
     }
 
-    if (vm.activeLogin.name === Data.loginNames.default && vm.contentType === 'tokens') {
+    if (vm.activeLogin && vm.activeLogin.name === Data.loginNames.default && vm.contentType === 'tokens') {
         window.location.hash = `EVELoginAdmin/${vm.activeLogin.id}/login`;
         return false;
     }
