@@ -4,8 +4,9 @@
 
 dd mm yyyy
 
+- New: The warning about deactivated groups now distinguishes between disabled and soon to be disabled.
+- New: Added note about deactivated group in the player modal window.
 - New: CSV export for charts.
-- New: The warning about disabled groups now distinguishes between disabled and soon to be disabled.
 - Fix: JavaScript error when adding a new EVE login.
 - Text changes/improvements.
 

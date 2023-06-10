@@ -346,10 +346,10 @@
                     <h4>Group Membership</h4>
                     <p v-if="playerEditDeactivated.withoutDelay" class="small text-info">
                         <span v-if="playerEditDeactivated.withDelay">
-                            Groups for this account are disabled
+                            Groups for this account <strong>are disabled</strong>
                         </span>
                         <span v-else-if="playerEditDeactivated.withoutDelay">
-                            Groups for this account will be disabled soon
+                            Groups for this account <strong>will be disabled</strong> soon
                         </span>
                         because one or more characters do not have a valid ESI token.
                     </p>

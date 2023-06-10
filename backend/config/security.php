@@ -101,6 +101,11 @@ return [
                                                        Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER_MANAGER,
                                                        Role::USER_CHARS, Role::WATCHLIST, Role::TRACKING
                                                    ],
+    '/api/user/player/{id}/groups-disabled'        => [
+                                                       Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER_MANAGER,
+                                                       Role::USER_CHARS, Role::WATCHLIST, Role::TRACKING,
+                                                       Role::USER_ADMIN
+                                                   ],
     '/api/user/player/group-characters-by-account' => [Role::USER_CHARS],
     '/api/user/player/with-status/{name}'          => [Role::USER_ADMIN, Role::USER_MANAGER],
     '/api/user/player/{id}/show'                   => [Role::USER_ADMIN, Role::USER_MANAGER],

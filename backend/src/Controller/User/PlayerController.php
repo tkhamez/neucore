@@ -159,7 +159,7 @@ class PlayerController extends BaseController
      *     path="/user/player/{id}/groups-disabled",
      *     operationId="groupsDisabledById",
      *     summary="Checks whether groups for this account are disabled or will be disabled soon.",
-     *     description="Needs role: user-admin",
+     *     description="Needs role: user-admin or the same permissions as for the 'userPlayerCharacters' endpoint.",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -184,12 +184,23 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function groupsDisabledById(string $id, AccountGroup $accountGroupService): ResponseInterface
-    {
+    public function groupsDisabledById(
+        string $id,
+        UserAuth $userAuth,
+        AccountGroup $accountGroupService
+    ): ResponseInterface {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
         if ($player === null) {
             return $this->response->withStatus(404);
+        }
+
+        // Check special tracking and watchlist permissions
+        if (
+            !$this->getUser($userAuth)->getPlayer()->hasRole(Role::USER_ADMIN) &&
+            !$this->hasPlayerModalPermission($userAuth, $player)
+        ) {
+            return $this->response->withStatus(403);
         }
 
         return $this->withJson([
@@ -877,7 +888,7 @@ class PlayerController extends BaseController
     /**
      * @OA\Get(
      *     path="/user/player/{id}/characters",
-     *     operationId="characters",
+     *     operationId="userPlayerCharacters",
      *     summary="Show player with characters, moved characters, groups and service accounts.",
      *     description="Needs role: app-admin, group-admin, user-manager, user-chars, watchlist, tracking<br>
                         If a user only has the tracking or watchlist roles, the player must have a character in a
@@ -919,11 +930,7 @@ class PlayerController extends BaseController
         }
 
         // Check special tracking and watchlist permissions
-        if (
-            $this->needsTrackingOrWatchlistPermission($userAuth) &&
-            ! $this->hasTrackingPermission($userAuth, $player) &&
-            ! $this->hasWatchlistPermission($userAuth, $player)
-        ) {
+        if (!$this->hasPlayerModalPermission($userAuth, $player)) {
             return $this->response->withStatus(403);
         }
 
@@ -1139,16 +1146,28 @@ class PlayerController extends BaseController
         return $this->withJson($ret);
     }
 
+    private function hasPlayerModalPermission(UserAuth $userAuth, Player $player): bool
+    {
+        if (
+            $this->needsTrackingOrWatchlistPermission($userAuth) &&
+            !$this->hasTrackingPermission($userAuth, $player) &&
+            !$this->hasWatchlistPermission($userAuth, $player)
+        ) {
+            return false;
+        }
+        return true;
+    }
+
     private function needsTrackingOrWatchlistPermission(UserAuth $userAuth): bool
     {
         $roles = $this->getUser($userAuth)->getPlayer()->getRoleNames();
-        $neededRolesExceptTracking = array_intersect(
+        $neededRolesExceptTrackingAndWatchlist = array_intersect(
             $roles,
             [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER_MANAGER, Role::USER_CHARS]
         );
         if (
             (in_array(Role::TRACKING, $roles) || in_array(Role::WATCHLIST, $roles)) &&
-            empty($neededRolesExceptTracking)
+            empty($neededRolesExceptTrackingAndWatchlist)
         ) {
             return true;
         }

@@ -95,6 +95,16 @@ Modal window with all characters of one player.
                         </div>
                         <div class="col-lg-5">
                             <h6>Groups</h6>
+                            <p v-if="playerDeactivated.withoutDelay" class="small text-info">
+                                <span v-if="playerDeactivated.withDelay">
+                                    Groups for this account <strong>are disabled</strong>
+                                </span>
+                                <span v-else-if="playerDeactivated.withoutDelay">
+                                    Groups for this account <strong>will be disabled</strong> soon
+                                </span>
+                                because one or more characters do not have a valid ESI token.
+                            </p>
+
                             <ul>
                                 <li v-for="group in selectedPlayer.groups" class="small">{{ group.name }}</li>
                             </ul>
@@ -190,6 +200,7 @@ export default {
             selectedPlayer: null,
             characterMovements: [],
             unauthorized: null,
+            playerDeactivated: null,
         }
     },
 
@@ -227,7 +238,10 @@ export default {
             this.unauthorized = null;
             this.selectedPlayer = null;
             this.characterMovements = [];
-            new PlayerApi().characters(playerId, (error, data, response) => {
+
+            const api = new PlayerApi();
+
+            api.userPlayerCharacters(playerId, (error, data, response) => {
                 if (error) {
                     if (response.statusCode === 403) {
                         this.unauthorized = true;
@@ -236,6 +250,12 @@ export default {
                 }
                 this.selectedPlayer = data;
                 this.characterMovements = Character.buildCharacterMovements(data);
+            });
+
+            api.groupsDisabledById(playerId, (error, data) => {
+                if (!error) {
+                    this.playerDeactivated = data;
+                }
             });
         },
 

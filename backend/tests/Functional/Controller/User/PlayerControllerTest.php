@@ -49,6 +49,8 @@ class PlayerControllerTest extends WebTestCase
 
     private int $player5;
 
+    private int $noPlayerId = 0;
+
     private int $eveLoginId;
 
     private int $managerId;
@@ -707,13 +709,13 @@ class PlayerControllerTest extends WebTestCase
 
     public function testAddRole403()
     {
-        $response = $this->runApp('PUT', '/api/user/player/101/add-role/r');
+        $response = $this->runApp('PUT', "/api/user/player/$this->noPlayerId/add-role/r");
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->setupDb();
         $this->loginUser(11); // not user-admin or group-admin
 
-        $response = $this->runApp('PUT', '/api/user/player/101/add-role/r');
+        $response = $this->runApp('PUT', "/api/user/player/$this->noPlayerId/add-role/r");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -722,8 +724,8 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response1 = $this->runApp('PUT', '/api/user/player/101/add-role/r');
-        $response2 = $this->runApp('PUT', '/api/user/player/101/add-role/'.Role::APP_MANAGER);
+        $response1 = $this->runApp('PUT', "/api/user/player/$this->noPlayerId/add-role/r");
+        $response2 = $this->runApp('PUT', "/api/user/player/$this->noPlayerId/add-role/".Role::APP_MANAGER);
         $response3 = $this->runApp('PUT', '/api/user/player/'.$this->player3Id.'/add-role/role');
 
         // app is a valid role, but not for users, app-manager is auto assigned
@@ -758,13 +760,13 @@ class PlayerControllerTest extends WebTestCase
 
     public function testRemoveRole403()
     {
-        $response = $this->runApp('PUT', '/api/user/player/101/remove-role/r');
+        $response = $this->runApp('PUT', "/api/user/player/$this->noPlayerId/remove-role/r");
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->setupDb();
         $this->loginUser(11); // not user-admin or group-admin
 
-        $response = $this->runApp('PUT', '/api/user/player/101/remove-role/r');
+        $response = $this->runApp('PUT', "/api/user/player/$this->noPlayerId/remove-role/r");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -773,8 +775,8 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response1 = $this->runApp('PUT', '/api/user/player/101/remove-role/a');
-        $response2 = $this->runApp('PUT', '/api/user/player/101/remove-role/'.Role::APP_MANAGER);
+        $response1 = $this->runApp('PUT', "/api/user/player/$this->noPlayerId/remove-role/a");
+        $response2 = $this->runApp('PUT', "/api/user/player/$this->noPlayerId/remove-role/".Role::APP_MANAGER);
         $response3 = $this->runApp('PUT', '/api/user/player/'.$this->player3Id.'/remove-role/a');
 
         // user is a valid role, but may not be removed, group-manager is auto assigned
@@ -826,13 +828,13 @@ class PlayerControllerTest extends WebTestCase
 
     public function testShowById403()
     {
-        $response = $this->runApp('GET', '/api/user/player/1/show');
+        $response = $this->runApp('GET', "/api/user/player/$this->noPlayerId/show");
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->setupDb();
         $this->loginUser(10); // not user-admin or group-manager
 
-        $response = $this->runApp('GET', '/api/user/player/1/show');
+        $response = $this->runApp('GET', "/api/user/player/$this->noPlayerId/show");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -1419,13 +1421,13 @@ class PlayerControllerTest extends WebTestCase
 
     public function testGroupsDisabledById403()
     {
-        $response1 = $this->runApp('GET', '/api/user/player/1/groups-disabled');
+        $response1 = $this->runApp('GET', "/api/user/player/$this->noPlayerId/groups-disabled");
         $this->assertEquals(403, $response1->getStatusCode());
 
         $this->setupDb();
-        $this->loginUser(14); // no user-admin
+        $this->loginUser(11); // tracking but no permission
 
-        $response2 = $this->runApp('GET', '/api/user/player/1/groups-disabled');
+        $response2 = $this->runApp('GET', "/api/user/player/$this->player1Id/groups-disabled");
         $this->assertEquals(403, $response2->getStatusCode());
     }
 
@@ -1557,6 +1559,8 @@ class PlayerControllerTest extends WebTestCase
         $charNoMain = $this->h->addCharacterMain('Account with no main', 15);
         $charNoMain->setMain(false);
         $this->player5 = $charNoMain->getPlayer()->getId();
+
+        $this->noPlayerId = $this->player5 + 99;
 
         $this->em->flush();
         $this->em->clear();
