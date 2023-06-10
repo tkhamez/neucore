@@ -6,7 +6,7 @@ dd mm yyyy
 
 - New: CSV export for charts.
 - Fix: JavaScript error when adding a new EVE login.
-- Text changes.
+- Text changes/improvements.
 
 ## 2.0.0
 

@@ -66,11 +66,11 @@ be removed without notice. Also, do not access the Neucore database directly.
 
 ## Install a plugin
 
-- Set the `NEUCORE_PLUGINS_INSTALL_DIR` environment variable (e.g. `/plugins`).
+- Set the `NEUCORE_PLUGINS_INSTALL_DIR` environment variable (e.g. `/home/user/neucore-plugins`).
 - Copy the plugin into that directory within its own subdirectory (so that the plugin.yml file is e.g. 
-  at `/plugins/discord/plugin.yml`).
-- If the plugin contains frontend files, make them available below `web/plugin/{name}`, e.g. by creating a symlink or
-  by mounting the directory in the Docker container. See the documentation of the plugin for the name of the {name}
-  directory.
+  at `/home/user/neucore-plugins/discord/plugin.yml` - do _not_ edit this file!).
+- If the plugin contains frontend files, make them available below 
+  `[Neucore installation directory]/web/plugin/{name}`, e.g. by creating a symlink or by mounting the directory in 
+  the Docker container. See the documentation of the plugin for the name of the {name} directory.
 - In Neucore, go to _Administration -> Plugins_ and add a new plugin.
 - Configure the plugin, at the very least choose the plugin from the dropdown list. Don't forget to save your changes.

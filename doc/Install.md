@@ -160,7 +160,8 @@ for example:
 ```
 
 To add a service plugin, for example the [Discord Plugin](https://github.com/tkhamez/neucore-discord-plugin), add
-the following arguments, for example:
+the following arguments (note: `$(pwd)/neucore-discord-plugin` is the path on the host where you stored
+the plugin), for example:
 
 ```
   --volume=$(pwd)/neucore-discord-plugin:/var/www/plugins/discord \
