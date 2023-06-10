@@ -222,7 +222,7 @@
 
                     <h4>Account Status</h4>
                     <p>
-                        {{ playerEdit.status }}
+                        {{ playerEdit.status === 'standard' ? 'standard' : 'manually managed' }}
                         <span v-if="h.hasRole('user-manager')" class="text-muted">
                             (change here:
                             <a :href="`#PlayerManagement/${playerEdit.id}`">Player Management</a>)
@@ -344,8 +344,13 @@
                     </div>
 
                     <h4>Group Membership</h4>
-                    <p v-if="playerEditDeactivated" class="small text-info">
-                        Groups for this account are disabled (or will be disabled soon)
+                    <p v-if="playerEditDeactivated.withoutDelay" class="small text-info">
+                        <span v-if="playerEditDeactivated.withDelay">
+                            Groups for this account are disabled
+                        </span>
+                        <span v-else-if="playerEditDeactivated.withoutDelay">
+                            Groups for this account will be disabled soon
+                        </span>
                         because one or more characters do not have a valid ESI token.
                     </p>
                     <div class="table-responsive">
@@ -499,7 +504,7 @@ export default {
 
             eveLogins: null,
 
-            playerEditDeactivated: false,
+            playerEditDeactivated: {},
             availableRoles: Data.userRoles,
             autoRoles: [
                 'app-manager',

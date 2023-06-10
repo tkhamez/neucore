@@ -46,6 +46,12 @@ use Psr\Log\LoggerInterface;
  *         @OA\Items(ref="#/components/schemas/Character")
  *     )
  * )
+ * @OA\Schema(
+ *     schema="GroupsDisabled",
+ *     required={"withDelay", "withoutDelay"},
+ *     @OA\Property(property="withDelay", type="boolean"),
+ *     @OA\Property(property="withoutDelay", type="boolean"),
+ * )
  */
 class PlayerController extends BaseController
 {
@@ -122,14 +128,14 @@ class PlayerController extends BaseController
      * @OA\Get(
      *     path="/user/player/groups-disabled",
      *     operationId="groupsDisabled",
-     *     summary="Check whether groups for this account are disabled or will be disabled soon.",
+     *     summary="Checks whether groups for this account are disabled or will be disabled soon.",
      *     description="Needs role: user",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @OA\Response(
      *         response="200",
      *         description="True if groups are disabled, otherwise false.",
-     *         @OA\JsonContent(type="boolean")
+     *         @OA\JsonContent(ref="#/components/schemas/GroupsDisabled")
      *     ),
      *     @OA\Response(
      *         response="403",
@@ -139,12 +145,12 @@ class PlayerController extends BaseController
      */
     public function groupsDisabled(AccountGroup $accountGroupService): ResponseInterface
     {
-        // check state and ignore delay
-        if ($accountGroupService->groupsDeactivated($this->getUser($this->userAuth)->getPlayer(), true)) {
-            return $this->withJson(true);
-        }
+        $player = $this->getUser($this->userAuth)->getPlayer();
 
-        return $this->withJson(false);
+        return $this->withJson([
+            'withDelay' => $accountGroupService->groupsDeactivated($player),
+            'withoutDelay' => $accountGroupService->groupsDeactivated($player, true), // true = ignore delay
+        ]);
     }
 
     /**
@@ -152,7 +158,7 @@ class PlayerController extends BaseController
      * @OA\Get(
      *     path="/user/player/{id}/groups-disabled",
      *     operationId="groupsDisabledById",
-     *     summary="Check whether groups for this account are disabled or will be disabled soon.",
+     *     summary="Checks whether groups for this account are disabled or will be disabled soon.",
      *     description="Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
@@ -166,7 +172,7 @@ class PlayerController extends BaseController
      *     @OA\Response(
      *         response="200",
      *         description="True if groups are disabled, otherwise false.",
-     *         @OA\JsonContent(type="boolean")
+     *         @OA\JsonContent(ref="#/components/schemas/GroupsDisabled")
      *     ),
      *     @OA\Response(
      *         response="403",
@@ -186,11 +192,10 @@ class PlayerController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        if ($accountGroupService->groupsDeactivated($player, true)) { // true = ignore delay
-            return $this->withJson(true);
-        }
-
-        return $this->withJson(false);
+        return $this->withJson([
+            'withDelay' => $accountGroupService->groupsDeactivated($player),
+            'withoutDelay' => $accountGroupService->groupsDeactivated($player, true), // true = ignore delay
+        ]);
     }
 
     /**

@@ -83,6 +83,8 @@ class PlayerControllerTest extends WebTestCase
 
     private Logger $log;
 
+    private string $date1 = '2019-08-03T23:12:45Z';
+
     public static function setupBeforeClass(): void
     {
         self::$writeErrorListener = new WriteErrorListener();
@@ -390,7 +392,7 @@ class PlayerControllerTest extends WebTestCase
                 'created' => null,
                 'lastUpdate' => null,
                 'validToken' => true,
-                'validTokenTime' => '2019-08-03T23:12:45Z',
+                'validTokenTime' => '2019-08-03T23:12:46Z',
                 'tokenLastChecked' => null,
                 'corporation' => null
             ],
@@ -877,7 +879,7 @@ class PlayerControllerTest extends WebTestCase
                 'created' => null,
                 'lastUpdate' => null,
                 'validToken' => false,
-                'validTokenTime' => '2019-08-03T23:12:45Z',
+                'validTokenTime' => $this->date1,
                 'tokenLastChecked' => null,
                 'corporation' => [
                     'id' => 234, 'name' => 'ccc', 'ticker' => 'c-c', 'alliance' => [
@@ -889,7 +891,7 @@ class PlayerControllerTest extends WebTestCase
                     'characterId' => 12,
                     'playerId' => $this->player3Id,
                     'validToken' => false,
-                    'validTokenTime' => '2019-08-03T23:12:45Z', // same as above (character.validTokenTime)
+                    'validTokenTime' => $this->date1, // same as above (character.validTokenTime)
                     'hasRoles' => null,
                     'lastChecked' => null,
                 ]],
@@ -901,7 +903,7 @@ class PlayerControllerTest extends WebTestCase
                 'created' => null,
                 'lastUpdate' => null,
                 'validToken' => true,
-                'validTokenTime' => '2019-08-03T23:12:45Z',
+                'validTokenTime' => '2019-08-03T23:12:46Z',
                 'tokenLastChecked' => null,
                 'corporation' => null,
                 'esiTokens' => [[
@@ -909,7 +911,7 @@ class PlayerControllerTest extends WebTestCase
                     'characterId' => 13,
                     'playerId' => $this->player3Id,
                     'validToken' => true,
-                    'validTokenTime' => '2019-08-03T23:12:45Z',
+                    'validTokenTime' => '2019-08-03T23:12:46Z',
                     'hasRoles' => null,
                     'lastChecked' => null,
                 ]],
@@ -995,7 +997,7 @@ class PlayerControllerTest extends WebTestCase
                     'created' => null,
                     'lastUpdate' => null,
                     'validToken' => false,
-                    'validTokenTime' => '2019-08-03T23:12:45Z',
+                    'validTokenTime' => $this->date1,
                     'tokenLastChecked' => null,
                     'corporation' => [
                         'id' => 234, 'name' => 'ccc', 'ticker' => 'c-c', 'alliance' => [
@@ -1011,7 +1013,7 @@ class PlayerControllerTest extends WebTestCase
                     'created' => null,
                     'lastUpdate' => null,
                     'validToken' => true,
-                    'validTokenTime' => '2019-08-03T23:12:45Z',
+                    'validTokenTime' => '2019-08-03T23:12:46Z',
                     'tokenLastChecked' => null,
                     'corporation' => null,
                     'characterNameChanges' => [],
@@ -1378,7 +1380,7 @@ class PlayerControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/player/groups-disabled');
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertTrue($this->parseJsonBody($response));
+        $this->assertSame(['withDelay' => true, 'withoutDelay' => true], $this->parseJsonBody($response));
     }
 
     public function testGroupsDisabled200Managed()
@@ -1396,7 +1398,7 @@ class PlayerControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/player/groups-disabled');
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertFalse($this->parseJsonBody($response));
+        $this->assertSame(['withDelay' => false, 'withoutDelay' => false], $this->parseJsonBody($response));
     }
 
     public function testGroupsDisabled200False()
@@ -1412,7 +1414,7 @@ class PlayerControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/player/groups-disabled');
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertFalse($this->parseJsonBody($response));
+        $this->assertSame(['withDelay' => false, 'withoutDelay' => false], $this->parseJsonBody($response));
     }
 
     public function testGroupsDisabledById403()
@@ -1445,18 +1447,23 @@ class PlayerControllerTest extends WebTestCase
         $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('234');
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $dateDiff = (new \DateTime($this->date1))->diff(new \DateTime());
+        $setting4 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_DELAY))
+            ->setValue((string)(($dateDiff->days * 24) + 24));
         $this->em->persist($setting);
         $this->em->persist($setting2);
         $this->em->persist($setting3);
+        $this->em->persist($setting4);
         $this->em->flush();
 
         $response1 = $this->runApp('GET', '/api/user/player/' . $this->player3Id . '/groups-disabled');
         $this->assertEquals(200, $response1->getStatusCode());
-        $this->assertTrue($this->parseJsonBody($response1));
+        $this->assertSame(['withDelay' => false, 'withoutDelay' => true], $this->parseJsonBody($response1));
 
         $response2 = $this->runApp('GET', '/api/user/player/' . $this->player4Id . '/groups-disabled');
         $this->assertEquals(200, $response2->getStatusCode());
-        $this->assertFalse($this->parseJsonBody($response2));
+        $this->assertSame(['withDelay' => false, 'withoutDelay' => false], $this->parseJsonBody($response2));
     }
 
     private function setupDb(): void
@@ -1521,8 +1528,9 @@ class PlayerControllerTest extends WebTestCase
             12,
             [Role::USER, Role::APP_ADMIN, Role::USER_ADMIN, Role::GROUP_ADMIN]
         );
+        /** @noinspection PhpUnhandledExceptionInspection */
         $char3a->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(false)
-            ->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
+            ->setValidTokenTime(new \DateTime($this->date1));
         $char3a->setCorporation($corp2);
         $char3a->getPlayer()->addGroup($gs[2]);
         $this->player3Id = $char3a->getPlayer()->getId();
@@ -1540,7 +1548,7 @@ class PlayerControllerTest extends WebTestCase
 
         $char3b = $this->h->addCharacterToPlayer('Alt', 13, $char3a->getPlayer(), true);
         $char3b->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(true)
-            ->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
+            ->setValidTokenTime(new \DateTime('2019-08-03T23:12:46Z'));
 
         $char4 = $this->h->addCharacterMain('User3', 14, [Role::USER, Role::USER_MANAGER]);
         $char4->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(true);

@@ -118,8 +118,14 @@
         <div class="card-body pb-0" v-html="markdownHtml"></div>
     </div>
 
-    <div v-cloak v-if="deactivated" class="alert alert-danger">
-        Groups for this account are <strong>disabled</strong> (or will be disabled soon)
+    <div v-cloak v-if="deactivated.withoutDelay" class="alert"
+         :class="deactivated.withDelay ? 'alert-danger' : 'alert-warning'">
+        <span v-if="deactivated.withDelay">
+            Groups for this account are <strong>disabled</strong>
+        </span>
+        <span v-else-if="deactivated.withoutDelay">
+            Groups for this account will be <strong>disabled</strong> soon
+        </span>
         because one or more characters do not have a valid ESI token.<br>
         Note: Deleted characters will be removed automatically within 1 to 2 days.
     </div>
@@ -196,7 +202,7 @@
                         <h3 class="me-2 mb-0">Groups</h3>
                         <span v-if="player.status === 'managed'" class="text-muted"> (manually managed)</span>
                     </div>
-                    <ul class="list-group list-group-flush" :class="{ 'groups-disabled': deactivated }">
+                    <ul class="list-group list-group-flush" :class="{ 'groups-disabled': deactivated.withDelay }">
                         <li v-for="group in player.groups" class="list-group-item">
                             {{ group.name }}
                         </li>
@@ -254,7 +260,7 @@ export default {
             settings: toRef(this.store.state, 'settings'),
             player: toRef(this.store.state, 'player'),
             loginNames: Data.loginNames,
-            deactivated: false,
+            deactivated: {},
             charToDelete: null,
             md: null,
             markdownHtml: '',
@@ -307,7 +313,7 @@ export default {
             if (this.player) {
                 checkDeactivated(this);
             } else {
-                this.deactivated = false;
+                this.deactivated = {};
             }
         },
     },
@@ -381,7 +387,7 @@ function loginAddRedirect(vm) {
 
 function checkDeactivated(vm) {
     if (!vm.player) {
-        vm.deactivated = false;
+        vm.deactivated = {};
         return;
     }
 
