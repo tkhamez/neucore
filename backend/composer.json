@@ -40,10 +40,10 @@
         "symfony/dotenv": "^5.1",
         "symfony/http-foundation": "^5.1",
         "symfony/yaml": "^5.1",
-        "tkhamez/eve-sso": "^3.0",
+        "tkhamez/eve-sso": "^4.0",
         "tkhamez/neucore-plugin": "^2.1",
         "tkhamez/slim-role-auth": "^4.0",
-        "tkhamez/swagger-eve-php": "~8.1.0",
+        "tkhamez/swagger-eve-php": "~8.2.0",
         "zircote/swagger-php": "^4.4"
     },
     "require-dev": {
@@ -51,7 +51,8 @@
         "phan/phan": "^5.2",
         "phpstan/phpstan": "^1.3",
         "phpunit/phpunit": "^9.4",
-        "vimeo/psalm": "^5.4"
+        "vimeo/psalm": "^5.4",
+        "web-token/jwt-key-mgmt": "^2.2"
     },
     "suggest": {
         "ext-apcu": "*",

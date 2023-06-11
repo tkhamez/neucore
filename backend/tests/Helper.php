@@ -99,12 +99,14 @@ class Helper
         string $ownerHashKey = 'owner'
     ): array {
         // create key
-        $jwk = JWKFactory::createRSAKey(2048, ['alg' => 'RS256', 'use' => 'sig']);
+        $kid = 'JWT-Signature-Key';
+        $jwk = JWKFactory::createRSAKey(2048, ['alg' => 'RS256', 'use' => 'sig', 'kid' => $kid]);
 
         // create token
         $algorithmManager = new AlgorithmManager([new RS256()]);
         $jwsBuilder = new JWSBuilder($algorithmManager);
         $payload = (string)json_encode([
+            'kid' => $kid,
             'scp' => count($scopes) > 1 ? $scopes : ($scopes[0] ?? null),
             'sub' => "CHARACTER:EVE:$charId",
             'name' => $charName,
@@ -115,7 +117,7 @@ class Helper
         $jws = $jwsBuilder
             ->create()
             ->withPayload($payload)
-            ->addSignature($jwk, ['alg' => $jwk->get('alg')])
+            ->addSignature($jwk, ['alg' => $jwk->get('alg'), 'kid' => $kid])
             ->build();
         $token = (new CompactSerializer())->serialize($jws);
 
@@ -126,18 +128,19 @@ class Helper
     }
 
     public static function getAuthenticationProvider(Client $client): AuthenticationProvider {
-        $authProvider = new AuthenticationProvider([
-            'clientId' => '123',
-            'clientSecret' => 'abc',
-            'redirectUri' => 'http',
-            'urlAuthorize' => 'http',
-            'urlAccessToken' => 'http',
-            'urlResourceOwnerDetails' => '',
-            'urlKeySet' => '',
-            'urlRevoke' => 'http',
-        ]);
-        $authProvider->getProvider()->setHttpClient($client);
-        return $authProvider;
+        return new AuthenticationProvider(
+            [
+                'clientId' => '123',
+                'clientSecret' => 'abc',
+                'redirectUri' => 'http',
+                'urlAuthorize' => 'http',
+                'urlAccessToken' => 'http',
+                'urlKeySet' => 'http',
+                'urlRevoke' => 'http',
+                'issuer' => 'localhost',
+            ],
+            httpClient: $client
+        );
     }
 
     public static function getPluginFactory(

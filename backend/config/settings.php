@@ -55,26 +55,13 @@ return [
     ],
 
     'eve' => [
-        'client_id'       => '${NEUCORE_EVE_CLIENT_ID}',
-        'secret_key'      => '${NEUCORE_EVE_SECRET_KEY}',
-        'callback_url'    => '${NEUCORE_EVE_CALLBACK_URL}',
-        'scopes'          => '${NEUCORE_EVE_SCOPES}',
-        'datasource'      => '${NEUCORE_EVE_DATASOURCE}',
-        'esi_host'        => 'https://esi.evetech.net',
-        'oauth_urls_tq'   => [
-            'authorize' => 'https://login.eveonline.com/v2/oauth/authorize',
-            'token'     => 'https://login.eveonline.com/v2/oauth/token',
-            'verify'    => '', // only needed for SSO v1, but required by class
-            'jwks'      => 'https://login.eveonline.com/oauth/jwks',
-            'revoke'    => 'https://login.eveonline.com/v2/oauth/revoke',
-        ],
-        'oauth_urls_sisi' => [
-            'authorize' => 'https://sisilogin.testeveonline.com/v2/oauth/authorize',
-            'token'     => 'https://sisilogin.testeveonline.com/v2/oauth/token',
-            'verify'    => '',
-            'jwks'      => 'https://sisilogin.testeveonline.com/oauth/jwks',
-            'revoke'    => 'https://sisilogin.testeveonline.com/v2/oauth/revoke',
-        ],
+        'client_id'    => '${NEUCORE_EVE_CLIENT_ID}',
+        'secret_key'   => '${NEUCORE_EVE_SECRET_KEY}',
+        'callback_url' => '${NEUCORE_EVE_CALLBACK_URL}',
+        'scopes'       => '${NEUCORE_EVE_SCOPES}',
+        'datasource'   => '${NEUCORE_EVE_DATASOURCE}',
+        'esi_host'     => 'https://esi.evetech.net',
+        'oauth_urls'   => [], // only used for tests
     ],
 
     'guzzle' => [

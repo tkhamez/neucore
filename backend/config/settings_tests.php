@@ -19,4 +19,13 @@ return [
             'mysql_verify_server_cert' => '${NEUCORE_TEST_MYSQL_VERIFY_SERVER_CERT}',
         ],
     ],
+    'eve' => [
+        'oauth_urls'   => [
+            'authorize' => 'https://login.eveonline.com/v2/oauth/authorize',
+            'token'     => 'https://login.eveonline.com/v2/oauth/token',
+            'jwks'      => 'https://login.eveonline.com/oauth/jwks',
+            'revoke'    => 'https://login.eveonline.com/v2/oauth/revoke',
+            'issuer'    => 'login.eveonline.com',
+        ],
+    ],
 ];
