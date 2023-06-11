@@ -22,7 +22,7 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  * @OA\Schema(
  *     schema="CharacterGroups",
- *     required={"character", "groups"},
+ *     required={"character", "groups", "deactivated"},
  *     @OA\Property(
  *         property="character",
  *         ref="#/components/schemas/Character"
@@ -31,6 +31,12 @@ use Psr\Http\Message\ServerRequestInterface;
  *         property="groups",
  *         type="array",
  *         @OA\Items(ref="#/components/schemas/Group")
+ *     ),
+ *     @OA\Property(
+ *         property="deactivated",
+ *         description="Groups deactivation status.",
+ *         type="string",
+ *         enum={"no", "soon", "yes"}
  *     )
  * )
  */
@@ -672,16 +678,24 @@ class GroupController extends BaseController
             return null;
         }
 
+        $deactivated = $this->accountGroupService->groupsDeactivated($char->getPlayer()); // with delay
+        $deactivatedWithoutDelay = $this->accountGroupService->groupsDeactivated($char->getPlayer(),  true);
+
         $result = [
             'character' => [
                 'id' => $char->getId(),
                 'name' => $char->getName(),
                 'corporation' => $char->getCorporation(),
             ],
-            self::KEY_GROUPS => []
+            self::KEY_GROUPS => [],
+            'deactivated' => match (true) {
+                $deactivated => 'yes',
+                $deactivatedWithoutDelay => 'soon',
+                default => 'no',
+            },
         ];
 
-        if ($this->accountGroupService->groupsDeactivated($char->getPlayer())) {
+        if ($deactivated) {
             return $result;
         }
 

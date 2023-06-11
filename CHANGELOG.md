@@ -4,8 +4,10 @@
 
 dd mm yyyy
 
-- New: The warning about deactivated groups now distinguishes between disabled and soon to be disabled.
+- New: The warning about deactivated groups now distinguishes between deactivated and soon to be deactivated.
 - New: Added note about deactivated group in the player modal window.
+- New: Added "deactivated" property with value "yes", "no" or "soon" to the `POST /app/v1/groups` endpoint result
+  for each character.
 - New: CSV export for charts.
 - Fix: JavaScript error when adding a new EVE login.
 - Text changes/improvements.

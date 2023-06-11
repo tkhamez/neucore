@@ -185,6 +185,7 @@ class GroupControllerTest extends WebTestCase
                 ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
             ],
+            'deactivated' => 'no',
         ], [
             'character' => ['id' => 789, 'name' => 'C3', 'corporation' => [
                 'id' => 500, 'name' => 'five', 'ticker' => '-5-', 'alliance' => [
@@ -197,6 +198,7 @@ class GroupControllerTest extends WebTestCase
                 ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             ],
+            'deactivated' => 'no',
         ]];
         $this->assertSame($expected, $body);
     }
@@ -230,6 +232,7 @@ class GroupControllerTest extends WebTestCase
                 ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
             ],
+            'deactivated' => 'no',
         ], [
             'character' => ['id' => 789, 'name' => 'C3', 'corporation' => [
                 'id' => 500, 'name' => 'five', 'ticker' => '-5-', 'alliance' => [
@@ -237,6 +240,58 @@ class GroupControllerTest extends WebTestCase
                 ]
             ]],
             'groups' => [],
+            'deactivated' => 'yes',
+        ]];
+        $this->assertSame($expected, $body);
+    }
+
+    public function testGroupsBulkV1200DeactivatedSoon()
+    {
+        $invalidHours = 48;
+        $this->setUpDb($invalidHours);
+
+        // activate "deactivated groups"
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('100');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('500');
+        $setting4 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_DELAY))
+            ->setValue((string)($invalidHours + 1));
+        $this->helper->getObjectManager()->persist($setting1);
+        $this->helper->getObjectManager()->persist($setting2);
+        $this->helper->getObjectManager()->persist($setting3);
+        $this->helper->getObjectManager()->persist($setting4);
+        $this->helper->getObjectManager()->flush();
+
+        $headers = [
+            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
+            'Content-Type' => 'application/json'
+        ];
+        $response = $this->runApp('POST', '/api/app/v1/groups', [123, 789], $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $body = $this->parseJsonBody($response);
+
+        $expected = [[
+            'character' => ['id' => 123, 'name' => 'C1', 'corporation' => null],
+            'groups' => [
+                ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
+            ],
+            'deactivated' => 'no',
+        ], [
+            'character' => ['id' => 789, 'name' => 'C3', 'corporation' => [
+                'id' => 500, 'name' => 'five', 'ticker' => '-5-', 'alliance' => [
+                    'id' => 100, 'name' => 'one', 'ticker' => '-1-'
+                ]
+            ]],
+            'groups' => [
+                ['id' => $this->group0Id, 'name' => 'g0', 'description' => null,
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
+                ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
+            ],
+            'deactivated' => 'soon',
         ]];
         $this->assertSame($expected, $body);
     }
