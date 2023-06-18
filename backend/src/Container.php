@@ -33,14 +33,12 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Psr7\Factory\ResponseFactory;
-use Symfony\Component\Yaml\Parser;
 
 class Container
 {
     public static function getDefinitions(): array
     {
         return [
-
             // Doctrine
             EntityManagerInterface::class => function (
                 ?ContainerInterface $c = null, // this is also used in unit tests where the container does not exist
@@ -185,10 +183,6 @@ class Container
                     );
                 }
                 return $storage;
-            },
-
-            Parser::class => function () {
-                return new Parser();
             },
         ];
     }

@@ -679,7 +679,7 @@ class GroupController extends BaseController
         }
 
         $deactivated = $this->accountGroupService->groupsDeactivated($char->getPlayer()); // with delay
-        $deactivatedWithoutDelay = $this->accountGroupService->groupsDeactivated($char->getPlayer(),  true);
+        $deactivatedWithoutDelay = $this->accountGroupService->groupsDeactivated($char->getPlayer(), true);
 
         $result = [
             'character' => [

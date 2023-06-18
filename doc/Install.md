@@ -61,8 +61,8 @@ Next, start Neucore (adjust EVE client ID and secret):
 ```shell
 docker run \
   --env=NEUCORE_APP_ENV=prod \
-  --env=NEUCORE_DATABASE_URL=mysql://neucore:neucore@neucore_db_prod/neucore \
-  --env=NEUCORE_EVE_CALLBACK_URL=http://localhost:8080/login-callback \
+  --env=NEUCORE_DATABASE_URL="mysql://neucore:neucore@neucore_db_prod/neucore" \
+  --env=NEUCORE_EVE_CALLBACK_URL="http://localhost:8080/login-callback" \
   --env=NEUCORE_EVE_CLIENT_ID=123 \
   --env=NEUCORE_EVE_SECRET_KEY=abc \
   --env=NEUCORE_EVE_SCOPES="esi-corporations.read_corporation_membership.v1" \

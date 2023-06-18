@@ -40,7 +40,7 @@
     "mitt": "^3.0.0",
     "neucore-js-client": "file:neucore-js-client",
     "querystring-es3": "^0.2.1",
-    "swagger-ui-dist": "^4.11.0",
+    "swagger-ui-dist": "^5.0.0",
     "vue": "^3.2.33"
   },
   "devDependencies": {
