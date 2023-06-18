@@ -2,7 +2,7 @@
 
 ## 2.1.0
 
-18 May 2023
+18 Jun 2023
 
 - New: The warning about deactivated groups now distinguishes between deactivated and soon to be deactivated.
 - New: Added note about deactivated group in the player modal window.
