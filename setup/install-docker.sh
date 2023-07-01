@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DIR=$(dirname "$(realpath "$0")")
+DIR=$( cd -- "$( dirname -- "$0" )" &> /dev/null && pwd )
 
 # Install backend, run database migrations and generate OpenAPI files.
 cd "${DIR}"/.. || exit
