@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DIR=$(dirname "$(realpath "$0")")
+DIR=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 
 mkdir -p "${DIR}"/../dist
 rm -Rf "${DIR}"/../dist/*

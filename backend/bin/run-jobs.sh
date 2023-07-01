@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
-DIR=$(dirname "$(realpath "$0")")
+#DIR=$(dirname "$(readlink -f "$0")")
+DIR=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 
 "${DIR}"/console update-corporations --log --hide-details
 "${DIR}"/console update-chars --log --hide-details
