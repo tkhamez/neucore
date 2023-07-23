@@ -27,7 +27,7 @@ RUN echo 'expose_php = Off' > "$PHP_INI_DIR/conf.d/x-neucore.ini"
 
 RUN a2enmod rewrite headers
 RUN echo 'Header always set Strict-Transport-Security "max-age=31536000"' > /etc/apache2/conf-enabled/x-neucore.conf && \
-    echo "Header always set Content-Security-Policy \"default-src 'none'; style-src 'self'; script-src 'self' data:; font-src 'self' data:; img-src 'self' data: https://images.evetech.net; connect-src 'self' https://esi.evetech.net; form-action 'self'; base-uri 'none'; frame-ancestors 'none'; sandbox allow-downloads allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation;\"" >> /etc/apache2/conf-enabled/x-neucore.conf && \
+    echo "Header always set Content-Security-Policy \"default-src 'none'; style-src 'self'; script-src 'self'; font-src 'self' data:; img-src 'self' data: https://images.evetech.net; connect-src 'self' https://esi.evetech.net; form-action 'self'; base-uri 'none'; frame-ancestors 'none'; sandbox allow-downloads allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation;\"" >> /etc/apache2/conf-enabled/x-neucore.conf && \
     echo 'Header always set X-Frame-Options "sameorigin"'                >> /etc/apache2/conf-enabled/x-neucore.conf && \
     echo 'Header always set X-Content-Type-Options "nosniff"'            >> /etc/apache2/conf-enabled/x-neucore.conf && \
     echo 'ServerSignature Off'                                           >> /etc/apache2/conf-enabled/x-neucore.conf && \

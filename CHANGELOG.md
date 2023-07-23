@@ -6,6 +6,7 @@ dd mm yyyy
 
 - Fix: Text color of tooltips.
 - Fix: Member tracking ESI column sort.
+- Change: The Content-Security-Policy header does no longer need "data:" for "script-src".
 
 ## 2.1.0
 
