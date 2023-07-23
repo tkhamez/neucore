@@ -1,4 +1,3 @@
-//@import "whatever.scss";
 
 html {
     // for sticky footer
@@ -13,12 +12,6 @@ body.neucore {
 [v-cloak] {
     display: none;
     visibility: hidden;
-}
-
-.character-name-changes .tooltip-inner,
-.character-token .tooltip-inner {
-    max-width: initial;
-    text-align: left;
 }
 
 /**
@@ -243,6 +236,25 @@ body.neucore {
     &.active .entity-actions {
         display: inline;
     }
+}
+
+/**
+ * Tooltips
+ */
+.cyborg,
+.darkly,
+.slate,
+.solar,
+.superhero,
+.vapor {
+    .tooltip {
+        --bs-tooltip-color: var(--bs-body-color);
+    }
+}
+.character-name-changes .tooltip-inner,
+.character-token .tooltip-inner {
+    max-width: initial;
+    text-align: left;
 }
 
 /**

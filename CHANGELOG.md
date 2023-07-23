@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Fix: Text color of tooltips.
+
 ## 2.1.0
 
 18 Jun 2023
