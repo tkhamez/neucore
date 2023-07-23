@@ -203,7 +203,7 @@ export default {
 
     methods: {
         toggleSearchableColumn(index) {
-            this.columns[index].searchable = ! this.columns[index].searchable;
+            this.columns[index].searchable = !this.columns[index].searchable;
             this.table.draw();
         },
     }
@@ -311,6 +311,19 @@ function configureDataTable(vm) {
         });
     }
 
+    const esiColumnText = (row) => {
+        if (!row.character) {
+            return '';
+        }
+        if (row.character.validToken) {
+            return 'valid';
+        }
+        if (row.character.validToken === false) {
+            return 'invalid';
+        }
+        return 'n/a';
+    };
+
     vm.table = $('.member-table').DataTable({
         lengthMenu: [
             [10, 25, 50, 100, 200, 500, 1000, 5000, -1],
@@ -334,6 +347,7 @@ function configureDataTable(vm) {
             });
         },
         columns: [{
+            // Character
             render: {
                 _(data, type, row) {
                     return `
@@ -345,6 +359,7 @@ function configureDataTable(vm) {
                 },
             }
         }, {
+            // Account
             render: {
                 _(data, type, row) {
                     if (row.player) {
@@ -369,38 +384,37 @@ function configureDataTable(vm) {
                 },
             }
         }, {
-            data(row) {
-                if (!row.character) {
-                    return '';
-                }
-                let text = '';
-                if (row.character.validToken) {
-                    text = 'valid';
-                } else if (row.character.validToken === false) {
-                    text = 'invalid';
-                } else {
-                    text = 'n/a';
-                }
-                if (row.character.validTokenTime) {
-                    return `
-                        <div class="text-with-tooltip" data-bs-toggle="tooltip" data-bs-html="true"
-                              title="Token status change date: ${Util.formatDate(row.character.validTokenTime)}<br>
-                                    Token's last check date: ${Util.formatDate(row.character.tokenLastChecked)}">
-                            ${text}
-                        </div>`;
-                } else {
-                    return text;
+            // ESI
+            render: {
+                _(data, type, row) {
+                    const text = esiColumnText(row);
+                    if (row.character && row.character.validTokenTime) {
+                        return `
+                            <div class="text-with-tooltip" data-bs-toggle="tooltip" data-bs-html="true"
+                                  title="Token status change date: ${Util.formatDate(row.character.validTokenTime)}<br>
+                                        Token's last check date: ${Util.formatDate(row.character.tokenLastChecked)}">
+                                ${text}
+                            </div>`;
+                    } else {
+                        return text;
+                    }
+                },
+                sort(data, type, row) {
+                    return esiColumnText(row);
                 }
             }
         }, {
+            // Logon
             data(row) {
                 return row.logonDate ? Util.formatDate(row.logonDate) : '';
             }
         }, {
+            // Logoff
             data(row) {
                 return row.logoffDate ? Util.formatDate(row.logoffDate) : '';
             }
         }, {
+            // Location
             data(row) {
                 if (row.location) {
                     return row.location.name ? row.location.name : row.location.id;
@@ -408,6 +422,7 @@ function configureDataTable(vm) {
                 return '';
             }
         }, {
+            // Ship
             data(row) {
                 if (row.shipType) {
                     return row.shipType.name ? row.shipType.name : row.shipType.id;
@@ -415,6 +430,7 @@ function configureDataTable(vm) {
                 return '';
             }
         }, {
+            // Joined
             data(row) {
                 return row.startDate ? Util.formatDate(row.startDate) : '';
             }

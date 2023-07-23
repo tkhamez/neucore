@@ -5,6 +5,7 @@
 dd mm yyyy
 
 - Fix: Text color of tooltips.
+- Fix: Member tracking ESI column sort.
 
 ## 2.1.0
 
