@@ -241,15 +241,9 @@ body.neucore {
 /**
  * Tooltips
  */
-.cyborg,
-.darkly,
-.slate,
-.solar,
-.superhero,
-.vapor {
-    .tooltip {
-        --bs-tooltip-color: var(--bs-body-color);
-    }
+.tooltip {
+    --bs-tooltip-color: var(--bs-body-color);
+    --bs-tooltip-bg: var(--bs-body-bg);
 }
 .character-name-changes .tooltip-inner,
 .character-token .tooltip-inner {
