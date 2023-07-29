@@ -15,11 +15,14 @@ Select and table to add and remove objects from other objects.
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <ul class="list-group">
-                        <li v-for="group in showGroupsEntity.groups" class="list-group-item">
-                            {{ group.name }}
-                        </li>
-                    </ul>
+                    <div class="modal-body">
+                        <p>Other groups that use this alliance/corporation:</p>
+                        <ul class="list-group">
+                            <li v-for="group in showGroupsEntity.groups" class="list-group-item">
+                                {{ group.name }}
+                            </li>
+                        </ul>
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
