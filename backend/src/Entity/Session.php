@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Only used to generate the database schema for the PdoSessionHandler.
  *
  * @see \Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
- * @ORM\Table(name="sessions", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
+ * @ORM\Table(name="sessions", options={"charset"="utf8mb4", "collate"="utf8mb4_bin"})
  * @ORM\Entity
  */
 class Session
@@ -33,7 +33,7 @@ class Session
     public string $sessData;
 
     /**
-     * @ORM\Column(name="sess_lifetime", type="integer", nullable=false)
+     * @ORM\Column(name="sess_lifetime", type="integer", nullable=false, options={"unsigned"=true})
      */
     public int $sessLifetime;
 
