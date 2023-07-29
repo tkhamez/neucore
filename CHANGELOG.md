@@ -5,6 +5,7 @@
 dd mm yyyy
 
 - **BC Break**: Raised minimum required PHP version to 8.0.2, from 8.0.0.
+- Updated neucore-plugin to version 3.0.0.
 - Fix: Text color of tooltips.
 - Fix: Member tracking ESI column sort.
 - Fix: Possible JS error due to browser extensions that insert code into the HTML head, preventing 
