@@ -51,31 +51,30 @@ jobs:
           npm install
           npm run build
       - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
       - name: Create archive
         run: |
           dist/build/setup/dist-collect-files.sh
           cd dist
-          tar -czf neucore-${{ steps.get_version.outputs.VERSION }}.tar.gz neucore
-          sha256sum neucore-${{ steps.get_version.outputs.VERSION }}.tar.gz > neucore-${{ steps.get_version.outputs.VERSION }}.sha256
+          tar -czf neucore-${{ env.RELEASE_VERSION }}.tar.gz neucore
+          sha256sum neucore-${{ env.RELEASE_VERSION }}.tar.gz > neucore-${{ env.RELEASE_VERSION }}.sha256
       - name: GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            dist/neucore-${{ steps.get_version.outputs.VERSION }}.tar.gz
-            dist/neucore-${{ steps.get_version.outputs.VERSION }}.sha256
+            dist/neucore-${{ env.RELEASE_VERSION }}.tar.gz
+            dist/neucore-${{ env.RELEASE_VERSION }}.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Docker image
         if: ${{ github.repository_owner == 'tkhamez' }}
         run: |
-          docker build -f dist/build/setup/Dockerfile --no-cache -t tkhamez/neucore:${{ steps.get_version.outputs.VERSION }} dist
-          docker tag tkhamez/neucore:${{ steps.get_version.outputs.VERSION }} tkhamez/neucore:latest
+          docker build -f dist/build/setup/Dockerfile --no-cache -t tkhamez/neucore:${{ env.RELEASE_VERSION }} dist
+          docker tag tkhamez/neucore:${{ env.RELEASE_VERSION }} tkhamez/neucore:latest
       - name: Publish Docker image
         if: ${{ github.repository_owner == 'tkhamez' }}
         run: |
           echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u tkhamez --password-stdin
-          docker push tkhamez/neucore:${{ steps.get_version.outputs.VERSION }}
+          docker push tkhamez/neucore:${{ env.RELEASE_VERSION }}
           docker push tkhamez/neucore:latest
           docker logout
