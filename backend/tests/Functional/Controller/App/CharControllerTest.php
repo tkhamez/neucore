@@ -153,6 +153,50 @@ class CharControllerTest extends WebTestCase
         );
     }
 
+    public function testPlayerBulkV1_403()
+    {
+        $this->setUpDb();
+
+        $response1 = $this->runApp('POST', '/api/app/v1/players');
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s0')]; // does not have role app-chars
+        $response2 = $this->runApp('POST', '/api/app/v1/players', null, $headers);
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testPlayerBulkV1_400()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('POST', '/api/app/v1/players', '', $headers);
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function testPlayerBulkV1_200()
+    {
+        $this->setUpDb();
+        $playerId1 = $this->helper->addCharacterMain('C1', 123, [Role::USER])->getPlayer()->getId();
+        $playerId2 = $this->helper->addCharacterMain('C2', 234, [Role::USER])->getPlayer()->getId();
+
+        $headers = [
+            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
+            'Content-Type' => 'application/json',
+        ];
+        $response = $this->runApp('POST', '/api/app/v1/players', [123, 234, 345], $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(
+            [
+                ['id' => $playerId1, 'name' => 'C1'],
+                ['id' => $playerId2, 'name' => 'C2'],
+            ],
+            $this->parseJsonBody($response)
+        );
+    }
+
     public function testCharactersV1403()
     {
         $response = $this->runApp('GET', '/api/app/v1/characters/123');

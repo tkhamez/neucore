@@ -40,6 +40,7 @@ return [
     '/api/app/v1/main/{cid}'                           => ['GET',  [CharController::class, 'mainV1']],
     '/api/app/v2/main/{cid}'                           => ['GET',  [CharController::class, 'mainV2']],
     '/api/app/v1/player/{characterId}'                 => ['GET',  [CharController::class, 'playerV1']],
+    '/api/app/v1/players'                              => ['POST',  [CharController::class, 'playersV1']],
     '/api/app/v1/characters/{characterId}'             => ['GET',  [CharController::class, 'charactersV1']],
     '/api/app/v1/characters'                           => ['POST', [CharController::class, 'charactersBulk']],
     '/api/app/v1/character-list'                       => ['POST', [CharController::class, 'characterListV1']],

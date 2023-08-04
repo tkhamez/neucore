@@ -15,6 +15,7 @@ return [
     '/api/app/v1/main'                             => [Role::APP_CHARS],
     '/api/app/v2/main'                             => [Role::APP_CHARS],
     '/api/app/v1/player/'                          => [Role::APP_CHARS],
+    '/api/app/v1/players'                          => [Role::APP_CHARS],
     '/api/app/v1/character-list'                   => [Role::APP_CHARS],
     '/api/app/v1/characters'                       => [Role::APP_CHARS],
     '/api/app/v1/player-chars'                     => [Role::APP_CHARS],

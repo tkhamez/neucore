@@ -174,6 +174,54 @@ class CharController extends BaseController
     }
 
     /**
+     * @OA\Post(
+     *     path="/app/v1/players",
+     *     operationId="playersV1",
+     *     summary="Returns player accounts identified by character IDs.",
+     *     description="Needs role: app-chars.",
+     *     tags={"Application - Characters"},
+     *     security={{"BearerAuth"={}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="EVE character IDs array.",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(type="array", @OA\Items(type="integer"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="The players, only id and name properties are returned.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Invalid body."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
+     *     )
+     * )
+     */
+    public function playersV1(ServerRequestInterface $request): ResponseInterface
+    {
+        $ids = $this->getIntegerArrayFromBody($request);
+        if ($ids === null) {
+            return $this->response->withStatus(400);
+        }
+
+        $players = $this->repositoryFactory->getPlayerRepository()->findPlayersOfCharactersWithName($ids);
+
+        return $this->withJson($players);
+    }
+
+    /**
      * @OA\Get(
      *     path="/app/v1/characters/{characterId}",
      *     operationId="charactersV1",

@@ -6,6 +6,7 @@ dd mm yyyy
 
 - **BC Break**: Raised minimum required PHP version to 8.0.2, from 8.0.0.
 - Updated neucore-plugin to version 3.
+- Added `/api/app/v1/players` endpoint to retrieve multiple player accounts identified by character IDs.
 - Fix: Various searches now handle the backslash correctly and disallow wildcards.
 - Fix: Text color of tooltips.
 - Fix: Member tracking ESI column sort.

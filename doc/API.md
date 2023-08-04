@@ -72,7 +72,7 @@ Group API
 
 Player API
 - Return the logged in player with all properties. `GET /user/player/show`
-- Check whether groups for this account are disabled or will be disabled soon. `GET /user/player/groups-disabled`
+- Checks whether groups for this account are disabled or will be disabled soon. `GET /user/player/groups-disabled`
 - Submit a group application. `PUT /user/player/add-application/{gid}`
 - Cancel a group application. `PUT /user/player/remove-application/{gid}`
 - Show all group applications. `GET /user/player/show-applications`
@@ -103,7 +103,7 @@ Character API
 Player API
 - List all players with characters. `GET /user/player/with-characters`
 - List all players without characters. `GET /user/player/without-characters`
-- Check whether groups for this account are disabled or will be disabled soon. `GET /user/player/{id}/groups-disabled`
+- Checks whether groups for this account are disabled or will be disabled soon. `GET /user/player/{id}/groups-disabled`
 - Delete a character. `DELETE /user/player/delete-character/{id}`
 - Add a role to the player. `PUT /user/player/{id}/add-role/{name}`
 - Remove a role from a player. `PUT /user/player/{id}/remove-role/{name}`
@@ -133,6 +133,7 @@ Group API
 - Remove player from a group. `PUT /user/group/{id}/remove-member/{pid}`
 
 Player API
+- Checks whether groups for this account are disabled or will be disabled soon. `GET /user/player/{id}/groups-disabled`
 - Change the player's account status. `PUT /user/player/{id}/set-status/{status}`
 - Show all data from a player. `GET /user/player/{id}/show`
 - Show player with characters, moved characters, groups and service accounts. `GET /user/player/{id}/characters`
@@ -150,6 +151,7 @@ Character API
                     that matches the name (partial matching). `GET /user/character/find-character/{name}`
 
 Player API
+- Checks whether groups for this account are disabled or will be disabled soon. `GET /user/player/{id}/groups-disabled`
 - Show player with characters, moved characters, groups and service accounts. `GET /user/player/{id}/characters`
 - Accepts a list of character names and returns them grouped by account. `POST /user/player/group-characters-by-account`
 
@@ -199,6 +201,7 @@ Group API
 - List all members of a group. `GET /user/group/{id}/members`
 
 Player API
+- Checks whether groups for this account are disabled or will be disabled soon. `GET /user/player/{id}/groups-disabled`
 - List all players with the role group-manger. `GET /user/player/group-managers`
 - Show player with characters, moved characters, groups and service accounts. `GET /user/player/{id}/characters`
 
@@ -275,6 +278,7 @@ Group API
 - List all groups. `GET /user/group/all`
 
 Player API
+- Checks whether groups for this account are disabled or will be disabled soon. `GET /user/player/{id}/groups-disabled`
 - List all players with the role app-manger. `GET /user/player/app-managers`
 - Show player with characters, moved characters, groups and service accounts. `GET /user/player/{id}/characters`
 
@@ -331,6 +335,7 @@ Corporation API
 - Returns tracking data of corporation members. `GET /user/corporation/{id}/members`
 
 Player API
+- Checks whether groups for this account are disabled or will be disabled soon. `GET /user/player/{id}/groups-disabled`
 - Show player with characters, moved characters, groups and service accounts. `GET /user/player/{id}/characters`
 
 Service API
@@ -353,6 +358,7 @@ Allows players to view the watchlist if they are also member of an appropriate g
 This role is assigned automatically based on group membership.
 
 Player API
+- Checks whether groups for this account are disabled or will be disabled soon. `GET /user/player/{id}/groups-disabled`
 - Show player with characters, moved characters, groups and service accounts. `GET /user/player/{id}/characters`
 
 Watchlist API
@@ -469,6 +475,7 @@ Allows an app to get characters from a player account.
 Application - Characters API
 - Returns the main character of the player account to which the character ID belongs. `GET /app/v2/main/{cid}`
 - Returns the player account to which the character ID belongs. `GET /app/v1/player/{characterId}`
+- Returns player accounts identified by character IDs. `POST /app/v1/players`
 - Returns all characters of the player account to which the character ID belongs. `GET /app/v1/characters/{characterId}`
 - Returns all characters from multiple player accounts identified by character IDs. `POST /app/v1/characters`
 - Returns all known characters from the parameter list. `POST /app/v1/character-list`
