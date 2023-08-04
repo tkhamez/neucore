@@ -6,6 +6,7 @@ namespace Neucore\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\Alliance;
+use Neucore\Util\Database;
 
 /**
  * AllianceRepository
@@ -39,6 +40,8 @@ class AllianceRepository extends EntityRepository
      */
     public function findByNameOrTickerPartialMatch(string $search): array
     {
+        $search = Database::escapeForLike($this->getEntityManager(), $search);
+
         $query = $this->createQueryBuilder('a')
             ->where('a.name LIKE :search')
             ->orWhere('a.ticker LIKE :search')

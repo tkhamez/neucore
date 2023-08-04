@@ -6,6 +6,7 @@ namespace Neucore\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\Corporation;
+use Neucore\Util\Database;
 
 /**
  * CorporationRepository
@@ -70,6 +71,8 @@ class CorporationRepository extends EntityRepository
      */
     public function findByNameOrTickerPartialMatch(string $search): array
     {
+        $search = Database::escapeForLike($this->getEntityManager(), $search);
+
         $query = $this->createQueryBuilder('c')
             ->where('c.name LIKE :search')
             ->orWhere('c.ticker LIKE :search')

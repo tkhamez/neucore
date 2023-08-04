@@ -7,6 +7,7 @@ namespace Neucore\Repository;
 use Doctrine\ORM\EntityRepository;
 use Neucore\Data\SearchResult;
 use Neucore\Entity\Player;
+use Neucore\Util\Database;
 
 /**
  * PlayerRepository
@@ -214,6 +215,8 @@ class PlayerRepository extends EntityRepository
      */
     public function findCharacters(string $nameOrId, bool $currentOnly): array
     {
+        $nameOrIdForLike = Database::escapeForLike($this->getEntityManager(), $nameOrId);
+
         // current characters
         $query1 = $this
             ->createQueryBuilder('p')
@@ -227,7 +230,7 @@ class PlayerRepository extends EntityRepository
             ->where('c.name LIKE :name')
             ->orWhere('c.id = :id')
             ->orderBy('c.name', 'ASC')
-            ->setParameter('name', "%$nameOrId%")
+            ->setParameter('name', "%$nameOrIdForLike%")
             ->setParameter('id', $nameOrId);
 
         if (!$currentOnly) {
@@ -244,7 +247,7 @@ class PlayerRepository extends EntityRepository
                 ->leftJoin('p.removedCharacters', 'rc')
                 ->where('rc.characterName LIKE :name')
                 ->orderBy('rc.characterName', 'ASC')
-                ->setParameter('name', "%$nameOrId%");
+                ->setParameter('name', "%$nameOrIdForLike%");
 
             // character name changes
             $query3 = $this
@@ -260,7 +263,7 @@ class PlayerRepository extends EntityRepository
                 ->leftJoin('c.characterNameChanges', 'ccn')
                 ->where('ccn.oldName LIKE :name')
                 ->orderBy('ccn.oldName', 'ASC')
-                ->setParameter('name', "%$nameOrId%");
+                ->setParameter('name', "%$nameOrIdForLike%");
         }
 
         $result = $query1->getQuery()->getResult();

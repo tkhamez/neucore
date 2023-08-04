@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
@@ -15,11 +16,14 @@ use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\PlayerRepository;
+use Neucore\Util\Database;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 
 class PlayerRepositoryTest extends TestCase
 {
+    private static EntityManagerInterface $em;
+
     private static Group $group1;
     
     private static Group $group2;
@@ -36,39 +40,39 @@ class PlayerRepositoryTest extends TestCase
     {
         $helper = new Helper();
         $helper->emptyDb();
-        $om = $helper->getObjectManager();
+        self::$em = $helper->getEm();
 
         self::$group1 = (new Group())->setName('g1');
         self::$group2 = (new Group())->setName('g2');
-        $om->persist(self::$group1);
-        $om->persist(self::$group2);
+        self::$em->persist(self::$group1);
+        self::$em->persist(self::$group2);
 
         $roleTracking = (new Role(10))->setName(Role::TRACKING);
-        $om->persist($roleTracking);
+        self::$em->persist($roleTracking);
 
         $alliance = (new Alliance())->setId(1000)->setName('alli1');
         $corp1 = (new Corporation())->setId(98000101)->setName('corp1')->setAlliance($alliance);
         $corp2 = (new Corporation())->setId(98000102)->setName('corp2');
         $corp3 = (new Corporation())->setId(98000103)->setName('corp3')->setAlliance($alliance);
         $corp4 = (new Corporation())->setId(1000500)->setName('corp4'); // NPC corp
-        $om->persist($alliance);
-        $om->persist($corp1);
-        $om->persist($corp2);
-        $om->persist($corp3);
-        $om->persist($corp4);
+        self::$em->persist($alliance);
+        self::$em->persist($corp1);
+        self::$em->persist($corp2);
+        self::$em->persist($corp3);
+        self::$em->persist($corp4);
 
         self::$player1 = $helper->addCharacterMain('c1', 1)->getPlayer();
         self::$player1->getCharacters()[0]->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(true);
         self::$player1->getCharacters()[0]->setCorporation($corp1)->setCreated(new \DateTime());
-        $char1b = $helper->addCharacterToPlayer('c1b', 12, self::$player1, true)->setCorporation($corp2);
+        $char1b = $helper->addCharacterToPlayer('c1b 12\ 12_ 12% 12', 12, self::$player1, true)->setCorporation($corp2);
         $char1b->setCorporation($corp1);
         $char1b->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(false);
         $char1c = $helper->addCharacterToPlayer('c1c', 1313, self::$player1, true)->setCorporation($corp4);
         $char1c->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(false);
         self::$player1->addCharacter($char1b);
         self::$player1->addCharacter($char1c);
-        $om->persist($char1b);
-        $om->persist($char1c);
+        self::$em->persist($char1b);
+        self::$em->persist($char1c);
 
         $player2 = $helper->addCharacterMain('c2', 2)->getPlayer();
         $player2->addGroup(self::$group2);
@@ -94,8 +98,8 @@ class PlayerRepositoryTest extends TestCase
         $player3->setStatus(Player::STATUS_MANAGED);
         self::$player4->setStatus(Player::STATUS_MANAGED);
 
-        $om->persist($player3);
-        $om->persist($player5);
+        self::$em->persist($player3);
+        self::$em->persist($player5);
 
         // additional data for search by name
         $moveOutChar1 = (new RemovedCharacter())
@@ -132,14 +136,14 @@ class PlayerRepositoryTest extends TestCase
             ->setCharacter(self::$player6->getCharacters()[0])
             ->setOldName('c6-51')
             ->setChangeDate(new \DateTime());
-        $om->persist($moveOutChar1);
-        $om->persist($moveBackChar1);
-        $om->persist($deletedChar1);
-        $om->persist($removedChar2);
-        $om->persist($renamed1);
-        $om->persist($renamed2);
+        self::$em->persist($moveOutChar1);
+        self::$em->persist($moveBackChar1);
+        self::$em->persist($deletedChar1);
+        self::$em->persist($removedChar2);
+        self::$em->persist($renamed1);
+        self::$em->persist($renamed2);
 
-        $om->flush();
+        self::$em->flush();
     }
 
     protected function setup(): void
@@ -154,7 +158,7 @@ class PlayerRepositoryTest extends TestCase
         $this->assertSame(4, count($actual));
         $this->assertSame('c1', $actual[0]->getName());
         $this->assertSame('c1', $actual[0]->getCharacters()[0]->getName());
-        $this->assertSame('c1b', $actual[0]->getCharacters()[1]->getName());
+        $this->assertSame('c1b 12\ 12_ 12% 12', $actual[0]->getCharacters()[1]->getName());
         $this->assertSame('c2', $actual[1]->getName());
         $this->assertSame('c4', $actual[2]->getName());
         $this->assertSame('c6', $actual[3]->getName());
@@ -252,6 +256,18 @@ class PlayerRepositoryTest extends TestCase
         $this->assertSame('c1', $actual[0]->getName());
     }
 
+    public function testFindCharacters_SpecialChars()
+    {
+        if (Database::getDbName(self::$em) === 'sqlite') {
+            $this->markTestSkipped('This is not implemented for SQLite.');
+        }
+        $this->assertSame([], $this->repo->findCharacters('c1_', false));
+        $this->assertSame([], $this->repo->findCharacters('c1%', false));
+        $this->assertSame(1, count($this->repo->findCharacters('12_ 12', false)));
+        $this->assertSame(1, count($this->repo->findCharacters('12% 12', false)));
+        $this->assertSame(1, count($this->repo->findCharacters('12\ 12', false)));
+    }
+
     public function testFindCharacters_byName()
     {
         $actual = $this->repo->findCharacters('1', false);
@@ -265,7 +281,7 @@ class PlayerRepositoryTest extends TestCase
         ], $actual[0]->jsonSerialize());
         $this->assertSame([ // existing char
             'characterId' => 12,
-            'characterName' => 'c1b',
+            'characterName' => 'c1b 12\ 12_ 12% 12',
             'playerId' => self::$player1->getId(),
             'playerName' => 'c1',
         ], $actual[1]->jsonSerialize());
@@ -320,7 +336,7 @@ class PlayerRepositoryTest extends TestCase
         ], $actual[0]->jsonSerialize());
         $this->assertSame([ // existing char
             'characterId' => 12,
-            'characterName' => 'c1b',
+            'characterName' => 'c1b 12\ 12_ 12% 12',
             'playerId' => self::$player1->getId(),
             'playerName' => 'c1',
         ], $actual[1]->jsonSerialize());

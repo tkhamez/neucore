@@ -6,6 +6,7 @@ namespace Neucore\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\Character;
+use Neucore\Util\Database;
 
 /**
  * CharacterRepository
@@ -26,6 +27,8 @@ class CharacterRepository extends EntityRepository
      */
     public function findMainByNamePartialMatch(string $name): array
     {
+        $name = Database::escapeForLike($this->getEntityManager(), $name);
+
         $query = $this->createQueryBuilder('c')
             ->where('c.name LIKE :name')
             ->addOrderBy('c.name', 'ASC')
