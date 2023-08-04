@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 2.2.0
 
-dd mm yyyy
+4 Aug 2023
 
 - **BC Break**: Raised minimum required PHP version to 8.0.2, from 8.0.0.
 - Updated neucore-plugin to version 3.
