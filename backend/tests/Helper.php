@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Tests;
 
 use Doctrine\DBAL\Exception;
-use Doctrine\DBAL\Platforms\MySQLPlatform;
-use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Persistence\ObjectManager;
@@ -56,6 +54,7 @@ use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
 use Neucore\Storage\StorageInterface;
 use Neucore\Storage\SystemVariableStorage;
+use Neucore\Util\Database;
 use Symfony\Component\Yaml\Parser;
 
 class Helper
@@ -255,22 +254,6 @@ class Helper
         );
     }
 
-    public function getDbName(): string
-    {
-        try {
-            $connection = $this->getEm()->getConnection()->getDatabasePlatform();
-        } catch (Exception) {
-            return 'error';
-        }
-        if ($connection instanceof SqlitePlatform) {
-            return 'sqlite';
-        } elseif ($connection instanceof MySQLPlatform) {
-            return 'mysql';
-        } else {
-            return 'other';
-        }
-    }
-
     public function addEm(array $mocks): array
     {
         if (! array_key_exists(ObjectManager::class, $mocks)) {
@@ -296,7 +279,7 @@ class Helper
         }
 
         $tool = new SchemaTool($em);
-        if ($this->getDbName() === 'sqlite') {
+        if (Database::getDbName($em) === 'sqlite') {
             $tool->updateSchema($classes);
         } else {
             $em->getConnection()->executeStatement('SET FOREIGN_KEY_CHECKS = 0;');
@@ -314,7 +297,7 @@ class Helper
             $qb->delete($entity)->getQuery()->execute();
         }
 
-        if ($this->getDbName() === 'sqlite') {
+        if (Database::getDbName($em) === 'sqlite') {
             // for some reason these relation tables are not empties with SQLite in-memory db
             try {
                 $em->getConnection()->executeStatement('DELETE FROM watchlist_corporation WHERE 1');
