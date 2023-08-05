@@ -86,7 +86,8 @@ Select and table to add and remove objects from other objects.
                 Groups whose members are allowed to view the lists.
             </p>
             <p v-cloak v-if="type === 'Watchlist' && contentType === 'groupsManage'">
-                Groups whose members are allowed to edit the list configuration.
+                Groups whose members are allowed to add and remove accounts and corporations from
+                the kick and allow lists and edit the list configuration (unless locked in settings).
             </p>
 
             <multiselect v-if="!useCharacterSearch"

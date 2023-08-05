@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Improved texts.
+
 ## 2.2.0
 
 4 Aug 2023
