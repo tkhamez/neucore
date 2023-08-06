@@ -68,13 +68,14 @@ const findCharacter = _.debounce(vm => {
         }
         vm.$emit('result', data);
     };
+    const query = encodeURIComponent(vm.searchTerm);
     if (vm.admin) {
-        api.findCharacter(vm.searchTerm, {
+        api.findCharacter(query, {
             currentOnly: vm.currentOnly ? 'true' : 'false',
             plugin: vm.plugin ? 'true' : 'false',
         }, callback);
     } else {
-        api.findPlayer(vm.searchTerm, callback);
+        api.findPlayer(query, callback);
     }
 }, 250);
 </script>

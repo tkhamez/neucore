@@ -149,7 +149,7 @@ export default {
         charSearchDelayed: _.debounce((vm, searchTerm) => {
             vm.charSearchResult = [];
             vm.charSearchIsLoading = true;
-            new CharacterApi().findCharacter(searchTerm, { currentOnly: 'true' }, (error, data) => {
+            new CharacterApi().findCharacter(encodeURIComponent(searchTerm), { currentOnly: 'true' }, (error, data) => {
                 vm.charSearchIsLoading = false;
                 if (error) {
                     return;
