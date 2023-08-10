@@ -1572,7 +1572,7 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * Checks if logged in user is member of a group that may see or manage this watchlist.
+     * Checks if logged-in user is member of a group that may see or manage this watchlist.
      *
      * @param int $id Watchlist ID
      * @param UserAuth $userAuth

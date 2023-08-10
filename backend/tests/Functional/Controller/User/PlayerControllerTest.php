@@ -1156,7 +1156,7 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        // cannot delete logged in char
+        // cannot delete logged-in character
 
         $response = $this->runApp('DELETE', '/api/user/player/delete-character/12');
         $this->assertEquals(409, $response->getStatusCode());

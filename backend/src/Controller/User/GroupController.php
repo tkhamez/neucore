@@ -1442,7 +1442,7 @@ class GroupController extends BaseController
     }
 
     /**
-     * Checks if current logged in user is manager of a group.
+     * Checks if current logged-in user is manager of a group.
      *
      * @param Group $group
      * @return boolean

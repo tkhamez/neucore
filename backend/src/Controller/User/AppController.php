@@ -454,7 +454,7 @@ class AppController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        // check if logged in user is manager of this app or has the role app-admin
+        // check if logged-in user is manager of this app or has the role app-admin
         $authedPlayer = $this->getUser($uas)->getPlayer();
         if (! $authedPlayer->hasRole(Role::APP_ADMIN) && ! $app->isManager($authedPlayer)) {
             return $this->response->withStatus(403);
@@ -802,7 +802,7 @@ class AppController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        // check if logged in user is manager
+        // check if logged-in user is manager
         if (! $app->isManager($this->getUser($uas)->getPlayer())) {
             return $this->response->withStatus(403);
         }

@@ -103,7 +103,7 @@ class PlayerController extends BaseController
      * @OA\Get(
      *     path="/user/player/show",
      *     operationId="userPlayerShow",
-     *     summary="Return the logged in player with all properties.",
+     *     summary="Return the logged-in player with all properties.",
      *     description="Needs role: user",
      *     tags={"Player"},
      *     security={{"Session"={}}},
@@ -1060,7 +1060,7 @@ class PlayerController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="409",
-     *         description="Trying to delete logged in character."
+     *         description="Trying to delete logged-in character."
      *     )
      * )
      */
@@ -1096,7 +1096,7 @@ class PlayerController extends BaseController
         }
 
         // Check for a valid reason if an admin deletes the character,
-        // otherwise check if character belongs to the logged in player account.
+        // otherwise check if character belongs to the logged-in player account.
         if ($admin && !in_array($reason, [
             RemovedCharacter::REASON_DELETED_OWNER_CHANGED,
             RemovedCharacter::REASON_DELETED_LOST_ACCESS,

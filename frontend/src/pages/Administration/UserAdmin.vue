@@ -482,7 +482,7 @@ export default {
 
     props: {
         route: Array,
-        authChar: Object, // logged in character
+        authChar: Object, // logged-in character
     },
 
     data() {

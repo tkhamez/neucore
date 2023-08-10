@@ -56,13 +56,13 @@ class CharacterController extends BaseController
      * @OA\Get(
      *     path="/user/character/show",
      *     operationId="userCharacterShow",
-     *     summary="Return the logged in EVE character.",
+     *     summary="Return the logged-in EVE character.",
      *     description="Needs role: user",
      *     tags={"Character"},
      *     security={{"Session"={}}},
      *     @OA\Response(
      *         response="200",
-     *         description="The logged in EVE character.",
+     *         description="The logged-in EVE character.",
      *         @OA\JsonContent(ref="#/components/schemas/Character")
      *     ),
      *     @OA\Response(
