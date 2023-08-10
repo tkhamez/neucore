@@ -734,7 +734,7 @@ class EsiController extends BaseController
         $path = substr($esiPath, (int) strpos($esiPath, '/', 1));
 
         /** @noinspection PhpIncludeInspection */
-        $publicPaths = include Application::ROOT_DIR . '/config/esi-paths-public.php';
+        $publicPaths = require Application::ROOT_DIR . '/config/esi-paths-public.php';
 
         foreach ($publicPaths as $pattern) {
             if (preg_match("@^$pattern$@", $path) === 1) {

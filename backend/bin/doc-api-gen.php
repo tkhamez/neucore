@@ -8,8 +8,8 @@ use Symfony\Component\Yaml\Yaml;
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-$routesDef = include __DIR__ . '/../config/routes.php';
-$securityDef = include __DIR__ . '/../config/security.php';
+$routesDef = require __DIR__ . '/../config/routes.php';
+$securityDef = require __DIR__ . '/../config/security.php';
 $apiDef = Yaml::parse(file_get_contents(__DIR__ . '/../../web/openapi-3.yaml'));
 $result = file_get_contents(__DIR__ . '/../../doc/API.md.tpl');
 $roles = new ReflectionClass(Role::class);

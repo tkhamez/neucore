@@ -179,7 +179,7 @@ class Application
 
         if ($unitTest) {
             /** @noinspection PhpIncludeInspection */
-            $test = include self::ROOT_DIR . '/config/settings_tests.php';
+            $test = require self::ROOT_DIR . '/config/settings_tests.php';
             $settings = array_replace_recursive($settings, $test);
         }
 
@@ -289,7 +289,7 @@ class Application
         /** @noinspection PhpIncludeInspection */
         $app->add(new SecureRouteMiddleware(
             $this->container->get(ResponseFactoryInterface::class),
-            include self::ROOT_DIR . '/config/security.php'
+            require self::ROOT_DIR . '/config/security.php'
         ));
 
         $app->add(new RoleMiddleware($this->container->get(AppAuth::class), ['route_pattern' => ['/api/app']]));
@@ -388,7 +388,7 @@ class Application
     private function registerRoutes(App $app): void
     {
         /** @noinspection PhpIncludeInspection */
-        $routes = include self::ROOT_DIR . '/config/routes.php';
+        $routes = require self::ROOT_DIR . '/config/routes.php';
 
         foreach ($routes as $pattern => $configuration) {
             if (isset($configuration[0])) { // e. g. ['GET', 'method']
