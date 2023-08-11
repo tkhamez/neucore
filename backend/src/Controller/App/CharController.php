@@ -18,6 +18,23 @@ use Psr\Http\Message\ServerRequestInterface;
  * @OA\Tag(
  *     name="Application - Characters"
  * )
+ *
+ * @OA\Schema(
+ *     schema="PlayerWithCharcterId",
+ *     required={"id", "name", "characterId"},
+ *     @OA\Property(
+ *         property="id",
+ *         type="int"
+ *     ),
+ *     @OA\Property(
+ *         property="name",
+ *         type="string"
+ *     ),
+ *     @OA\Property(
+ *         property="characterId",
+ *         type="int"
+ *     )
+ * )
  */
 class CharController extends BaseController
 {
@@ -177,7 +194,7 @@ class CharController extends BaseController
      * @OA\Post(
      *     path="/app/v1/players",
      *     operationId="playersV1",
-     *     summary="Returns player accounts identified by character IDs.",
+     *     summary="Returns player accounts identified by character IDs. Can contain the same player several times.",
      *     description="Needs role: app-chars.",
      *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
@@ -191,8 +208,8 @@ class CharController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="200",
-     *         description="The players, only id and name properties are returned.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
+     *         description="One entry for each character ID that was provided and found.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/PlayerWithCharcterId"))
      *     ),
      *     @OA\Response(
      *         response="400",
@@ -216,7 +233,7 @@ class CharController extends BaseController
             return $this->response->withStatus(400);
         }
 
-        $players = $this->repositoryFactory->getPlayerRepository()->findPlayersOfCharactersWithName($ids);
+        $players = $this->repositoryFactory->getCharacterRepository()->findPlayersByCharacters($ids);
 
         return $this->withJson($players);
     }

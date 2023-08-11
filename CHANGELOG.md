@@ -4,6 +4,8 @@
 
 dd mm yyyy
 
+- Change: Added character ID to the result of `/api/app/v1/players`. OpenAPI **BC Break**: The model of the return 
+  value changed.
 - Fix: Search for character names containing a slash was broken.
 - Improved texts.
 

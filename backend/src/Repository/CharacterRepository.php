@@ -114,4 +114,22 @@ class CharacterRepository extends EntityRepository
             return (int) $row['id'];
         }, $qb->getQuery()->getResult());
     }
+
+    public function findPlayersByCharacters(array $characterIds): array
+    {
+        $qb = $this->createQueryBuilder('c');
+        $qb->select(['c.id AS characterId', 'p.id', 'p.name'])
+            ->leftJoin('c.player', 'p')
+            ->where($qb->expr()->in('c.id', ':IDs'))
+            ->orderBy('p.id')
+            ->setParameter('IDs', $characterIds);
+
+        return array_map(function (array $character) {
+            return [
+                'id' => $character['id'],
+                'name' => $character['name'],
+                'characterId' => (int)$character['characterId'],
+            ];
+        }, $qb->getQuery()->getResult());
+    }
 }

@@ -64,14 +64,14 @@ Auth API
 - The CSRF token to use in POST, PUT and DELETE requests. `GET /user/auth/csrf-token`
 
 Character API
-- Return the logged in EVE character. `GET /user/character/show`
+- Return the logged-in EVE character. `GET /user/character/show`
 - Update a character with data from ESI. `PUT /user/character/{id}/update`
 
 Group API
 - List all public groups that the player can join. `GET /user/group/public`
 
 Player API
-- Return the logged in player with all properties. `GET /user/player/show`
+- Return the logged-in player with all properties. `GET /user/player/show`
 - Checks whether groups for this account are disabled or will be disabled soon. `GET /user/player/groups-disabled`
 - Submit a group application. `PUT /user/player/add-application/{gid}`
 - Cancel a group application. `PUT /user/player/remove-application/{gid}`
@@ -475,7 +475,7 @@ Allows an app to get characters from a player account.
 Application - Characters API
 - Returns the main character of the player account to which the character ID belongs. `GET /app/v2/main/{cid}`
 - Returns the player account to which the character ID belongs. `GET /app/v1/player/{characterId}`
-- Returns player accounts identified by character IDs. `POST /app/v1/players`
+- Returns player accounts identified by character IDs. Can contain the same player several times. `POST /app/v1/players`
 - Returns all characters of the player account to which the character ID belongs. `GET /app/v1/characters/{characterId}`
 - Returns all characters from multiple player accounts identified by character IDs. `POST /app/v1/characters`
 - Returns all known characters from the parameter list. `POST /app/v1/character-list`

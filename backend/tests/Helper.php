@@ -436,9 +436,9 @@ class Helper
         return $alt;
     }
 
-    public function addNewPlayerToCharacterAndFlush(Character $character): Player
+    public function addNewPlayerToCharacterAndFlush(Character $character, string $playerName = 'Player'): Player
     {
-        $player = (new Player())->setName('Player');
+        $player = (new Player())->setName($playerName);
         $character->setPlayer($player);
         $this->getObjectManager()->persist($player);
         $this->getObjectManager()->persist($character);

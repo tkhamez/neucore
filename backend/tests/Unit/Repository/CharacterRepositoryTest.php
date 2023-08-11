@@ -39,8 +39,8 @@ class CharacterRepositoryTest extends TestCase
         $char3 = (new Character())->setId(30)->setName('three')->setMain(true);
         $char4 = (new Character())->setId(40)->setName('four')->setMain(true)->setCorporation($corporation2);
 
-        self::$player1 = $h->addNewPlayerToCharacterAndFlush($char1);
-        self::$player2 = $h->addNewPlayerToCharacterAndFlush($char2);
+        self::$player1 = $h->addNewPlayerToCharacterAndFlush($char1, 'Player 1');
+        self::$player2 = $h->addNewPlayerToCharacterAndFlush($char2, 'Player 2');
         $h->addNewPlayerToCharacterAndFlush($char3);
         $player4 = $h->addNewPlayerToCharacterAndFlush($char4);
 
@@ -89,6 +89,18 @@ class CharacterRepositoryTest extends TestCase
         $this->assertSame(
             [10, 20, 101],
             self::$repository->getCharacterIdsFromPlayers([self::$player1->getId(), self::$player2->getId()])
+        );
+    }
+
+    public function testFindPlayersByCharacters()
+    {
+        $this->assertSame(
+            [
+                ['id' => self::$player1->getId(), 'name' => 'Player 1', 'characterId' => 10],
+                ['id' => self::$player1->getId(), 'name' => 'Player 1', 'characterId' => 101],
+                ['id' => self::$player2->getId(), 'name' => 'Player 2', 'characterId' => 20],
+            ],
+            self::$repository->findPlayersByCharacters([10, 20, 101])
         );
     }
 }

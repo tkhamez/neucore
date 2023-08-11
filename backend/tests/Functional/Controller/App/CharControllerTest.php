@@ -153,7 +153,7 @@ class CharControllerTest extends WebTestCase
         );
     }
 
-    public function testPlayerBulkV1_403()
+    public function testPlayersV1_403()
     {
         $this->setUpDb();
 
@@ -165,7 +165,7 @@ class CharControllerTest extends WebTestCase
         $this->assertEquals(403, $response2->getStatusCode());
     }
 
-    public function testPlayerBulkV1_400()
+    public function testPlayersV1_400()
     {
         $this->setUpDb();
 
@@ -175,7 +175,7 @@ class CharControllerTest extends WebTestCase
         $this->assertEquals(400, $response->getStatusCode());
     }
 
-    public function testPlayerBulkV1_200()
+    public function testPlayersV1_200()
     {
         $this->setUpDb();
         $playerId1 = $this->helper->addCharacterMain('C1', 123, [Role::USER])->getPlayer()->getId();
@@ -190,8 +190,8 @@ class CharControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [
-                ['id' => $playerId1, 'name' => 'C1'],
-                ['id' => $playerId2, 'name' => 'C2'],
+                ['id' => $playerId1, 'name' => 'C1', 'characterId' => 123],
+                ['id' => $playerId2, 'name' => 'C2', 'characterId' => 234],
             ],
             $this->parseJsonBody($response)
         );

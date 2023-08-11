@@ -368,17 +368,6 @@ class PlayerRepositoryTest extends TestCase
         );
     }
 
-    public function testFindPlayersOfCharactersWithName()
-    {
-        $this->assertSame(
-            [
-                ['id' => self::$player1->getId(), 'name' => 'c1'],
-                ['id' => self::$player4->getId(), 'name' => 'c4']
-            ],
-            $this->repo->findPlayersOfCharactersWithName([1, 12, 3])
-        );
-    }
-
     public function testFindPlayersOfRecentlyAddedCharacters()
     {
         $actual = $this->repo->findPlayersOfRecentlyAddedCharacters(30);
