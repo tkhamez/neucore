@@ -122,6 +122,7 @@ class CharacterRepository extends EntityRepository
             ->leftJoin('c.player', 'p')
             ->where($qb->expr()->in('c.id', ':IDs'))
             ->orderBy('p.id')
+            ->addOrderBy('c.id')
             ->setParameter('IDs', $characterIds);
 
         return array_map(function (array $character) {
