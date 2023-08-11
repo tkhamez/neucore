@@ -26,6 +26,9 @@ class DataTest extends TestCase
 
     private DataInterface $data;
 
+    /**
+     * @throws \Exception
+     */
     public static function setUpBeforeClass(): void
     {
         self::$helper = new Helper();
@@ -58,7 +61,7 @@ class DataTest extends TestCase
             ->setId($char->getId())
             ->setName($char->getName())
             ->setCorporation($corp1)
-            ->setLogonDate(new \DateTime())
+            ->setLogonDate(new \DateTime("@".(time()-1)))
             ->setLogoffDate(new \DateTime())
             ->setLocation($location)
             ->setShipType($ship)
@@ -67,7 +70,7 @@ class DataTest extends TestCase
             ->setId($char2->getId())
             ->setName($char2->getName())
             ->setCorporation($corp1)
-            ->setLogonDate(new \DateTime())
+            ->setLogonDate(new \DateTime("@".(time()-2)))
             ->setLogoffDate(new \DateTime())
             ->setLocation($location)
             ->setShipType($ship)
