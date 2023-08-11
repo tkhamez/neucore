@@ -8,6 +8,7 @@ dd mm yyyy
   value changed.
 - Fix: Search for character names containing a slash was broken.
 - Improved texts.
+- Updated dependencies.
 
 ## 2.2.0
 
