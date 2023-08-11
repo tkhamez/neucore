@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 2.2.1
 
-dd mm yyyy
+11 Aug 2023
 
 - Change: Added character ID to the result of `/api/app/v1/players`. OpenAPI **BC Break**: The model of the return 
   value changed.
