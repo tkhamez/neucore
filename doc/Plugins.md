@@ -2,20 +2,41 @@
 
 <!-- toc -->
 
-- [Overview](#overview)
-- [Create a plugin](#create-a-plugin)
+- [Intro](#intro)
 - [Install a plugin](#install-a-plugin)
+- [Overview for plugin creators](#overview-for-plugin-creators)
+  * [General plugins](#general-plugins)
+  * [Service plugins](#service-plugins)
+- [Create a plugin](#create-a-plugin)
 
 <!-- tocstop -->
-
-## Overview
 
 _The following is valid for Neucore 1.42.0 and [neucore-plugin](https://github.com/tkhamez/neucore-plugin)
 0.10.0 and above._
 
-A plugin can be added multiple times to Neucore with different configuration data. For example the
-[Neucore Discord Plugin](https://github.com/tkhamez/neucore-discord-plugin) is added once for every Discord
-server that should be available to users.
+
+## Intro
+
+A plugin can be added multiple times to Neucore with different configuration data (via GUI, it only has to 
+be installed once). For example the [Neucore Discord Plugin](https://github.com/tkhamez/neucore-discord-plugin) 
+is added once for every Discord server that should be available to users.
+
+
+## Install a plugin
+
+The following steps are the same for all plugins. See the respective plugin documentation for further steps.
+
+- Set the `NEUCORE_PLUGINS_INSTALL_DIR` environment variable (e.g. `/home/user/neucore-plugins`).
+- Copy the plugin into that directory within its own subdirectory (so that the plugin.yml file is e.g.
+  at `/home/user/neucore-plugins/discord/plugin.yml` - do _not_ edit this file!).
+- If the plugin contains frontend files (see the respective plugin documentation), make them available
+  below `[Neucore installation directory]/web/plugin/{name}`, e.g. by creating a symlink or by mounting the
+  directory in the Docker container. See the documentation of the plugin for the name of the {name} directory.
+- In Neucore, go to _Administration -> Plugins_ and add a new plugin.
+- Configure the plugin, at the very least choose the plugin from the dropdown list. Don't forget to save your changes.
+
+
+## Overview for plugin creators
 
 For each plugin that was created in Neucore there is one distinct URL `/plugin/{plugin_id}/{name}`.
 The {name} part can be anything and is passed to the method that implements the request. This method will also 
@@ -24,14 +45,14 @@ get information about the logged-in user.
 All plugins have access to a couple object from Neucore, e.g. to parse YAML files, get various data like 
 group members or make ESI requests with tokens from any character that is available on Neucore.
 
-**General plugins**
+### General plugins
 
 They can have their own frontend, add items to the navigation menu that point to their own URL and
 implement console commands via Neucore (`backend/bin/console plugin {plugin_id} [args] [--opts]`).
 
 See this [example plugin](https://github.com/tkhamez/neucore-example-plugin) for a simple demo.
 
-**Service plugins**
+### Service plugins
 
 They are available to users from the "Services" menu. They provide configuration data to customize the 
 user interface and implement a couple methods to create and update external service accounts via Neucore.
@@ -62,15 +83,3 @@ with each Neucore release.
 
 Besides that, **do not use** any class from Neucore or any library that Neucore provides. Those can change or
 be removed without notice. Also, do not access the Neucore database directly.
-
-
-## Install a plugin
-
-- Set the `NEUCORE_PLUGINS_INSTALL_DIR` environment variable (e.g. `/home/user/neucore-plugins`).
-- Copy the plugin into that directory within its own subdirectory (so that the plugin.yml file is e.g. 
-  at `/home/user/neucore-plugins/discord/plugin.yml` - do _not_ edit this file!).
-- If the plugin contains frontend files, make them available below 
-  `[Neucore installation directory]/web/plugin/{name}`, e.g. by creating a symlink or by mounting the directory in 
-  the Docker container. See the documentation of the plugin for the name of the {name} directory.
-- In Neucore, go to _Administration -> Plugins_ and add a new plugin.
-- Configure the plugin, at the very least choose the plugin from the dropdown list. Don't forget to save your changes.
