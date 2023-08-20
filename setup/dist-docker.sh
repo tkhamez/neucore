@@ -8,8 +8,8 @@ rm -Rf "${DIR}"/../dist/*
 git checkout-index -a -f --prefix="${DIR}"/../dist/build/
 
 # A minimum configuration is required to generate the doctrine proxy classes
-echo "NEUCORE_APP_ENV=prod"                                                          > "${DIR}"/../dist/build/backend/.env
-echo "NEUCORE_DATABASE_URL=mysql://user:@127.0.0.1/db?serverVersion=mariadb-10.2.7" >> "${DIR}"/../dist/build/backend/.env
+echo "NEUCORE_APP_ENV=prod" > "${DIR}"/../dist/build/backend/.env
+echo "NEUCORE_DATABASE_URL=mysql://user:@127.0.0.1/db?serverVersion=10.5.22-MariaDB-1:10.5.22+maria~ubu2004" >> "${DIR}"/../dist/build/backend/.env
 
 # Backend
 cd "${DIR}"/.. || exit

@@ -12,16 +12,20 @@ jobs:
         include:
           - php-version: '8.0'
             db-image: mariadb
-            db-version: '10.2'
+            db-version: '10.5'
           - php-version: '8.1'
             db-image: mariadb
-            db-version: '10.6'
+            db-version: '10.11'
           - php-version: '8.1'
             db-image: mariadb
-            db-version: '10.10'
+            db-version: '11.0'
           - php-version: '8.2'
             db-image: mysql
-            db-version: '8.0'
+            db-version: '8.0.22'
+          - php-version: '8.2'
+            db-image: mysql
+            db-version: '8.0.34'
+      fail-fast: false
     services:
       database:
         image: ${{ matrix.db-image }}:${{ matrix.db-version }}
@@ -29,7 +33,6 @@ jobs:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_DATABASE: test
         ports: ['3306:3306']
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - name: Checkout
         uses: actions/checkout@v3

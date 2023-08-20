@@ -25,5 +25,6 @@ if [[ $1 = prod ]]; then
 fi
 
 # Create database for unit tests
+docker exec neucore_dev_db sh -c 'ln -s /usr/bin/mariadb /usr/local/bin/mysql' # MariaDB 11 does not have "mysql"
 docker exec neucore_dev_db sh -c 'mysql -e "CREATE DATABASE IF NOT EXISTS neucore_test" -uroot -pneucore'
 docker exec neucore_dev_db sh -c 'mysql -e "GRANT ALL PRIVILEGES ON neucore_test.* TO neucore@\"%\";" -uroot -pneucore'

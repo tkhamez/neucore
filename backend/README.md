@@ -165,8 +165,8 @@ bin/doctrine orm:validate-schema
 ```
 
 Generate a migration by comparing the current database to the mapping information.  
-Set the server version to something below 5.7 to generate MariaDB 10.2 compatible syntax, e.g. 
-`mysql://neucore:password@127.0.0.1/core?mariadb-10.2.7`:
+Set the server version to generate compatible syntax, e.g.
+`mysql://neucore:password@127.0.0.1/core?serverVersion=10.5.22-MariaDB-1:10.5.22+maria~ubu2004`:
 ```
 vendor/bin/doctrine-migrations migrations:diff
 ```

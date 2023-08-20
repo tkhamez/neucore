@@ -50,7 +50,7 @@ docker run \
   --name=neucore_db_prod \
   --restart=always \
   --detach=true \
-  mariadb:10.6
+  mariadb:10.11
 
 # to stop it again:
 docker stop neucore_db_prod
@@ -189,8 +189,8 @@ A Linux server (others may work, but were not tested).
 To run the application:
 * PHP >=8.0.0 (64bit version), see [backend/composer.json](../backend/composer.json) for necessary and suggested 
   extensions (APCu highly recommended).
-* MariaDB or MySQL Server (tested with MariaDB 10.2, 10.6, 10.10 and MySQL 8.0, NO_BACKSLASH_ESCAPES should not be on).  
-  Unit tests can also be run with a SQLite in-memory database.
+* MariaDB or MySQL Server (tested with MariaDB 10.5, 10.11, 11.0 and MySQL 8.0.22, 8.0.34, 
+  NO_BACKSLASH_ESCAPES should not be on). Unit tests can also be run with a SQLite in-memory database.
 * An HTTP Server with support for PHP and URL rewriting.
   * Set the document root to the `web` directory.
   * Configure URL rewriting to `app.php`:

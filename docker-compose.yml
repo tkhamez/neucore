@@ -5,13 +5,15 @@ version: '3.5'
 services:
   neucore_db:
     container_name: neucore_dev_db
-    #image: mariadb:10.2
-    image: mariadb:10.6 # LTS
-    #image: mariadb:10.10
-    #image: mysql:8.0
-    #volumes: ["./.db/10.2:/var/lib/mysql"]
-    volumes: ["./.db/10.6:/var/lib/mysql"]
-    #volumes: ["./.db/10.10:/var/lib/mysql"]
+    #image: mariadb:10.5
+    image: mariadb:10.11 # LTS
+    #image: mariadb:11.0
+    #image: mysql:8.0.22
+    #image: mysql:8.0.34
+    #volumes: ["./.db/10.5:/var/lib/mysql"]
+    volumes: ["./.db/10.11:/var/lib/mysql"]
+    #volumes: ["./.db/11:/var/lib/mysql"]
+    #volumes: ["./.db/8.0.22:/var/lib/mysql"]
     #volumes: ["./.db/8.0:/var/lib/mysql"]
     environment:
       MYSQL_ROOT_PASSWORD: neucore
