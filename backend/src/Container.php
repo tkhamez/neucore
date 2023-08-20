@@ -85,21 +85,27 @@ class Container
             // EVE OAuth
             AuthenticationProvider::class => function (ContainerInterface $c) {
                 $conf = $c->get(Config::class)['eve'];
-                return new AuthenticationProvider(
+                $provider = new AuthenticationProvider(
                     [
                         'clientId'     => $conf['client_id'],
                         'clientSecret' => $conf['secret_key'],
                         'redirectUri'  => $conf['callback_url'],
 
                         // These are only set for tests
+                        'urlMetadata'    => $conf['oauth_urls']['metadata'] ?? null,
                         'urlAuthorize'   => $conf['oauth_urls']['authorize'] ?? null,
                         'urlAccessToken' => $conf['oauth_urls']['token'] ?? null,
                         'urlKeySet'      => $conf['oauth_urls']['jwks'] ?? null,
                         'urlRevoke'      => $conf['oauth_urls']['revoke'] ?? null,
                         'issuer'         => $conf['oauth_urls']['issuer'] ?? null,
                     ],
-                    httpClient: $c->get(\GuzzleHttp\ClientInterface::class)
+                    httpClient: $c->get(\GuzzleHttp\ClientInterface::class),
+                    logger: $c->get(LoggerInterface::class),
                 );
+                if (!$conf['oauth_verify_signature']) {
+                    $provider->setSignatureVerification(false);
+                }
+                return $provider;
             },
 
             // Monolog

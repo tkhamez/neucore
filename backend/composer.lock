@@ -4631,16 +4631,16 @@
         },
         {
             "name": "tkhamez/eve-sso",
-            "version": "4.0.0",
+            "version": "4.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/eve-sso-php.git",
-                "reference": "6c6b3dbacbfff5568bd1bff9910d72ee0601e137"
+                "reference": "7b29d83e30b2b896721c813ede9256d0b4d330dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/eve-sso-php/zipball/6c6b3dbacbfff5568bd1bff9910d72ee0601e137",
-                "reference": "6c6b3dbacbfff5568bd1bff9910d72ee0601e137",
+                "url": "https://api.github.com/repos/tkhamez/eve-sso-php/zipball/7b29d83e30b2b896721c813ede9256d0b4d330dc",
+                "reference": "7b29d83e30b2b896721c813ede9256d0b4d330dc",
                 "shasum": ""
             },
             "require": {
@@ -4649,11 +4649,13 @@
                 "guzzlehttp/guzzle": "^7.7",
                 "league/oauth2-client": "^2.7",
                 "php": "^8.0",
+                "psr/log": "^1.0 || ^2.0 || ^3.0",
                 "web-token/jwt-core": "^2.2",
                 "web-token/jwt-signature": "^2.2",
                 "web-token/jwt-signature-algorithm-rsa": "^2.2"
             },
             "require-dev": {
+                "monolog/monolog": "^2.9",
                 "phpunit/phpunit": "^9.6",
                 "web-token/jwt-key-mgmt": "^2.2"
             },
@@ -4671,9 +4673,9 @@
             "description": "EVE Online - SSO",
             "support": {
                 "issues": "https://github.com/tkhamez/eve-sso-php/issues",
-                "source": "https://github.com/tkhamez/eve-sso-php/tree/4.0.0"
+                "source": "https://github.com/tkhamez/eve-sso-php/tree/4.1.0"
             },
-            "time": "2023-05-28T15:40:02+00:00"
+            "time": "2023-08-20T12:43:40+00:00"
         },
         {
             "name": "tkhamez/neucore-plugin",

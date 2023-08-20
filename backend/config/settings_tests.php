@@ -21,6 +21,7 @@ return [
     ],
     'eve' => [
         'oauth_urls'   => [
+            'metadata'  => 'https://login.eveonline.com/.well-known/oauth-authorization-server',
             'authorize' => 'https://login.eveonline.com/v2/oauth/authorize',
             'token'     => 'https://login.eveonline.com/v2/oauth/token',
             'jwks'      => 'https://login.eveonline.com/oauth/jwks',
