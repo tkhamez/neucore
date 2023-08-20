@@ -21,7 +21,7 @@ final class Version20200801163459 extends AbstractMigration
     {
         $this->addSql('SET FOREIGN_KEY_CHECKS = 0;');
 
-        $this->addSql('ALTER TABLE watchlists CHANGE id id INT AUTO_INCREMENT NOT NULL');
+        $this->addSql('SET FOREIGN_KEY_CHECKS = 0; ALTER TABLE watchlists CHANGE id id INT AUTO_INCREMENT NOT NULL');
 
         $this->addSql('ALTER TABLE watchlist_kicklist_corporation DROP FOREIGN KEY FK_8DDD9A7183DD0D94');
         $this->addSql('ALTER TABLE watchlist_kicklist_corporation DROP FOREIGN KEY FK_8DDD9A71B2685369');
