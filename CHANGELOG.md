@@ -7,6 +7,7 @@ dd mm yyyy
 - **BC Break**: Dropped support for MariaDB 10.2, the minimum required version is now 10.5.
 - Minimum required MySQL version is now 8.0.22, previously 8.0, but it was not tested with older versions.
 - Added compatibility with MariaDB 11.0.
+- Updated certificate bundle for all AWS regions.
 
 ## 2.2.1
 
