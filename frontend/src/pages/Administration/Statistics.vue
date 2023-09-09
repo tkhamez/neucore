@@ -234,7 +234,7 @@ function chartPlayerLogins(vm, items) {
     const uniqueLogins = 'Unique logins';
 
     const options = copyObjectData(chartOption);
-    options.title.text = 'Player logins';
+    options.title.text = 'Player logins, monthly';
     options.series.push(copyObjectData(chartSeries));
     options.series.push(copyObjectData(chartSeries));
     options.legend.data = [totalLogins, uniqueLogins];
