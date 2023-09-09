@@ -342,6 +342,7 @@ export default {
             new PlayerApi().userPlayerShow((error, data) => {
                 if (error) { // 403 usually
                     this.store.setPlayer(null);
+                    this.authChar = null;
                     return;
                 }
                 this.store.setPlayer(data);
