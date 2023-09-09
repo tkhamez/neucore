@@ -13,6 +13,7 @@ use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AppAuth;
 use Neucore\Service\EsiClient;
+use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\StorageInterface;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
@@ -23,36 +24,24 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * @OA\Tag(
- *     name="Application - ESI"
- * )
+ * @OA\Tag(name="Application - ESI")
  *
  * @OA\Schema(
  *     schema="EsiTokenData",
  *     required={"lastChecked", "characterId", "characterName", "corporationId", "allianceId"},
- *     @OA\Property(
- *         property="lastChecked",
- *         type="string",
- *         nullable=true
- *     ),
- *     @OA\Property(
- *         property="characterId",
- *         type="integer"
- *     ),
- *     @OA\Property(
- *         property="characterName",
- *         type="string"
- *     ),
- *     @OA\Property(
- *         property="corporationId",
- *         type="integer",
- *         nullable=true
- *     ),
- *     @OA\Property(
- *         property="allianceId",
- *         type="integer",
- *         nullable=true
- *     )
+ *     @OA\Property(property="lastChecked", type="string", nullable=true),
+ *     @OA\Property(property="characterId", type="integer"),
+ *     @OA\Property(property="characterName", type="string"),
+ *     @OA\Property(property="corporationId", type="integer", nullable=true),
+ *     @OA\Property(property="allianceId", type="integer", nullable=true)
+ * )
+ *
+ * @OA\Schema(
+ *     schema="EsiAccessToken",
+ *     required={"token", "scopes", "expires"},
+ *     @OA\Property(property="token", type="string"),
+ *     @OA\Property(property="scopes", type="array", @OA\Items(type="string")),
+ *     @OA\Property(property="expires",type="integer")
  * )
  */
 class EsiController extends BaseController
@@ -146,7 +135,7 @@ class EsiController extends BaseController
 
         $charIds = $this->repositoryFactory->getEsiTokenRepository()
             // Note: $this->eveLogin always exists at this point
-            ->findCharacterIdsByLoginId($this->eveLogin ? $this->eveLogin->getId() : 0);
+            ->findCharacterIdsByLoginId((int)$this->eveLogin?->getId());
 
         return $this->withJson($charIds);
     }
@@ -195,12 +184,86 @@ class EsiController extends BaseController
             return $response;
         }
 
-        // Note: This works with ~38k tokens without an out-of-memory error from Doctrine with a 256MB limit.
         $tokenData = $this->repositoryFactory->getEsiTokenRepository()
             // Note: $this->eveLogin always exists at this point
-            ->findValidTokens($this->eveLogin ? $this->eveLogin->getId() : 0);
+            ->findValidTokens((int)$this->eveLogin?->getId());
 
         return $this->withJson($tokenData);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/app/v1/esi/access-token/{characterId}",
+     *     operationId="esiAccessTokenV1",
+     *     summary="Returns an access token for a character and EVE login.",
+     *     description="Needs role: app-esi.",
+     *     tags={"Application - ESI"},
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
+     *         name="characterId",
+     *         in="path",
+     *         required=true,
+     *         description="The EVE character ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="eveLoginName",
+     *         in="query",
+     *         description="Optional EVE login name, defaults to 'core.default'.",
+     *         @OA\Schema(type="string", maxLength=20, pattern="^[-._a-zA-Z0-9]+$")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Success",
+     *         @OA\JsonContent(ref="#/components/schemas/EsiAccessToken")
+     *     ),
+     *     @OA\Response(
+     *         response="204",
+     *         description="Invalid token.",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Forbidden",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="ESI token not found.",
+     *         @OA\JsonContent(type="string")
+     *     )
+     * )
+     */
+    public function accessToken(
+        int $characterId,
+        ServerRequestInterface $request,
+        OAuthToken $tokenService,
+    ): ResponseInterface {
+        $eveLoginName = $this->getQueryParam($request, 'eveLoginName', EveLogin::NAME_DEFAULT);
+
+        $response = $this->validateTokenRequest($eveLoginName, $request);
+        if ($response) {
+            return $response;
+        }
+
+        $esiToken = $this->repositoryFactory->getEsiTokenRepository()->findOneBy([
+            'character' => $characterId,
+            'eveLogin' => $this->eveLogin?->getId(),
+        ]);
+        if (!$esiToken) {
+            return $this->response->withStatus(404);
+        }
+
+        $token = $tokenService->updateEsiToken($esiToken);
+        if (!$token || !$esiToken->getValidToken()) {
+            return $this->response->withStatus(204);
+        }
+
+        return $this->withJson([
+            'token' => $token->getToken(),
+            'scopes' => $tokenService->getEveAuth($token)?->getScopes(), // Note: It's never null here
+            'expires' => $token->getExpires(),
+        ]);
     }
 
     /**

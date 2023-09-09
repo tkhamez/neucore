@@ -160,6 +160,85 @@ class EsiControllerTest extends WebTestCase
         ]], $this->parseJsonBody($response));
     }
 
+    public function testAccessToken403_App()
+    {
+        $response = $this->runApp('GET', '/api/app/v1/esi/access-token/321?eveLoginName=test');
+
+        $this->assertSame(403, $response->getStatusCode());
+    }
+
+    public function testAccessToken403_EveLogin()
+    {
+        $this->helper->addEveLogin('test');
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI]);
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode("{$app->getId()}:s1")];
+        $response = $this->runApp('GET', '/api/app/v1/esi/access-token/321?eveLoginName=test', null, $headers);
+
+        $this->assertSame(403, $response->getStatusCode());
+    }
+
+    public function testAccessToken404()
+    {
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI], 'test');
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode("{$app->getId()}:s1")];
+        $response = $this->runApp('GET', '/api/app/v1/esi/access-token/321?eveLoginName=test', null, $headers);
+
+        $this->assertSame(404, $response->getStatusCode());
+    }
+
+    public function testAccessToken204()
+    {
+        $character = $this->helper->addCharacterMain('C1', 123, [Role::USER], withEsiToken: false);
+        $esiToken = $this->helper->createOrUpdateEsiToken($character, loginName: 'test', refreshToken: '');
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI]);
+        $app->addEveLogin($esiToken->getEveLogin() ?: new EveLogin());
+        $this->helper->getEm()->flush();
+        $this->helper->getEm()->clear();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode("{$app->getId()}:s1")];
+        $response = $this->runApp('GET', '/api/app/v1/esi/access-token/123?eveLoginName=test', null, $headers);
+
+        $this->assertSame(204, $response->getStatusCode());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testAccessToken200()
+    {
+        $character = $this->helper->addCharacterMain('C1', 123, [Role::USER], withEsiToken: false);
+        $now = time();
+        $accessToken = Helper::generateToken(['scope-one'])[0];
+        $esiToken = $this->helper->createOrUpdateEsiToken(
+            $character, $now - 60, $accessToken, true, 'test', ['scope-one']
+        );
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI]);
+        $app->addEveLogin($esiToken->getEveLogin() ?: new EveLogin());
+        $this->helper->getEm()->flush();
+        $this->helper->getEm()->clear();
+
+        $httpClient = new Client();
+        $httpClient->setResponse(new Response(body: (string)json_encode([
+            'access_token' => $accessToken,
+            'refresh_token' => 'rf',
+            'expires' => $now+60
+        ])));
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode("{$app->getId()}:s1")];
+        $response = $this->runApp('GET', '/api/app/v1/esi/access-token/123?eveLoginName=test', null, $headers, [
+            HttpClientFactoryInterface::class => new HttpClientFactory($httpClient),
+        ]);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame([
+            'token' => $accessToken,
+            'scopes' => ['scope-one'],
+            'expires' => $now + 60,
+        ], $this->parseJsonBody($response));
+    }
+
     public function testEsiV2403()
     {
         $response1 = $this->runApp('GET', '/api/app/v2/esi');

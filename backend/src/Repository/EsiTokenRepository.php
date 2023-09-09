@@ -54,6 +54,8 @@ class EsiTokenRepository extends EntityRepository
 
     public function findValidTokens(int $loginId): array
     {
+        // Note: This works with ~38k tokens without an out-of-memory error from Doctrine with a 256MB limit.
+
         $qb = $this->createQueryBuilder('token');
         $qb->select([
                 'token.lastChecked',

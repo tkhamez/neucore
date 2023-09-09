@@ -55,6 +55,7 @@ return [
 
     '/api/app/v1/esi/eve-login/{name}/characters'   => ['GET',    [AppEsiController::class, 'eveLoginCharacters']],
     '/api/app/v1/esi/eve-login/{name}/token-data'   => ['GET',    [AppEsiController::class, 'eveLoginTokenData']],
+    '/api/app/v1/esi/access-token/{characterId}'    => ['GET',    [AppEsiController::class, 'accessToken']],
     '/api/app/v1/esi[{path:.*}]'                    => ['GET'  => [AppEsiController::class, 'esiV1'],
                                                         'POST' => [AppEsiController::class, 'esiPostV1']],
     '/api/app/v2/esi[{path:.*}]'                    => ['GET'  => [AppEsiController::class, 'esiV2'],

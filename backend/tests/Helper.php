@@ -456,13 +456,14 @@ class Helper
         array $scopes = [], // only added if EveLogin does not already exist
         array $roles = [], // only added if EveLogin does not already exist
         \DateTime $lastChecked = null,
+        string $refreshToken = 'rt',
     ): EsiToken {
         $om = $this->getObjectManager();
 
         $esiToken = $character->getEsiToken($loginName);
         if ($esiToken === null) {
             $eveLogin = $this->addEveLogin($loginName, $scopes, $roles);
-            $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setRefreshToken('rt');
+            $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setRefreshToken($refreshToken);
             $character->addEsiToken($esiToken);
             $esiToken->setCharacter($character);
             if (!empty($roles)) {
@@ -569,12 +570,7 @@ class Helper
         return $char;
     }
 
-    private static function getConfig(): config
-    {
-        return new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
-    }
-
-    private function addEveLogin(string $name, array $scopes, array $roles): EveLogin
+    public function addEveLogin(string $name, array $scopes = [], array $roles = []): EveLogin
     {
         $om = $this->getObjectManager();
 
@@ -587,5 +583,10 @@ class Helper
         }
 
         return $eveLogin;
+    }
+
+    private static function getConfig(): config
+    {
+        return new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
     }
 }
