@@ -79,46 +79,51 @@
 </div>
 
 <div class="container-fluid">
-    <div v-cloak v-if="authLoaded && !authChar" class="mt-3">
-        <title-logo></title-logo>
-        <p>Click the button below to login through <em>EVE Online SSO</em>.</p>
-        <a :href="`${loginHost}/login/${loginNames.default}${redirectQuery}`">
-            <img src="../assets/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
-        </a>
-        <p class="small">
-            <br>
-            Learn more about
-            <a class="external" href="https://support.eveonline.com/hc/en-us/articles/205381192"
-               target="_blank" rel="noopener noreferrer">EVE Online Single Sign On</a>.
-        </p>
-        <span v-if="markdownLoginText">
-            <br>
-            <span v-html="markdownLoginText"></span>
-        </span>
-    </div>
 
-    <div v-cloak v-if="authChar" class="card mt-3 mb-3">
+    <div class="card mt-3 mb-3">
         <div class="card-body">
             <title-logo></title-logo>
-            <p>Add your other characters by logging in with EVE SSO.</p>
-            <p>
-                <a :href="`${loginHost}/login/${loginNames.default}`">
-                    <img src="../../public/img/eve_sso.png" alt="LOG IN with EVE Online"
-                         title="Login to add another character.">
+            <!-- not logged-in -->
+            <template v-cloak v-if="authLoaded && !authChar">
+                <p>Click the button below to login through <em>EVE Online SSO</em>.</p>
+                <a :href="`${loginHost}/login/${loginNames.default}${redirectQuery}`">
+                    <img src="../assets/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
                 </a>
-            </p>
-            <button href="#" class="btn btn-secondary nc-btn-xs fw-normal p-2"
-               data-bs-toggle="modal" data-bs-target="#eveLoginsModal">
-                Add additional ESI tokens
-            </button>
+                <p class="small mb-0">
+                    <br>
+                    Learn more about
+                    <a class="external" href="https://support.eveonline.com/hc/en-us/articles/205381192"
+                       target="_blank" rel="noopener noreferrer">EVE Online Single Sign On</a>.
+                </p>
+            </template>
+            <!-- logged-in -->
+            <template v-cloak v-if="authChar">
+                <p>Add your other characters by logging in with EVE SSO.</p>
+                <p>
+                    <a :href="`${loginHost}/login/${loginNames.default}`">
+                        <img src="../../public/img/eve_sso.png" alt="LOG IN with EVE Online"
+                             title="Login to add another character.">
+                    </a>
+                </p>
+                <button href="#" class="btn btn-secondary nc-btn-xs fw-normal p-2"
+                        data-bs-toggle="modal" data-bs-target="#eveLoginsModal">
+                    Add additional ESI tokens
+                </button>
+            </template>
         </div>
     </div>
-
-    <div v-cloak v-if="authChar && markdownHtml" class="card mb-3">
-        <div class="card-body pb-0" v-html="markdownHtml"></div>
+    <div class="card mb-3">
+        <!-- not logged-in -->
+        <template v-cloak v-if="authLoaded && !authChar && markdownLoginText">
+            <div class="card-body pb-0" v-html="markdownLoginText"></div>
+        </template>
+        <!-- logged-in -->
+        <template v-cloak v-if="authChar && markdownHtml">
+            <div class="card-body pb-0" v-html="markdownHtml"></div>
+        </template>
     </div>
 
-    <div v-cloak v-if="deactivated.withoutDelay" class="alert"
+    <div v-cloak v-if="player && deactivated.withoutDelay" class="alert"
          :class="deactivated.withDelay ? 'alert-danger' : 'alert-warning'">
         <span v-if="deactivated.withDelay">
             Groups for this account are <strong>disabled</strong>
@@ -310,11 +315,7 @@ export default {
         },
 
         player() {
-            if (this.player) {
-                checkDeactivated(this);
-            } else {
-                this.deactivated = {};
-            }
+            checkDeactivated(this);
         },
     },
 
@@ -387,7 +388,6 @@ function loginAddRedirect(vm) {
 
 function checkDeactivated(vm) {
     if (!vm.player) {
-        vm.deactivated = {};
         return;
     }
 
