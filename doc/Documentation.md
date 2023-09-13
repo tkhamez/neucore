@@ -115,7 +115,8 @@ The API respects the ESI cache headers and will return a cached response if it i
 
 The ESI error limit of 100 errors every 60 seconds is reduced to 80 errors every 60 seconds. It is  
 shared between all applications that use the ESI API endpoint. The `X-Esi-Error-Limit-Remain` header is
-*not* modified to reflect this.
+*not* modified to reflect this. The API will return a 429 status code if it gets below 21, including 
+a `Retry-After` header.
 
 ## Service Registration Plugins
 
