@@ -7,7 +7,7 @@
 - **BC Break**: Dropped support for MariaDB 10.2, the minimum required version is now 10.5. Minimum required
   MySQL version is now 8.0.22, previously 8.0, but it was not tested with older versions.
 - New: Added compatibility with MariaDB 11.0.
-- New: API endpoint to get an access token for a character.
+- New: API endpoint to get an ESI access token for a character.
 - Changed layout of login page.
 - Updated certificate bundle for all AWS regions.
 
