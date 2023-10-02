@@ -27,6 +27,10 @@ jobs:
           php-version: 8.2
           extensions: gmp
           tools: composer:v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
       - name: Build backend
         run: |
           cd dist/build/backend
@@ -66,15 +70,9 @@ jobs:
             dist/neucore-${{ env.RELEASE_VERSION }}.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build Docker image
-        if: ${{ github.repository_owner == 'tkhamez' }}
-        run: |
-          docker build -f dist/build/setup/Dockerfile --no-cache -t tkhamez/neucore:${{ env.RELEASE_VERSION }} dist
-          docker tag tkhamez/neucore:${{ env.RELEASE_VERSION }} tkhamez/neucore:latest
-      - name: Publish Docker image
+      - name: Build and publish Docker image
         if: ${{ github.repository_owner == 'tkhamez' }}
         run: |
           echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u tkhamez --password-stdin
-          docker push tkhamez/neucore:${{ env.RELEASE_VERSION }}
-          docker push tkhamez/neucore:latest
+          docker buildx build --platform linux/amd64,linux/arm64 -f dist/build/setup/Dockerfile --no-cache -t tkhamez/neucore:${{ env.RELEASE_VERSION }} -t tkhamez/neucore:latest --push dist
           docker logout
