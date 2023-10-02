@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.3.1
+
+2 Oct 2023
+
+- Added arm64 Docker image.
+
 ## 2.3.0
 
 9 Sep 2023
