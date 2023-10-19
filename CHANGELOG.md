@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.3.2
+
+19 Oct 2023
+
+- Fixed a rare login issue (see https://github.com/tkhamez/eve-sso-php/blob/main/CHANGELOG.md#411).
+- Updated dependencies.
+
 ## 2.3.1
 
 2 Oct 2023
