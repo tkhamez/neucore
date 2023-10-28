@@ -41,7 +41,7 @@ const allThemes = {
 // Set to true to be able to switch themes in dev mode, but CSS reloading will not work anymore.
 const devModeThemes = false;
 
-// Use "minThemes" to build only 2 themes, which is a lot faster.
+// Use "minThemes" or "defaultTheme" to build only 2 or 1 theme, which is a lot faster.
 const useThemes = allThemes;
 
 module.exports = defineConfig(() => {
