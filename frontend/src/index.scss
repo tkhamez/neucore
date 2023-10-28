@@ -212,6 +212,13 @@ body.neucore {
 }
 
 /**
+ * Fix colors
+ */
+.slate .list-group-item-action:hover {
+    color: #fff;
+}
+
+/**
  * The edit icons for the group, app etc. admin navigation.
  */
 .nc-list-item-wrap {
