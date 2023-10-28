@@ -246,8 +246,10 @@ class PlayerRepository extends EntityRepository
                 ->distinct()
                 ->leftJoin('p.removedCharacters', 'rc')
                 ->where('rc.characterName LIKE :name')
+                ->orWhere('rc.characterId LIKE :id')
                 ->orderBy('rc.characterName', 'ASC')
-                ->setParameter('name', "%$nameOrIdForLike%");
+                ->setParameter('name', "%$nameOrIdForLike%")
+                ->setParameter('id', $nameOrId);
 
             // character name changes
             $query3 = $this

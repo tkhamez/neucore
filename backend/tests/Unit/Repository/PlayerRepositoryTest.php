@@ -104,27 +104,27 @@ class PlayerRepositoryTest extends TestCase
         // additional data for search by name
         $moveOutChar1 = (new RemovedCharacter())
             ->setCharacterId(21)
-            ->setCharacterName('removed-21')
+            ->setCharacterName('removed-2-1')
             ->setRemovedDate(new \DateTime())
             ->setReason(RemovedCharacter::REASON_MOVED)
             ->setPlayer(self::$player4)
             ->setNewPlayer(self::$player6);
         $moveBackChar1 = (new RemovedCharacter())
             ->setCharacterId(21)
-            ->setCharacterName('removed-21')
+            ->setCharacterName('removed-2-1')
             ->setRemovedDate(new \DateTime())
             ->setReason(RemovedCharacter::REASON_MOVED)
             ->setPlayer(self::$player6)
             ->setNewPlayer(self::$player4);
         $deletedChar1 = (new RemovedCharacter())
             ->setCharacterId(21)
-            ->setCharacterName('removed-21')
+            ->setCharacterName('removed-2-1')
             ->setRemovedDate(new \DateTime())
             ->setReason(RemovedCharacter::REASON_DELETED_MANUALLY)
             ->setPlayer(self::$player4);
         $removedChar2 = (new RemovedCharacter())
             ->setCharacterId(31)
-            ->setCharacterName('removed-31')
+            ->setCharacterName('removed-3-1')
             ->setRemovedDate(new \DateTime())
             ->setReason(RemovedCharacter::REASON_DELETED_MANUALLY)
             ->setPlayer(self::$player4);
@@ -305,19 +305,19 @@ class PlayerRepositoryTest extends TestCase
         ], $actual[4]->jsonSerialize());
         $this->assertSame([ // moved out/deleted character - there are two entries, filtered by "distinct"
             'characterId' => 21,
-            'characterName' => 'removed-21',
+            'characterName' => 'removed-2-1',
             'playerId' => self::$player4->getId(),
             'playerName' => 'c4',
         ], $actual[5]->jsonSerialize());
         $this->assertSame([ // moved back character
             'characterId' => 21,
-            'characterName' => 'removed-21',
+            'characterName' => 'removed-2-1',
             'playerId' => self::$player6->getId(),
             'playerName' => 'c6',
         ], $actual[6]->jsonSerialize());
         $this->assertSame([ // removed character
             'characterId' => 31,
-            'characterName' => 'removed-31',
+            'characterName' => 'removed-3-1',
             'playerId' => self::$player4->getId(),
             'playerName' => 'c4',
         ], $actual[7]->jsonSerialize());
@@ -358,6 +358,17 @@ class PlayerRepositoryTest extends TestCase
         $this->assertSame('c1c', $result[0]->characterName);
         $this->assertSame(self::$player1->getId(), $result[0]->playerId);
         $this->assertSame('c1', $result[0]->playerName);
+
+        $this->assertSame([], $this->repo->findCharacters('21', true));
+
+        $result2 = $this->repo->findCharacters('31', false);
+        $this->assertSame(1, count($result2));
+        $this->assertSame([
+            'characterId' => 31,
+            'characterName' => 'removed-3-1',
+            'playerId' => self::$player4->getId(),
+            'playerName' => 'c4',
+        ], $result2[0]->jsonSerialize());
     }
 
     public function testFindPlayersOfCharacters()
