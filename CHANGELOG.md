@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Fix: Show "Update Account" button for deactivated service accounts.
+
 ## 2.3.2
 
 19 Oct 2023

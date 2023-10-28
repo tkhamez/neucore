@@ -168,7 +168,7 @@ class ServiceController extends BaseController
      * @OA\Post(
      *     path="/user/service/{id}/register",
      *     operationId="serviceRegister",
-     *     summary="Registers a new account with a service.",
+     *     summary="Registers or reactivates an account with a service.",
      *     description="Needs role: group-user",
      *     tags={"Service"},
      *     security={{"Session"={}, "CSRF"={}}},
@@ -253,7 +253,10 @@ class ServiceController extends BaseController
             !empty($accounts) &&
             (
                 $oneAccountOnly ||
-                !in_array( // check status of main character
+
+                // Check status of main character. Note: this method is also used to reactivate deactivated accounts,
+                // for example for services that do not support account updates.
+                !in_array(
                     $accounts[0]->getStatus(),
                     [ServiceAccountData::STATUS_DEACTIVATED, ServiceAccountData::STATUS_UNKNOWN]
                 )

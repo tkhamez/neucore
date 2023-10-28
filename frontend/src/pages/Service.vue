@@ -88,8 +88,7 @@
                                 </a>
                             </td>
                             <td v-if="service.configurationFile.actions.length > 0">
-                                <span v-if="hasAction('update-account') &&
-                                            (isActive(account) || account.status === 'Nonmember')">
+                                <span v-if="hasAction('update-account')">
                                     <button
                                         type="submit" class="btn btn-sm btn-info"
                                         v-on:click.prevent="updateAccount(account.characterId)"
