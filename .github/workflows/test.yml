@@ -35,9 +35,10 @@ jobs:
         ports: ['3306:3306']
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -65,10 +66,17 @@ jobs:
           NEUCORE_EVE_SECRET_KEY: 'abc'
           NEUCORE_EVE_CALLBACK_URL: 'http://localhost'
         run: cd backend && vendor/bin/phpunit
+
+      - name: Setup Java
+        if: ${{ github.repository_owner == 'tkhamez' && matrix.php-version == '8.0' }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 17
       - name: Setup SonarQube
         if: ${{ github.repository_owner == 'tkhamez' && matrix.php-version == '8.0' }}
-        uses: warchant/setup-sonar-scanner@v3
-      - name: SonarQube
+        uses: warchant/setup-sonar-scanner@v7
+      - name: SonarQube Scan
         if: ${{ github.repository_owner == 'tkhamez' && matrix.php-version == '8.0' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
