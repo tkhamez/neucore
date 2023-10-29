@@ -206,7 +206,7 @@ const chartOption = {
         bottom: 60,
     },
     legend: {
-        bottom: 10,
+        bottom: 5,
         data: [],
     },
     toolbox: { feature: { saveAsImage: {} } },
@@ -259,7 +259,7 @@ function chartPlayerLogins(vm, items) {
 function chartTotalMonthlyApp(vm, items) {
     const requests = 'Requests';
 
-    const options = JSON.parse(JSON.stringify(chartOption));
+    const options = copyObjectData(chartOption);
     options.title.text = 'App requests, monthly total';
     options.series.push(copyObjectData(chartSeries));
     options.series[0].name = requests;
@@ -278,10 +278,9 @@ function chartTotalMonthlyApp(vm, items) {
     initChart(vm, 'statisticsTotalMonthlyApp', options);
 }
 
-function chartAppRequests(vm, items, title, ticks, charId) {
-    const options = JSON.parse(JSON.stringify(chartOption));
+function chartAppRequests(vm, items, title, ticks, chartId) {
+    let options = copyObjectData(chartOption);
     options.title.text = title;
-    options.grid.bottom = 81; // more space for legend (2 rows)
 
     const csvRowOne = [];
     if (ticks === 'months') {
@@ -355,13 +354,15 @@ function chartAppRequests(vm, items, title, ticks, charId) {
         vm.csvData.hourlyAppRequests = csvRows;
     }
 
-    initChart(vm, charId, options);
+    options.grid.bottom = calculateBottonMargin(chartId, options);
+
+    initChart(vm, chartId, options);
 }
 
 function chartTotalDailyApp(vm, items) {
     const requests = 'Requests';
 
-    const options = JSON.parse(JSON.stringify(chartOption));
+    const options = copyObjectData(chartOption);
 
     options.title.text = 'App requests, daily total';
     options.series.push(copyObjectData(chartSeries));
@@ -392,6 +393,22 @@ function initChart(vm, id, options) {
     );
     chart.setOption(options, true);
     vm.charts[id] = chart;
+}
+
+/**
+ * Calculate bottom margin based on needed width for all labels.
+ */
+function calculateBottonMargin(chartId, options) {
+    let labelCharacters = 0;
+    let numLabels = 0;
+    options.series.map((key) => {
+        numLabels ++;
+        labelCharacters += key.name.length;
+    });
+    const neededPixel = (numLabels * 40) + (labelCharacters * 6) + 50; // one character = ~3-6 pixel
+    const hasPixel = document.getElementById(chartId).offsetWidth;
+    const neededRows = Math.ceil(neededPixel / hasPixel);
+    return 40 + (20 * neededRows);
 }
 
 function csvDownload(data, name) {

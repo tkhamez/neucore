@@ -6,6 +6,7 @@ dd mm yyyy
 
 - Fix: Show "Update Account" button for deactivated service accounts.
 - Fix: Search for deleted characters by ID did not work.
+- Fix: Calculate necessary space for labels in charts.
 
 ## 2.3.2
 
