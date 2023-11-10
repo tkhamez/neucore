@@ -94,7 +94,7 @@ class EsiController extends BaseController
      *     path="/app/v1/esi/eve-login/{name}/characters",
      *     operationId="esiEveLoginCharactersV1",
      *     summary="Returns character IDs of characters that have an ESI token (including invalid) of an EVE login.",
-     *     description="Needs role: app-esi.",
+     *     description="Needs role: app-esi-login.",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
@@ -145,7 +145,7 @@ class EsiController extends BaseController
      *     path="/app/v1/esi/eve-login/{name}/token-data",
      *     operationId="esiEveLoginTokenDataV1",
      *     summary="Returns data for all valid tokens (roles are also checked if applicable) for an EVE login.",
-     *     description="Needs role: app-esi.",
+     *     description="Needs role: app-esi-login.",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
@@ -196,7 +196,7 @@ class EsiController extends BaseController
      *     path="/app/v1/esi/access-token/{characterId}",
      *     operationId="esiAccessTokenV1",
      *     summary="Returns an access token for a character and EVE login.",
-     *     description="Needs role: app-esi.",
+     *     description="Needs role: app-esi-token",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
@@ -356,7 +356,7 @@ class EsiController extends BaseController
      *     path="/app/v2/esi",
      *     operationId="esiV2",
      *     summary="Makes an ESI GET request on behalf on an EVE character and returns the result.",
-     *     description="Needs role: app-esi<br>
+     *     description="Needs role: app-esi-proxy<br>
      *         Public ESI routes are not allowed.<br>
      *         The following headers from ESI are passed through to the response if they exist:
                Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning, Warning<br>

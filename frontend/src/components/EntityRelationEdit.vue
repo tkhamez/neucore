@@ -430,7 +430,9 @@ export default {
                     { id: 'app-groups', name: 'app-groups' },
                     { id: 'app-chars', name: 'app-chars' },
                     { id: 'app-tracking', name: 'app-tracking' },
-                    { id: 'app-esi', name: 'app-esi' }
+                    { id: 'app-esi-login', name: 'app-esi-login' },
+                    { id: 'app-esi-proxy', name: 'app-esi-proxy' },
+                    { id: 'app-esi-token', name: 'app-esi-token' },
                 ];
                 return;
             } else if (this.contentType === 'eveLogins') {

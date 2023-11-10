@@ -41,7 +41,9 @@ class AppController extends BaseController
         Role::APP_GROUPS,
         Role::APP_CHARS,
         Role::APP_TRACKING,
-        Role::APP_ESI,
+        Role::APP_ESI_LOGIN,
+        Role::APP_ESI_PROXY,
+        Role::APP_ESI_TOKEN,
     ];
 
     /**
@@ -583,7 +585,8 @@ class AppController extends BaseController
      *         in="path",
      *         required=true,
      *         description="Name of the role.",
-     *         @OA\Schema(type="string", enum={"app-groups", "app-chars", "app-tracking", "app-esi"})
+     *         @OA\Schema(type="string", enum={"app-groups", "app-chars", "app-tracking", "app-esi-login",
+     *                                         "app-esi-proxy", "app-esi-token"})
      *     ),
      *     @OA\Response(
      *         response="204",
@@ -633,7 +636,8 @@ class AppController extends BaseController
      *         in="path",
      *         required=true,
      *         description="Name of the role.",
-     *         @OA\Schema(type="string", enum={"app-groups", "app-chars", "app-tracking", "app-esi"})
+     *         @OA\Schema(type="string", enum={"app-groups", "app-chars", "app-tracking", "app-esi-login",
+     *                                         "app-esi-proxy", "app-esi-token"})
      *     ),
      *     @OA\Response(
      *         response="204",

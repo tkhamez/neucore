@@ -27,8 +27,10 @@ return [
 
     '/api/app/v1/corporation/{id}/member-tracking' => [Role::APP_TRACKING],
 
-    '/api/app/v1/esi'                              => [Role::APP_ESI],
-    '/api/app/v2/esi'                              => [Role::APP_ESI],
+    '/api/app/v1/esi/eve-login/'                   => [Role::APP_ESI_LOGIN],
+    '/api/app/v1/esi/access-token/'                => [Role::APP_ESI_TOKEN],
+    '/api/app/v1/esi'                              => [Role::APP_ESI_PROXY],
+    '/api/app/v2/esi'                              => [Role::APP_ESI_PROXY],
 
     '/api/app/v1/groups'                           => [Role::APP_GROUPS],
     '/api/app/v2/groups'                           => [Role::APP_GROUPS],

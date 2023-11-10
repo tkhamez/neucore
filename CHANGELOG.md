@@ -4,6 +4,9 @@
 
 dd mm yyyy
 
+- Change: The role `app-esi` has been split into several roles: `app-esi-login`, `app-esi-proxy` and `app-esi-token`.
+  All applications with the app-esi role have been given all new roles with a database update.
+- Added app role "app-esi-token".
 - Fix: Show "Update Account" button for deactivated service accounts.
 - Fix: Search for deleted characters by ID did not work.
 - Fix: Calculate necessary space for labels in charts.

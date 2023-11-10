@@ -79,7 +79,7 @@ The `operationId` must be a unique string among all operations described in the 
 
 ### Documentation
 
-The file [doc/API.md](../doc/API.md) is automatically generated from the template file `doc/API.md.tpl`, 
+The file [doc/API.md](../doc/API.md) is automatically generated from the template file `doc/API.tpl.md`, 
 the route and security configuration from the `config` directory and `web/openapi-3.yaml`:
 ```
 bin/doc-api-gen.php

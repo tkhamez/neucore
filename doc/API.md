@@ -37,7 +37,9 @@ can be a `Corporation` object, be null, or not exist at all.
   * [app-groups](#app-groups)
   * [app-chars](#app-chars)
   * [app-tracking](#app-tracking)
-  * [app-esi](#app-esi)
+  * [app-esi-login](#app-esi-login)
+  * [app-esi-proxy](#app-esi-proxy)
+  * [app-esi-token](#app-esi-token)
 
 <!-- tocstop -->
 
@@ -87,7 +89,7 @@ Settings API
 Service API
 - Returns service. `GET /user/service/{id}/get`
 - Returns all player's service accounts for a service. `GET /user/service/{id}/accounts`
-- Registers a new account with a service. `POST /user/service/{id}/register`
+- Registers or reactivates an account with a service. `POST /user/service/{id}/register`
 - Update an account. `PUT /user/service/{id}/update-account/{characterId}`
 - Resets password for one account. `PUT /user/service/{id}/reset-password/{characterId}`
 
@@ -495,14 +497,22 @@ Allows an app to get corporation member tracking data.
 Application - Tracking API
 - Return corporation member tracking data. `GET /app/v1/corporation/{id}/member-tracking`
 
-#### app-esi
-
-Allows an app to make an ESI request on behalf of a character from the database.
+#### app-esi-login
 
 Application - ESI API
 - Returns character IDs of characters that have an ESI token (including invalid) of an EVE login. `GET /app/v1/esi/eve-login/{name}/characters`
 - Returns data for all valid tokens (roles are also checked if applicable) for an EVE login. `GET /app/v1/esi/eve-login/{name}/token-data`
-- Returns an access token for a character and EVE login. `GET /app/v1/esi/access-token/{characterId}`
+
+#### app-esi-proxy
+
+Allows an app to make ESI requests on behalf of a character from the database.
+
 - Makes an ESI GET or POST request on behalf on an EVE character and returns the result. `/app/v2/esi`  
-  This endpoint can also be used with OpenAPI clients generated for ESI,
-  see [api-examples](api-examples) for more.
+  This endpoint can also be used with OpenAPI clients generated for ESI, see [api-examples](api-examples) for more.
+
+#### app-esi-token
+
+Allows an app to use ESI access tokens.
+
+Application - ESI API
+- Returns an access token for a character and EVE login. `GET /app/v1/esi/access-token/{characterId}`

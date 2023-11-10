@@ -16,9 +16,10 @@ use OpenApi\Annotations as OA;
  *
  * @OA\Schema(
  *     type="string",
- *     enum={"app", "app-groups", "app-chars", "app-tracking", "app-esi", "user", "user-admin", "user-manager",
- *           "user-chars", "group-admin", "group-manager", "app-admin", "app-manager", "plugin-admin", "statistics",
- *           "esi", "settings", "tracking", "tracking-admin", "watchlist", "watchlist-manager", "watchlist-admin"})
+ *     enum={"app", "app-groups", "app-chars", "app-tracking", "app-esi-login", "app-esi-proxy", "app-esi-token",
+ *           "user", "user-admin", "user-manager", "user-chars", "group-admin", "group-manager", "app-admin",
+ *           "app-manager", "plugin-admin", "statistics", "esi", "settings", "tracking", "tracking-admin",
+ *           "watchlist", "watchlist-manager", "watchlist-admin"}
  * )
  *
  * @ORM\Entity
@@ -32,7 +33,9 @@ class Role implements \JsonSerializable
     public const APP_GROUPS = 'app-groups';
     public const APP_CHARS = 'app-chars';
     public const APP_TRACKING = 'app-tracking';
-    public const APP_ESI = 'app-esi';
+    public const APP_ESI_LOGIN = 'app-esi-login';
+    public const APP_ESI_PROXY = 'app-esi-proxy';
+    public const APP_ESI_TOKEN = 'app-esi-token';
 
     public const ANONYMOUS = 'anonymous';
 

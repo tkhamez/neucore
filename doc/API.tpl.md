@@ -157,11 +157,19 @@ Allows an app to get corporation member tracking data.
 
 {app-tracking}
 
-#### app-esi
+#### app-esi-login
 
-Allows an app to make an ESI request on behalf of a character from the database.
+{app-esi-login}
 
-{app-esi}
+#### app-esi-proxy
+
+Allows an app to make ESI requests on behalf of a character from the database.
+
 - Makes an ESI GET or POST request on behalf on an EVE character and returns the result. `/app/v2/esi`  
-  This endpoint can also be used with OpenAPI clients generated for ESI,
-  see [api-examples](api-examples) for more.
+  This endpoint can also be used with OpenAPI clients generated for ESI, see [api-examples](api-examples) for more.
+
+#### app-esi-token
+
+Allows an app to use ESI access tokens.
+
+{app-esi-token}

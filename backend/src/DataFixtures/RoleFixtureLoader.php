@@ -26,7 +26,6 @@ class RoleFixtureLoader
             9 => Role::SETTINGS,
             10 => Role::TRACKING,
             11 => Role::APP_TRACKING,
-            12 => Role::APP_ESI,
             13 => Role::APP_GROUPS,
             14 => Role::APP_CHARS,
             15 => Role::USER_MANAGER,
@@ -37,6 +36,9 @@ class RoleFixtureLoader
             20 => Role::USER_CHARS,
             21 => Role::PLUGIN_ADMIN,
             22 => Role::STATISTICS,
+            23 => Role::APP_ESI_LOGIN,
+            24 => Role::APP_ESI_PROXY,
+            25 => Role::APP_ESI_TOKEN,
         ];
 
         foreach ($roles as $id => $name) {
@@ -46,6 +48,16 @@ class RoleFixtureLoader
                 $manager->persist($role);
             }
             $role->setName($name);
+        }
+
+        $rolesRemove = [
+            12, // app-esi, removed in v2.4.0
+        ];
+        foreach ($rolesRemove as $roleId) {
+            $roleRemove = $roleRepository->find($roleId);
+            if ($roleRemove !== null) {
+                $manager->remove($roleRemove);
+            }
         }
 
         $manager->flush();
