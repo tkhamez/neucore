@@ -10,6 +10,7 @@ dd mm yyyy
 - Fix: Show "Update Account" button for deactivated service accounts.
 - Fix: Search for deleted characters by ID did not work.
 - Fix: Calculate necessary space for labels in charts.
+- Fix: The endpoint `/app/v1/esi/eve-login/{name}/token-data` again no longer allows the EVE login `core.default`.
 
 ## 2.3.2
 

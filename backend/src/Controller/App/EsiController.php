@@ -179,6 +179,10 @@ class EsiController extends BaseController
      */
     public function eveLoginTokenData(string $name, ServerRequestInterface $request): ResponseInterface
     {
+        if ($name === EveLogin::NAME_DEFAULT) {
+            return $this->response->withStatus(403);
+        }
+
         $response = $this->validateTokenRequest($name, $request);
         if ($response) {
             return $response;

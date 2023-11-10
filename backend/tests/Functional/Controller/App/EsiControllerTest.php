@@ -126,6 +126,18 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame(403, $response->getStatusCode());
     }
 
+    public function testEveLoginTokenData403_WrongLogin()
+    {
+        $eveLogin = (new EveLogin())->setName('core.default');
+        $this->helper->getEm()->persist($eveLogin);
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_LOGIN], 'core.default');
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/core.default/token-data', null, $headers);
+
+        $this->assertSame(403, $response->getStatusCode());
+    }
+
     public function testEveLoginTokenData404()
     {
         $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_LOGIN], 'test-1');

@@ -507,7 +507,7 @@ class Helper
         }
 
         if ($eveLoginName) {
-            $eveLogin = $this->addEveLogin($eveLoginName, [], []);
+            $eveLogin = $this->addEveLogin($eveLoginName);
             $app->addEveLogin($eveLogin);
         }
 
