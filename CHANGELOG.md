@@ -1,16 +1,18 @@
 # Changelog
 
-## next
+## 2.4.0
 
 dd mm yyyy
 
+- New: The ESI proxy API endpoints now also accept the headers `Neucore-EveCharacter` and `Neucore-EveLogin` 
+  as an alternative to the `datasource` parameter, which is now optional.
 - Change: The role `app-esi` has been split into several roles: `app-esi-login`, `app-esi-proxy` and `app-esi-token`.
-  All applications with the app-esi role have been given all new roles with a database update.
-- Added app role "app-esi-token".
+  All applications with the app-esi role have been given all 3 new roles with a database update.
 - Fix: Show "Update Account" button for deactivated service accounts.
 - Fix: Search for deleted characters by ID did not work.
 - Fix: Calculate necessary space for labels in charts.
-- Fix: The endpoint `/app/v1/esi/eve-login/{name}/token-data` again no longer allows the EVE login `core.default`.
+- Fix: The endpoint `/app/v1/esi/eve-login/{name}/token-data` again no longer allows the EVE login `core.default`
+  (as documented).
 
 ## 2.3.2
 

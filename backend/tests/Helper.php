@@ -491,7 +491,7 @@ class Helper
         string $name,
         string $secret,
         array $roles,
-        ?string $eveLoginName = null,
+        array $eveLoginNames = [],
         string $hashAlgorithm = PASSWORD_BCRYPT
     ): App
     {
@@ -506,7 +506,7 @@ class Helper
             $app->addRole($role);
         }
 
-        if ($eveLoginName) {
+        foreach ($eveLoginNames as $eveLoginName) {
             $eveLogin = $this->addEveLogin($eveLoginName);
             $app->addEveLogin($eveLogin);
         }

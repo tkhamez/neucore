@@ -278,6 +278,19 @@ class EsiController extends BaseController
      *     summary="See GET /app/v2/esi",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
+     *      @OA\Parameter(
+     *          name="Neucore-EveCharacter",
+     *          in="header",
+     *          description="The EVE character ID those token should be used. Has priority over the query
+     *                       parameter 'datasource'",
+     *          @OA\Schema(type="string")
+     *      ),
+     *      @OA\Parameter(
+     *          name="Neucore-EveLogin",
+     *          in="header",
+     *          description="The EVE login name from which the token should be used, defaults to core.default.",
+     *          @OA\Schema(type="string")
+     *      ),
      *     @OA\Parameter(
      *         name="esi-path-query",
      *         in="query",
@@ -361,6 +374,8 @@ class EsiController extends BaseController
      *     operationId="esiV2",
      *     summary="Makes an ESI GET request on behalf on an EVE character and returns the result.",
      *     description="Needs role: app-esi-proxy<br>
+     *         Either the header 'Neucore-EveCharacter' and optionally 'Neucore-EveLogin' or the query parameter
+               'datasource' is required.<br>
      *         Public ESI routes are not allowed.<br>
      *         The following headers from ESI are passed through to the response if they exist:
                Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning, Warning<br>
@@ -371,6 +386,19 @@ class EsiController extends BaseController
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
+     *         name="Neucore-EveCharacter",
+     *         in="header",
+     *         description="The EVE character ID those token should be used. Has priority over the query
+                            parameter 'datasource'",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="Neucore-EveLogin",
+     *         in="header",
+     *         description="The EVE login name from which the token should be used, defaults to core.default.",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
      *         name="esi-path-query",
      *         in="query",
      *         required=true,
@@ -380,9 +408,9 @@ class EsiController extends BaseController
      *     @OA\Parameter(
      *         name="datasource",
      *         in="query",
-     *         required=true,
-     *         description="The EVE character ID those token should be used to make the ESI request. Optionally
-                            followed by a colon and the name of an EVE login to use an alternative ESI token.",
+     *         description="The EVE character ID those token should be used from the default login to make the ESI
+                            request. Optionally followed by a colon and the name of an EVE login to use an alternative
+                            ESI token.",
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\Response(
@@ -467,6 +495,19 @@ class EsiController extends BaseController
      *     summary="See POST /app/v2/esi",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
+     *      @OA\Parameter(
+     *          name="Neucore-EveCharacter",
+     *          in="header",
+     *          description="The EVE character ID those token should be used. Has priority over the query
+     *                       parameter 'datasource'",
+     *          @OA\Schema(type="string")
+     *      ),
+     *      @OA\Parameter(
+     *          name="Neucore-EveLogin",
+     *          in="header",
+     *          description="The EVE login name from which the token should be used, defaults to core.default.",
+     *          @OA\Schema(type="string")
+     *      ),
      *     @OA\Parameter(
      *         name="esi-path-query",
      *         in="query",
@@ -559,6 +600,19 @@ class EsiController extends BaseController
      *     summary="Same as GET /app/v2/esi, but for POST requests.",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
+     *      @OA\Parameter(
+     *          name="Neucore-EveCharacter",
+     *          in="header",
+     *          description="The EVE character ID those token should be used. Has priority over the query
+     *                       parameter 'datasource'",
+     *          @OA\Schema(type="string")
+     *      ),
+     *      @OA\Parameter(
+     *          name="Neucore-EveLogin",
+     *          in="header",
+     *          description="The EVE login name from which the token should be used, defaults to core.default.",
+     *          @OA\Schema(type="string")
+     *      ),
      *     @OA\Parameter(
      *         name="esi-path-query",
      *         in="query",
@@ -663,7 +717,7 @@ class EsiController extends BaseController
 
         // get/validate input
         $esiPath = $this->getEsiPathWithQueryParams($request, $path);
-        $dataSource = $this->getQueryParam($request, self::PARAM_DATASOURCE, '');
+        $dataSource = $this->getDataSource($request);
         if (str_contains($dataSource, ':')) {
             $dataSourceTmp = explode(':', $dataSource);
             $characterId = $dataSourceTmp[0];
@@ -678,7 +732,8 @@ class EsiController extends BaseController
             } elseif ($this->isPublicPath($esiPath)) {
                 $reason = 'Public ESI routes are not allowed.';
             } else { // empty($characterId)
-                $reason = 'The datasource parameter cannot be empty, it must contain an EVE character ID';
+                $reason = 'The Neucore-EveCharacter header and datasource parameter cannot both be empty, ' .
+                    'one of them must contain an EVE character ID';
             }
             if ($version === 1) {
                 return $this->response->withStatus(400, $reason);
@@ -794,6 +849,17 @@ class EsiController extends BaseController
         }
 
         return $esiPath;
+    }
+
+    private function getDataSource(ServerRequestInterface $request): string
+    {
+        $character = $request->getHeader('Neucore-EveCharacter')[0] ?? '';
+        $login = $request->getHeader('Neucore-EveLogin')[0] ?? '';
+        if ($character !== '') {
+            return "$character:$login";
+        }
+
+        return $this->getQueryParam($request, self::PARAM_DATASOURCE, '');
     }
 
     private function isPublicPath(string $esiPath): bool

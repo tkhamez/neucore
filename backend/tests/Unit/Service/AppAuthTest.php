@@ -102,7 +102,7 @@ class AppAuthTest extends TestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $appId = $h->addApp('Test App', 'my-test-secret', ['app'], null, 'md5')->getId();
+        $appId = $h->addApp('Test App', 'my-test-secret', ['app'], [], 'md5')->getId();
 
 
         $oldHash = $this->repo->find($appId)->getSecret();

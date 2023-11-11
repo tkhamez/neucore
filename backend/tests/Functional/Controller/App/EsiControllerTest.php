@@ -130,7 +130,7 @@ class EsiControllerTest extends WebTestCase
     {
         $eveLogin = (new EveLogin())->setName('core.default');
         $this->helper->getEm()->persist($eveLogin);
-        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_LOGIN], 'core.default');
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_LOGIN], ['core.default']);
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
         $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/core.default/token-data', null, $headers);
@@ -140,7 +140,7 @@ class EsiControllerTest extends WebTestCase
 
     public function testEveLoginTokenData404()
     {
-        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_LOGIN], 'test-1');
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_LOGIN], ['test-1']);
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
         $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-2/token-data', null, $headers);
@@ -150,7 +150,7 @@ class EsiControllerTest extends WebTestCase
 
     public function testEveLoginTokenData200()
     {
-        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_LOGIN], 'test-1');
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_LOGIN], ['test-1']);
         $eveLogin = $app->getEveLogins()[0];
         $character = $this->helper->addCharacterMain('Char 1', 123456);
         $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setCharacter($character)
@@ -192,7 +192,7 @@ class EsiControllerTest extends WebTestCase
 
     public function testAccessToken404()
     {
-        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_TOKEN], 'test');
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_TOKEN], ['test']);
 
         $headers = ['Authorization' => 'Bearer '.base64_encode("{$app->getId()}:s1")];
         $response = $this->runApp('GET', '/api/app/v1/esi/access-token/321?eveLoginName=test', null, $headers);
@@ -266,7 +266,7 @@ class EsiControllerTest extends WebTestCase
     public function testEsiV2403_MissingEveLogin()
     {
         $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
-        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], 'another-app')->getId();
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], ['another-app'])->getId();
 
         $response = $this->runApp(
             'GET',
@@ -311,7 +311,8 @@ class EsiControllerTest extends WebTestCase
         );
         $this->assertSame(400, $response2->getStatusCode());
         $this->assertSame(
-            '"The datasource parameter cannot be empty, it must contain an EVE character ID"',
+            '"The Neucore-EveCharacter header and datasource parameter cannot both be empty, ' .
+            'one of them must contain an EVE character ID"',
             $response2->getBody()->__toString()
         );
     }
@@ -339,7 +340,7 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiV1400_CharacterNotFound_ReasonPhrase()
     {
-        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], EveLogin::NAME_DEFAULT)->getId();
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], [EveLogin::NAME_DEFAULT])->getId();
 
         $response = $this->runApp(
             'GET',
@@ -354,7 +355,7 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiV2400_CharacterNotFound()
     {
-        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], EveLogin::NAME_DEFAULT)->getId();
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], [EveLogin::NAME_DEFAULT])->getId();
 
         $response = $this->runApp(
             'GET',
@@ -370,7 +371,7 @@ class EsiControllerTest extends WebTestCase
     public function testEsiV1400_MissingToken_ReasonPhrase()
     {
         $this->helper->addCharacterMain('C1', 123, [Role::USER]);
-        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], 'test-1')->getId();
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], ['test-1'])->getId();
 
         $response = $this->runApp(
             'GET',
@@ -386,7 +387,7 @@ class EsiControllerTest extends WebTestCase
     public function testEsiV2400_MissingToken()
     {
         $this->helper->addCharacterMain('C1', 123, [Role::USER]);
-        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], 'test-1')->getId();
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], ['test-1'])->getId();
 
         $response = $this->runApp(
             'GET',
@@ -567,7 +568,7 @@ class EsiControllerTest extends WebTestCase
     public function testEsiV2500_ClientException()
     {
         $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
-        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], EveLogin::NAME_DEFAULT)->getId();
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], [EveLogin::NAME_DEFAULT])->getId();
 
         $httpClient = new Client();
         $httpClient->setMiddleware(function () {
@@ -597,7 +598,7 @@ class EsiControllerTest extends WebTestCase
     public function testEsiV2400_EsiError()
     {
         $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
-        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], EveLogin::NAME_DEFAULT)->getId();
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], [EveLogin::NAME_DEFAULT])->getId();
 
         $httpClient = new Client();
         $httpClient->setResponse(new Response(
@@ -633,7 +634,7 @@ class EsiControllerTest extends WebTestCase
     public function testEsiV2200_AllHeaders()
     {
         $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
-        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], EveLogin::NAME_DEFAULT)->getId();
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], [EveLogin::NAME_DEFAULT])->getId();
 
         $httpClient = new Client();
         $httpClient->setResponse(new Response(
@@ -678,7 +679,7 @@ class EsiControllerTest extends WebTestCase
     public function testEsiV2200_Middleware()
     {
         $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
-        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], EveLogin::NAME_DEFAULT)->getId();
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], [EveLogin::NAME_DEFAULT])->getId();
 
         // create client with middleware
         $httpClient = new Client();
@@ -716,7 +717,7 @@ class EsiControllerTest extends WebTestCase
     public function testEsiV2200_PathAsParameter()
     {
         $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
-        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], EveLogin::NAME_DEFAULT)->getId();
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], [EveLogin::NAME_DEFAULT])->getId();
 
         $httpClient = new Client();
         $httpClient->setResponse(new Response(200, [], '{"key": "value"}'));
@@ -730,6 +731,77 @@ class EsiControllerTest extends WebTestCase
         );
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('{"key": "value"}', $response->getBody()->__toString());
+    }
+
+    public function testEsiV2200_OtherEveLogin()
+    {
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], ['login2']);
+        $eveLogin = $app->getEveLogins()[0];
+        $character = $this->helper->addCharacterMain('C1', 123);
+        $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setCharacter($character)
+            ->setRefreshToken('rt')->setAccessToken('at')->setExpires(0)->setValidToken(true);
+        $this->helper->getEm()->persist($esiToken);
+        $this->helper->getEm()->flush();
+        $this->helper->getEm()->clear();
+
+        $httpClient = new Client();
+        $httpClient->setResponse(new Response(200, [], '{"key": "value"}'));
+
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v2/esi/v3/characters/96061222/assets/?page=1&datasource=123:login2',
+            null,
+            ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
+        );
+
+        $this->assertSame('{"key": "value"}', $response->getBody()->__toString());
+        $this->assertSame(200, $response->getStatusCode());
+    }
+
+    public function testEsiV2200_DatasourceHeaders()
+    {
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], [EveLogin::NAME_DEFAULT, 'login2']);
+        $eveLogin = $app->getEveLogins()[1];
+        $character = $this->helper->addCharacterMain('C1', 123, [Role::USER], tokenValid: true);
+        $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setCharacter($character)
+            ->setRefreshToken('rt')->setAccessToken('at')->setExpires(0)->setValidToken(true);
+        $this->helper->getEm()->persist($esiToken);
+        $this->helper->getEm()->flush();
+        $this->helper->getEm()->clear();
+
+        $httpClient = new Client();
+        $httpClient->setResponse(
+            new Response(200, [], '{"key": "value1"}'),
+            new Response(200, [], '{"key": "value2"}'),
+        );
+
+        $response1 = $this->runApp(
+            'GET',
+            '/api/app/v2/esi/v3/characters/96061222/assets/?page=1&datasource=invalid',
+            null,
+            [
+                'Authorization' => 'Bearer '.base64_encode($app->getId().':s1'),
+                'Neucore-EveCharacter' => '123',
+            ],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
+        );
+        $this->assertSame(200, $response1->getStatusCode());
+        $this->assertSame('{"key": "value1"}', $response1->getBody()->__toString());
+
+        $response2 = $this->runApp(
+            'GET',
+            '/api/app/v2/esi/v3/characters/96061222/assets/?page=1&datasource=invalid',
+            null,
+            [
+                'Authorization' => 'Bearer '.base64_encode($app->getId().':s1'),
+                'Neucore-EveCharacter' => '123',
+                'Neucore-EveLogin' => 'login2',
+            ],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
+        );
+        $this->assertSame(200, $response2->getStatusCode());
+        $this->assertSame('{"key": "value2"}', $response2->getBody()->__toString());
     }
 
     public function testEsiPostV2403()
@@ -747,7 +819,7 @@ class EsiControllerTest extends WebTestCase
     public function testEsiPostV2403_MissingEveLogin()
     {
         $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
-        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], EveLogin::NAME_DEFAULT)->getId();
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], [EveLogin::NAME_DEFAULT])->getId();
 
         $response = $this->runApp(
             'POST',
@@ -763,7 +835,7 @@ class EsiControllerTest extends WebTestCase
     public function testEsiPostV2200()
     {
         $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
-        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], EveLogin::NAME_DEFAULT)->getId();
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], [EveLogin::NAME_DEFAULT])->getId();
 
         $httpClient = new Client();
         $httpClient->setResponse(new Response(
