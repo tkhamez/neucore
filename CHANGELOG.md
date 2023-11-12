@@ -4,6 +4,7 @@
 
 dd mm yyyy
 
+- New: The Docker image now supports HTTPS.
 - New: The ESI proxy API endpoints now also accept the headers `Neucore-EveCharacter` and `Neucore-EveLogin` 
   as an alternative to the `datasource` parameter, which is now optional.
 - Change: The role `app-esi` has been split into several roles: `app-esi-login`, `app-esi-proxy` and `app-esi-token`.

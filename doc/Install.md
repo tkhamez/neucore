@@ -107,8 +107,19 @@ Continue reading [Getting started](../README.md#getting-started).
 
 #### Production environment
 
-In a production environment you want to set up a reverse proxy server with SSL and remove the
-`NEUCORE_SESSION_SECURE=0` environment variable.
+In a production environment you want to run a web server with SSL and remove the `NEUCORE_SESSION_SECURE=0` 
+environment variable.
+
+You can do that by setting up a reverse proxy (recommended) or by forwarding the SSL port from the Docker 
+container and provide an SSL certificate.
+
+To use SSL from Docker use the following arguments when running the container:
+
+```
+  --volume="/path/to/your/certificate":/etc/ssl/certs/neucore.pem \
+  --volume="/path/to/your/key":/etc/ssl/private/neucore.key \
+  --publish=443:443 \
+```
 
 Example reverse proxy configuration for Apache, including necessary setup on Ubuntu 22.04:
 
@@ -148,7 +159,8 @@ when running the Neucore container, for example:
 
 ```shell
 mkdir docker-logs && sudo chown 33 docker-logs
-
+```
+```
   --volume="$(pwd)/docker-logs":/var/www/backend/var/logs \
 ```
 
