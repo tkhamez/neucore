@@ -499,6 +499,8 @@ Application - Tracking API
 
 #### app-esi-login
 
+Allows an app to receive information about tokens for EVE logins.
+
 Application - ESI API
 - Returns character IDs of characters that have an ESI token (including invalid) of an EVE login. `GET /app/v1/esi/eve-login/{name}/characters`
 - Returns data for all valid tokens (roles are also checked if applicable) for an EVE login. `GET /app/v1/esi/eve-login/{name}/token-data`

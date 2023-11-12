@@ -159,6 +159,8 @@ Allows an app to get corporation member tracking data.
 
 #### app-esi-login
 
+Allows an app to receive information about tokens for EVE logins.
+
 {app-esi-login}
 
 #### app-esi-proxy
