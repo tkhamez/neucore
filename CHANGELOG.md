@@ -2,7 +2,7 @@
 
 ## 2.4.0
 
-dd mm yyyy
+12 Nov 2023
 
 - New: The Docker image now supports HTTPS.
 - New: The ESI proxy API endpoints now also accept the headers `Neucore-EveCharacter` and `Neucore-EveLogin` 
