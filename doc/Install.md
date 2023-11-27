@@ -35,6 +35,16 @@ All installation methods share the same configuration via environment variables,
 You can run Neucore using the [Docker](https://www.docker.com/) image from 
 https://hub.docker.com/r/tkhamez/neucore.
 
+This is how you install Docker on Ubuntu 22.04:
+
+```
+sudo apt install docker.io
+sudo usermod -a -G docker user
+sudo systemctl enable docker
+```
+
+In the second line replace "user" with your username, after that login again.
+
 If you don't have a database you can also use Docker to create one, for example:
 
 ```shell
@@ -68,7 +78,7 @@ docker run \
   --env=NEUCORE_EVE_SCOPES="esi-corporations.read_corporation_membership.v1" \
   --env=NEUCORE_SESSION_SECURE=0 \
   --workdir=/var/www/backend \
-  --publish=127.0.0.1:8080:80 \
+  --publish=8080:80 \
   --network=neucore_prod \
   --name=neucore_prod_http \
   --restart=always \
@@ -77,6 +87,7 @@ docker run \
 ```
 
 The above will automatically start the container when the server is started if the Docker daemon is running.
+The application will be available on port 8080, e.g. http://localhost:8080.
 
 This is how you stop and restart the container or remove it completely:
 
@@ -96,8 +107,8 @@ docker exec -u www-data neucore_prod_http vendor/bin/doctrine-migrations migrati
 docker exec -u www-data neucore_prod_http bin/console doctrine-fixtures-load
 ```
 
-Now login at http://localhost:8080/ (if you run it on a remote host see "Production environment" below) 
-and make yourself an admin:
+Now login at http://localhost:8080/ (replace localhost if you IP address if you run it on a remote host), 
+then make yourself an admin:
 
 ```shell
 docker exec -u www-data neucore_prod_http bin/console make-admin 1
@@ -121,6 +132,11 @@ To use SSL from Docker use the following arguments when running the container:
   --publish=443:443 \
 ```
 
+If you do not have a certificate you can remove those arguments, but there will be a certificate warning
+from your browser.
+
+The application will be available at e.g. https://localhost.
+
 Example reverse proxy configuration for Apache, including necessary setup on Ubuntu 22.04:
 
 ```
@@ -141,6 +157,13 @@ sudo a2ensite z-neucore
 sudo certbot --apache
 
 sudo systemctl restart apache2
+```
+
+Once the reverse proxy is working, you can change the "publish" argument of Docker so that the port is 
+no longer available for every IP address:
+
+```
+--publish=127.0.0.1:8080:80 \
 ```
 
 #### Further Configuration
