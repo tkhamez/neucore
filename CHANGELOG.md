@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- PHP 8.3 compatibility (no changes were necessary, but it's tested now).
+
 ## 2.4.0
 
 12 Nov 2023

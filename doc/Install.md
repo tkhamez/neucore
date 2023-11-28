@@ -222,8 +222,8 @@ docker build -f setup/Dockerfile --no-cache -t neucore dist
 A Linux server (others may work, but were not tested).
 
 To run the application:
-* PHP >=8.0.2 (64bit version), see [backend/composer.json](../backend/composer.json) for necessary and suggested 
-  extensions (APCu highly recommended).
+* PHP >=8.0.2 - 8.3 (64bit version), see [backend/composer.json](../backend/composer.json) for necessary and 
+  suggested extensions (APCu highly recommended).
 * MariaDB or MySQL Server (tested with MariaDB 10.5, 10.11, 11.0 and MySQL 8.0.22, 8.0.35, 8.2.0, 
   NO_BACKSLASH_ESCAPES should not be on). Unit tests can also be run with a SQLite in-memory database.
 * An HTTP Server with support for PHP and URL rewriting.
