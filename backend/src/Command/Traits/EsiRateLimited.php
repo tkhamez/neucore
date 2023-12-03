@@ -54,8 +54,9 @@ trait EsiRateLimited
 
     private function checkThrottled(): void
     {
-        if (($retryAt = EsiClient::getThrottledWaitTime($this->storage)) > time()) {
-            $sleep = (int) max(1, $retryAt - time());
+        $now = time();
+        if (($retryAt = EsiClient::getThrottledWaitTime($this->storage)) > $now) {
+            $sleep = (int) max(1, $retryAt - $now);
             $this->logger->info("EsiRateLimited: hit 'throttled', sleeping $sleep seconds");
             $this->sleep($sleep);
         }

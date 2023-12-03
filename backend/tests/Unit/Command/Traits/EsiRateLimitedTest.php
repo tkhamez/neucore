@@ -67,7 +67,8 @@ class EsiRateLimitedTest extends TestCase
 
         $this->testStorage->set(Variables::ESI_THROTTLED, (string)(time() + 5));
         $this->checkForErrors();
-        $this->assertSame(5, $this->getSleepInSeconds());
+        $this->assertGreaterThanOrEqual(4, $this->getSleepInSeconds()); // very rarely this is 4
+        $this->assertLessThanOrEqual(5, $this->getSleepInSeconds());
         $this->assertMatchesRegularExpression(
             "/EsiRateLimited: hit 'throttled', sleeping \d+ seconds/",
             $this->testLogger->getHandler()->getRecords()[0]['message']
