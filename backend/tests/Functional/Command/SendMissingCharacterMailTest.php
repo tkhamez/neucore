@@ -48,7 +48,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "send-missing-character-mail"', $actual[0]);
         $this->assertStringEndsWith('  Mail is deactivated.', $actual[1]);
         $this->assertStringEndsWith('Finished "send-missing-character-mail"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
     }
 
     public function testExecuteInvalidConfig()
@@ -64,7 +64,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "send-missing-character-mail"', $actual[0]);
         $this->assertStringEndsWith('  Invalid config.', $actual[1]);
         $this->assertStringEndsWith('Finished "send-missing-character-mail"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
     }
 
     public function testExecuteMisconfiguration()
@@ -78,7 +78,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "send-missing-character-mail"', $actual[0]);
         $this->assertStringEndsWith('  Missing subject or body text.', $actual[1]);
         $this->assertStringEndsWith('Finished "send-missing-character-mail"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
     }
 
     public function testExecuteRequestException()
@@ -105,7 +105,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
             $actual[1]
         );
         $this->assertStringEndsWith('Finished "send-missing-character-mail"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
 
         $this->assertSame(0, count($log->getHandler()->getRecords()));
 
@@ -129,7 +129,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "send-missing-character-mail"', $actual[0]);
         $this->assertStringEndsWith('  Missing character mail sent to 104', $actual[1]);
         $this->assertStringEndsWith('Finished "send-missing-character-mail"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
 
         $this->om->clear();
         $member4 = $this->repoFactory->getCorporationMemberRepository()->find(104);

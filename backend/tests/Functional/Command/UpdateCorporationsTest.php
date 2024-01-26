@@ -50,7 +50,7 @@ class UpdateCorporationsTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "update-corporations"', $actual[0]);
         $this->assertStringEndsWith('  Corporation 101: ' . UpdateCorporations::UPDATE_NOK, $actual[1]);
         $this->assertStringEndsWith('Finished "update-corporations"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
     }
 
     public function testExecuteInvalidCorp()
@@ -66,7 +66,7 @@ class UpdateCorporationsTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "update-corporations"', $actual[0]);
         $this->assertStringEndsWith('  Corporation 0: ' . UpdateCorporations::UPDATE_NOK, $actual[1]);
         $this->assertStringEndsWith('Finished "update-corporations"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
     }
 
     public function testExecuteOk()
@@ -90,7 +90,7 @@ class UpdateCorporationsTest extends ConsoleTestCase
         $this->assertStringEndsWith('  Corporation 101: ' . UpdateCorporations::UPDATE_OK, $actual[1]);
         $this->assertStringEndsWith('  Alliance 212: ' . UpdateCorporations::UPDATE_OK, $actual[2]);
         $this->assertStringEndsWith('Finished "update-corporations"', $actual[3]);
-        $this->assertStringEndsWith('', $actual[4]);
+        $this->assertSame('', $actual[4]);
 
         // read result
         $this->om->clear();

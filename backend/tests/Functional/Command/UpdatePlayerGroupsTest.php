@@ -19,7 +19,7 @@ class UpdatePlayerGroupsTest extends ConsoleTestCase
 {
     public function testExecute()
     {
-        // setup
+// setup
         $h = new Helper();
         $h->emptyDb();
         $h->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
@@ -54,7 +54,7 @@ class UpdatePlayerGroupsTest extends ConsoleTestCase
         $this->assertStringEndsWith('  Account '.$p1->getId().' groups updated', $actual[1]);
         $this->assertStringEndsWith('  Account '.$p2->getId().' groups updated', $actual[2]);
         $this->assertStringEndsWith('Finished "update-player-groups"', $actual[3]);
-        $this->assertStringEndsWith('', $actual[4]);
+        $this->assertSame('', $actual[4]);
 
         # read result
         $actual = (new RepositoryFactory($om))->getPlayerRepository()->findBy([]);

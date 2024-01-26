@@ -1,19 +1,21 @@
+<?xml version="1.0"?>
 <!DOCTYPE xml>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          bootstrap="tests/bootstrap.php"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
-    <testsuites>
-        <testsuite name="Neucore">
-            <directory>tests</directory>
-        </testsuite>
-    </testsuites>
-    <coverage processUncoveredFiles="true">
-        <include>
-            <directory suffix=".php">./src</directory>
-        </include>
-        <exclude>
-            <directory>./src/Migrations</directory>
-        </exclude>
-    </coverage>
-    <logging/>
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+         cacheDirectory=".phpunit.cache">
+  <testsuites>
+    <testsuite name="Neucore">
+      <directory>tests</directory>
+    </testsuite>
+  </testsuites>
+  <logging/>
+  <source>
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+    <exclude>
+      <directory>./src/Migrations</directory>
+    </exclude>
+  </source>
 </phpunit>

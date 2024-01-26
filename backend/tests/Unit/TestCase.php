@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use PHPUnit\Framework\MockObject\Exception;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\RouteInterface;
 use Slim\Interfaces\RouteParserInterface;
@@ -11,6 +12,9 @@ use Tests\RequestFactory;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @throws Exception
+     */
     protected function createRequestWithRoute(string $method = 'GET', string $path = null): ServerRequestInterface
     {
         $routeParser = $this->createMock(RouteParserInterface::class);

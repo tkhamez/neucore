@@ -45,7 +45,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "update-member-tracking"', $actual[0]);
         $this->assertStringEndsWith('  Corporation not found for Director', $actual[1]);
         $this->assertStringEndsWith('Finished "update-member-tracking"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
     }
 
     public function testExecuteErrorToken()
@@ -64,7 +64,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "update-member-tracking"', $actual[0]);
         $this->assertStringEndsWith('  Error refreshing token for Director', $actual[1]);
         $this->assertStringEndsWith('Finished "update-member-tracking"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
     }
 
     public function testExecuteErrorData()
@@ -84,7 +84,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->assertStringEndsWith('  Start updating Corporation', $actual[1]);
         $this->assertStringEndsWith('  Error getting member tracking data from ESI for Director', $actual[2]);
         $this->assertStringEndsWith('Finished "update-member-tracking"', $actual[3]);
-        $this->assertStringEndsWith('', $actual[4]);
+        $this->assertSame('', $actual[4]);
     }
 
     public function testExecuteSuccess()
@@ -113,7 +113,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->assertStringEndsWith('  Start updating Corp 2', $actual[5]);
         $this->assertStringEndsWith('  Updated tracking data for 0 members of corporation 100202', $actual[6]);
         $this->assertStringEndsWith('Finished "update-member-tracking"', $actual[7]);
-        $this->assertStringEndsWith('', $actual[8]);
+        $this->assertSame('', $actual[8]);
 
         $this->om->clear();
         $corps = (new RepositoryFactory($this->om))->getCorporationRepository()->findBy([]);
@@ -122,7 +122,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->assertNotNull($corps[1]->getTrackingLastUpdate());
     }
 
-    private function addData(bool $noCorporation = false, bool $expiredToken = false, bool $addSecond = true)
+    private function addData(bool $noCorporation = false, bool $expiredToken = false, bool $addSecond = true): void
     {
         $eveLogin = (new EveLogin())->setName(EveLogin::NAME_TRACKING);
         $corporation1 = (new Corporation())->setId(100200)->setName('Corporation');

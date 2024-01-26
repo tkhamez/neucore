@@ -52,7 +52,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "update-chars"', $actual[0]);
         $this->assertStringEndsWith('  Character 1: update NOK', $actual[1]);
         $this->assertStringEndsWith('Finished "update-chars"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
     }
 
     public function testExecuteOk()
@@ -81,7 +81,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "update-chars"', $actual[0]);
         $this->assertStringEndsWith('  Characters 3,6: update OK', $actual[1]);
         $this->assertStringEndsWith('Finished "update-chars"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
 
         // read result
         $this->om->clear();

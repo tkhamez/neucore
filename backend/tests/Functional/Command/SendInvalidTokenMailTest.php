@@ -49,7 +49,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "send-invalid-token-mail"', $actual[0]);
         $this->assertStringEndsWith('  Mail is deactivated.', $actual[1]);
         $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
     }
 
     public function testExecuteMisconfiguration()
@@ -79,7 +79,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "send-invalid-token-mail"', $actual[0]);
         $this->assertStringEndsWith('  Missing character that can send mails or missing token data.', $actual[1]);
         $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
     }
 
     public function testExecuteRequestException()
@@ -106,7 +106,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
             $actual[1]
         );
         $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
 
         $this->assertSame(0, count($log->getHandler()->getRecords()));
 
@@ -130,7 +130,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "send-invalid-token-mail"', $actual[0]);
         $this->assertStringEndsWith('  Invalid token mail sent to 30', $actual[1]);
         $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
 
         $this->om->clear();
         $player = $this->repoFactory->getPlayerRepository()->find($this->playerId);
