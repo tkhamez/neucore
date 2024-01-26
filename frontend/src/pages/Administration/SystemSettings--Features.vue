@@ -97,7 +97,8 @@
             <a :href="`${backendHost}/login/${loginNames.noScopes}`">{{ backendHost }}/login/{{ loginNames.noScopes }}</a>
             <br>
             This login URL does not require any ESI scopes. If used it will disable groups for the player account
-            if the "Groups Deactivation" feature above is enabled, unless the
+            if the "Groups Deactivation" feature above is enabled and the player has a character in one of the
+            configured alliances or corporations, unless the
             <!--suppress HtmlUnknownAnchorTarget --> <a href="#PlayerManagement">account status</a>
             is "manually managed".
         </p>
