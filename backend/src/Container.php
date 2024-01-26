@@ -16,7 +16,7 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Formatter\LogglyFormatter;
 use Monolog\Formatter\LogstashFormatter;
 use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
+use Monolog\Level;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\HttpClientFactory;
 use Neucore\Factory\HttpClientFactoryInterface;
@@ -147,7 +147,7 @@ class Container
                         $formatter->includeStacktraces();
                     }
                 }
-                $handler = (new StreamHandler($path, Logger::DEBUG))->setFormatter($formatter);
+                $handler = (new StreamHandler($path, Level::Debug))->setFormatter($formatter);
                 return (new Log\Logger('app'))->pushHandler($handler);
             },
 

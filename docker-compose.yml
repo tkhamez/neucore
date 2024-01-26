@@ -51,7 +51,6 @@ services:
     container_name: neucore_dev_php
     build:
       context: setup
-      #dockerfile: Dockerfile-php80-fpm
       #dockerfile: Dockerfile-php81-fpm
       #dockerfile: Dockerfile-php82-fpm
       dockerfile: Dockerfile-php83-fpm

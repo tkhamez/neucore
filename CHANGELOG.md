@@ -4,7 +4,9 @@
 
 dd mm yyyy
 
+- **BC break**: Dropped PHP 8.0 support, minimum required version is now 8.1.0.
 - PHP 8.3 compatibility (no changes were necessary, but it's tested now).
+- Updated dependencies.
 
 ## 2.4.0
 

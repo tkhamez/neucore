@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Neucore\Log;
 
 use Monolog\DateTimeImmutable;
+use Monolog\Level;
 
 class Logger extends \Monolog\Logger
 {
+    /** @noinspection PhpRedundantMethodOverrideInspection */
     public function addRecord(
-        int $level,
+        int|Level $level,
         string $message,
         array $context = [],
         DateTimeImmutable $datetime = null

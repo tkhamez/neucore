@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Log;
 
+use Monolog\Level;
 use Monolog\Logger;
+use Monolog\LogRecord;
 use Neucore\Log\FluentdFormatter;
 use PHPUnit\Framework\TestCase;
 
@@ -12,14 +14,14 @@ class FluentdFormatterTest extends TestCase
 {
     public function testFormat()
     {
-        $record = array(
-            'message' => 'msg',
-            'context' => ['exception' => new \Exception('test', 10)],
-            'level' => Logger::DEBUG,
-            'level_name' => Logger::getLevelName(Logger::DEBUG),
-            'channel' => 'channel',
-            'datetime' => new \DateTimeImmutable(),
-            'extra' => [],
+        $record = new LogRecord(
+            new \DateTimeImmutable(),
+            'channel',
+            Level::Debug,
+            'msg',
+            ['exception' => new \Exception('test', 10)],
+            ['extra'],
+            Logger::toMonologLevel(Level::Debug),
         );
         $formatter = new FluentdFormatter();
 

@@ -6,7 +6,7 @@ namespace Tests;
 
 use Monolog\ErrorHandler;
 use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
+use Monolog\Level;
 use Neucore\Application;
 use Neucore\Middleware\Psr15\RateLimitIP;
 
@@ -17,7 +17,7 @@ require __DIR__ . '/../vendor/autoload.php';
 // Setup error handler
 $config = (new Application())->loadSettings(true);
 error_reporting((int)$config['error_reporting']);
-$handler = new StreamHandler($config['monolog']['path'], Logger::DEBUG);
+$handler = new StreamHandler($config['monolog']['path'], Level::Debug);
 $log = new \Neucore\Log\Logger('Test');
 $log->pushHandler($handler);
 ErrorHandler::register($log);

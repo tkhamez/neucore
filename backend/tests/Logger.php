@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests;
 
 use Monolog\Handler\TestHandler;
+use Monolog\LogRecord;
 
 class Logger extends \Neucore\Log\Logger
 {
@@ -24,7 +25,7 @@ class Logger extends \Neucore\Log\Logger
     public function getMessages(): array
     {
         if (($handler = $this->getHandler()) !== null) {
-            return array_map(function (array $item) {
+            return array_map(function (LogRecord $item) {
                 return $item['message'];
             }, $handler->getRecords());
         }

@@ -6,6 +6,7 @@ namespace Neucore\Log;
 
 use Gelf\Encoder\JsonEncoder;
 use Monolog\Formatter\FormatterInterface;
+use Monolog\LogRecord;
 
 class GelfMessageFormatter implements FormatterInterface
 {
@@ -16,7 +17,7 @@ class GelfMessageFormatter implements FormatterInterface
         $this->formatter = new \Monolog\Formatter\GelfMessageFormatter();
     }
 
-    public function format(array $record): string
+    public function format(LogRecord $record): string
     {
         $message = $this->formatter->format($record);
 

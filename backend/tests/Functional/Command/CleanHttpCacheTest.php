@@ -13,42 +13,57 @@ use Tests\Functional\ConsoleTestCase;
 
 class CleanHttpCacheTest extends ConsoleTestCase
 {
-    private string $file1;
-    private string $file2;
+    private static string $cacheDir =  __DIR__ . '/cache';
+
+    private array $files = [];
 
     protected function tearDown(): void
     {
         unset($_ENV['NEUCORE_CACHE_DIR']);
 
-        @unlink($this->file1);
-        @unlink($this->file2);
+        foreach ($this->files as $file) {
+            if (file_exists($file)) {
+                unlink($file);
+            }
+        }
     }
 
     public function testExecute()
     {
-        $dir = __DIR__ . '/cache';
-        $cache = new Psr6CacheStorage(new FilesystemAdapter('', 86400, $dir . '/http/default'));
+        $dir = self::$cacheDir . '/http/default';
+        $cache = new Psr6CacheStorage(new FilesystemAdapter('', 86400, $dir));
         $entry1 = new CacheEntry(new Request('GET', '/1'), new Response(), new \DateTime('+ 1000 seconds'));
         $entry2 = new CacheEntry(new Request('GET', '/2'), new Response(), new \DateTime('+ 10 seconds'));
         $cache->save('abc', $entry1);
         $cache->save('def', $entry2);
 
-        $this->file1 = $dir . '/http/default/@/D/K/EgL8QYyiakaaA6EJZP8Q';
-        $this->file2 = $dir . '/http/default/@/X/N/fghpXxufE0oEF1KNkZqw';
+        $this->files = $this->getFiles($dir);
 
         // change lifetime of file1
-        $file1Content = explode("\n", (string)file_get_contents($this->file2));
-        $file1Content[0] = time() - 10;
-        file_put_contents($this->file2, implode("\n", $file1Content));
+        $file2Content = explode("\n", (string)file_get_contents($this->files[1]));
+        $file2Content[0] = time() - 10;
+        file_put_contents($this->files[1], implode("\n", $file2Content));
 
-        $output = $this->runConsoleApp('clean-http-cache', [], [], [['NEUCORE_CACHE_DIR', $dir]], true);
+        $output = $this->runConsoleApp('clean-http-cache', [], [], [['NEUCORE_CACHE_DIR', self::$cacheDir]], true);
         $actual = explode("\n", $output);
 
-        $this->assertStringContainsString('Guzzle cache cleaned.', $actual[0]);
-        $this->assertSame('', $actual[1]);
-        $this->assertSame(2, count($actual));
+        self::assertStringContainsString('Guzzle cache cleaned.', $actual[0]);
+        self::assertSame('', $actual[1]);
+        self::assertSame(2, count($actual));
 
-        $this->assertTrue(file_exists($this->file1));
-        $this->assertFalse(file_exists($this->file2));
+        self::assertTrue(file_exists($this->files[0]));
+        self::assertFalse(file_exists($this->files[1]));
+    }
+
+    private function getFiles(string $path): array
+    {
+        $files = [];
+        $objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+        foreach ($objects as $object) { /* @var \SplFileInfo $object */
+            if ($object->isFile()) {
+                $files[] = $object->getRealPath();
+            }
+        }
+        return $files;
     }
 }
