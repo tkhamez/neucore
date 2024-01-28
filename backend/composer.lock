@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "df3219a5ae970e6599053248e54e49e2",
+    "content-hash": "5e10a4316a133307d36e08f96aa64bec",
     "packages": [
         {
             "name": "brick/math",
@@ -1001,16 +1001,16 @@
         },
         {
             "name": "doctrine/orm",
-            "version": "2.17.3",
+            "version": "2.17.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/orm.git",
-                "reference": "398ab0547aaf90bdb352b560a94c24f44ff00670"
+                "reference": "ccfc97c32f63aaa0988ac6aa42e71c5590bb794d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/orm/zipball/398ab0547aaf90bdb352b560a94c24f44ff00670",
-                "reference": "398ab0547aaf90bdb352b560a94c24f44ff00670",
+                "url": "https://api.github.com/repos/doctrine/orm/zipball/ccfc97c32f63aaa0988ac6aa42e71c5590bb794d",
+                "reference": "ccfc97c32f63aaa0988ac6aa42e71c5590bb794d",
                 "shasum": ""
             },
             "require": {
@@ -1096,9 +1096,9 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/orm/issues",
-                "source": "https://github.com/doctrine/orm/tree/2.17.3"
+                "source": "https://github.com/doctrine/orm/tree/2.17.4"
             },
-            "time": "2024-01-16T21:32:04+00:00"
+            "time": "2024-01-26T19:41:16+00:00"
         },
         {
             "name": "doctrine/persistence",
@@ -4708,16 +4708,16 @@
         },
         {
             "name": "tkhamez/swagger-eve-php",
-            "version": "8.2.0",
+            "version": "9.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/swagger-eve-php.git",
-                "reference": "f582ee289877533652a0e7b776077dc93b2c50c1"
+                "reference": "67c0be180ef3bcee4f0bdbe825cc95e65136d871"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/f582ee289877533652a0e7b776077dc93b2c50c1",
-                "reference": "f582ee289877533652a0e7b776077dc93b2c50c1",
+                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/67c0be180ef3bcee4f0bdbe825cc95e65136d871",
+                "reference": "67c0be180ef3bcee4f0bdbe825cc95e65136d871",
                 "shasum": ""
             },
             "require": {
@@ -4744,7 +4744,7 @@
             ],
             "authors": [
                 {
-                    "name": "OpenAPI-Generator contributors",
+                    "name": "OpenAPI",
                     "homepage": "https://openapi-generator.tech"
                 }
             ],
@@ -4761,9 +4761,9 @@
             ],
             "support": {
                 "issues": "https://github.com/tkhamez/swagger-eve-php/issues",
-                "source": "https://github.com/tkhamez/swagger-eve-php/tree/8.2.0"
+                "source": "https://github.com/tkhamez/swagger-eve-php/tree/9.0.0"
             },
-            "time": "2023-05-28T17:20:09+00:00"
+            "time": "2024-01-28T15:30:46+00:00"
         },
         {
             "name": "web-token/jwt-core",
@@ -5856,16 +5856,16 @@
         },
         {
             "name": "netresearch/jsonmapper",
-            "version": "v4.2.0",
+            "version": "v4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cweiske/jsonmapper.git",
-                "reference": "f60565f8c0566a31acf06884cdaa591867ecc956"
+                "reference": "18133a2d8c24e10e58e02b700308ed3a4a60c97f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/f60565f8c0566a31acf06884cdaa591867ecc956",
-                "reference": "f60565f8c0566a31acf06884cdaa591867ecc956",
+                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/18133a2d8c24e10e58e02b700308ed3a4a60c97f",
+                "reference": "18133a2d8c24e10e58e02b700308ed3a4a60c97f",
                 "shasum": ""
             },
             "require": {
@@ -5876,7 +5876,7 @@
                 "php": ">=7.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "~7.5 || ~8.0 || ~9.0",
+                "phpunit/phpunit": "~7.5 || ~8.0 || ~9.0 || ~10.0",
                 "squizlabs/php_codesniffer": "~3.5"
             },
             "type": "library",
@@ -5901,9 +5901,9 @@
             "support": {
                 "email": "cweiske@cweiske.de",
                 "issues": "https://github.com/cweiske/jsonmapper/issues",
-                "source": "https://github.com/cweiske/jsonmapper/tree/v4.2.0"
+                "source": "https://github.com/cweiske/jsonmapper/tree/v4.4.0"
             },
-            "time": "2023-04-09T17:37:40+00:00"
+            "time": "2024-01-28T07:31:37+00:00"
         },
         {
             "name": "nikic/php-parser",

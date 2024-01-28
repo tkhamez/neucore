@@ -574,13 +574,13 @@ class EsiDataTest extends TestCase
             new Response(200, [], '[]'), // r21 - 81-90
             new Response(200, [], '[{"id": 100, "name": "N 100", "category": "character"}]'), // r22 - 91-100
             new Response(200, [], '[{"id": 200, "name": "N 200", "category": "character"}]'), // r23 - 101-200
-            new Response(200, [], ''), // r24 - 201-300
-            new Response(200, [], ''), // r25 - 301-400
-            new Response(200, [], ''), // r26 - 401-500
-            new Response(200, [], ''), // r27 - 501-600
-            new Response(200, [], ''), // r28 - 601-700
-            new Response(200, [], ''), // r29 - 701-800
-            new Response(200, [], ''), // r30 - 801-900
+            new Response(200, [], '[]'), // r24 - 201-300
+            new Response(200, [], '[]'), // r25 - 301-400
+            new Response(200, [], '[]'), // r26 - 401-500
+            new Response(200, [], '[]'), // r27 - 501-600
+            new Response(200, [], '[]'), // r28 - 601-700
+            new Response(200, [], '[]'), // r29 - 701-800
+            new Response(200, [], '[]'), // r30 - 801-900
             new Response(200, [], '[{"id": 1000, "name": "N 1000", "category": "character"}]'), // r31 - 901-1000
             new Response(200, [], '[{"id": 1500, "name": "N 1500", "category": "character"}]') // r32 - 1001 - 1500
         );
@@ -600,6 +600,7 @@ class EsiDataTest extends TestCase
         $this->assertSame(PostUniverseNames200Ok::CATEGORY_CHARACTER, $names[0]->getCategory());
 
         $records = $this->log->getHandler()->getRecords();
+        #print_r($this->log->getMessages());
         $this->assertSame(4, count($records));
         $this->assertSame(
             'fetchUniverseNames: Invalid ID(s) in request, trying again with max. 100 IDs.',
