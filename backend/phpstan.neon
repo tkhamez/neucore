@@ -38,8 +38,14 @@ parameters:
 			message: '#Cannot call method (.*) on (.*)#'
 			path: %currentWorkingDirectory%/tests/*
 		-
+			message: '#Parameter \#1 \$prefix of method (.*)assertStringStartsWith\(\) expects non-empty-string, string given.#'
+			path: %currentWorkingDirectory%/tests/*
+		-
 			message: '#Class Tests\\Client extends @final class GuzzleHttp\\Client.#'
 			path: %currentWorkingDirectory%/tests/Client.php
+		-
+			message: '#Class Tests\\Logger extends @final class Monolog\\Logger.#'
+			path: %currentWorkingDirectory%/tests/Logger.php
 		-
 			message: '#Method (.*) should return (.*) but returns (.*)#'
 			path: %currentWorkingDirectory%/tests/*

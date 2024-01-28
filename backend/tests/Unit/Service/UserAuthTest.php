@@ -127,7 +127,7 @@ class UserAuthTest extends TestCase
         $this->assertSame(UserAuth::LOGIN_AUTHENTICATED_FAIL, $result);
         $this->assertSame(
             'UserAuth::authenticate(): Role "'.Role::USER.'" not found.',
-            $this->log->getHandler()->getRecords()[0]['message']
+            $this->log->getMessages()[0]
         );
     }
 
@@ -226,7 +226,7 @@ class UserAuthTest extends TestCase
         );
 
         $this->assertSame(UserAuth::LOGIN_ALT_FAILED, $result);
-        $this->assertSame('Login with alt 9014 denied.', $this->log->getHandler()->getRecords()[0]['message']);
+        $this->assertSame('Login with alt 9014 denied.', $this->log->getMessages()[0]);
     }
 
     public function testLogin_Authenticate_NewOwner()
@@ -522,7 +522,7 @@ class UserAuthTest extends TestCase
         $this->assertSame(1, count($this->log->getHandler()->getRecords()));
         $this->assertStringStartsWith(
             'A new entity was found', // EveLogin was not persisted
-            $this->log->getHandler()->getRecords()[0]['message']
+            $this->log->getMessages()[0]
         );
     }
 

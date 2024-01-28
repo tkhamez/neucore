@@ -6,7 +6,9 @@
     cacheDirectory="var/cache/.psalm"
     errorLevel="6"
     resolveFromConfigFile="true"
-    phpVersion="8.0"
+    phpVersion="8.1"
+    findUnusedBaselineEntry="true"
+    findUnusedCode="false"
 >
     <projectFiles>
         <directory name="src" />

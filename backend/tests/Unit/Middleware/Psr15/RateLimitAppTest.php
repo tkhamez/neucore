@@ -85,11 +85,11 @@ class RateLimitAppTest extends TestCase
             $response->getBody()->__toString()
         );
 
-        $logs = $this->logger->getHandler()->getRecords();
+        $logs = $this->logger->getMessages();
         $this->assertSame(1, count($logs));
         $this->assertStringStartsWith(
             "API Rate Limit: App $this->appId 'Test app', limit exceeded with 51 request in ", // ... ~5.5 seconds.
-            $logs[0]['message']
+            $logs[0]
         );
     }
 
@@ -129,11 +129,11 @@ class RateLimitAppTest extends TestCase
         $this->assertFalse($response->hasHeader(RateLimit::HEADER_REMAIN));
         $this->assertFalse($response->hasHeader(RateLimit::HEADER_RESET));
 
-        $logs = $this->logger->getHandler()->getRecords();
+        $logs = $this->logger->getMessages();
         $this->assertSame(1, count($logs));
         $this->assertStringStartsWith(
             "API Rate Limit: App $this->appId 'Test app', limit exceeded with 51 request in ", // ... ~5.5 seconds.
-            $logs[0]['message']
+            $logs[0]
         );
     }
 

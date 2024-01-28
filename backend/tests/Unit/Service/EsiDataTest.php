@@ -187,9 +187,9 @@ class EsiDataTest extends TestCase
         $this->client->setResponse(new Response(404));
         $char = $this->esiData->fetchCharacter(123);
 
-        $this->assertStringContainsString('404', $this->log->getHandler()->getRecords()[0]['message']);
+        $this->assertStringContainsString('404', $this->log->getMessages()[0]);
         $this->assertNull($char);
-        $this->assertStringStartsWith('[404] Error ', $this->log->getHandler()->getRecords()[0]['message']);
+        $this->assertStringStartsWith('[404] Error ', $this->log->getMessages()[0]);
     }
 
     public function testFetchCharacter_404Deleted()
@@ -350,7 +350,7 @@ class EsiDataTest extends TestCase
 
         $corp = $this->esiData->fetchCorporation(123);
         $this->assertNull($corp);
-        $this->assertStringStartsWith('[500] Error ', $this->log->getHandler()->getRecords()[0]['message']);
+        $this->assertStringStartsWith('[500] Error ', $this->log->getMessages()[0]);
     }
 
     public function testFetchCorporationNoFlushNoAlliance()
@@ -445,7 +445,7 @@ class EsiDataTest extends TestCase
 
         $alli = $this->esiData->fetchAlliance(123);
         $this->assertNull($alli);
-        $this->assertStringStartsWith('[500] Error ', $this->log->getHandler()->getRecords()[0]['message']);
+        $this->assertStringStartsWith('[500] Error ', $this->log->getMessages()[0]);
     }
 
     public function testFetchAllianceNoFlush()
@@ -621,7 +621,7 @@ class EsiDataTest extends TestCase
             '... {\"error\":\"Ensure all IDs are valid before resolving.\"}',
             $records[3]['message']
         );
-        $this->assertSame([3], $records[3]['context']['IDs']);
+        $this->assertSame([3], $records[3]['context']['IDs'] ?? []);
     }
 
     public function testFetchStructure_NoToken()
@@ -794,7 +794,7 @@ class EsiDataTest extends TestCase
     {
         $this->client->setResponse(new Response(500));
         $this->assertFalse($this->esiData->verifyRoles(['Auditor'], 100, 'access-token'));
-        $this->assertStringStartsWith('[500]', $this->log->getHandler()->getRecords()[0]['message']);
+        $this->assertStringStartsWith('[500]', $this->log->getMessages()[0]);
     }
 
     public function testVerifyRoles_CharacterNotFound()

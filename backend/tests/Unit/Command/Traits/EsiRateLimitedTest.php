@@ -52,7 +52,7 @@ class EsiRateLimitedTest extends TestCase
         $this->assertSame(1, count($this->testLogger->getHandler()->getRecords()));
         $this->assertMatchesRegularExpression(
             '/sleeping \d+ second/',
-            $this->testLogger->getHandler()->getRecords()[0]['message']
+            $this->testLogger->getMessages()[0]
         );
     }
 
@@ -71,7 +71,7 @@ class EsiRateLimitedTest extends TestCase
         $this->assertLessThanOrEqual(5, $this->getSleepInSeconds());
         $this->assertMatchesRegularExpression(
             "/EsiRateLimited: hit 'throttled', sleeping \d+ seconds/",
-            $this->testLogger->getHandler()->getRecords()[0]['message']
+            $this->testLogger->getMessages()[0]
         );
     }
 
@@ -86,8 +86,8 @@ class EsiRateLimitedTest extends TestCase
         $this->assertLessThanOrEqual(20, $this->getSleepInSeconds());
         $this->assertStringStartsWith(
             'EsiRateLimited: hit error limit, sleeping ',
-            $this->testLogger->getHandler()->getRecords()[0]['message']
+            $this->testLogger->getMessages()[0]
         );
-        $this->assertStringEndsWith(' seconds', $this->testLogger->getHandler()->getRecords()[0]['message']);
+        $this->assertStringEndsWith(' seconds', $this->testLogger->getMessages()[0]);
     }
 }

@@ -1,7 +1,6 @@
 /.env
 /.php_cs.cache
 /.php-cs-fixer.cache
-/.phpunit.cache
 /var/cache/*
 !/var/cache/.gitkeep
 /var/logs/*

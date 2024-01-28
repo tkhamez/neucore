@@ -26,6 +26,6 @@ class ErrorHandlerTest extends TestCase
         $error->__invoke(RequestFactory::createRequest(), $exception, true, true, true);
 
         $this->assertSame('msg', $handler->getRecords()[0]['message']);
-        $this->assertSame($exception, $handler->getRecords()[0]['context']['exception']);
+        $this->assertSame($exception, $handler->getRecords()[0]['context']['exception'] ?? null);
     }
 }
