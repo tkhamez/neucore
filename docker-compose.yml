@@ -27,7 +27,7 @@ services:
 
   neucore_java:
     container_name: neucore_dev_java
-    image: openjdk:11-jre
+    image: eclipse-temurin:17-jre-alpine
     volumes: [".:/app"]
     user: ${UID}
     networks: [neucore]

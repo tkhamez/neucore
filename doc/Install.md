@@ -237,7 +237,7 @@ Additionally, for a development environment and to build the application:
 * PHP extensions: ast (optional for phan), pdo_sqlite (optional for unit tests), xdebug (optional for debugging).
 * Composer 2.
 * Node.js, only tested with version 18.12.1 (LTS) with npm 8.19.2.
-* Java runtime >=8 (but only tested with v17) to generate the OpenAPI JavaScript client.
+* Java runtime >=11 (but only tested with v17) to generate the OpenAPI JavaScript client.
 
 #### Install/Update
 
