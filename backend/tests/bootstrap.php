@@ -18,7 +18,7 @@ require __DIR__ . '/../vendor/autoload.php';
 $config = (new Application())->loadSettings(true);
 error_reporting((int)$config['error_reporting']);
 $handler = new StreamHandler($config['monolog']['path'], Level::Debug);
-$log = new \Neucore\Log\Logger('Test');
+$log = new \Monolog\Logger('Test');
 $log->pushHandler($handler);
 ErrorHandler::register($log);
 ini_set('log_errors', '0');

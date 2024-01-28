@@ -7,7 +7,7 @@ namespace Tests;
 use Monolog\Handler\TestHandler;
 use Monolog\LogRecord;
 
-class Logger extends \Neucore\Log\Logger
+class Logger extends \Monolog\Logger
 {
     public function __construct($handlers = array(), $processors = array())
     {

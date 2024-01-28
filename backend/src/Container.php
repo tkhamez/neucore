@@ -17,6 +17,7 @@ use Monolog\Formatter\LogglyFormatter;
 use Monolog\Formatter\LogstashFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
+use Monolog\Logger;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\HttpClientFactory;
 use Neucore\Factory\HttpClientFactoryInterface;
@@ -148,7 +149,7 @@ class Container
                     }
                 }
                 $handler = (new StreamHandler($path, Level::Debug))->setFormatter($formatter);
-                return (new Log\Logger('app'))->pushHandler($handler);
+                return (new Logger('app'))->pushHandler($handler);
             },
 
             // Guzzle
