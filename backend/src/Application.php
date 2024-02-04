@@ -110,10 +110,10 @@ class Application
 
     public function __construct()
     {
-        // set timezone - also used by Doctrine for dates/times in the database
+        // Set timezone - also used by Doctrine for dates/times in the database.
         date_default_timezone_set('UTC');
 
-        // allow group to change files
+        // Allow group to change files created by this application.
         umask(0002);
     }
 
