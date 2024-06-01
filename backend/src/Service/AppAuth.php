@@ -105,9 +105,6 @@ class AppAuth implements RoleProviderInterface
     {
         if (password_needs_rehash($app->getSecret(), PASSWORD_BCRYPT)) {
             $hash = password_hash($secret, PASSWORD_BCRYPT);
-            if ($hash === '') {
-                return;
-            }
             $app->setSecret($hash);
             $this->objectManager->flush();
         }

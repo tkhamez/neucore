@@ -138,9 +138,6 @@ class AppController extends BaseController
             return $this->response->withStatus(500);
         }
         $hash = password_hash($secret, PASSWORD_BCRYPT);
-        if ($hash === '') {
-            return $this->response->withStatus(500);
-        }
 
         $app = new App();
         $app->setName($name);
@@ -817,9 +814,6 @@ class AppController extends BaseController
             return $this->response->withStatus(500);
         }
         $hash = password_hash($secret, PASSWORD_BCRYPT);
-        if ($hash === '') {
-            return $this->response->withStatus(500);
-        }
 
         $app->setSecret($hash);
 
