@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore;
 
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Logging\Middleware;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
@@ -50,32 +51,23 @@ class Container
                 } else {
                     $conf = $config['doctrine'] ?? []; // it should always be set
                 }
-                $metaConfig = ORMSetup::createAttributeMetadataConfiguration(
-                    $conf['meta']['entity_paths'],
-                    $conf['meta']['dev_mode'],
-                    $conf['meta']['proxy_dir']
-                );
                 $options = $conf['driver_options'];
-                $caFile = (string) $options['mysql_ssl_ca'];
-                $verify = (bool) $options['mysql_verify_server_cert'];
+                $caFile = (string)$options['mysql_ssl_ca'];
+                $verify = (bool)$options['mysql_verify_server_cert'];
                 if ($caFile !== '' && (!$verify || is_file($caFile))) {
                     $conf['connection']['driverOptions'] = [
                         \PDO::MYSQL_ATTR_SSL_CA => $caFile,
                         \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => $verify,
                     ];
                 }
+                $metaConfig = ORMSetup::createAttributeMetadataConfiguration(
+                    $conf['meta']['entity_paths'],
+                    $conf['meta']['dev_mode'],
+                    $conf['meta']['proxy_dir']
+                );
+                #$metaConfig->setMiddlewares([new Middleware($c->get(LoggerInterface::class))]);
                 $connection = DriverManager::getConnection($conf['connection'], $metaConfig);
-                /** @noinspection PhpUnnecessaryLocalVariableInspection */
-                $em = new EntityManager($connection, $metaConfig);
-                /*$logger = new class() extends \Doctrine\DBAL\Logging\DebugStack {
-                    public function startQuery($sql, ?array $params = null, ?array $types = null)
-                    {
-                        error_log($sql);
-                        #error_log(print_r($params, true));
-                    }
-                };
-                $em->getConnection()->getConfiguration()->setSQLLogger($logger);*/
-                return $em;
+                return new EntityManager($connection, $metaConfig);
             },
             ObjectManager::class => function (ContainerInterface $c) {
                 return $c->get(EntityManagerInterface::class);
