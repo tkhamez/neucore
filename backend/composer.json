@@ -20,7 +20,7 @@
         "ext-zlib": "*",
         "doctrine/common": "^3.3",
         "doctrine/migrations": "^3.5",
-        "doctrine/orm": "^2.12",
+        "doctrine/orm": "^3.2",
         "doctrine/persistence": "^3.0",
         "graylog2/gelf-php": "^2.0",
         "guzzlehttp/guzzle": "^7.2",

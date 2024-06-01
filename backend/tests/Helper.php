@@ -294,7 +294,7 @@ class Helper
         $qb = $em->createQueryBuilder();
 
         foreach ($this->entities as $entity) {
-            $qb->delete($entity)->getQuery()->execute();
+            $qb->delete($entity, 'c')->getQuery()->execute();
         }
 
         if (Database::getDbName($em) === 'sqlite') {
