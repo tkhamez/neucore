@@ -1,6 +1,6 @@
 # Changelog
 
-## next
+## 2.5.0
 
 dd mm yyyy
 
