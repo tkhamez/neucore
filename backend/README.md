@@ -161,7 +161,7 @@ bin/doctrine orm:generate-entities src
 
 Validate the mapping files:
 ```
-bin/doctrine orm:validate-schema
+bin/doctrine orm:validate-schema -v
 ```
 
 Generate a migration by comparing the current database to the mapping information.  
@@ -173,14 +173,8 @@ vendor/bin/doctrine-migrations migrations:diff
 
 Execute a single migration, e.g.:
 ```
-vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20230101183432 --up
-vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20230101183432 --down
-```
-
-Create/sync the database schema - **This can delete data - backup your database first!** (For example, there are
-changes to the database schema where this command deletes a column and creates a new one instead of renaming it.):
-```
-bin/doctrine orm:schema-tool:update
+vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20240601205616 --up
+vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20240601205616 --down
 ```
 
 Check reserved words:
