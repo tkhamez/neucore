@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Neucore\Entity;
 
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -19,9 +18,9 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     required={"name", "value"}
  * )
- * @ORM\Entity
- * @ORM\Table(name="system_variables", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
+#[ORM\Entity]
+#[ORM\Table(name: "system_variables", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
 class SystemVariable implements \JsonSerializable
 {
     /**
@@ -293,23 +292,21 @@ class SystemVariable implements \JsonSerializable
      * Variable name.
      *
      * @OA\Property(maxLength=255)
-     * @ORM\Column(type="string", length=255)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
      */
+    #[ORM\Id]
+    #[ORM\Column(type: "string", length: 255)]
+    #[ORM\GeneratedValue(strategy: "NONE")]
     private string $name;
 
     /**
      * Variable value.
      *
      * @OA\Property(nullable=true)
-     * @ORM\Column(name="variable_value", type="text", length=16777215, nullable=true)
      */
+    #[ORM\Column(name: "variable_value", type: "text", length: 16777215, nullable: true)]
     private ?string $value = null;
 
-    /**
-     * @ORM\Column(type="string", length=16, options={"default" : "public"})
-     */
+    #[ORM\Column(type: "string", length: 16, options: ["default" => "public"])]
     private string $scope = self::SCOPE_PUBLIC;
 
     public function jsonSerialize(): array

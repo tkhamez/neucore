@@ -6,7 +6,6 @@ namespace Neucore\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -16,110 +15,110 @@ use OpenApi\Annotations as OA;
  *     required={"id", "name"}
  * )
  *
- * @ORM\Entity
- * @ORM\Table(name="watchlists", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
+#[ORM\Entity]
+#[ORM\Table(name: "watchlists", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
 class Watchlist implements \JsonSerializable
 {
     /**
      * @OA\Property()
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
      */
+    #[ORM\Id]
+    #[ORM\Column(type: "integer")]
+    #[ORM\GeneratedValue]
     private ?int $id = null;
 
     /**
      * @OA\Property()
-     * @ORM\Column(type="string", length=32)
      */
+    #[ORM\Column(type: "string", length: 32)]
     private ?string $name = null;
 
     /**
      * @OA\Property()
-     * @ORM\Column(type="boolean", name="lock_watchlist_settings")
      */
+    #[ORM\Column(name: "lock_watchlist_settings", type: "boolean")]
     private bool $lockWatchlistSettings = false;
 
     /**
      * Player accounts that are on the allowlist.
      *
-     * @ORM\ManyToMany(targetEntity="Player")
-     * @ORM\JoinTable(name="watchlist_exemption")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Player")]
+    #[ORM\JoinTable(name: "watchlist_exemption")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $exemptions;
 
     /**
      * Corporations whose members are on this list if their player accounts also have
      * members in other corporations that are not on this list.
      *
-     * @ORM\ManyToMany(targetEntity="Corporation")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Corporation")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $corporations;
 
     /**
      * Same as $corporations but for alliances.
      *
-     * @ORM\ManyToMany(targetEntity="Alliance")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Alliance")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $alliances;
 
     /**
      * Members of theses groups have read access to this list.
      *
-     * @ORM\ManyToMany(targetEntity="Group")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Group")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $groups;
 
     /**
      * Members of theses groups can change settings for this list.
      *
-     * @ORM\ManyToMany(targetEntity="Group")
-     * @ORM\JoinTable(name="watchlist_manager_group")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Group")]
+    #[ORM\JoinTable(name: "watchlist_manager_group")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $managerGroups;
 
     /**
      * Accounts that are on the list and have members in one of these corporations
      * are moved to the kicklist.
      *
-     * @ORM\ManyToMany(targetEntity="Corporation")
-     * @ORM\JoinTable(name="watchlist_kicklist_corporation")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Corporation")]
+    #[ORM\JoinTable(name: "watchlist_kicklist_corporation")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $kicklistCorporations;
 
     /**
      * Same as $kicklistCorporations but for alliances.
      *
-     * @ORM\ManyToMany(targetEntity="Alliance")
-     * @ORM\JoinTable(name="watchlist_kicklist_alliance")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Alliance")]
+    #[ORM\JoinTable(name: "watchlist_kicklist_alliance")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $kicklistAlliances;
 
     /**
      * Corporations that should be treated like NPC corporations, for example personal alt corps.
      * Accounts will not be added to the list is they have a character in one of these.
      *
-     * @ORM\ManyToMany(targetEntity="Corporation")
-     * @ORM\JoinTable(name="watchlist_allowlist_corporation")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Corporation")]
+    #[ORM\JoinTable(name: "watchlist_allowlist_corporation")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $allowlistCorporations;
 
     /**
      * Same as $allowlistCorporations but for alliances.
      *
-     * @ORM\ManyToMany(targetEntity="Alliance")
-     * @ORM\JoinTable(name="watchlist_allowlist_alliance")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Alliance")]
+    #[ORM\JoinTable(name: "watchlist_allowlist_alliance")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $allowlistAlliances;
 
     public function jsonSerialize(): array

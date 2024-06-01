@@ -6,7 +6,6 @@ namespace Neucore\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -15,9 +14,9 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     required={"id", "name", "description", "esiScopes", "eveRoles"}
  * )
- * @ORM\Entity
- * @ORM\Table(name="eve_logins", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
+#[ORM\Entity]
+#[ORM\Table(name: "eve_logins", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
 class EveLogin implements \JsonSerializable
 {
     /**
@@ -65,11 +64,10 @@ class EveLogin implements \JsonSerializable
 
     /**
      * @OA\Property()
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
      */
-    private ?int $id = null;
+    #[ORM\Id]
+    #[ORM\Column(type: "integer")]
+    #[ORM\GeneratedValue] private ?int $id = null;
 
     /**
      * @OA\Property(
@@ -78,20 +76,20 @@ class EveLogin implements \JsonSerializable
      *     nullable=false,
      *     description="Names starting with 'core.' are reserved for internal use."
      * )
-     * @ORM\Column(type="string", unique=true, length=20)
      */
+    #[ORM\Column(type: "string", length: 20, unique: true)]
     private string $name = '';
 
     /**
      * @OA\Property(maxLength=1024)
-     * @ORM\Column(type="string", length=1024)
      */
+    #[ORM\Column(type: "string", length: 1024)]
     private string $description = '';
 
     /**
      * @OA\Property(maxLength=8192)
-     * @ORM\Column(type="string", name="esi_scopes", length=8192)
      */
+    #[ORM\Column(name: "esi_scopes", type: "string", length: 8192)]
     private string $esiScopes = '';
 
     /**
@@ -100,13 +98,11 @@ class EveLogin implements \JsonSerializable
      *     @OA\Items(type="string"),
      *     description="Maximum length of all roles separated by comma: 1024."
      * )
-     * @ORM\Column(type="string", name="eve_roles", length=1024)
      */
+    #[ORM\Column(name: "eve_roles", type: "string", length: 1024)]
     private string $eveRoles = '';
 
-    /**
-     * @ORM\OneToMany(targetEntity="EsiToken", mappedBy="eveLogin")
-     */
+    #[ORM\OneToMany(mappedBy: "eveLogin", targetEntity: "EsiToken")]
     private Collection $esiTokens;
 
     public static function isValidObject(\stdClass $data): bool

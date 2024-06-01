@@ -6,7 +6,6 @@ namespace Neucore\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -17,59 +16,56 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     required={"id", "name", "ticker"}
  * )
- * @ORM\Entity
- * @ORM\Table(name="alliances", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
+#[ORM\Table(name: "alliances", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
+#[ORM\Entity]
 class Alliance implements \JsonSerializable
 {
     /**
      * EVE alliance ID.
      *
      * @OA\Property(format="int64")
-     * @ORM\Id
-     * @ORM\Column(type="bigint")
-     * @ORM\GeneratedValue(strategy="NONE")
      */
+    #[ORM\Id]
+    #[ORM\Column(type: "bigint")]
+    #[ORM\GeneratedValue(strategy: "NONE")]
     private ?int $id = null;
 
     /**
      * EVE alliance name.
      *
      * @OA\Property(nullable=true)
-     * @ORM\Column(type="string", length=255, nullable=true)
      */
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
     private ?string $name = null;
 
     /**
      * Alliance ticker.
      *
      * @OA\Property(nullable=true)
-     * @ORM\Column(type="string", length=16, nullable=true)
      */
+    #[ORM\Column(type: "string", length: 16, nullable: true)]
     private ?string $ticker = null;
 
     /**
      * Last ESI update.
      *
-     * @ORM\Column(type="datetime", name="last_update", nullable=true)
      */
+    #[ORM\Column(name: "last_update", type: "datetime", nullable: true)]
     private ?\DateTime $lastUpdate = null;
 
-    /**
-     *
-     * @ORM\OneToMany(targetEntity="Corporation", mappedBy="alliance")
-     * @ORM\OrderBy({"name" = "ASC"})
-     */
+    #[ORM\OneToMany(mappedBy: "alliance", targetEntity: "Corporation")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $corporations;
 
     /**
      * Groups for automatic assignment (API: not included by default).
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
-     * @ORM\ManyToMany(targetEntity="Group", inversedBy="alliances")
-     * @ORM\JoinTable(name="alliance_group")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Group", inversedBy: "alliances")]
+    #[ORM\JoinTable(name: "alliance_group")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $groups;
 
     /**

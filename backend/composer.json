@@ -18,7 +18,6 @@
         "ext-pdo_mysql": "*",
         "ext-simplexml": "*",
         "ext-zlib": "*",
-        "doctrine/annotations": "^2.0",
         "doctrine/common": "^3.3",
         "doctrine/migrations": "^3.5",
         "doctrine/orm": "^2.12",

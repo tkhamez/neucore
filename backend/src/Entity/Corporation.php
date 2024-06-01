@@ -6,7 +6,6 @@ namespace Neucore\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Api;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
@@ -18,97 +17,92 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     required={"id", "name", "ticker"}
  * )
- * @ORM\Entity
- * @ORM\Table(name="corporations", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
+#[ORM\Entity]
+#[ORM\Table(name: "corporations", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
 class Corporation implements \JsonSerializable
 {
     /**
      * EVE corporation ID.
      *
      * @OA\Property(format="int64")
-     * @ORM\Id
-     * @ORM\Column(type="bigint")
-     * @ORM\GeneratedValue(strategy="NONE")
      */
+    #[ORM\Id]
+    #[ORM\Column(type: "bigint")]
+    #[ORM\GeneratedValue(strategy: "NONE")]
     private ?int $id = null;
 
     /**
      * EVE corporation name.
      *
      * @OA\Property(nullable=true)
-     * @ORM\Column(type="string", length=255, nullable=true)
      */
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
     private ?string $name = null;
 
     /**
      * Corporation ticker.
      *
      * @OA\Property(nullable=true)
-     * @ORM\Column(type="string", length=16, nullable=true)
      */
+    #[ORM\Column(type: "string", length: 16, nullable: true)]
     private ?string $ticker = null;
 
     /**
      * Last ESI update.
      *
-     * @ORM\Column(type="datetime", name="last_update", nullable=true)
      */
+    #[ORM\Column(name: "last_update", type: "datetime", nullable: true)]
     private ?\DateTime $lastUpdate = null;
 
     /**
      *
      * @OA\Property(ref="#/components/schemas/Alliance", nullable=false)
-     * @ORM\ManyToOne(targetEntity="Alliance", inversedBy="corporations")
      */
+    #[ORM\ManyToOne(targetEntity: "Alliance", inversedBy: "corporations")]
     private ?Alliance $alliance = null;
 
     /**
      * Groups for automatic assignment (API: not included by default).
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
-     * @ORM\ManyToMany(targetEntity="Group", inversedBy="corporations")
-     * @ORM\JoinTable(name="corporation_group")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Group", inversedBy: "corporations")]
+    #[ORM\JoinTable(name: "corporation_group")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $groups;
 
     /**
      * Groups those members may see this corporation member tracking data.
      *
-     * @ORM\ManyToMany(targetEntity="Group")
-     * @ORM\JoinTable(name="corporation_group_tracking")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Group")]
+    #[ORM\JoinTable(name: "corporation_group_tracking")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $groupsTracking;
 
     /**
      * Last update of corporation member tracking data (API: not included by default).
      *
      * @OA\Property(nullable=true)
-     * @ORM\Column(type="datetime", name="tracking_last_update", nullable=true)
      */
+    #[ORM\Column(name: "tracking_last_update", type: "datetime", nullable: true)]
     private ?\DateTime $trackingLastUpdate = null;
 
-    /**
-     *
-     * @ORM\OneToMany(targetEntity="Character", mappedBy="corporation")
-     * @ORM\OrderBy({"name" = "ASC"})
-     */
+    #[ORM\OneToMany(mappedBy: "corporation", targetEntity: "Character")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $characters;
 
-    /**
-     * @ORM\OneToMany(targetEntity="CorporationMember", mappedBy="corporation")
-     * @ORM\OrderBy({"name" = "ASC"})
-     */
+    #[ORM\OneToMany(mappedBy: "corporation", targetEntity: "CorporationMember")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $members;
 
     /**
      * True if this corporation was automatically placed on the allowlist of a watchlist (API: not included by default).
      *
      * @OA\Property(type="boolean")
-     * @ORM\Column(type="boolean", name="auto_allowlist", nullable=false, options={"default" : 0})
      */
+    #[ORM\Column(name: "auto_allowlist", type: "boolean", nullable: false, options: ["default" => 0])]
     private bool $autoAllowlist = false;
 
     /**

@@ -6,7 +6,6 @@ namespace Neucore\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Plugin\Data\CoreAccount;
 use Neucore\Plugin\Data\CoreCharacter;
@@ -43,9 +42,9 @@ use OpenApi\Annotations as OA;
  *     )
  * )
  *
- * @ORM\Entity
- * @ORM\Table(name="players", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
+#[ORM\Entity]
+#[ORM\Table(name: "players", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
 class Player implements \JsonSerializable
 {
     /**
@@ -64,10 +63,10 @@ class Player implements \JsonSerializable
 
     /**
      * @OA\Property()
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
      */
+    #[ORM\Id]
+    #[ORM\Column(type: "integer")]
+    #[ORM\GeneratedValue]
     private ?int $id = null;
 
     /**
@@ -77,15 +76,15 @@ class Player implements \JsonSerializable
      * the last main character if there is currently none.
      *
      * @OA\Property()
-     * @ORM\Column(type="string", length=255)
      */
+    #[ORM\Column(type: "string", length: 255)]
     private string $name = '';
 
     /**
      * Last automatic group assignment.
      *
-     * @ORM\Column(type="datetime", name="last_update", nullable=true)
      */
+    #[ORM\Column(name: "last_update", type: "datetime", nullable: true)]
     private ?\DateTime $lastUpdate = null;
 
     /**
@@ -94,8 +93,8 @@ class Player implements \JsonSerializable
      * @OA\Property(
      *     enum={"standard", "managed"})
      * )
-     * @ORM\Column(type="string", length=16)
      */
+    #[ORM\Column(type: "string", length: 16)]
     private string $status = self::STATUS_STANDARD;
 
     /**
@@ -105,77 +104,77 @@ class Player implements \JsonSerializable
      * Reset to false when all characters on the account
      * have valid tokens.
      *
-     * @ORM\Column(type="boolean", name="deactivation_mail_sent")
      */
+    #[ORM\Column(name: "deactivation_mail_sent", type: "boolean")]
     private bool $deactivationMailSent = false;
 
     /**
      * Roles for authorization.
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Role"))
-     * @ORM\ManyToMany(targetEntity="Role", inversedBy="players")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Role", inversedBy: "players")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $roles;
 
     /**
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Character"))
-     * @ORM\OneToMany(targetEntity="Character", mappedBy="player")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\OneToMany(mappedBy: "player", targetEntity: "Character")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $characters;
 
     /**
      * Group applications.
      *
-     * @ORM\OneToMany(targetEntity="GroupApplication", mappedBy="player")
-     * @ORM\OrderBy({"created" = "DESC"})
      */
+    #[ORM\OneToMany(mappedBy: "player", targetEntity: "GroupApplication")]
+    #[ORM\OrderBy(["created" => "DESC"])]
     private Collection $groupApplications;
 
     /**
      * Group membership.
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
-     * @ORM\ManyToMany(targetEntity="Group", inversedBy="players")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Group", inversedBy: "players")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $groups;
 
     /**
      * Manager of groups.
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
-     * @ORM\ManyToMany(targetEntity="Group", mappedBy="managers")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Group", mappedBy: "managers")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $managerGroups;
 
     /**
      * Manager of apps.
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/App"))
-     * @ORM\ManyToMany(targetEntity="App", mappedBy="managers")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "App", mappedBy: "managers")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $managerApps;
 
     /**
      * Characters that were removed from a player (API: not included by default).
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/RemovedCharacter"))
-     * @ORM\OneToMany(targetEntity="RemovedCharacter", mappedBy="player")
-     * @ORM\OrderBy({"removedDate" = "ASC"})
      */
+    #[ORM\OneToMany(mappedBy: "player", targetEntity: "RemovedCharacter")]
+    #[ORM\OrderBy(["removedDate" => "ASC"])]
     private Collection $removedCharacters;
 
     /**
      * Characters that were moved from another player account to this account (API: not included by default).
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/RemovedCharacter"))
-     * @ORM\OneToMany(targetEntity="RemovedCharacter", mappedBy="newPlayer")
-     * @ORM\OrderBy({"removedDate" = "ASC"})
      */
+    #[ORM\OneToMany(mappedBy: "newPlayer", targetEntity: "RemovedCharacter")]
+    #[ORM\OrderBy(["removedDate" => "ASC"])]
     private Collection $incomingCharacters;
 
     /**

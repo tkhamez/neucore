@@ -50,9 +50,7 @@ class Container
                 } else {
                     $conf = $config['doctrine'] ?? []; // it should always be set
                 }
-                // TODO migrate from annotations to attributes
-                /* @phan-suppress-next-line PhanDeprecatedFunction */
-                $metaConfig = ORMSetup::createAnnotationMetadataConfiguration(
+                $metaConfig = ORMSetup::createAttributeMetadataConfiguration(
                     $conf['meta']['entity_paths'],
                     $conf['meta']['dev_mode'],
                     $conf['meta']['proxy_dir']

@@ -8,7 +8,6 @@ use Neucore\Api;
 use Neucore\Plugin\Data\CoreCharacter;
 use Neucore\Plugin\Data\CoreEsiToken;
 use Neucore\Plugin\Data\CoreMemberTracking;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -19,65 +18,66 @@ use OpenApi\Annotations as OA;
  *     description="The player property contains only id and name, character does not contain corporation.",
  *     @OA\Property(property="player", ref="#/components/schemas/Player", nullable=false)
  * )
- * @ORM\Entity
- * @ORM\Table(name="corporation_members", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
+#[ORM\Entity]
+#[ORM\Table(
+    name: "corporation_members",
+    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])
+]
 class CorporationMember implements \JsonSerializable
 {
     /**
      * EVE Character ID.
      *
      * @OA\Property(format="int64")
-     * @ORM\Id
-     * @ORM\Column(type="bigint")
-     * @ORM\GeneratedValue(strategy="NONE")
      */
+    #[ORM\Id]
+    #[ORM\Column(type: "bigint")]
+    #[ORM\GeneratedValue(strategy: "NONE")]
     private ?int $id = null;
 
     /**
      * EVE Character name.
      *
      * @OA\Property(type="string", nullable=true)
-     * @ORM\Column(type="string", length=255, nullable=true)
      */
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
     private ?string $name = null;
 
     /**
      * @OA\Property(ref="#/components/schemas/EsiLocation", nullable=false)
-     * @ORM\ManyToOne(targetEntity="EsiLocation")
-     * @ORM\JoinColumn(name="esi_location_id")
      */
+    #[ORM\ManyToOne(targetEntity: "EsiLocation")]
+    #[ORM\JoinColumn(name: "esi_location_id")]
     private ?EsiLocation $location = null;
 
     /**
      * @OA\Property(nullable=true)
-     * @ORM\Column(type="datetime", name="logoff_date", nullable=true)
      */
+    #[ORM\Column(name: "logoff_date", type: "datetime", nullable: true)]
     private ?\DateTime $logoffDate = null;
 
     /**
      * @OA\Property(nullable=true)
-     * @ORM\Column(type="datetime", name="logon_date", nullable=true)
      */
+    #[ORM\Column(name: "logon_date", type: "datetime", nullable: true)]
     private ?\DateTime $logonDate = null;
 
     /**
      * @OA\Property(ref="#/components/schemas/EsiType", nullable=false)
-     * @ORM\ManyToOne(targetEntity="EsiType")
-     * @ORM\JoinColumn(name="esi_type_id")
      */
+    #[ORM\ManyToOne(targetEntity: "EsiType")]
+    #[ORM\JoinColumn(name: "esi_type_id")]
     private ?EsiType $shipType = null;
 
     /**
      * @OA\Property(nullable=true)
-     * @ORM\Column(type="datetime", name="start_date", nullable=true)
      */
+    #[ORM\Column(name: "start_date", type: "datetime", nullable: true)]
     private ?\DateTime $startDate = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Corporation", inversedBy="members")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: "Corporation", inversedBy: "members")]
+    #[ORM\JoinColumn(nullable: false)]
     private Corporation $corporation;
 
     /**
@@ -90,24 +90,24 @@ class CorporationMember implements \JsonSerializable
      * Date and time of the last sent mail.
      *
      * @OA\Property(nullable=true)
-     * @ORM\Column(type="datetime", name="missing_character_mail_sent_date", nullable=true)
      */
+    #[ORM\Column(name: "missing_character_mail_sent_date", type: "datetime", nullable: true)]
     private ?\DateTime $missingCharacterMailSentDate = null;
 
     /**
      * Result of the last sent mail (OK, Blocked, CSPA charge > 0)
      *
      * @OA\Property(nullable=true)
-     * @ORM\Column(type="string", length=255, name="missing_character_mail_sent_result", nullable=true)
      */
+    #[ORM\Column(name: "missing_character_mail_sent_result", type: "string", length: 255, nullable: true)]
     private ?string $missingCharacterMailSentResult = null;
 
     /**
      * Number of mails sent, is reset when the character is added.
      *
      * @OA\Property()
-     * @ORM\Column(type="integer", name="missing_character_mail_sent_number")
      */
+    #[ORM\Column(name: "missing_character_mail_sent_number", type: "integer")]
     private int $missingCharacterMailSentNumber = 0;
 
     /**

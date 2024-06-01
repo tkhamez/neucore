@@ -9,7 +9,6 @@ namespace Neucore\Entity;
 use Neucore\Api;
 use Neucore\Plugin\Data\CoreCharacter;
 use Neucore\Plugin\Data\CoreMovedCharacter;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -20,9 +19,12 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(property="newPlayerId", type="integer"),
  *     @OA\Property(property="newPlayerName", type="string")
  * )
- * @ORM\Entity
- * @ORM\Table(name="removed_characters", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
+#[ORM\Entity]
+#[ORM\Table(
+    name: "removed_characters",
+    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"]
+)]
 class RemovedCharacter implements \JsonSerializable
 {
     /**
@@ -61,52 +63,50 @@ class RemovedCharacter implements \JsonSerializable
      */
     public const REASON_DELETED_BY_ADMIN = 'deleted-by-admin';
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: "integer")]
+    #[ORM\GeneratedValue]
     private ?int $id = null;
 
     /**
      * The old player account.
      *
      * @OA\Property(ref="#/components/schemas/Player", description="The old player account.", nullable=false)
-     * @ORM\ManyToOne(targetEntity="Player", inversedBy="removedCharacters")
-     * @ORM\JoinColumn(nullable=false)
      */
+    #[ORM\ManyToOne(targetEntity: "Player", inversedBy: "removedCharacters")]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Player $player = null;
 
     /**
      * The new player account.
      *
-     * @ORM\ManyToOne(targetEntity="Player", inversedBy="incomingCharacters")
-     * @ORM\JoinColumn(name="new_player_id")
      */
+    #[ORM\ManyToOne(targetEntity: "Player", inversedBy: "incomingCharacters")]
+    #[ORM\JoinColumn(name: "new_player_id")]
     private ?Player $newPlayer = null;
 
     /**
      * EVE character ID.
      *
      * @OA\Property(format="int64")
-     * @ORM\Column(type="bigint", name="character_id")
      */
+    #[ORM\Column(name: "character_id", type: "bigint")]
     private ?int $characterId = null;
 
     /**
      * EVE character name.
      *
      * @OA\Property()
-     * @ORM\Column(type="string", name="character_name", length=255)
      */
+    #[ORM\Column(name: "character_name", type: "string", length: 255)]
     private ?string $characterName = null;
 
     /**
      * Date of removal.
      *
      * @OA\Property()
-     * @ORM\Column(type="datetime", name="removed_date")
      */
+    #[ORM\Column(name: "removed_date", type: "datetime")]
     private ?\DateTime $removedDate = null;
 
     /**
@@ -114,17 +114,17 @@ class RemovedCharacter implements \JsonSerializable
      *
      * @OA\Property(enum={"moved", "moved-owner-changed", "deleted-biomassed",
                           "deleted-owner-changed", "deleted-lost-access", "deleted-manually"})
-     * @ORM\Column(type="string", length=32)
      */
+    #[ORM\Column(type: "string", length: 32)]
     private ?string $reason = null;
 
     /**
      * The player who deleted the character (only set if it was deleted via the API).
      *
      * @OA\Property(ref="#/components/schemas/Player", nullable=false)
-     * @ORM\ManyToOne(targetEntity="Player")
-     * @ORM\JoinColumn(name="deleted_by")
      */
+    #[ORM\ManyToOne(targetEntity: "Player")]
+    #[ORM\JoinColumn(name: "deleted_by")]
     private ?Player $deletedBy = null;
 
     /**

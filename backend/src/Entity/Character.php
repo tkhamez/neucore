@@ -6,7 +6,6 @@ namespace Neucore\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Api;
 use Neucore\Plugin\Data\CoreCharacter;
@@ -41,87 +40,78 @@ use OpenApi\Annotations as OA;
  *         description="Date and time when the default token was last checked."
  *     )
  * )
- * @ORM\Entity
- * @ORM\Table(name="characters", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
+#[ORM\Entity]
+#[ORM\Table(name: "characters", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
 class Character implements \JsonSerializable
 {
     /**
      * EVE character ID.
      *
      * @OA\Property(format="int64")
-     * @ORM\Id
-     * @ORM\Column(type="bigint")
-     * @ORM\GeneratedValue(strategy="NONE")
      */
+    #[ORM\Id]
+    #[ORM\Column(type: "bigint")]
+    #[ORM\GeneratedValue(strategy: "NONE")]
     private ?int $id = null;
 
     /**
      * EVE character name.
      *
      * @OA\Property()
-     * @ORM\Column(type="string", length=255)
      */
-    private string $name = '';
+    #[ORM\Column(type: "string", length: 255)] private string $name = '';
 
     /**
      * @OA\Property()
-     * @ORM\Column(type="boolean")
      */
-    private bool $main = false;
+    #[ORM\Column(type: "boolean")] private bool $main = false;
 
-    /**
-     * @ORM\Column(type="text", length=65535, name="character_owner_hash", nullable=true)
-     */
+    #[ORM\Column(name: "character_owner_hash", type: "text", length: 65535, nullable: true)]
     private ?string $characterOwnerHash = null;
 
     /**
      * ESI tokens of the character (API: not included by default).
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/EsiToken"))
-     * @ORM\OneToMany(targetEntity="EsiToken", mappedBy="character")
-     * @ORM\OrderBy({"id" = "ASC"})
      */
-    private Collection $esiTokens;
+    #[ORM\OneToMany(mappedBy: "character", targetEntity: "EsiToken")]
+    #[ORM\OrderBy(["id" => "ASC"])] private Collection $esiTokens;
 
     /**
      * @OA\Property(nullable=true)
-     * @ORM\Column(type="datetime", name="created", nullable=true)
      */
+    #[ORM\Column(name: "created", type: "datetime", nullable: true)]
     private ?\DateTime $created = null;
 
-    /**
-     * @ORM\Column(type="datetime", name="last_login", nullable=true)
-     */
+    #[ORM\Column(name: "last_login", type: "datetime", nullable: true)]
     private ?\DateTime $lastLogin = null;
 
     /**
      * Last ESI update.
      *
      * @OA\Property(nullable=true)
-     * @ORM\Column(type="datetime", name="last_update", nullable=true)
      */
+    #[ORM\Column(name: "last_update", type: "datetime", nullable: true)]
     private ?\DateTime $lastUpdate = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Player", inversedBy="characters")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: "Player", inversedBy: "characters")]
+    #[ORM\JoinColumn(nullable: false)]
     private Player $player;
 
     /**
      * @OA\Property(ref="#/components/schemas/Corporation", nullable=false)
-     * @ORM\ManyToOne(targetEntity="Corporation", inversedBy="characters")
      */
+    #[ORM\ManyToOne(targetEntity: "Corporation", inversedBy: "characters")]
     private ?Corporation $corporation = null;
 
     /**
      * List of previous character names (API: not included by default).
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/CharacterNameChange"))
-     * @ORM\OneToMany(targetEntity="CharacterNameChange", mappedBy="character")
-     * @ORM\OrderBy({"changeDate" = "DESC"})
      */
+    #[ORM\OneToMany(mappedBy: "character", targetEntity: "CharacterNameChange")]
+    #[ORM\OrderBy(["changeDate" => "DESC"])]
     private Collection $characterNameChanges;
 
     /**

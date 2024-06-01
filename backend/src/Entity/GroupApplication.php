@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Neucore\Entity;
 
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Api;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
@@ -16,13 +15,13 @@ use OpenApi\Annotations as OA;
  *     description="The player property contains only id and name."
  * )
  *
- * @ORM\Entity
- * @ORM\Table(
- *     name="group_applications",
- *     options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"},
- *     uniqueConstraints={@ORM\UniqueConstraint(name="player_group_idx", columns={"player_id", "group_id"})}
- * )
  */
+#[ORM\Entity]
+#[ORM\Table(
+    name: "group_applications",
+    uniqueConstraints: [new ORM\UniqueConstraint(name: "player_group_idx", columns: ["player_id", "group_id"])],
+    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"]
+)]
 class GroupApplication implements \JsonSerializable
 {
     /**
@@ -42,30 +41,30 @@ class GroupApplication implements \JsonSerializable
 
     /**
      * @OA\Property()
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
      */
+    #[ORM\Id]
+    #[ORM\Column(type: "integer")]
+    #[ORM\GeneratedValue]
     private ?int $id = null;
 
     /**
      * @OA\Property(ref="#/components/schemas/Player")
-     * @ORM\ManyToOne(targetEntity="Player", inversedBy="groupApplications")
-     * @ORM\JoinColumn(nullable=false)
      */
+    #[ORM\ManyToOne(targetEntity: "Player", inversedBy: "groupApplications")]
+    #[ORM\JoinColumn(nullable: false)]
     private Player $player;
 
     /**
      * @OA\Property(ref="#/components/schemas/Group")
-     * @ORM\ManyToOne(targetEntity="Group", inversedBy="applications")
-     * @ORM\JoinColumn(nullable=false)
      */
+    #[ORM\ManyToOne(targetEntity: "Group", inversedBy: "applications")]
+    #[ORM\JoinColumn(nullable: false)]
     private Group $group;
 
     /**
      * @OA\Property(nullable=true)
-     * @ORM\Column(type="datetime", nullable=true)
      */
+    #[ORM\Column(type: "datetime", nullable: true)]
     private ?\DateTime $created = null;
 
     /**
@@ -74,8 +73,8 @@ class GroupApplication implements \JsonSerializable
      * @OA\Property(
      *     enum={"pending", "accepted", "denied"})
      * )
-     * @ORM\Column(type="string", length=16)
      */
+    #[ORM\Column(type: "string", length: 16)]
     private string $status = self::STATUS_PENDING;
 
     /**

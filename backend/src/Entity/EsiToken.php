@@ -6,7 +6,6 @@ declare(strict_types=1);
 
 namespace Neucore\Entity;
 
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Api;
 use Neucore\Plugin\Data\CoreEsiToken;
@@ -21,35 +20,30 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(property="playerId", type="integer", description="ID of Player"),
  *     @OA\Property(property="playerName", type="string", description="Name of Player"),
  * )
- * @ORM\Entity
- * @ORM\Table(
- *     name="esi_tokens",
- *     options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"},
- *     uniqueConstraints={
- *         @ORM\UniqueConstraint(name="character_eve_login_idx", columns={"character_id", "eve_login_id"})
- *     }
- * )
  */
+#[ORM\Entity]
+#[ORM\Table(
+    name: "esi_tokens",
+    uniqueConstraints: [
+        new ORM\UniqueConstraint(name: "character_eve_login_idx", columns: ["character_id", "eve_login_id"])
+    ],
+    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"]
+)]
 class EsiToken implements \JsonSerializable
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     */
-    private ?int $id = null;
+    #[ORM\Id]
+    #[ORM\Column(type: "integer")]
+    #[ORM\GeneratedValue] private ?int $id = null;
 
     /**
      * @OA\Property(ref="#/components/schemas/Character", nullable=false)
-     * @ORM\ManyToOne(targetEntity="Character", inversedBy="esiTokens")
-     * @ORM\JoinColumn(nullable=false, name="character_id", onDelete="CASCADE")
      */
+    #[ORM\ManyToOne(targetEntity: "Character", inversedBy: "esiTokens")]
+    #[ORM\JoinColumn(name: "character_id", nullable: false, onDelete: "CASCADE")]
     private ?Character $character = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="EveLogin", inversedBy="esiTokens")
-     * @ORM\JoinColumn(nullable=false, name="eve_login_id", onDelete="CASCADE")
-     */
+    #[ORM\ManyToOne(targetEntity: "EveLogin", inversedBy: "esiTokens")]
+    #[ORM\JoinColumn(name: "eve_login_id", nullable: false, onDelete: "CASCADE")]
     private ?EveLogin $eveLogin = null;
 
     /**
@@ -57,13 +51,11 @@ class EsiToken implements \JsonSerializable
      *
      * Empty string if the token became invalid.
      *
-     * @ORM\Column(type="text", length=65535, name="refresh_token")
      */
+    #[ORM\Column(name: "refresh_token", type: "text", length: 65535)]
     private ?string $refreshToken = null;
 
-    /**
-     * @ORM\Column(type="text", length=65535, name="access_token")
-     */
+    #[ORM\Column(name: "access_token", type: "text", length: 65535)]
     private ?string $accessToken = null;
 
     /**
@@ -73,16 +65,16 @@ class EsiToken implements \JsonSerializable
      * or a valid token but without scopes (SSOv2).
      *
      * @OA\Property
-     * @ORM\Column(type="boolean", name="valid_token", nullable=true)
      */
+    #[ORM\Column(name: "valid_token", type: "boolean", nullable: true)]
     private ?bool $validToken = null;
 
     /**
      * Date and time when the valid token property was last changed.
      *
      * @OA\Property
-     * @ORM\Column(type="datetime", name="valid_token_time", nullable=true)
      */
+    #[ORM\Column(name: "valid_token_time", type: "datetime", nullable: true)]
     private ?\DateTime $validTokenTime = null;
 
     /**
@@ -91,23 +83,22 @@ class EsiToken implements \JsonSerializable
      * Null if the login does not require any roles or if the token is invalid.
      *
      * @OA\Property
-     * @ORM\Column(type="boolean", name="has_roles", nullable=true)
      */
+    #[ORM\Column(name: "has_roles", type: "boolean", nullable: true)]
     private ?bool $hasRoles = null;
 
     /**
      * Unix timestamp when access token expires.
      *
-     * @ORM\Column(type="integer")
      */
-    private ?int $expires = null;
+    #[ORM\Column(type: "integer")] private ?int $expires = null;
 
     /**
      * When the refresh token was last checked for validity.
      *
      * @OA\Property
-     * @ORM\Column(type="datetime", name="last_checked", nullable=true)
      */
+    #[ORM\Column(name: "last_checked", type: "datetime", nullable: true)]
     private ?\DateTime $lastChecked = null;
 
     public function jsonSerialize(bool $withCharacterDetails = false): array

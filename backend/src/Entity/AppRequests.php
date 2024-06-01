@@ -4,60 +4,42 @@ declare(strict_types=1);
 
 namespace Neucore\Entity;
 
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(
- *     name="app_requests",
- *     options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"},
- *     indexes={
- *         @ORM\Index(name="ar_year_idx", columns={"request_year"}),
- *         @ORM\Index(name="ar_month_idx", columns={"request_month"}),
- *         @ORM\Index(name="ar_day_of_month_idx", columns={"request_day_of_month"}),
- *         @ORM\Index(name="ar_hour_idx", columns={"request_hour"})
- *     },
- * )
- */
+#[ORM\Entity]
+#[ORM\Table(
+    name: "app_requests",
+    indexes: [
+        new ORM\Index(columns: ["request_year"], name: "ar_year_idx"),
+        new ORM\Index(columns: ["request_month"], name: "ar_month_idx"),
+        new ORM\Index(columns: ["request_day_of_month"], name: "ar_day_of_month_idx"),
+        new ORM\Index(columns: ["request_hour"], name: "ar_hour_idx")
+    ],
+    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"],
+)]
 class AppRequests
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="bigint")
-     * @ORM\GeneratedValue
-     */
+    #[ORM\Id] #[ORM\Column(type: "bigint")]
+    #[ORM\GeneratedValue]
     private ?int $id = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\ManyToOne(targetEntity: "App")]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private ?App $app = null;
 
-    /**
-     * @ORM\Column(name="request_year", type="integer")
-     */
+    #[ORM\Column(name: "request_year", type: "integer")]
     private ?int $year = null;
 
-    /**
-     * @ORM\Column(name="request_month", type="integer")
-     */
+    #[ORM\Column(name: "request_month", type: "integer")]
     private ?int $month = null;
 
-    /**
-     * @ORM\Column(name="request_day_of_month", type="integer")
-     */
+    #[ORM\Column(name: "request_day_of_month", type: "integer")]
     private ?int $dayOfMonth = null;
 
-    /**
-     * @ORM\Column(name="request_hour", type="integer")
-     */
+    #[ORM\Column(name: "request_hour", type: "integer")]
     private ?int $hour = null;
 
-    /**
-     * @ORM\Column(name="request_count", type="integer")
-     */
+    #[ORM\Column(name: "request_count", type: "integer")]
     private int $count = 0;
 
     public function getId(): ?int

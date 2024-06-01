@@ -8,7 +8,6 @@ namespace Neucore\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Plugin\Data\CoreGroup;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
@@ -18,9 +17,9 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     required={"id", "name"}
  * )
- * @ORM\Entity
- * @ORM\Table(name="groups_tbl", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
+#[ORM\Entity]
+#[ORM\Table(name: "groups_tbl", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
 class Group implements \JsonSerializable
 {
     public const VISIBILITY_PRIVATE = 'private';
@@ -31,103 +30,97 @@ class Group implements \JsonSerializable
      * Group ID.
      *
      * @OA\Property()
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
      */
+    #[ORM\Id]
+    #[ORM\Column(type: "integer")]
+    #[ORM\GeneratedValue]
     private ?int $id = null;
 
     /**
      * A unique group name (can be changed).
      *
      * @OA\Property(maxLength=64, pattern="^[-._a-zA-Z0-9]+$")
-     * @ORM\Column(type="string", unique=true, length=64)
      */
+    #[ORM\Column(type: "string", length: 64, unique: true)]
     private ?string $name = null;
 
     /**
      * @OA\Property(maxLength=1024)
-     * @ORM\Column(type="string", length=1024, nullable=true)
      */
+    #[ORM\Column(type: "string", length: 1024, nullable: true)]
     private ?string $description = null;
 
     /**
      * @OA\Property(enum={"private", "public"})
-     * @ORM\Column(type="string", length=16, options={"default" : "private"})
      */
+    #[ORM\Column(type: "string", length: 16, options: ["default" => "private"])]
     private string $visibility = self::VISIBILITY_PRIVATE;
 
     /**
      * @OA\Property()
-     * @ORM\Column(type="boolean", name="auto_accept")
      */
+    #[ORM\Column(name: "auto_accept", type: "boolean")]
     private bool $autoAccept = false;
 
     /**
      * @OA\Property()
-     * @ORM\Column(type="boolean", name="is_default")
      */
+    #[ORM\Column(name: "is_default", type: "boolean")]
     private bool $isDefault = false;
 
-    /**
-     * @ORM\OneToMany(targetEntity="GroupApplication", mappedBy="group", cascade={"remove"})
-     * @ORM\OrderBy({"created" = "DESC"})
-     */
+    #[ORM\OneToMany(mappedBy: "group", targetEntity: "GroupApplication", cascade: ["remove"])]
+    #[ORM\OrderBy(["created" => "DESC"])]
     private Collection $applications;
 
     /**
      * Group members.
      *
-     * @ORM\ManyToMany(targetEntity="Player", mappedBy="groups")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Player", mappedBy: "groups")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $players;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="Player", inversedBy="managerGroups")
-     * @ORM\JoinTable(name="group_manager")
-     * @ORM\OrderBy({"name" = "ASC"})
-     */
+    #[ORM\ManyToMany(targetEntity: "Player", inversedBy: "managerGroups")]
+    #[ORM\JoinTable(name: "group_manager")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $managers;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App", mappedBy="groups")
-     * @ORM\OrderBy({"name" = "ASC"})
-     */
+    #[ORM\ManyToMany(targetEntity: "App", mappedBy: "groups")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $apps;
 
     /**
      * Corporations for automatic assignment.
      *
-     * @ORM\ManyToMany(targetEntity="Corporation", mappedBy="groups")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Corporation", mappedBy: "groups")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $corporations;
 
     /**
      * Alliances for automatic assignment.
      *
-     * @ORM\ManyToMany(targetEntity="Alliance", mappedBy="groups")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Alliance", mappedBy: "groups")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $alliances;
 
     /**
      * A player must be a member of one of these groups in order to be a member of this group.
      *
-     * @ORM\ManyToMany(targetEntity="Group")
-     * @ORM\JoinTable(name="group_required_groups")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Group")]
+    #[ORM\JoinTable(name: "group_required_groups")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $requiredGroups;
 
     /**
      * A player must not be a member of any of these groups in order to be a member of this group.
      *
-     * @ORM\ManyToMany(targetEntity="Group")
-     * @ORM\JoinTable(name="group_forbidden_groups")
-     * @ORM\OrderBy({"name" = "ASC"})
      */
+    #[ORM\ManyToMany(targetEntity: "Group")]
+    #[ORM\JoinTable(name: "group_forbidden_groups")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $forbiddenGroups;
 
     /**

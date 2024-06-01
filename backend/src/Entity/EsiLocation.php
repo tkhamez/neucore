@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Neucore\Entity;
 
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -15,9 +14,9 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     required={"id", "name", "category"}
  * )
- * @ORM\Entity
- * @ORM\Table(name="esi_locations", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
+#[ORM\Entity]
+#[ORM\Table(name: "esi_locations", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
 class EsiLocation implements \JsonSerializable
 {
     public const CATEGORY_SYSTEM = 'system';
@@ -28,48 +27,46 @@ class EsiLocation implements \JsonSerializable
 
     /**
      * @OA\Property(format="int64")
-     * @ORM\Id
-     * @ORM\Column(type="bigint")
-     * @ORM\GeneratedValue(strategy="NONE")
      */
+    #[ORM\Id]
+    #[ORM\Column(type: "bigint")]
+    #[ORM\GeneratedValue(strategy: "NONE")]
     private ?int $id = null;
 
     /**
      * @OA\Property(enum={"system", "station", "structure"})
-     * @ORM\Column(type="string", length=16)
      */
+    #[ORM\Column(type: "string", length: 16)]
     private ?string $category = null;
 
     /**
      * @OA\Property()
-     * @ORM\Column(type="string", length=255, nullable=true)
      */
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
     private ?string $name = null;
 
     /**
      * Optional owner for category = structure.
      *
-     * @ORM\Column(type="integer", name="owner_id", nullable=true)
      */
+    #[ORM\Column(name: "owner_id", type: "integer", nullable: true)]
     private ?int $ownerId = null;
 
     /**
      * Optional system for category = structure.
      *
-     * @ORM\Column(type="integer", name="system_id", nullable=true)
      */
+    #[ORM\Column(name: "system_id", type: "integer", nullable: true)]
     private ?int $systemId = null;
 
     /**
      * Last ESI update.
      *
-     * @ORM\Column(type="datetime", name="last_update", nullable=true)
      */
+    #[ORM\Column(name: "last_update", type: "datetime", nullable: true)]
     private ?\DateTime $lastUpdate = null;
 
-    /**
-     * @ORM\Column(type="integer", name="error_count", nullable=true)
-     */
+    #[ORM\Column(name: "error_count", type: "integer", nullable: true)]
     private ?int $errorCount = null;
 
     public function jsonSerialize(): array

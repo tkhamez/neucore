@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Neucore\Entity;
 
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Data\PluginConfigurationFile;
 use Neucore\Data\PluginConfigurationDatabase;
@@ -16,32 +15,32 @@ use OpenApi\Annotations as OA;
 /**
  * @OA\Schema(required={"id", "name"})
  *
- * @ORM\Entity()
- * @ORM\Table(name="plugins", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
+#[ORM\Entity()]
+#[ORM\Table(name: "plugins", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
 class Plugin implements \JsonSerializable
 {
     /**
      * @OA\Property()
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
      */
+    #[ORM\Id]
+    #[ORM\Column(type: "integer")]
+    #[ORM\GeneratedValue]
     private ?int $id = null;
 
     /**
      * @OA\Property()
-     * @ORM\Column(type="string", length=255)
      */
+    #[ORM\Column(type: "string", length: 255)]
     private string $name = '';
 
     /**
      * JSON serialized PluginConfigurationDatabase class.
      *
      * @OA\Property(property="configurationDatabase", ref="#/components/schemas/PluginConfigurationDatabase")
-     * @ORM\Column(type="text", length=16777215, nullable=true)
      * @see PluginConfigurationDatabase
      */
+    #[ORM\Column(type: "text", length: 16777215, nullable: true)]
     private ?string $configuration = null;
 
     /**

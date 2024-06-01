@@ -6,7 +6,6 @@ namespace Neucore\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
@@ -22,11 +21,10 @@ use OpenApi\Annotations as OA;
  *           "watchlist", "watchlist-manager", "watchlist-admin"}
  * )
  *
- * @ORM\Entity
- * @ORM\Table(name="roles", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
- *
  * @see doc/API.md for role descriptions
  */
+#[ORM\Entity]
+#[ORM\Table(name: "roles", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
 class Role implements \JsonSerializable
 {
     public const APP = 'app';
@@ -75,37 +73,28 @@ class Role implements \JsonSerializable
         // Not tracking, watchlist and watchlist-manager because these are only assigned based on groups.
     ];
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="NONE")
-     */
+    #[ORM\Id] #[ORM\Column(type: "integer")]
+    #[ORM\GeneratedValue(strategy: "NONE")]
     private int $id;
 
     /**
      * Role name.
      *
-     * @ORM\Column(type="string", unique=true, length=64)
      */
+    #[ORM\Column(type: "string", length: 64, unique: true)]
     private string $name = '';
 
-    /**
-     * @ORM\ManyToMany(targetEntity="Player", mappedBy="roles")
-     * @ORM\OrderBy({"name" = "ASC"})
-     */
+    #[ORM\ManyToMany(targetEntity: "Player", mappedBy: "roles")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $players;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App", mappedBy="roles")
-     * @ORM\OrderBy({"name" = "ASC"})
-     */
+    #[ORM\ManyToMany(targetEntity: "App", mappedBy: "roles")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $apps;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="Group")
-     * @ORM\JoinTable(name="role_required_group")
-     * @ORM\OrderBy({"name" = "ASC"})
-     */
+    #[ORM\ManyToMany(targetEntity: "Group")]
+    #[ORM\JoinTable(name: "role_required_group")]
+    #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $requiredGroups;
 
     /**

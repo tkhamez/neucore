@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Neucore\Entity;
 
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Api;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
@@ -16,34 +15,33 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     required={"oldName", "changeDate"}
  * )
- * @ORM\Entity
- * @ORM\Table(name="character_name_changes", options={"charset"="utf8mb4", "collate"="utf8mb4_unicode_520_ci"})
  */
+#[ORM\Entity]
+#[ORM\Table(
+    name: "character_name_changes",
+    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])
+]
 class CharacterNameChange implements \JsonSerializable
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: "integer")]
+    #[ORM\GeneratedValue]
     private ?int $id = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Character", inversedBy="characterNameChanges")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\ManyToOne(targetEntity: "Character", inversedBy: "characterNameChanges")]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private Character $character;
 
     /**
      * @OA\Property()
-     * @ORM\Column(type="string", length=255, name="old_name")
      */
+    #[ORM\Column(name: "old_name", type: "string", length: 255)]
     private string $oldName = '';
 
     /**
      * @OA\Property(nullable=true)
-     * @ORM\Column(type="datetime", name="change_date")
      */
+    #[ORM\Column(name: "change_date", type: "datetime")]
     private ?\DateTime $changeDate = null;
 
     public function jsonSerialize(): array
