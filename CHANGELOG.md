@@ -8,6 +8,7 @@ dd mm yyyy
 - **BC break**: Removed `/application-api.json` file which is outdated since version 1.4.0.
 - Added PHP 8.3 compatibility (no changes were necessary, but it's tested now).
 - Added MySQL 8.4 compatibility (no changes were necessary, but it's tested now).
+- Fix database schema for MariaDB 10.5.
 - Updated dependencies.
 
 ## 2.4.0
