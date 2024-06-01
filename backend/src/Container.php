@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Neucore;
 
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Logging\Middleware;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
@@ -65,7 +64,7 @@ class Container
                     $conf['meta']['dev_mode'],
                     $conf['meta']['proxy_dir']
                 );
-                #$metaConfig->setMiddlewares([new Middleware($c->get(LoggerInterface::class))]);
+                #$metaConfig->setMiddlewares([new \Doctrine\DBAL\Logging\Middleware($c->get(LoggerInterface::class))]);
                 $connection = DriverManager::getConnection($conf['connection'], $metaConfig);
                 return new EntityManager($connection, $metaConfig);
             },
