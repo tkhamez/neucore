@@ -9,14 +9,12 @@ services:
     image: mariadb:10.11 # LTS
     #image: mariadb:11.0
     #image: mysql:8.0.22
-    #image: mysql:8.0.35
-    #image: mysql:8.2.0
+    #image: mysql:8.4.0 # LTS
     #volumes: ["./.db/10.5:/var/lib/mysql"]
     volumes: ["./.db/10.11:/var/lib/mysql"]
     #volumes: ["./.db/11:/var/lib/mysql"]
     #volumes: ["./.db/8.0.22:/var/lib/mysql"]
-    #volumes: ["./.db/8.0:/var/lib/mysql"]
-    #volumes: ["./.db/8.2:/var/lib/mysql"]
+    #volumes: ["./.db/8.4:/var/lib/mysql"]
     environment:
       MYSQL_ROOT_PASSWORD: neucore
       MYSQL_USER: neucore
@@ -41,7 +39,7 @@ services:
     volumes: [".:/app"]
     environment:
       BACKEND_HOST: http://localhost:8080
-    ports: [ "3000:8080" ]
+    ports: ["3000:8080"]
     user: node
     working_dir: /app/frontend
     dns: [1.1.1.1]
