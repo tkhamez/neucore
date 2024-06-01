@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Util;
 
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Platforms\MariaDBPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,6 +28,8 @@ class Database
         if ($connection instanceof SqlitePlatform) {
             return self::PLATFORM_SQLITE;
         } elseif ($connection instanceof MySQLPlatform) {
+            return self::PLATFORM_MYSQL;
+        } elseif ($connection instanceof MariaDBPlatform) {
             return self::PLATFORM_MYSQL;
         } else {
             return self::PLATFORM_OTHER;

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore;
 
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Tools\DsnParser;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
@@ -65,7 +66,14 @@ class Container
                     $conf['meta']['proxy_dir']
                 );
                 #$metaConfig->setMiddlewares([new \Doctrine\DBAL\Logging\Middleware($c->get(LoggerInterface::class))]);
-                $connection = DriverManager::getConnection($conf['connection'], $metaConfig);
+                $dsnParser = new DsnParser([
+                    'mysql' => 'pdo_mysql',
+                    'sqlite' => 'pdo_sqlite',
+                ]);
+                $connection = DriverManager::getConnection(
+                    $dsnParser->parse($conf['connection']['url']),
+                    $metaConfig,
+                );
                 return new EntityManager($connection, $metaConfig);
             },
             ObjectManager::class => function (ContainerInterface $c) {
