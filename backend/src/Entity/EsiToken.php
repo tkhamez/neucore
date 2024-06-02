@@ -33,7 +33,8 @@ class EsiToken implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\Column(type: "integer")]
-    #[ORM\GeneratedValue] private ?int $id = null;
+    #[ORM\GeneratedValue]
+    private ?int $id = null;
 
     /**
      * @OA\Property(ref="#/components/schemas/Character", nullable=false)
