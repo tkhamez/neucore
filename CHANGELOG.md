@@ -10,6 +10,7 @@ dd mm yyyy
 - Added MySQL 8.4 compatibility (no changes were necessary, but it's tested now).
 - Fix database schema for MariaDB 10.5.
 - Small UI improvements.
+- Updated development environment to node 20.
 - Updated dependencies.
 
 ## 2.4.0

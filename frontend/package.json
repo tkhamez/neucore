@@ -58,8 +58,8 @@
     "neucore-js-client"
   ],
   "engines": {
-    "node": "^18.12.1",
-    "npm": "^8.19.2"
+    "node": "^20.14.0",
+    "npm": "^10.7.0"
   },
   "license": "MIT"
 }
