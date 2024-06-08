@@ -115,7 +115,7 @@
 </template>
 
 <script>
-import { WatchlistApi }  from 'neucore-js-client';
+import {WatchlistApi}  from 'neucore-js-client';
 import Helper from "../../classes/Helper";
 import WatchlistSettings from './Watchlist--Settings.vue';
 
