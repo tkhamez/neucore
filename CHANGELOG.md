@@ -9,6 +9,7 @@ dd mm yyyy
 - Added PHP 8.3 compatibility (no changes were necessary, but it's tested now).
 - Added MySQL 8.4 compatibility (no changes were necessary, but it's tested now).
 - Fix database schema for MariaDB 10.5.
+- Small UI improvements.
 - Updated dependencies.
 
 ## 2.4.0

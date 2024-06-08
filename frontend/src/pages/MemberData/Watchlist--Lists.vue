@@ -98,7 +98,7 @@
                 <p class="small text-muted">
                     <span v-if="index === 0">{{ listContent[listName].length }} alliances(s)</span>
                     <span v-if="index === 1">
-                        {{ listContent[listName].filter(corporation => ! corporation.autoAllowlist).length }}
+                        {{ listContent[listName].filter(corporation => !corporation.autoAllowlist).length }}
                         corporation(s)
                     </span>
                     <span v-if="index === 2">
@@ -168,7 +168,7 @@ export default {
         },
 
         addToAllowlist(playerId) {
-            if (! this.id) {
+            if (!this.id) {
                 return;
             }
             new WatchlistApi().watchlistExemptionAdd(this.id, playerId, () => {
@@ -217,14 +217,16 @@ export default {
  * @param {boolean} [onlyPlayers] for allowlist, reload players only
  */
 function loadList(vm, onlyPlayers) {
-    if (! vm.id) {
+    if (!vm.id) {
         return;
     }
     const api = new WatchlistApi();
 
     function setPlayer(error, data) {
         vm.listContent.Player = []; // not before, so that the list does not scroll up
-        if (! error) {
+        if (error) {
+            vm.h.message('Failed to load list.', 'error');
+        } else {
             vm.listContent.Player = data;
         }
     }
@@ -244,14 +246,18 @@ function loadList(vm, onlyPlayers) {
 
         vm.listContent.Alliance = [];
         api.watchlistAllowlistAllianceList(vm.id, (error, data) => {
-            if (! error) {
+            if (error) {
+                vm.h.message('Failed to load list.', 'error');
+            } else {
                 vm.listContent.Alliance = data;
             }
         });
 
         vm.listContent.Corporation = [];
         api.watchlistAllowlistCorporationList(vm.id, (error, data) => {
-            if (! error) {
+            if (error) {
+                vm.h.message('Failed to load list.', 'error');
+            } else {
                 vm.listContent.Corporation = data;
             }
         });
@@ -265,14 +271,18 @@ function loadList(vm, onlyPlayers) {
     if (vm.tab === 'warnings') {
         vm.alliances = [];
         api.watchlistAllianceList(vm.id, (error, data) => {
-            if (! error) {
+            if (error) {
+                vm.h.message('Failed to load list.', 'error');
+            } else {
                 vm.alliances = data;
             }
         });
 
         vm.corporations = [];
         api.watchlistCorporationList(vm.id, (error, data) => {
-            if (! error) {
+            if (error) {
+                vm.h.message('Failed to load list.', 'error');
+            } else {
                 vm.corporations = data;
             }
         });
@@ -282,14 +292,18 @@ function loadList(vm, onlyPlayers) {
     if (vm.tab === 'kick') {
         vm.kicklistAlliances = [];
         api.watchlistKicklistAllianceList(vm.id, (error, data) => {
-            if (! error) {
+            if (error) {
+                vm.h.message('Failed to load list.', 'error');
+            } else {
                 vm.kicklistAlliances = data;
             }
         });
 
         vm.kicklistCorporations = [];
         api.watchlistKicklistCorporationList(vm.id, (error, data) => {
-            if (! error) {
+            if (error) {
+                vm.h.message('Failed to load list.', 'error');
+            } else {
                 vm.kicklistCorporations = data;
             }
         });
