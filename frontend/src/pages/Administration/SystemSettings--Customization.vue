@@ -66,7 +66,7 @@
             (use, for example,  with Bootstrap classes "text-primary", "bg-warning"
             <a class="external" href="https://bootswatch.com/darkly/" target="_blank"
                rel="noopener noreferrer">etc.</a>),
-            <a class="external" href="https://github.com/markdown-it/markdown-it-emoji/blob/master/lib/data/light.json"
+            <a class="external" href="https://github.com/markdown-it/markdown-it-emoji/blob/master/lib/data/light.mjs"
                target="_blank" rel="noopener noreferrer">emoji</a> light,
             <a class="external" href="https://github.com/markdown-it/markdown-it-mark"
                target="_blank" rel="noopener noreferrer">mark</a>,

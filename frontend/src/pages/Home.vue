@@ -231,7 +231,7 @@
 import {toRef} from "vue";
 import {Modal} from "bootstrap";
 import markdownIt from 'markdown-it';
-import mdEmoji from 'markdown-it-emoji/light';
+import {light as mdEmoji} from 'markdown-it-emoji'
 import mdSup from 'markdown-it-sup';
 import mdSub from 'markdown-it-sub';
 import mdIns from 'markdown-it-ins';
