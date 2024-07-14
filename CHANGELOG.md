@@ -2,7 +2,7 @@
 
 ## 2.5.0
 
-dd mm yyyy
+14 Jul 2024
 
 - **BC break**: Dropped PHP 8.0 support, minimum required version is now 8.1.0.
 - **BC break**: Removed `/application-api.json` file which is outdated since version 1.4.0.
