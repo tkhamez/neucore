@@ -4737,16 +4737,16 @@
         },
         {
             "name": "tkhamez/swagger-eve-php",
-            "version": "9.1.0",
+            "version": "9.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/swagger-eve-php.git",
-                "reference": "984ff1b9b902a8b833ec23489d90abb8e648ae66"
+                "reference": "24a2480b79deb2019be8162f9114adb04ec91edf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/984ff1b9b902a8b833ec23489d90abb8e648ae66",
-                "reference": "984ff1b9b902a8b833ec23489d90abb8e648ae66",
+                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/24a2480b79deb2019be8162f9114adb04ec91edf",
+                "reference": "24a2480b79deb2019be8162f9114adb04ec91edf",
                 "shasum": ""
             },
             "require": {
@@ -4790,9 +4790,9 @@
             ],
             "support": {
                 "issues": "https://github.com/tkhamez/swagger-eve-php/issues",
-                "source": "https://github.com/tkhamez/swagger-eve-php/tree/9.1.0"
+                "source": "https://github.com/tkhamez/swagger-eve-php/tree/9.1.1"
             },
-            "time": "2024-06-01T17:59:05+00:00"
+            "time": "2024-07-12T15:42:54+00:00"
         },
         {
             "name": "web-token/jwt-library",
