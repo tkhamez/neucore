@@ -176,8 +176,3 @@ Execute a single migration, e.g.:
 vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20240601205616 --up
 vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20240601205616 --down
 ```
-
-Check reserved words:
-```
-bin/doctrine dbal:reserved-words
-```
