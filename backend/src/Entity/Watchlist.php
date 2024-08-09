@@ -75,7 +75,7 @@ class Watchlist implements \JsonSerializable
     private Collection $groups;
 
     /**
-     * Members of theses groups can change settings for this list.
+     * Members of these groups can change settings for this list.
      *
      */
     #[ORM\ManyToMany(targetEntity: "Group")]
