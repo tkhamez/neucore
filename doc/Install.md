@@ -7,7 +7,6 @@
   * [Run Docker Image](#run-docker-image)
   * [Manual Installation](#manual-installation)
   * [Docker Development Environment](#docker-development-environment)
-  * [Deploy on AWS Beanstalk](#deploy-on-aws-beanstalk)
 - [Post Installation](#post-installation)
   * [Cronjob](#cronjob)
   * [Customization](#customization)
@@ -312,10 +311,6 @@ the database host is `neucore_db` and the database name also `neucore`.
 
 The web application is available at http://localhost:8080, the frontend development server at http://localhost:3000.
 The database is also available at `127.0.0.1:30306` and it's data is stored in the `.db` subdirectory.
-
-### Deploy on AWS Beanstalk
-
-See [bravecollective/neucore-beanstalk](https://github.com/bravecollective/neucore-beanstalk) for an example.
 
 ## Post Installation
 
