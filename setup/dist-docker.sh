@@ -13,20 +13,20 @@ echo "NEUCORE_DATABASE_URL=mysql://user:@127.0.0.1/db?serverVersion=10.5.22-Mari
 
 # Backend
 cd "${DIR}"/.. || exit
-docker-compose exec neucore_php sh -c "cd ../dist/build/backend && composer install --no-dev --optimize-autoloader --no-interaction"
-docker-compose exec neucore_php sh -c "cd ../dist/build/backend && bin/doctrine orm:generate-proxies"
-docker-compose exec neucore_php sh -c "cd ../dist/build/backend && composer openapi"
+docker compose exec neucore_php sh -c "cd ../dist/build/backend && composer install --no-dev --optimize-autoloader --no-interaction"
+docker compose exec neucore_php sh -c "cd ../dist/build/backend && bin/doctrine orm:generate-proxies"
+docker compose exec neucore_php sh -c "cd ../dist/build/backend && composer openapi"
 
 # OpenAPI JS client
 cd "${DIR}"/.. || exit
-docker-compose run neucore_java /app/dist/build/frontend/openapi.sh
-docker-compose exec neucore_node sh -c "cd ../dist/build/frontend/neucore-js-client && npm install"
-docker-compose exec neucore_node sh -c "cd ../dist/build/frontend/neucore-js-client && npm run build"
+docker compose run neucore_java /app/dist/build/frontend/openapi.sh
+docker compose exec neucore_node sh -c "cd ../dist/build/frontend/neucore-js-client && npm install"
+docker compose exec neucore_node sh -c "cd ../dist/build/frontend/neucore-js-client && npm run build"
 
 # Frontend
 cd "${DIR}"/.. || exit
-docker-compose exec neucore_node sh -c "cd ../dist/build/frontend && npm install"
-docker-compose exec neucore_node sh -c "cd ../dist/build/frontend && npm run build"
+docker compose exec neucore_node sh -c "cd ../dist/build/frontend && npm install"
+docker compose exec neucore_node sh -c "cd ../dist/build/frontend && npm run build"
 
 # Collect files and create archive
 "${DIR}"/../dist/build/setup/dist-collect-files.sh

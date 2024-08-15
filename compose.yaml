@@ -1,7 +1,5 @@
 # Creates a development environment
 
-version: '3.5'
-
 services:
   neucore_db:
     container_name: neucore_dev_db

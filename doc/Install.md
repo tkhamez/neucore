@@ -290,24 +290,25 @@ cd frontend && npm run build
 
 ### Docker Development Environment
 
-Only tested on Linux and once or twice on macOS.
+Needs [Docker Compose](https://docs.docker.com/compose/) V2. Only tested on Linux and once or 
+twice on macOS.
 
-Copy `backend/.env.dist` file to `backend/.env` and adjust values, the database password and user are both `neucore`,
-the database host is `neucore_db` and the database name also `neucore`.
+Copy `backend/.env.dist` file to `backend/.env` and adjust values, the database password and user 
+are both `neucore`, the database host is `neucore_db` and the database name also `neucore`.
 
 - Always run `export UID` first in each console that you use to execute any of the following commands.
 - Build the containers:  
-  `docker-compose build`
+  `docker compose build`
 - Start services:  
-  `docker-compose up`
+  `docker compose up`
 - Install the app:  
   `setup/install-docker.sh`  
-  `docker-compose exec neucore_node npm run build`
+  `docker compose exec neucore_node npm run build`
 - After the first login, make the account with the ID 1 admin:  
-  `docker-compose exec neucore_php bin/console make-admin 1`
+  `docker compose exec neucore_php bin/console make-admin 1`
 - Run tests and other commands in the php and node containers:  
-  `docker-compose exec neucore_php /bin/sh`  
-  `docker-compose exec neucore_node /bin/sh`
+  `docker compose exec neucore_php /bin/sh`  
+  `docker compose exec neucore_node /bin/sh`
 
 The web application is available at http://localhost:8080, the frontend development server at http://localhost:3000.
 The database is also available at `127.0.0.1:30306` and it's data is stored in the `.db` subdirectory.

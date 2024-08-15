@@ -40,7 +40,7 @@ include __DIR__ . '/vendor/autoload.php';
 //
 
 $coreHttpScheme = 'http';
-$coreDomain = 'neucore_http'; // works with docker-compose
+$coreDomain = 'neucore_http'; // Works with compose.yaml.
 $coreAppToken = base64_encode('1:secret');
 $coreCharId = '96061222'; // Character with token in Neucore
 
