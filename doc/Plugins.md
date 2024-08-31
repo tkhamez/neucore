@@ -17,6 +17,10 @@ _The following is valid for Neucore 1.42.0 and [neucore-plugin](https://github.c
 
 ## Intro
 
+Plugins add functionality to Neucore. They are most commonly used to create external service accounts
+and/or link them to a Neucore user account (like Mumble or Discord). They can also have their own user 
+interface.
+
 A plugin can be added multiple times to Neucore with different configuration data (via GUI, it only has to 
 be installed once). For example the [Neucore Discord Plugin](https://github.com/tkhamez/neucore-discord-plugin) 
 is added once for every Discord server that should be available to users.
