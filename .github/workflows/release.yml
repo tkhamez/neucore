@@ -49,7 +49,7 @@ jobs:
       - name: Build frontend
         run: |
           cd dist/build/frontend
-          npm install
+          npm ci
           npm run build
       - name: Get the version
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV

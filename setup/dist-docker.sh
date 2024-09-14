@@ -25,7 +25,7 @@ docker compose exec neucore_node sh -c "cd ../dist/build/frontend/neucore-js-cli
 
 # Frontend
 cd "${DIR}"/.. || exit
-docker compose exec neucore_node sh -c "cd ../dist/build/frontend && npm install"
+docker compose exec neucore_node sh -c "cd ../dist/build/frontend && npm ci"
 docker compose exec neucore_node sh -c "cd ../dist/build/frontend && npm run build"
 
 # Collect files and create archive
