@@ -4,10 +4,10 @@ DIR=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 
 # generate the OpenAPI client
 
-VERSION=7.2.0
+VERSION=7.8.0
 FILENAME=openapi-generator-cli-${VERSION}.jar
 
-if [ ! -f ${DIR}/${FILENAME} ]; then
+if [ ! -f "${DIR}"/${FILENAME} ]; then
     wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/${VERSION}/${FILENAME} \
         -O "${DIR}"/${FILENAME}
 fi
