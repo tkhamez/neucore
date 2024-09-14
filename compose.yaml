@@ -34,6 +34,7 @@ services:
       context: setup
       dockerfile: Dockerfile-node
     tty: true
+    stop_grace_period: 2s
     volumes: [".:/app"]
     environment:
       BACKEND_HOST: http://localhost:8080
