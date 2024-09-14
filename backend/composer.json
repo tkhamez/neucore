@@ -48,10 +48,8 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.0",
-        "phan/phan": "^5.2",
         "phpstan/phpstan": "^1.3",
         "phpunit/phpunit": "^10.5",
-        "vimeo/psalm": "^5.4",
         "web-token/jwt-library": "^3.2"
     },
     "suggest": {
@@ -87,9 +85,7 @@
             "openapi src --output ../web/frontend-api-3.yml --exclude src/Controller/App",
             "openapi src --output ../web/application-api-3.yml --exclude src/Controller/User"
         ],
-        "phan": "PHAN_DISABLE_XDEBUG_WARN=1 phan --color",
         "phpstan": "phpstan analyse --level 8 --ansi --memory-limit 512M src tests",
-        "psalm": "psalm",
         "test": "phpunit --colors=always",
         "test:cov": "phpunit --colors=always --coverage-html var/phpunit",
         "style:check": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix src --dry-run --diff --ansi",
