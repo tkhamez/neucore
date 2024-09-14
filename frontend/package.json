@@ -1,6 +1,7 @@
 {
   "name": "tkhamez-neucore",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "postinstall": "node bin/install-swagger-ui.js",
     "serve": "vue-cli-service serve",
@@ -62,6 +63,5 @@
   "engines": {
     "node": "^20.14.0",
     "npm": "^10.7.0"
-  },
-  "license": "MIT"
+  }
 }
