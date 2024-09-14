@@ -4,7 +4,8 @@
   "scripts": {
     "postinstall": "node bin/install-swagger-ui.js",
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "license-checker": "license-checker --summary --production --onlyAllow 'MIT;Apache-2.0;OFL-1.1;0BSD;BSD-2-Clause;BSD-3-Clause;ISC;Python-2.0'"
   },
   "dependencies": {
     "@fontsource/cabin-sketch": "^5.0.3",
@@ -49,6 +50,7 @@
     "@vue/compiler-sfc": "^3.2.33",
     "compression-webpack-plugin": "^11.1.0",
     "imports-loader": "^5.0.0",
+    "license-checker": "^25.0.1",
     "license-webpack-plugin": "^4.0.2",
     "sass": "^1.51.0",
     "sass-loader": "^14.2.1",
