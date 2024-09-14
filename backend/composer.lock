@@ -4,8 +4,71 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eb258dd7ad6353757961400f622c2f9a",
+    "content-hash": "b3211e005b83c0274cd1d4c9bc9b4a00",
     "packages": [
+        {
+            "name": "arokettu/composer-license-manager",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/arokettu/composer-license-manager.git",
+                "reference": "5bc2c8a8f0d3f41bb58c3d9f3870058c1d2f56f9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/arokettu/composer-license-manager/zipball/5bc2c8a8f0d3f41bb58c3d9f3870058c1d2f56f9",
+                "reference": "5bc2c8a8f0d3f41bb58c3d9f3870058c1d2f56f9",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^2.3",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "composer/composer": "^2.3",
+                "phpunit/phpunit": "^10.4.2",
+                "sandfox.dev/code-standard": "^1.2023.06.29",
+                "squizlabs/php_codesniffer": "*",
+                "vimeo/psalm": "^5.16"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Arokettu\\Composer\\LicenseManager\\LicenseManagerPlugin"
+            },
+            "autoload": {
+                "psr-4": {
+                    "Arokettu\\Composer\\LicenseManager\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Anton Smirnov",
+                    "email": "sandfox@sandfox.me",
+                    "homepage": "https://sandfox.me/",
+                    "role": "developer"
+                }
+            ],
+            "description": "License management plugin for Composer",
+            "homepage": "https://sandfox.dev/php/composer-license-manager.html",
+            "keywords": [
+                "composer",
+                "composer plugin",
+                "license",
+                "license management",
+                "licenses"
+            ],
+            "support": {
+                "chat": "https://gitter.im/arokettu/community",
+                "docs": "https://composer-license-manager.readthedocs.io/",
+                "issues": "https://gitlab.com/sandfox/composer-license-manager/-/issues",
+                "source": "https://gitlab.com/sandfox/composer-license-manager"
+            },
+            "time": "2023-11-29T00:31:55+00:00"
+        },
         {
             "name": "brick/math",
             "version": "0.12.1",

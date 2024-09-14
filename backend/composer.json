@@ -18,6 +18,7 @@
         "ext-pdo_mysql": "*",
         "ext-simplexml": "*",
         "ext-zlib": "*",
+        "arokettu/composer-license-manager": "^1.2",
         "doctrine/annotations": "^2.0",
         "doctrine/common": "^3.3",
         "doctrine/migrations": "^3.5",
@@ -100,6 +101,18 @@
             "php": "8.1.0"
         },
         "process-timeout": 0,
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "arokettu/composer-license-manager": true
+        }
+    },
+    "extra": {
+        "arokettu/composer-license-manager": {
+            "licenses": {
+                "allowed": ["MIT", "ISC", "BSD-3*", "Apache*"],
+                "allow-empty": false
+            },
+            "enforced": true
+        }
     }
 }
