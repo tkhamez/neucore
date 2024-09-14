@@ -6,7 +6,8 @@
     "postinstall": "node bin/install-swagger-ui.js",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "license-checker": "license-checker --summary --production --onlyAllow 'MIT;Apache-2.0;OFL-1.1;0BSD;BSD-2-Clause;BSD-3-Clause;ISC;Python-2.0'"
+    "license-checker": "license-checker --summary --onlyAllow 'MIT;Apache-2.0;OFL-1.1;0BSD;BSD-2-Clause;BSD-3-Clause;ISC;Python-2.0;CC-BY-3.0;CC-BY-4.0;CC0-1.0;MPL-2.0;Unlicense'",
+    "license-checker:unknown": "license-checker --onlyunknown"
   },
   "dependencies": {
     "@fontsource/cabin-sketch": "^5.0.3",
