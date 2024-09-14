@@ -19,11 +19,12 @@ use Doctrine\ORM\Mapping as ORM;
 )]
 class AppRequests
 {
-    #[ORM\Id] #[ORM\Column(type: "bigint")]
+    #[ORM\Id]
+    #[ORM\Column(type: "bigint")]
     #[ORM\GeneratedValue]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: "App")]
+    #[ORM\ManyToOne(targetEntity: App::class)]
     #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private ?App $app = null;
 

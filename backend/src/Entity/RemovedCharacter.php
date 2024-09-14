@@ -73,7 +73,7 @@ class RemovedCharacter implements \JsonSerializable
      *
      * @OA\Property(ref="#/components/schemas/Player", description="The old player account.", nullable=false)
      */
-    #[ORM\ManyToOne(targetEntity: "Player", inversedBy: "removedCharacters")]
+    #[ORM\ManyToOne(targetEntity: Player::class, inversedBy: "removedCharacters")]
     #[ORM\JoinColumn(nullable: false)]
     private ?Player $player = null;
 
@@ -81,7 +81,7 @@ class RemovedCharacter implements \JsonSerializable
      * The new player account.
      *
      */
-    #[ORM\ManyToOne(targetEntity: "Player", inversedBy: "incomingCharacters")]
+    #[ORM\ManyToOne(targetEntity: Player::class, inversedBy: "incomingCharacters")]
     #[ORM\JoinColumn(name: "new_player_id")]
     private ?Player $newPlayer = null;
 
@@ -123,7 +123,7 @@ class RemovedCharacter implements \JsonSerializable
      *
      * @OA\Property(ref="#/components/schemas/Player", nullable=false)
      */
-    #[ORM\ManyToOne(targetEntity: "Player")]
+    #[ORM\ManyToOne(targetEntity: Player::class)]
     #[ORM\JoinColumn(name: "deleted_by")]
     private ?Player $deletedBy = null;
 

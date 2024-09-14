@@ -47,7 +47,7 @@ class CorporationMember implements \JsonSerializable
     /**
      * @OA\Property(ref="#/components/schemas/EsiLocation", nullable=false)
      */
-    #[ORM\ManyToOne(targetEntity: "EsiLocation")]
+    #[ORM\ManyToOne(targetEntity: EsiLocation::class)]
     #[ORM\JoinColumn(name: "esi_location_id")]
     private ?EsiLocation $location = null;
 
@@ -66,7 +66,7 @@ class CorporationMember implements \JsonSerializable
     /**
      * @OA\Property(ref="#/components/schemas/EsiType", nullable=false)
      */
-    #[ORM\ManyToOne(targetEntity: "EsiType")]
+    #[ORM\ManyToOne(targetEntity: EsiType::class)]
     #[ORM\JoinColumn(name: "esi_type_id")]
     private ?EsiType $shipType = null;
 
@@ -76,7 +76,7 @@ class CorporationMember implements \JsonSerializable
     #[ORM\Column(name: "start_date", type: "datetime", nullable: true)]
     private ?\DateTime $startDate = null;
 
-    #[ORM\ManyToOne(targetEntity: "Corporation", inversedBy: "members")]
+    #[ORM\ManyToOne(targetEntity: Corporation::class, inversedBy: "members")]
     #[ORM\JoinColumn(nullable: false)]
     private Corporation $corporation;
 

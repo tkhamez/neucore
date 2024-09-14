@@ -84,15 +84,15 @@ class Role implements \JsonSerializable
     #[ORM\Column(type: "string", length: 64, unique: true)]
     private string $name = '';
 
-    #[ORM\ManyToMany(targetEntity: "Player", mappedBy: "roles")]
+    #[ORM\ManyToMany(targetEntity: Player::class, mappedBy: "roles")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $players;
 
-    #[ORM\ManyToMany(targetEntity: "App", mappedBy: "roles")]
+    #[ORM\ManyToMany(targetEntity: App::class, mappedBy: "roles")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $apps;
 
-    #[ORM\ManyToMany(targetEntity: "Group")]
+    #[ORM\ManyToMany(targetEntity: Group::class)]
     #[ORM\JoinTable(name: "role_required_group")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $requiredGroups;

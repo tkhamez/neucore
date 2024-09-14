@@ -44,7 +44,7 @@ class Watchlist implements \JsonSerializable
      * Player accounts that are on the allowlist.
      *
      */
-    #[ORM\ManyToMany(targetEntity: "Player")]
+    #[ORM\ManyToMany(targetEntity: Player::class)]
     #[ORM\JoinTable(name: "watchlist_exemption")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $exemptions;
@@ -54,7 +54,7 @@ class Watchlist implements \JsonSerializable
      * members in other corporations that are not on this list.
      *
      */
-    #[ORM\ManyToMany(targetEntity: "Corporation")]
+    #[ORM\ManyToMany(targetEntity: Corporation::class)]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $corporations;
 
@@ -62,15 +62,15 @@ class Watchlist implements \JsonSerializable
      * Same as $corporations but for alliances.
      *
      */
-    #[ORM\ManyToMany(targetEntity: "Alliance")]
+    #[ORM\ManyToMany(targetEntity: Alliance::class)]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $alliances;
 
     /**
-     * Members of theses groups have read access to this list.
+     * Members of these groups have read access to this list.
      *
      */
-    #[ORM\ManyToMany(targetEntity: "Group")]
+    #[ORM\ManyToMany(targetEntity: Group::class)]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $groups;
 
@@ -78,7 +78,7 @@ class Watchlist implements \JsonSerializable
      * Members of these groups can change settings for this list.
      *
      */
-    #[ORM\ManyToMany(targetEntity: "Group")]
+    #[ORM\ManyToMany(targetEntity: Group::class)]
     #[ORM\JoinTable(name: "watchlist_manager_group")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $managerGroups;
@@ -88,7 +88,7 @@ class Watchlist implements \JsonSerializable
      * are moved to the kicklist.
      *
      */
-    #[ORM\ManyToMany(targetEntity: "Corporation")]
+    #[ORM\ManyToMany(targetEntity: Corporation::class)]
     #[ORM\JoinTable(name: "watchlist_kicklist_corporation")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $kicklistCorporations;
@@ -97,7 +97,7 @@ class Watchlist implements \JsonSerializable
      * Same as $kicklistCorporations but for alliances.
      *
      */
-    #[ORM\ManyToMany(targetEntity: "Alliance")]
+    #[ORM\ManyToMany(targetEntity: Alliance::class)]
     #[ORM\JoinTable(name: "watchlist_kicklist_alliance")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $kicklistAlliances;
@@ -107,7 +107,7 @@ class Watchlist implements \JsonSerializable
      * Accounts will not be added to the list is they have a character in one of these.
      *
      */
-    #[ORM\ManyToMany(targetEntity: "Corporation")]
+    #[ORM\ManyToMany(targetEntity: Corporation::class)]
     #[ORM\JoinTable(name: "watchlist_allowlist_corporation")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $allowlistCorporations;
@@ -116,7 +116,7 @@ class Watchlist implements \JsonSerializable
      * Same as $allowlistCorporations but for alliances.
      *
      */
-    #[ORM\ManyToMany(targetEntity: "Alliance")]
+    #[ORM\ManyToMany(targetEntity: Alliance::class)]
     #[ORM\JoinTable(name: "watchlist_allowlist_alliance")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $allowlistAlliances;

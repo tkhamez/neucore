@@ -22,7 +22,7 @@ class PlayerLogins
     #[ORM\GeneratedValue]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: "Player")]
+    #[ORM\ManyToOne(targetEntity: Player::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?Player $player = null;
 

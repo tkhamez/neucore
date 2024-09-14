@@ -45,7 +45,7 @@ class App implements \JsonSerializable
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Role"))
      */
-    #[ORM\ManyToMany(targetEntity: "Role", inversedBy: "apps")]
+    #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: "apps")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $roles;
 
@@ -54,11 +54,11 @@ class App implements \JsonSerializable
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      */
-    #[ORM\ManyToMany(targetEntity: "Group", inversedBy: "apps")]
+    #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: "apps")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $groups;
 
-    #[ORM\ManyToMany(targetEntity: "Player", inversedBy: "managerApps")]
+    #[ORM\ManyToMany(targetEntity: Player::class, inversedBy: "managerApps")]
     #[ORM\JoinTable(name: "app_manager")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $managers;
@@ -66,7 +66,7 @@ class App implements \JsonSerializable
     /**
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/EveLogin"))
      */
-    #[ORM\ManyToMany(targetEntity: "EveLogin")]
+    #[ORM\ManyToMany(targetEntity: EveLogin::class)]
     #[ORM\JoinTable(name: "app_eve_login")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $eveLogins;

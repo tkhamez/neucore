@@ -39,11 +39,11 @@ class EsiToken implements \JsonSerializable
     /**
      * @OA\Property(ref="#/components/schemas/Character", nullable=false)
      */
-    #[ORM\ManyToOne(targetEntity: "Character", inversedBy: "esiTokens")]
+    #[ORM\ManyToOne(targetEntity: Character::class, inversedBy: "esiTokens")]
     #[ORM\JoinColumn(name: "character_id", nullable: false, onDelete: "CASCADE")]
     private ?Character $character = null;
 
-    #[ORM\ManyToOne(targetEntity: "EveLogin", inversedBy: "esiTokens")]
+    #[ORM\ManyToOne(targetEntity: EveLogin::class, inversedBy: "esiTokens")]
     #[ORM\JoinColumn(name: "eve_login_id", nullable: false, onDelete: "CASCADE")]
     private ?EveLogin $eveLogin = null;
 

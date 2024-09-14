@@ -59,7 +59,7 @@ class Corporation implements \JsonSerializable
      *
      * @OA\Property(ref="#/components/schemas/Alliance", nullable=false)
      */
-    #[ORM\ManyToOne(targetEntity: "Alliance", inversedBy: "corporations")]
+    #[ORM\ManyToOne(targetEntity: Alliance::class, inversedBy: "corporations")]
     private ?Alliance $alliance = null;
 
     /**
@@ -67,7 +67,7 @@ class Corporation implements \JsonSerializable
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      */
-    #[ORM\ManyToMany(targetEntity: "Group", inversedBy: "corporations")]
+    #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: "corporations")]
     #[ORM\JoinTable(name: "corporation_group")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $groups;
@@ -76,7 +76,7 @@ class Corporation implements \JsonSerializable
      * Groups those members may see this corporation member tracking data.
      *
      */
-    #[ORM\ManyToMany(targetEntity: "Group")]
+    #[ORM\ManyToMany(targetEntity: Group::class)]
     #[ORM\JoinTable(name: "corporation_group_tracking")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $groupsTracking;
@@ -89,11 +89,11 @@ class Corporation implements \JsonSerializable
     #[ORM\Column(name: "tracking_last_update", type: "datetime", nullable: true)]
     private ?\DateTime $trackingLastUpdate = null;
 
-    #[ORM\OneToMany(mappedBy: "corporation", targetEntity: "Character")]
+    #[ORM\OneToMany(targetEntity: Character::class, mappedBy: "corporation")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $characters;
 
-    #[ORM\OneToMany(mappedBy: "corporation", targetEntity: "CorporationMember")]
+    #[ORM\OneToMany(targetEntity: CorporationMember::class, mappedBy: "corporation")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $members;
 

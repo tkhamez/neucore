@@ -54,7 +54,7 @@ class Alliance implements \JsonSerializable
     #[ORM\Column(name: "last_update", type: "datetime", nullable: true)]
     private ?\DateTime $lastUpdate = null;
 
-    #[ORM\OneToMany(mappedBy: "alliance", targetEntity: "Corporation")]
+    #[ORM\OneToMany(targetEntity: Corporation::class, mappedBy: "alliance")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $corporations;
 
@@ -63,7 +63,7 @@ class Alliance implements \JsonSerializable
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      */
-    #[ORM\ManyToMany(targetEntity: "Group", inversedBy: "alliances")]
+    #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: "alliances")]
     #[ORM\JoinTable(name: "alliance_group")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $groups;

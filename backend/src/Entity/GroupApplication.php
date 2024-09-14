@@ -50,14 +50,14 @@ class GroupApplication implements \JsonSerializable
     /**
      * @OA\Property(ref="#/components/schemas/Player")
      */
-    #[ORM\ManyToOne(targetEntity: "Player", inversedBy: "groupApplications")]
+    #[ORM\ManyToOne(targetEntity: Player::class, inversedBy: "groupApplications")]
     #[ORM\JoinColumn(nullable: false)]
     private Player $player;
 
     /**
      * @OA\Property(ref="#/components/schemas/Group")
      */
-    #[ORM\ManyToOne(targetEntity: "Group", inversedBy: "applications")]
+    #[ORM\ManyToOne(targetEntity: Group::class, inversedBy: "applications")]
     #[ORM\JoinColumn(nullable: false)]
     private Group $group;
 

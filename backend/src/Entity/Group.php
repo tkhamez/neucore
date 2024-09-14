@@ -68,7 +68,7 @@ class Group implements \JsonSerializable
     #[ORM\Column(name: "is_default", type: "boolean")]
     private bool $isDefault = false;
 
-    #[ORM\OneToMany(mappedBy: "group", targetEntity: "GroupApplication", cascade: ["remove"])]
+    #[ORM\OneToMany(targetEntity: GroupApplication::class, mappedBy: "group", cascade: ["remove"])]
     #[ORM\OrderBy(["created" => "DESC"])]
     private Collection $applications;
 
@@ -76,16 +76,16 @@ class Group implements \JsonSerializable
      * Group members.
      *
      */
-    #[ORM\ManyToMany(targetEntity: "Player", mappedBy: "groups")]
+    #[ORM\ManyToMany(targetEntity: Player::class, mappedBy: "groups")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $players;
 
-    #[ORM\ManyToMany(targetEntity: "Player", inversedBy: "managerGroups")]
+    #[ORM\ManyToMany(targetEntity: Player::class, inversedBy: "managerGroups")]
     #[ORM\JoinTable(name: "group_manager")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $managers;
 
-    #[ORM\ManyToMany(targetEntity: "App", mappedBy: "groups")]
+    #[ORM\ManyToMany(targetEntity: App::class, mappedBy: "groups")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $apps;
 
@@ -93,7 +93,7 @@ class Group implements \JsonSerializable
      * Corporations for automatic assignment.
      *
      */
-    #[ORM\ManyToMany(targetEntity: "Corporation", mappedBy: "groups")]
+    #[ORM\ManyToMany(targetEntity: Corporation::class, mappedBy: "groups")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $corporations;
 
@@ -101,7 +101,7 @@ class Group implements \JsonSerializable
      * Alliances for automatic assignment.
      *
      */
-    #[ORM\ManyToMany(targetEntity: "Alliance", mappedBy: "groups")]
+    #[ORM\ManyToMany(targetEntity: Alliance::class, mappedBy: "groups")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $alliances;
 
@@ -109,7 +109,7 @@ class Group implements \JsonSerializable
      * A player must be a member of one of these groups in order to be a member of this group.
      *
      */
-    #[ORM\ManyToMany(targetEntity: "Group")]
+    #[ORM\ManyToMany(targetEntity: Group::class)]
     #[ORM\JoinTable(name: "group_required_groups")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $requiredGroups;
@@ -118,7 +118,7 @@ class Group implements \JsonSerializable
      * A player must not be a member of any of these groups in order to be a member of this group.
      *
      */
-    #[ORM\ManyToMany(targetEntity: "Group")]
+    #[ORM\ManyToMany(targetEntity: Group::class)]
     #[ORM\JoinTable(name: "group_forbidden_groups")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $forbiddenGroups;

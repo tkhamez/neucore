@@ -113,14 +113,14 @@ class Player implements \JsonSerializable
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Role"))
      */
-    #[ORM\ManyToMany(targetEntity: "Role", inversedBy: "players")]
+    #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: "players")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $roles;
 
     /**
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Character"))
      */
-    #[ORM\OneToMany(mappedBy: "player", targetEntity: "Character")]
+    #[ORM\OneToMany(targetEntity: Character::class, mappedBy: "player")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $characters;
 
@@ -128,7 +128,7 @@ class Player implements \JsonSerializable
      * Group applications.
      *
      */
-    #[ORM\OneToMany(mappedBy: "player", targetEntity: "GroupApplication")]
+    #[ORM\OneToMany(targetEntity: GroupApplication::class, mappedBy: "player")]
     #[ORM\OrderBy(["created" => "DESC"])]
     private Collection $groupApplications;
 
@@ -137,7 +137,7 @@ class Player implements \JsonSerializable
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      */
-    #[ORM\ManyToMany(targetEntity: "Group", inversedBy: "players")]
+    #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: "players")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $groups;
 
@@ -146,7 +146,7 @@ class Player implements \JsonSerializable
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      */
-    #[ORM\ManyToMany(targetEntity: "Group", mappedBy: "managers")]
+    #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: "managers")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $managerGroups;
 
@@ -155,7 +155,7 @@ class Player implements \JsonSerializable
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/App"))
      */
-    #[ORM\ManyToMany(targetEntity: "App", mappedBy: "managers")]
+    #[ORM\ManyToMany(targetEntity: App::class, mappedBy: "managers")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $managerApps;
 
@@ -164,7 +164,7 @@ class Player implements \JsonSerializable
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/RemovedCharacter"))
      */
-    #[ORM\OneToMany(mappedBy: "player", targetEntity: "RemovedCharacter")]
+    #[ORM\OneToMany(targetEntity: RemovedCharacter::class, mappedBy: "player")]
     #[ORM\OrderBy(["removedDate" => "ASC"])]
     private Collection $removedCharacters;
 
@@ -173,7 +173,7 @@ class Player implements \JsonSerializable
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/RemovedCharacter"))
      */
-    #[ORM\OneToMany(mappedBy: "newPlayer", targetEntity: "RemovedCharacter")]
+    #[ORM\OneToMany(targetEntity: RemovedCharacter::class, mappedBy: "newPlayer")]
     #[ORM\OrderBy(["removedDate" => "ASC"])]
     private Collection $incomingCharacters;
 

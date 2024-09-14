@@ -24,13 +24,10 @@ class EntityManager extends EntityManagerDecorator
         return $this->wrapped->isUninitializedObject($value);
     }
 
-    /**
-     * @param mixed $entity
-     */
-    public function flush($entity = null): bool
+    public function flush(): bool
     {
         try {
-            parent::flush($entity);
+            parent::flush();
         } catch (\Exception $e) {
             $this->log->critical($e->getMessage(), [Context::EXCEPTION => $e]);
             return false;

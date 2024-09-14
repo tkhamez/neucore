@@ -28,7 +28,7 @@ class CharacterNameChange implements \JsonSerializable
     #[ORM\GeneratedValue]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: "Character", inversedBy: "characterNameChanges")]
+    #[ORM\ManyToOne(targetEntity: Character::class, inversedBy: "characterNameChanges")]
     #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private Character $character;
 

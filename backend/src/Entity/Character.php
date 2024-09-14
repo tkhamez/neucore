@@ -75,7 +75,7 @@ class Character implements \JsonSerializable
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/EsiToken"))
      */
-    #[ORM\OneToMany(mappedBy: "character", targetEntity: "EsiToken")]
+    #[ORM\OneToMany(targetEntity: EsiToken::class, mappedBy: "character")]
     #[ORM\OrderBy(["id" => "ASC"])] private Collection $esiTokens;
 
     /**
@@ -95,14 +95,14 @@ class Character implements \JsonSerializable
     #[ORM\Column(name: "last_update", type: "datetime", nullable: true)]
     private ?\DateTime $lastUpdate = null;
 
-    #[ORM\ManyToOne(targetEntity: "Player", inversedBy: "characters")]
+    #[ORM\ManyToOne(targetEntity: Player::class, inversedBy: "characters")]
     #[ORM\JoinColumn(nullable: false)]
     private Player $player;
 
     /**
      * @OA\Property(ref="#/components/schemas/Corporation", nullable=false)
      */
-    #[ORM\ManyToOne(targetEntity: "Corporation", inversedBy: "characters")]
+    #[ORM\ManyToOne(targetEntity: Corporation::class, inversedBy: "characters")]
     private ?Corporation $corporation = null;
 
     /**
@@ -110,7 +110,7 @@ class Character implements \JsonSerializable
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/CharacterNameChange"))
      */
-    #[ORM\OneToMany(mappedBy: "character", targetEntity: "CharacterNameChange")]
+    #[ORM\OneToMany(targetEntity: CharacterNameChange::class, mappedBy: "character")]
     #[ORM\OrderBy(["changeDate" => "DESC"])]
     private Collection $characterNameChanges;
 

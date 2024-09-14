@@ -103,7 +103,7 @@ class EveLogin implements \JsonSerializable
     #[ORM\Column(name: "eve_roles", type: "string", length: 1024)]
     private string $eveRoles = '';
 
-    #[ORM\OneToMany(mappedBy: "eveLogin", targetEntity: "EsiToken")]
+    #[ORM\OneToMany(targetEntity: EsiToken::class, mappedBy: "eveLogin")]
     private Collection $esiTokens;
 
     public static function isValidObject(\stdClass $data): bool
