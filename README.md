@@ -107,10 +107,8 @@ OpenAPI clients for the Neucore API:
 
 **Contact**
 
-If you have any questions or feedback, you can join the [Neucore Discord Server](https://discord.gg/memUh56u8z) or
-contact [Tian Khamez](https://evewho.com/character/96061222) on 
-[Tweetfleet Slack](https://tweetfleet.slack.com) (get invites 
-[here](https://www.fuzzwork.co.uk/tweetfleet-slack-invites/)).
+If you have any questions or feedback, you can join the
+[Neucore Discord Server](https://discord.gg/memUh56u8z).
 
 **Donations**
 
