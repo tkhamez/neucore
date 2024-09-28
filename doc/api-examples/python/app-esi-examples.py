@@ -44,6 +44,6 @@ client = EsiClient(security=auth, headers={'User-Agent': 'Neucore API Example'})
 
 
 # Make request
-structures_request = app.op['get_characters_character_id_assets'](character_id=core_char_id, datasource=core_char_id)
-structures_response = client.request(structures_request)
-print(structures_response.data[0])
+assets_request = app.op['get_characters_character_id_assets'](character_id=core_char_id, datasource=core_char_id)
+assets_response = client.request(assets_request)
+print(assets_response.data[0])

@@ -120,6 +120,7 @@ echo PHP_EOL;
 
 // Set the EVE character ID as the datasource
 $configuration = \Seat\Eseye\Configuration::getInstance();
+/* @see \Seat\Eseye\Containers\EsiConfiguration::$data */
 $configuration->datasource = $coreCharId;
 $configuration->esi_scheme = $coreHttpScheme;
 $configuration->esi_host = "$coreDomain/api/app/v2/esi";
@@ -139,7 +140,6 @@ try {
     $result = $esi
         ->setQueryString(['page' => 1])
         ->invoke('get', '/characters/{character_id}/assets/', ['character_id' => $coreCharId]);
-
     echo 'Status: ', $result->getErrorCode(), PHP_EOL;
     echo 'Headers: ';
     print_r($result->headers);
