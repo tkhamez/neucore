@@ -864,10 +864,9 @@ class EsiController extends BaseController
 
     private function isPublicPath(string $esiPath): bool
     {
-        $path = substr($esiPath, (int) strpos($esiPath, '/', 1));
+        $path = substr($esiPath, (int)strpos($esiPath, '/', 1));
 
-        /** @noinspection PhpIncludeInspection */
-        $publicPaths = require Application::ROOT_DIR . '/config/esi-paths-public.php';
+        $publicPaths = Application::loadFile('esi-paths-public.php');
 
         foreach ($publicPaths as $pattern) {
             if (preg_match("@^$pattern$@", $path) === 1) {

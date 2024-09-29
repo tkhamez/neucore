@@ -196,8 +196,7 @@ class PluginService
             }
             /** @noinspection PhpFullyQualifiedNameUsageInspection */
             /* @var \Composer\Autoload\ClassLoader $loader */
-            /** @noinspection PhpIncludeInspection */
-            $loader = require Application::ROOT_DIR . '/vendor/autoload.php';
+            $loader = Application::loadFile('autoload.php', 'vendor');
             foreach ($loader->getPrefixesPsr4() as $existingPrefix => $paths) {
                 if ($existingPrefix === $pluginConfigYaml->psr4Prefix) {
                     $psr4Paths = array_merge($paths, $psr4Paths);

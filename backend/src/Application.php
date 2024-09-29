@@ -108,6 +108,11 @@ class Application
 
     private ?Container $container = null;
 
+    public static function loadFile(string $name, string $directory = 'config'): mixed
+    {
+        return require self::ROOT_DIR . "/$directory/$name";
+    }
+
     public function __construct()
     {
         // Set timezone - also used by Doctrine for dates/times in the database.
@@ -168,15 +173,15 @@ class Application
             $this->env = self::ENV_DEV;
         }
 
-        $settings = $this->loadConfigFile('settings.php');
+        $settings = self::loadFile('settings.php');
 
         if ($this->env === self::ENV_DEV) {
-            $dev = $this->loadConfigFile('settings_dev.php');
+            $dev = self::loadFile('settings_dev.php');
             $settings = array_replace_recursive($settings, $dev);
         }
 
         if ($unitTest) {
-            $test = $this->loadConfigFile('settings_tests.php');
+            $test = self::loadFile('settings_tests.php');
             $settings = array_replace_recursive($settings, $test);
         }
 
@@ -285,7 +290,7 @@ class Application
 
         $app->add(new SecureRouteMiddleware(
             $this->container->get(ResponseFactoryInterface::class),
-            $this->loadConfigFile('security.php')
+            self::loadFile('security.php')
         ));
 
         $app->add(new RoleMiddleware($this->container->get(AppAuth::class), ['route_pattern' => ['/api/app']]));
@@ -383,7 +388,7 @@ class Application
 
     private function registerRoutes(App $app): void
     {
-        $routes = $this->loadConfigFile('routes.php');
+        $routes = self::loadFile('routes.php');
 
         foreach ($routes as $pattern => $configuration) {
             if (isset($configuration[0])) { // e. g. ['GET', 'method']
@@ -452,10 +457,5 @@ class Application
             echo 'Error: ', $e->getMessage(), PHP_EOL;
             exit(1);
         }
-    }
-
-    private function loadConfigFile(string $name): mixed
-    {
-        return require self::ROOT_DIR . "/config/$name";
     }
 }
