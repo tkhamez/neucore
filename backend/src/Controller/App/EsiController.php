@@ -278,19 +278,19 @@ class EsiController extends BaseController
      *     summary="See GET /app/v2/esi",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
-     *      @OA\Parameter(
-     *          name="Neucore-EveCharacter",
-     *          in="header",
-     *          description="The EVE character ID those token should be used. Has priority over the query
-     *                       parameter 'datasource'",
-     *          @OA\Schema(type="string")
-     *      ),
-     *      @OA\Parameter(
-     *          name="Neucore-EveLogin",
-     *          in="header",
-     *          description="The EVE login name from which the token should be used, defaults to core.default.",
-     *          @OA\Schema(type="string")
-     *      ),
+     *     @OA\Parameter(
+     *         name="Neucore-EveCharacter",
+     *         in="header",
+     *         description="The EVE character ID those token should be used. Has priority over the query
+                            parameter 'datasource'",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="Neucore-EveLogin",
+     *         in="header",
+     *         description="The EVE login name from which the token should be used, defaults to core.default.",
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(
      *         name="esi-path-query",
      *         in="query",
@@ -495,19 +495,19 @@ class EsiController extends BaseController
      *     summary="See POST /app/v2/esi",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
-     *      @OA\Parameter(
-     *          name="Neucore-EveCharacter",
-     *          in="header",
-     *          description="The EVE character ID those token should be used. Has priority over the query
-     *                       parameter 'datasource'",
-     *          @OA\Schema(type="string")
-     *      ),
-     *      @OA\Parameter(
-     *          name="Neucore-EveLogin",
-     *          in="header",
-     *          description="The EVE login name from which the token should be used, defaults to core.default.",
-     *          @OA\Schema(type="string")
-     *      ),
+     *     @OA\Parameter(
+     *         name="Neucore-EveCharacter",
+     *         in="header",
+     *         description="The EVE character ID those token should be used. Has priority over the query
+                            parameter 'datasource'",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="Neucore-EveLogin",
+     *         in="header",
+     *         description="The EVE login name from which the token should be used, defaults to core.default.",
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(
      *         name="esi-path-query",
      *         in="query",
@@ -600,19 +600,19 @@ class EsiController extends BaseController
      *     summary="Same as GET /app/v2/esi, but for POST requests.",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
-     *      @OA\Parameter(
-     *          name="Neucore-EveCharacter",
-     *          in="header",
-     *          description="The EVE character ID those token should be used. Has priority over the query
-     *                       parameter 'datasource'",
-     *          @OA\Schema(type="string")
-     *      ),
-     *      @OA\Parameter(
-     *          name="Neucore-EveLogin",
-     *          in="header",
-     *          description="The EVE login name from which the token should be used, defaults to core.default.",
-     *          @OA\Schema(type="string")
-     *      ),
+     *     @OA\Parameter(
+     *         name="Neucore-EveCharacter",
+     *         in="header",
+     *         description="The EVE character ID those token should be used. Has priority over the query
+                            parameter 'datasource'",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="Neucore-EveLogin",
+     *         in="header",
+     *         description="The EVE login name from which the token should be used, defaults to core.default.",
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(
      *         name="esi-path-query",
      *         in="query",
