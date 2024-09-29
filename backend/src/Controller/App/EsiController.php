@@ -16,34 +16,35 @@ use Neucore\Service\EsiClient;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\StorageInterface;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Annotations as OAT;
+use OpenApi\Attributes as OA;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * @OA\Tag(name="Application - ESI")
- *
- * @OA\Schema(
- *     schema="EsiTokenData",
- *     required={"lastChecked", "characterId", "characterName", "corporationId", "allianceId"},
- *     @OA\Property(property="lastChecked", type="string", nullable=true),
- *     @OA\Property(property="characterId", type="integer"),
- *     @OA\Property(property="characterName", type="string"),
- *     @OA\Property(property="corporationId", type="integer", nullable=true),
- *     @OA\Property(property="allianceId", type="integer", nullable=true)
- * )
- *
- * @OA\Schema(
- *     schema="EsiAccessToken",
- *     required={"token", "scopes", "expires"},
- *     @OA\Property(property="token", type="string"),
- *     @OA\Property(property="scopes", type="array", @OA\Items(type="string")),
- *     @OA\Property(property="expires",type="integer")
- * )
- */
+
+#[OA\Tag(name: 'Application - ESI')]
+#[OA\Schema(
+    schema: 'EsiTokenData',
+    required: ['lastChecked', 'characterId', 'characterName', 'corporationId', 'allianceId'],
+    properties: [
+        new OA\Property(property: 'lastChecked', type: 'string', nullable: true),
+        new OA\Property(property: 'characterId', type: 'integer'),
+        new OA\Property(property: 'characterName', type: 'string'),
+        new OA\Property(property: 'corporationId', type: 'integer', nullable: true),
+        new OA\Property(property: 'allianceId', type: 'integer', nullable: true)
+    ]
+)]
+#[OA\Schema(
+    schema: 'EsiAccessToken',
+    required: ['token', 'scopes', 'expires'],
+    properties: [
+        new OA\Property(property: 'token', type: 'string'),
+        new OA\Property(property: 'scopes', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'expires', type: 'integer')
+    ]
+)]
 class EsiController extends BaseController
 {
     private const ERROR_MESSAGE_PREFIX = 'App\EsiController: ';
@@ -89,43 +90,41 @@ class EsiController extends BaseController
         $this->esiClient = $esiClient;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/app/v1/esi/eve-login/{name}/characters",
-     *     operationId="esiEveLoginCharactersV1",
-     *     summary="Returns character IDs of characters that have an ESI token (including invalid) of an EVE login.",
-     *     description="Needs role: app-esi-login.",
-     *     tags={"Application - ESI"},
-     *     security={{"BearerAuth"={}}},
-     *     @OA\Parameter(
-     *         name="name",
-     *         in="path",
-     *         required=true,
-     *         description="EVE login name.",
-     *         @OA\Schema(type="string", maxLength=20, pattern="^[-._a-zA-Z0-9]+$")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="",
-     *         @OA\JsonContent(type="array", @OA\Items(type="integer"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Forbidden",
-     *         @OA\JsonContent(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="EVE login not found.",
-     *         @OA\JsonContent(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response="500",
-     *         description="",
-     *         @OA\JsonContent(type="string")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/app/v1/esi/eve-login/{name}/characters',
+        operationId: 'esiEveLoginCharactersV1',
+        description: 'Needs role: app-esi-login.',
+        summary: 'Returns character IDs of characters that have an ESI token (including invalid) of an EVE login.',
+        security: [['BearerAuth' => []]],
+        tags: ['Application - ESI'],
+        parameters: [
+            new OA\Parameter(
+                name: 'name',
+                description: 'EVE login name.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: '',
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(type: 'integer'))
+            ),
+            new OA\Response(
+                response: '403',
+                description: 'Forbidden',
+                content: new OA\JsonContent(type: 'string')
+            ),
+            new OA\Response(
+                response: '404',
+                description: 'EVE login not found.',
+                content: new OA\JsonContent(type: 'string')
+            ),
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+        ],
+    )]
     public function eveLoginCharacters(string $name, ServerRequestInterface $request): ResponseInterface
     {
         $response = $this->validateTokenRequest($name, $request);
@@ -140,43 +139,45 @@ class EsiController extends BaseController
         return $this->withJson($charIds);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/app/v1/esi/eve-login/{name}/token-data",
-     *     operationId="esiEveLoginTokenDataV1",
-     *     summary="Returns data for all valid tokens (roles are also checked if applicable) for an EVE login.",
-     *     description="Needs role: app-esi-login.",
-     *     tags={"Application - ESI"},
-     *     security={{"BearerAuth"={}}},
-     *     @OA\Parameter(
-     *         name="name",
-     *         in="path",
-     *         required=true,
-     *         description="EVE login name, 'core.default' is not allowed.",
-     *         @OA\Schema(type="string", maxLength=20, pattern="^[-._a-zA-Z0-9]+$")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/EsiTokenData"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Forbidden",
-     *         @OA\JsonContent(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="EVE login not found.",
-     *         @OA\JsonContent(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response="500",
-     *         description="",
-     *         @OA\JsonContent(type="string")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/app/v1/esi/eve-login/{name}/token-data',
+        operationId: 'esiEveLoginTokenDataV1',
+        description: 'Needs role: app-esi-login.',
+        summary: 'Returns data for all valid tokens (roles are also checked if applicable) for an EVE login.',
+        security: [['BearerAuth' => []]],
+        tags: ['Application - ESI'],
+        parameters: [
+            new OA\Parameter(
+                name: 'name',
+                description: "EVE login name, 'core.default' is not allowed.",
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: '',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items:
+                    new OA\Items(ref: '#/components/schemas/EsiTokenData')
+                )
+            ),
+            new OA\Response(
+                response: '403',
+                description: 'Forbidden',
+                content: new OA\JsonContent(type: 'string')
+            ),
+            new OA\Response(
+                response: '404',
+                description: 'EVE login not found.',
+                content: new OA\JsonContent(type: 'string')
+            ),
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+        ],
+    )]
     public function eveLoginTokenData(string $name, ServerRequestInterface $request): ResponseInterface
     {
         if ($name === EveLogin::NAME_DEFAULT) {
@@ -195,49 +196,51 @@ class EsiController extends BaseController
         return $this->withJson($tokenData);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/app/v1/esi/access-token/{characterId}",
-     *     operationId="esiAccessTokenV1",
-     *     summary="Returns an access token for a character and EVE login.",
-     *     description="Needs role: app-esi-token",
-     *     tags={"Application - ESI"},
-     *     security={{"BearerAuth"={}}},
-     *     @OA\Parameter(
-     *         name="characterId",
-     *         in="path",
-     *         required=true,
-     *         description="The EVE character ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="eveLoginName",
-     *         in="query",
-     *         description="Optional EVE login name, defaults to 'core.default'.",
-     *         @OA\Schema(type="string", maxLength=20, pattern="^[-._a-zA-Z0-9]+$")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="Success",
-     *         @OA\JsonContent(ref="#/components/schemas/EsiAccessToken")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Invalid token.",
-     *         @OA\JsonContent(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Forbidden",
-     *         @OA\JsonContent(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="ESI token not found.",
-     *         @OA\JsonContent(type="string")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/app/v1/esi/access-token/{characterId}',
+        operationId: 'esiAccessTokenV1',
+        description: 'Needs role: app-esi-token',
+        summary: 'Returns an access token for a character and EVE login.',
+        security: [['BearerAuth' => []]],
+        tags: ['Application - ESI'],
+        parameters: [
+            new OA\Parameter(
+                name: 'characterId',
+                description: 'The EVE character ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'eveLoginName',
+                description: "Optional EVE login name, defaults to 'core.default'.",
+                in: 'query',
+                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'Success',
+                content: new OA\JsonContent(ref: '#/components/schemas/EsiAccessToken')
+            ),
+            new OA\Response(
+                response: '204',
+                description: 'Invalid token.',
+                content: new OA\JsonContent(type: 'string')
+            ),
+            new OA\Response(
+                response: '403',
+                description: 'Forbidden',
+                content: new OA\JsonContent(type: 'string')
+            ),
+            new OA\Response(
+                response: '404',
+                description: 'ESI token not found.',
+                content: new OA\JsonContent(type: 'string')
+            )
+        ],
+    )]
     public function accessToken(
         int $characterId,
         ServerRequestInterface $request,
@@ -271,95 +274,95 @@ class EsiController extends BaseController
     }
 
     /**
-     * @OA\Get(
+     * @OAT\Get(
      *     path="/app/v1/esi",
      *     deprecated=true,
      *     operationId="esiV1",
      *     summary="See GET /app/v2/esi",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="Neucore-EveCharacter",
      *         in="header",
      *         description="The EVE character ID those token should be used. Has priority over the query
                             parameter 'datasource'",
-     *         @OA\Schema(type="string")
+     *         @OAT\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="Neucore-EveLogin",
      *         in="header",
      *         description="The EVE login name from which the token should be used, defaults to core.default.",
-     *         @OA\Schema(type="string")
+     *         @OAT\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="esi-path-query",
      *         in="query",
      *         required=true,
-     *         @OA\Schema(type="string")
+     *         @OAT\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="datasource",
      *         in="query",
      *         required=true,
-     *         @OA\Schema(type="string")
+     *         @OAT\Schema(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="200",
      *         description="",
-     *         @OA\JsonContent(type="string"),
-     *         @OA\Header(
+     *         @OAT\JsonContent(type="string"),
+     *         @OAT\Header(
      *             header="Expires",
-     *             @OA\Schema(type="string")
+     *             @OAT\Schema(type="string")
      *         )
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="304",
      *         description="",
-     *         @OA\Header(
+     *         @OAT\Header(
      *             header="Expires",
-     *             @OA\Schema(type="string")
+     *             @OAT\Schema(type="string")
      *         )
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="400",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="401",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="403",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="420",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="429",
      *         description="",
      *         description="Too many errors, see reason phrase for more.",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="500",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="503",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="504",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     )
      * )
      */
@@ -369,7 +372,7 @@ class EsiController extends BaseController
     }
 
     /**
-     * @OA\Get(
+     * @OAT\Get(
      *     path="/app/v2/esi",
      *     operationId="esiV2",
      *     summary="Makes an ESI GET request on behalf on an EVE character and returns the result.",
@@ -385,99 +388,99 @@ class EsiController extends BaseController
                see doc/api-examples for more.",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="Neucore-EveCharacter",
      *         in="header",
      *         description="The EVE character ID those token should be used. Has priority over the query
                             parameter 'datasource'",
-     *         @OA\Schema(type="string")
+     *         @OAT\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="Neucore-EveLogin",
      *         in="header",
      *         description="The EVE login name from which the token should be used, defaults to core.default.",
-     *         @OA\Schema(type="string")
+     *         @OAT\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="esi-path-query",
      *         in="query",
      *         required=true,
      *         description="The ESI path and query string (without the datasource parameter).",
-     *         @OA\Schema(type="string")
+     *         @OAT\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="datasource",
      *         in="query",
      *         description="The EVE character ID those token should be used from the default login to make the ESI
                             request. Optionally followed by a colon and the name of an EVE login to use an alternative
                             ESI token.",
-     *         @OA\Schema(type="string")
+     *         @OAT\Schema(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="200",
      *         description="The data from ESI.<br>
                             Please note that the JSON schema type can be an object, array or number etc.,
                             unfortunately there is no way to document this.",
-     *         @OA\JsonContent(type="string"),
-     *         @OA\Header(
+     *         @OAT\JsonContent(type="string"),
+     *         @OAT\Header(
      *             header="Expires",
      *             description="RFC7231 formatted datetime string",
-     *             @OA\Schema(type="string")
+     *             @OAT\Schema(type="string")
      *         )
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="304",
      *         description="Not modified",
-     *         @OA\Header(
+     *         @OAT\Header(
      *             header="Expires",
      *             description="RFC7231 formatted datetime string",
-     *             @OA\Schema(type="string")
+     *             @OAT\Schema(type="string")
      *         )
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="400",
      *         description="Bad request, see reason phrase and/or body for more.",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="401",
      *         description="Unauthorized",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="403",
      *         description="Forbidden",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="420",
      *         description="Error limited",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="429",
      *         description="Too many errors, see body for more.",
-     *         @OA\JsonContent(type="string"),
-     *         @OA\Header(
+     *         @OAT\JsonContent(type="string"),
+     *         @OAT\Header(
      *             header="Retry-After",
      *             description="Delay in seconds.",
-     *             @OA\Schema(type="string")
+     *             @OAT\Schema(type="string")
      *         )
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="500",
      *         description="Internal server error",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="503",
      *         description="Service unavailable",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="504",
      *         description="Gateway timeout",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     )
      * )
      * @noinspection PhpUnused
@@ -488,103 +491,103 @@ class EsiController extends BaseController
     }
 
     /**
-     * @OA\Post(
+     * @OAT\Post(
      *     path="/app/v1/esi",
      *     deprecated=true,
      *     operationId="esiPostV1",
      *     summary="See POST /app/v2/esi",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="Neucore-EveCharacter",
      *         in="header",
      *         description="The EVE character ID those token should be used. Has priority over the query
                             parameter 'datasource'",
-     *         @OA\Schema(type="string")
+     *         @OAT\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="Neucore-EveLogin",
      *         in="header",
      *         description="The EVE login name from which the token should be used, defaults to core.default.",
-     *         @OA\Schema(type="string")
+     *         @OAT\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="esi-path-query",
      *         in="query",
      *         required=true,
-     *         @OA\Schema(type="string")
+     *         @OAT\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="datasource",
      *         in="query",
      *         required=true,
-     *         @OA\Schema(type="string")
+     *         @OAT\Schema(type="string")
      *     ),
-     *     @OA\RequestBody(
+     *     @OAT\RequestBody(
      *         required=true,
      *         description="",
-     *         @OA\MediaType(
+     *         @OAT\MediaType(
      *             mediaType="text/plain",
-     *             @OA\Schema(type="string")
+     *             @OAT\Schema(type="string")
      *         ),
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="200",
      *         description="",
-     *         @OA\JsonContent(type="string"),
-     *         @OA\Header(
+     *         @OAT\JsonContent(type="string"),
+     *         @OAT\Header(
      *             header="Expires",
-     *             @OA\Schema(type="string")
+     *             @OAT\Schema(type="string")
      *         )
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="304",
      *         description="",
-     *         @OA\Header(
+     *         @OAT\Header(
      *             header="Expires",
-     *             @OA\Schema(type="string")
+     *             @OAT\Schema(type="string")
      *         )
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="400",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="401",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="403",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="420",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="429",
      *         description="",
      *         description="Too many errors, see reason phrase for more.",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="500",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="503",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="504",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     )
      * )
      */
@@ -594,109 +597,108 @@ class EsiController extends BaseController
     }
 
     /**
-     * @OA\Post(
+     * @OAT\Post(
      *     path="/app/v2/esi",
      *     operationId="esiPostV2",
      *     summary="Same as GET /app/v2/esi, but for POST requests.",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="Neucore-EveCharacter",
      *         in="header",
      *         description="The EVE character ID those token should be used. Has priority over the query
                             parameter 'datasource'",
-     *         @OA\Schema(type="string")
+     *         @OAT\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="Neucore-EveLogin",
      *         in="header",
      *         description="The EVE login name from which the token should be used, defaults to core.default.",
-     *         @OA\Schema(type="string")
+     *         @OAT\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="esi-path-query",
      *         in="query",
      *         required=true,
-     *         @OA\Schema(type="string")
+     *         @OAT\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="datasource",
      *         in="query",
      *         required=true,
-     *         @OA\Schema(type="string")
+     *         @OAT\Schema(type="string")
      *     ),
-     *     @OA\RequestBody(
+     *     @OAT\RequestBody(
      *         required=true,
      *         description="JSON encoded data.",
-     *         @OA\MediaType(
+     *         @OAT\MediaType(
      *             mediaType="text/plain",
-     *             @OA\Schema(type="string")
+     *             @OAT\Schema(type="string")
      *         ),
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="200",
      *         description="",
-     *         @OA\JsonContent(type="string"),
-     *         @OA\Header(
+     *         @OAT\JsonContent(type="string"),
+     *         @OAT\Header(
      *             header="Expires",
-     *             @OA\Schema(type="string")
+     *             @OAT\Schema(type="string")
      *         )
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="304",
      *         description="",
-     *         @OA\Header(
+     *         @OAT\Header(
      *             header="Expires",
-     *             @OA\Schema(type="string")
+     *             @OAT\Schema(type="string")
      *         )
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="400",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="401",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="403",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="420",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="429",
      *         description="",
-     *         @OA\JsonContent(type="string"),
-     *         @OA\Header(
+     *         @OAT\JsonContent(type="string"),
+     *         @OAT\Header(
      *             header="Retry-After",
      *             description="Delay in seconds.",
-     *             @OA\Schema(type="string")
+     *             @OAT\Schema(type="string")
      *         )
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="500",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="503",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="504",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     )
      * )
-     * @noinspection PhpUnused
      */
     public function esiPostV2(ServerRequestInterface $request, ?string $path = null): ResponseInterface
     {

@@ -10,36 +10,31 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\AppAuth;
 use Neucore\Service\ObjectManager;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Annotations as OAT;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * @OA\Tag(
- *     name="Application - Groups"
- * )
- *
- * @OA\Schema(
- *     schema="CharacterGroups",
- *     required={"character", "groups", "deactivated"},
- *     @OA\Property(
- *         property="character",
- *         ref="#/components/schemas/Character"
- *     ),
- *     @OA\Property(
- *         property="groups",
- *         type="array",
- *         @OA\Items(ref="#/components/schemas/Group")
- *     ),
- *     @OA\Property(
- *         property="deactivated",
- *         description="Groups deactivation status.",
- *         type="string",
- *         enum={"no", "soon", "yes"}
- *     )
- * )
- */
+
+#[OA\Tag(name: 'Application - Groups')]
+#[OA\Schema(
+    schema: 'CharacterGroups',
+    required: ['character', 'groups', 'deactivated'],
+    properties: [
+        new OA\Property(property: 'character', ref: '#/components/schemas/Character'),
+        new OA\Property(
+            property: 'groups',
+            type: 'array',
+            items: new OA\Items(ref: '#/components/schemas/Group')
+        ),
+        new OA\Property(
+            property: 'deactivated',
+            description: 'Groups deactivation status.',
+            type: 'string',
+            enum: ['no', 'soon', 'yes']
+        )
+    ]
+)]
 class GroupController extends BaseController
 {
     private const KEY_GROUPS = 'groups';
@@ -67,42 +62,37 @@ class GroupController extends BaseController
         $this->accountGroupService = $accountGroupService;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/app/v1/groups/{cid}",
-     *     deprecated=true,
-     *     operationId="groupsV1",
-     *     summary="Return groups of the character's player account.",
-     *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
-     *     tags={"Application - Groups"},
-     *     security={{"BearerAuth"={}}},
-     *     @OA\Parameter(
-     *         name="cid",
-     *         in="path",
-     *         required=true,
-     *         description="EVE character ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of groups.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Character not found. (default reason phrase)"
-     *     ),
-     *     @OA\Response(
-     *         response="500",
-     *         description="",
-     *         @OA\JsonContent(type="string")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/app/v1/groups/{cid}',
+        operationId: 'groupsV1',
+        description: 'Needs role: app-groups.<br>Returns only groups that have been added to the app as well.',
+        summary: "Return groups of the character's player account.",
+        security: [['BearerAuth' => []]],
+        tags: ['Application - Groups'],
+        parameters: [
+            new OA\Parameter(
+                name: 'cid',
+                description: 'EVE character ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of groups.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Group')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Character not found. (default reason phrase)'),
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+        ],
+        deprecated: true,
+    )]
     public function groupsV1(string $cid, ServerRequestInterface $request): ResponseInterface
     {
         $appGroups = $this->getAppGroups($request);
@@ -115,42 +105,36 @@ class GroupController extends BaseController
         return $this->withJson($result[self::KEY_GROUPS]);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/app/v2/groups/{cid}",
-     *     operationId="groupsV2",
-     *     summary="Return groups of the character's player account.",
-     *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
-     *     tags={"Application - Groups"},
-     *     security={{"BearerAuth"={}}},
-     *     @OA\Parameter(
-     *         name="cid",
-     *         in="path",
-     *         required=true,
-     *         description="EVE character ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of groups.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Reason phrase: Character not found."
-     *     ),
-     *     @OA\Response(
-     *         response="500",
-     *         description="",
-     *         @OA\JsonContent(type="string")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/app/v2/groups/{cid}',
+        operationId: 'groupsV2',
+        description: 'Needs role: app-groups.<br>Returns only groups that have been added to the app as well.',
+        summary: "Return groups of the character's player account.",
+        security: [['BearerAuth' => []]],
+        tags: ['Application - Groups'],
+        parameters: [
+            new OA\Parameter(
+                name: 'cid',
+                description: 'EVE character ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of groups.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Group')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Reason phrase: Character not found.'),
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+        ],
+    )]
     public function groupsV2(string $cid, ServerRequestInterface $request): ResponseInterface
     {
         $this->response = $this->groupsV1($cid, $request);
@@ -163,8 +147,7 @@ class GroupController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
-     * @OA\Post(
+     * @OAT\Post(
      *     path="/app/v1/groups",
      *     operationId="groupsBulkV1",
      *     summary="Return groups of multiple players, identified by one of their character IDs.",
@@ -173,31 +156,31 @@ class GroupController extends BaseController
      *                  Skips characters that are not found in the local database.",
      *     tags={"Application - Groups"},
      *     security={{"BearerAuth"={}}},
-     *     @OA\RequestBody(
+     *     @OAT\RequestBody(
      *         required=true,
      *         description="EVE character IDs array.",
-     *         @OA\MediaType(
+     *         @OAT\MediaType(
      *             mediaType="application/json",
-     *             @OA\Schema(type="array", @OA\Items(type="integer"))
+     *             @OAT\Schema(type="array", @OAT\Items(type="integer"))
      *         ),
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="200",
      *         description="List of characters (id, name and corporation properties only) with groups.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/CharacterGroups"))
+     *         @OAT\JsonContent(type="array", @OAT\Items(ref="#/components/schemas/CharacterGroups"))
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="400",
      *         description="Invalid body."
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="403",
      *         description="Not authorized."
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="500",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     )
      * )
      */
@@ -206,83 +189,72 @@ class GroupController extends BaseController
         return $this->groupsBulkFor('Player', $request);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/app/v1/corp-groups/{cid}",
-     *     deprecated=true,
-     *     operationId="corpGroupsV1",
-     *     summary="Return groups of the corporation.",
-     *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
-     *     tags={"Application - Groups"},
-     *     security={{"BearerAuth"={}}},
-     *     @OA\Parameter(
-     *         name="cid",
-     *         in="path",
-     *         required=true,
-     *         description="EVE corporation ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of groups.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Corporation not found. (default reason phrase)"
-     *     ),
-     *     @OA\Response(
-     *         response="500",
-     *         description="",
-     *         @OA\JsonContent(type="string")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/app/v1/corp-groups/{cid}',
+        operationId: 'corpGroupsV1',
+        description: 'Needs role: app-groups.<br>Returns only groups that have been added to the app as well.',
+        summary: 'Return groups of the corporation.',
+        security: [['BearerAuth' => []]],
+        tags: ['Application - Groups'],
+        parameters: [
+            new OA\Parameter(
+                name: 'cid',
+                description: 'EVE corporation ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of groups.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Group')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Corporation not found. (default reason phrase)'),
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+        ],
+        deprecated: true,
+    )]
     public function corpGroupsV1(string $cid, ServerRequestInterface $request): ResponseInterface
     {
         return $this->corpOrAllianceGroups($cid, self::TYPE_CORPORATION, $request);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/app/v2/corp-groups/{cid}",
-     *     operationId="corpGroupsV2",
-     *     summary="Return groups of the corporation.",
-     *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
-     *     tags={"Application - Groups"},
-     *     security={{"BearerAuth"={}}},
-     *     @OA\Parameter(
-     *         name="cid",
-     *         in="path",
-     *         required=true,
-     *         description="EVE corporation ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of groups.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Reason phrase: Corporation not found."
-     *     ),
-     *     @OA\Response(
-     *         response="500",
-     *         description="",
-     *         @OA\JsonContent(type="string")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/app/v2/corp-groups/{cid}',
+        operationId: 'corpGroupsV2',
+        description: 'Needs role: app-groups.<br>Returns only groups that have been added to the app as well.',
+        summary: 'Return groups of the corporation.',
+        security: [['BearerAuth' => []]],
+        tags: ['Application - Groups'],
+        parameters: [
+            new OA\Parameter(
+                name: 'cid',
+                description: 'EVE corporation ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of groups.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Group')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Reason phrase: Corporation not found.'),
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+        ],
+    )]
     public function corpGroupsV2(string $cid, ServerRequestInterface $request): ResponseInterface
     {
         $this->response = $this->corpGroupsV1($cid, $request);
@@ -296,7 +268,7 @@ class GroupController extends BaseController
 
     /**
      * @noinspection PhpUnused
-     * @OA\Post(
+     * @OAT\Post(
      *     path="/app/v1/corp-groups",
      *     operationId="corpGroupsBulkV1",
      *     summary="Return groups of multiple corporations.",
@@ -305,31 +277,31 @@ class GroupController extends BaseController
      *                  Skips corporations that are not found in the local database.",
      *     tags={"Application - Groups"},
      *     security={{"BearerAuth"={}}},
-     *     @OA\RequestBody(
+     *     @OAT\RequestBody(
      *         required=true,
      *         description="EVE corporation IDs array.",
-     *         @OA\MediaType(
+     *         @OAT\MediaType(
      *             mediaType="application/json",
-     *             @OA\Schema(type="array", @OA\Items(type="integer"))
+     *             @OAT\Schema(type="array", @OAT\Items(type="integer"))
      *         ),
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="200",
      *         description="List of corporations with groups but without alliance.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
+     *         @OAT\JsonContent(type="array", @OAT\Items(ref="#/components/schemas/Corporation"))
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="400",
      *         description="Invalid body."
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="403",
      *         description="Not authorized."
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="500",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     )
      * )
      */
@@ -338,42 +310,36 @@ class GroupController extends BaseController
         return $this->groupsBulkFor(self::TYPE_CORPORATION, $request);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/app/v1/alliance-groups/{aid}",
-     *     deprecated=true,
-     *     operationId="allianceGroupsV1",
-     *     summary="Return groups of the alliance.",
-     *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
-     *     tags={"Application - Groups"},
-     *     security={{"BearerAuth"={}}},
-     *     @OA\Parameter(
-     *         name="aid",
-     *         in="path",
-     *         required=true,
-     *         description="EVE alliance ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of groups.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Alliance not found. (default reason phrase)"
-     *     ),
-     *     @OA\Response(
-     *         response="500",
-     *         description="",
-     *         @OA\JsonContent(type="string")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/app/v1/alliance-groups/{aid}',
+        operationId: 'allianceGroupsV1',
+        description: 'Needs role: app-groups.<br>Returns only groups that have been added to the app as well.',
+        summary: 'Return groups of the alliance.',
+        security: [['BearerAuth' => []]],
+        tags: ['Application - Groups'], parameters: [
+            new OA\Parameter(
+                name: 'aid',
+                description: 'EVE alliance ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of groups.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Group')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Alliance not found. (default reason phrase)'),
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+        ],
+        deprecated: true,
+    )]
     public function allianceGroupsV1(string $aid, ServerRequestInterface $request): ResponseInterface
     {
         return $this->corpOrAllianceGroups($aid, self::TYPE_ALLIANCE, $request);
@@ -381,37 +347,37 @@ class GroupController extends BaseController
 
     /**
      * @noinspection PhpUnused
-     * @OA\Get(
+     * @OAT\Get(
      *     path="/app/v2/alliance-groups/{aid}",
      *     operationId="allianceGroupsV2",
      *     summary="Return groups of the alliance.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application - Groups"},
      *     security={{"BearerAuth"={}}},
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="aid",
      *         in="path",
      *         required=true,
      *         description="EVE alliance ID.",
-     *         @OA\Schema(type="integer")
+     *         @OAT\Schema(type="integer")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="200",
      *         description="List of groups.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
+     *         @OAT\JsonContent(type="array", @OAT\Items(ref="#/components/schemas/Group"))
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="403",
      *         description="Not authorized."
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="404",
      *         description="Reason phrase: Alliance not found."
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="500",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     )
      * )
      */
@@ -428,7 +394,7 @@ class GroupController extends BaseController
 
     /**
      * @noinspection PhpUnused
-     * @OA\Post(
+     * @OAT\Post(
      *     path="/app/v1/alliance-groups",
      *     operationId="allianceGroupsBulkV1",
      *     summary="Return groups of multiple alliances.",
@@ -437,31 +403,31 @@ class GroupController extends BaseController
      *                  Skips alliances that are not found in the local database.",
      *     tags={"Application - Groups"},
      *     security={{"BearerAuth"={}}},
-     *     @OA\RequestBody(
+     *     @OAT\RequestBody(
      *         required=true,
      *         description="EVE alliance IDs array.",
-     *         @OA\MediaType(
+     *         @OAT\MediaType(
      *             mediaType="application/json",
-     *             @OA\Schema(type="array", @OA\Items(type="integer"))
+     *             @OAT\Schema(type="array", @OAT\Items(type="integer"))
      *         ),
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="200",
      *         description="List of alliances with groups.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Alliance"))
+     *         @OAT\JsonContent(type="array", @OAT\Items(ref="#/components/schemas/Alliance"))
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="400",
      *         description="Invalid body."
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="403",
      *         description="Not authorized."
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="500",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     )
      * )
      */
@@ -472,7 +438,7 @@ class GroupController extends BaseController
 
     /**
      * @noinspection PhpUnused
-     * @OA\Get(
+     * @OAT\Get(
      *     path="/app/v1/groups-with-fallback",
      *     operationId="groupsWithFallbackV1",
      *     summary="Returns groups from the character's account, if available, or the corporation and alliance.",
@@ -481,39 +447,39 @@ class GroupController extends BaseController
      *                  It is not checked if character, corporation and alliance match.",
      *     tags={"Application - Groups"},
      *     security={{"BearerAuth"={}}},
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="character",
      *         in="query",
      *         required=true,
      *         description="EVE character ID.",
-     *         @OA\Schema(type="integer")
+     *         @OAT\Schema(type="integer")
      *     ),
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="corporation",
      *         in="query",
      *         required=true,
      *         description="EVE corporation ID.",
-     *         @OA\Schema(type="integer")
+     *         @OAT\Schema(type="integer")
      *     ),
-     *     @OA\Parameter(
+     *     @OAT\Parameter(
      *         name="alliance",
      *         in="query",
      *         description="EVE alliance ID.",
-     *         @OA\Schema(type="integer")
+     *         @OAT\Schema(type="integer")
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="200",
      *         description="List of groups.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
+     *         @OAT\JsonContent(type="array", @OAT\Items(ref="#/components/schemas/Group"))
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="403",
      *         description="Not authorized."
      *     ),
-     *     @OA\Response(
+     *     @OAT\Response(
      *         response="500",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OAT\JsonContent(type="string")
      *     )
      * )
      */
@@ -557,48 +523,39 @@ class GroupController extends BaseController
         return $this->withJson($fallbackGroups);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/app/v1/group-members/{groupId}",
-     *     operationId="groupMembersV1",
-     *     summary="Returns the main character IDs from all group members.",
-     *     description="Needs role: app-groups.",
-     *     tags={"Application - Groups"},
-     *     security={{"BearerAuth"={}}},
-     *     @OA\Parameter(
-     *         name="groupId",
-     *         in="path",
-     *         required=true,
-     *         description="Group ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="corporation",
-     *         in="query",
-     *         description="Limit to characters that are a member of this corporation.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of character IDs.",
-     *         @OA\JsonContent(type="array", @OA\Items(type="integer"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group was not found or app may not see it."
-     *     ),
-     *     @OA\Response(
-     *         response="500",
-     *         description="",
-     *         @OA\JsonContent(type="string")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/app/v1/group-members/{groupId}',
+        operationId: 'groupMembersV1',
+        description: 'Needs role: app-groups.',
+        summary: 'Returns the main character IDs from all group members.',
+        security: [['BearerAuth' => []]],
+        tags: ['Application - Groups'],
+        parameters: [
+            new OA\Parameter(
+                name: 'groupId',
+                description: 'Group ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'corporation',
+                description: 'Limit to characters that are a member of this corporation.',
+                in: 'query',
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of character IDs.',
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(type: 'integer'))
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group was not found or app may not see it.'),
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+        ],
+    )]
     public function members(string $groupId, ServerRequestInterface $request): ResponseInterface
     {
         $group = $this->getGroup((int) $groupId, $request);
