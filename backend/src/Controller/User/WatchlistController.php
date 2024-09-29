@@ -346,9 +346,7 @@ class WatchlistController extends BaseController
      * @OA\Get(
      *     path="/user/watchlist/{id}/players",
      *     operationId="watchlistPlayers",
-     *     summary="List of player accounts that have characters in one of the configured alliances or corporations
-                    and additionally have other characters in another player (not NPC) corporation that is not
-                    on the allowlist and have not been manually excluded.",
+     *     summary="List of player accounts that have characters in one of the configured alliances or corporations and additionally have other characters in another player (not NPC) corporation that is not on the allowlist and have not been manually excluded.",
      *     description="Needs role: watchlist",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
@@ -387,8 +385,7 @@ class WatchlistController extends BaseController
      * @OA\Get(
      *     path="/user/watchlist/{id}/players-kicklist",
      *     operationId="watchlistPlayersKicklist",
-     *     summary="Accounts from the watchlist with members in one of the alliances or corporations
-                    from the kicklist.",
+     *     summary="Accounts from the watchlist with members in one of the alliances or corporations from the kicklist.",
      *     description="Needs role: watchlist",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},

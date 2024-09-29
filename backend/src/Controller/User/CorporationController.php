@@ -188,9 +188,7 @@ class CorporationController extends BaseController
      *     path="/user/corporation/add/{id}",
      *     operationId="userCorporationAdd",
      *     summary="Add an EVE corporation to the database.",
-     *     description="Needs role: group-admin, watchlist-manager
-     *                  This makes an ESI request and adds the corporation only if it exists.
-     *                  Also adds the corresponding alliance, if there is one.",
+     *     description="Needs role: group-admin, watchlist-manager<br>This makes an ESI request and adds the corporation only if it exists. Also adds the corresponding alliance, if there is one.",
      *     tags={"Corporation"},
      *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(

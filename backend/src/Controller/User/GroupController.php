@@ -543,8 +543,7 @@ class GroupController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="200",
-     *         description="List of players ordered by name. Only id and name, and roles for users with group-admin
-                           role, properties are returned.",
+     *         description="List of players ordered by name. Only id and name, and roles for users with group-admin role, properties are returned.",
      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
      *     ),
      *     @OA\Response(

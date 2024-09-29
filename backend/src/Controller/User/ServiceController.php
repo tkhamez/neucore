@@ -37,8 +37,7 @@ use Psr\Log\LoggerInterface;
  *     @OA\Property(property="username", type="string", nullable=true),
  *     @OA\Property(property="password", type="string", nullable=true),
  *     @OA\Property(property="email", type="string", nullable=true),
- *     @OA\Property(property="status", type="string", nullable=true,
- *                  enum={"Pending", "Active", "Deactivated", "Unknown"}),
+ *     @OA\Property(property="status", type="string", nullable=true, enum={"Pending", "Active", "Deactivated", "Unknown"}),
  *     @OA\Property(property="name", type="string", nullable=true),
  * )
  */
@@ -357,8 +356,7 @@ class ServiceController extends BaseController
      *     path="/user/service/update-all-accounts/{playerId}",
      *     operationId="serviceUpdateAllAccounts",
      *     summary="Update all service accounts of one player.",
-     *     description="Needs role: user-admin, user-manager, group-admin, app-admin, user-chars, tracking or
-                        watchlist",
+     *     description="Needs role: user-admin, user-manager, group-admin, app-admin, user-chars, tracking or watchlist",
      *     tags={"Service"},
      *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(

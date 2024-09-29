@@ -637,9 +637,7 @@ class PlayerController extends BaseController
      *         description="Role name.",
      *         @OA\Schema(
      *             type="string",
-     *             enum={"user", "user-admin", "user-manager", "user-chars", "group-admin", "group-manager",
-     *                   "plugin-admin", "app-admin", "app-manager", "esi", "settings", "tracking", "tracking-admin",
-     *                   "watchlist", "watchlist-manager", "watchlist-admin"}
+     *             enum={"user", "user-admin", "user-manager", "user-chars", "group-admin", "group-manager", "plugin-admin", "app-admin", "app-manager", "esi", "settings", "tracking", "tracking-admin", "watchlist", "watchlist-manager", "watchlist-admin"}
      *         ),
      *     ),
      *     @OA\Response(
@@ -744,8 +742,7 @@ class PlayerController extends BaseController
      *         description="Name of the role.",
      *         @OA\Schema(
      *             type="string",
-     *             enum={"app-admin", "user-manager", "user-chars", "group-admin", "plugin-admin", "user-admin",
-     *                   "app-admin", "esi", "settings", "tracking-admin", "watchlist-admin"}
+     *             enum={"app-admin", "user-manager", "user-chars", "group-admin", "plugin-admin", "user-admin", "app-admin", "esi", "settings", "tracking-admin", "watchlist-admin"}
      *         )
      *     ),
      *     @OA\Response(
@@ -805,8 +802,7 @@ class PlayerController extends BaseController
      *         description="Name of the role.",
      *         @OA\Schema(
      *             type="string",
-     *             enum={"app-admin", "user-manager", "user-chars", "group-admin", "plugin-admin", "user-admin",
-     *                   "app-admin", "esi", "settings", "tracking-admin", "watchlist-admin"}
+     *             enum={"app-admin", "user-manager", "user-chars", "group-admin", "plugin-admin", "user-admin", "app-admin", "esi", "settings", "tracking-admin", "watchlist-admin"}
      *         )
      *     ),
      *     @OA\Response(
@@ -855,8 +851,7 @@ class PlayerController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="200",
-     *         description="The player (this includes the removedCharacters, incomingCharacters
-                            and serviceAccounts properties).",
+     *         description="The player (this includes the removedCharacters, incomingCharacters and serviceAccounts properties).",
      *         @OA\JsonContent(ref="#/components/schemas/Player")
      *     ),
      *     @OA\Response(
@@ -890,10 +885,7 @@ class PlayerController extends BaseController
      *     path="/user/player/{id}/characters",
      *     operationId="userPlayerCharacters",
      *     summary="Show player with characters, moved characters, groups and service accounts.",
-     *     description="Needs role: app-admin, group-admin, user-manager, user-chars, watchlist, tracking<br>
-                        If a user only has the tracking or watchlist roles, the player must have a character in a
-                        corporation for which the user has access to the member tracking data or the player must
-                        be on a watchlist that the user can view.",
+     *     description="Needs role: app-admin, group-admin, user-manager, user-chars, watchlist, tracking.<br> If a user only has the tracking or watchlist roles, the player must have a character in a corporation for which the user has access to the member tracking data or the player must be on a watchlist that the user can view.",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -953,10 +945,7 @@ class PlayerController extends BaseController
      *     path="/user/player/group-characters-by-account",
      *     operationId="playerGroupCharactersByAccount",
      *     summary="Accepts a list of character names and returns them grouped by account.",
-     *     description="Needs role: user-chars.<br>
-                        The returned character list always contains the main character as the first character
-                        in the list. Characters that do not exist will all be added to a separate group as the
-                        last element of the result list.",
+     *     description="Needs role: user-chars.<br>The returned character list always contains the main character as the first character in the list. Characters that do not exist will all be added to a separate group as the last element of the result list.",
      *     tags={"Player"},
      *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\RequestBody(
@@ -1039,8 +1028,7 @@ class PlayerController extends BaseController
      *     @OA\Parameter(
      *         name="admin-reason",
      *         in="query",
-     *         description="Specifies a reason if a user admin triggered the deletion.
-                            ('deleted-by-admin' will not create a 'Removed Character' entry.)",
+     *         description="Specifies a reason if a user admin triggered the deletion. ('deleted-by-admin' will not create a 'Removed Character' entry.)",
      *         @OA\Schema(
      *             type="string",
      *             enum={"deleted-owner-changed", "deleted-lost-access", "deleted-manually", "deleted-by-admin"}

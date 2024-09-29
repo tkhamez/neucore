@@ -420,8 +420,7 @@ class AppController extends BaseController
      *     path="/user/app/{id}/show",
      *     operationId="show",
      *     summary="Shows app information.",
-     *     description="Needs role: app-admin, app-manager
-     *                  Managers can only see groups of their own apps.",
+     *     description="Needs role: app-admin, app-manager<br>Managers can only see groups of their own apps.",
      *     tags={"App"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -582,8 +581,7 @@ class AppController extends BaseController
      *         in="path",
      *         required=true,
      *         description="Name of the role.",
-     *         @OA\Schema(type="string", enum={"app-groups", "app-chars", "app-tracking", "app-esi-login",
-     *                                         "app-esi-proxy", "app-esi-token"})
+     *         @OA\Schema(type="string", enum={"app-groups", "app-chars", "app-tracking", "app-esi-login", "app-esi-proxy", "app-esi-token"})
      *     ),
      *     @OA\Response(
      *         response="204",
@@ -633,8 +631,7 @@ class AppController extends BaseController
      *         in="path",
      *         required=true,
      *         description="Name of the role.",
-     *         @OA\Schema(type="string", enum={"app-groups", "app-chars", "app-tracking", "app-esi-login",
-     *                                         "app-esi-proxy", "app-esi-token"})
+     *         @OA\Schema(type="string", enum={"app-groups", "app-chars", "app-tracking", "app-esi-login", "app-esi-proxy", "app-esi-token"})
      *     ),
      *     @OA\Response(
      *         response="204",

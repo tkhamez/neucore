@@ -80,8 +80,7 @@ class CharacterController extends BaseController
      * @OA\Get(
      *     path="/user/character/find-character/{name}",
      *     operationId="findCharacter",
-     *     summary="Returns a list of characters (together with the name of the player account/main character)
-                    that matches the name (partial matching).",
+     *     summary="Returns a list of characters (together with the name of the player account/main character) that matches the name (partial matching).",
      *     description="Needs role: user-admin, user-manager, user-chars",
      *     tags={"Character"},
      *     security={{"Session"={}}},
@@ -189,9 +188,7 @@ class CharacterController extends BaseController
      *     path="/user/character/{id}/update",
      *     operationId="update",
      *     summary="Update a character with data from ESI.",
-     *     description="Needs role: user to update own characters or user-admin, user-manager, group-admin, app-admin,
-                        user-chars, tracking or watchlist to update any character. It also updates groups and
-                        verifies the OAuth token.",
+     *     description="Needs role: user to update own characters or user-admin, user-manager, group-admin, app-admin, user-chars, tracking or watchlist to update any character. It also updates groups and verifies the OAuth token.",
      *     tags={"Character"},
      *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
