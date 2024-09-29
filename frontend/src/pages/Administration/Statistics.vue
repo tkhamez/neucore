@@ -416,10 +416,8 @@ function csvDownload(data, name) {
     for (const dataRow of data) {
         const csvRow = [];
         for (let dataCell of dataRow) {
-            if (dataCell === undefined) {
-                dataCell = '';
-            }
-            csvRow.push('"' + dataCell.toString().replaceAll('"', '""') + '"');
+            let cellValue = dataCell === undefined ? '' : dataCell;
+            csvRow.push('"' + cellValue.toString().replaceAll('"', '""') + '"');
         }
         csvRows.push(csvRow.join(','))
     }

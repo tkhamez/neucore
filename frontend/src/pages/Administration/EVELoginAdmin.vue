@@ -89,9 +89,10 @@
                                    v-model="activeLogin.esiScopes" maxlength="8192">
                             <span class="form-text">Separated by one space, maximum length 8192.</span>
                         </label>
-                        <label class="col-form-label w-100 pb-1">
+                        <label class="col-form-label w-100 pb-1" for="eveLoginAdminRoles">
                             EVE Roles
                             <multiselect v-model="activeLogin.eveRoles" :options="allEveRoles" :multiple="true"
+                                         id="eveLoginAdminRoles"
                                          :disabled="disabled" :loading="false" :searchable="true"
                                          placeholder="Select roles">
                             </multiselect>

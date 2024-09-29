@@ -25,15 +25,17 @@
             Groups are only deactivated if at least one character in a player account
             belongs to one of the following alliances or corporations:
         </p>
-        <label class="col-form-label">Alliances</label>
+        <label class="col-form-label" for="systemSettingsFeaturesAccountDeactivationAlliances">Alliances</label>
         <multiselect v-model="accountDeactivationAlliances" :options="allAlliances"
+                     id="systemSettingsFeaturesAccountDeactivationAlliances"
                      label="name" track-by="id" :multiple="true"
                      :loading="isLoading" :searchable="true"
                      @search-change="(query) => findAlliancesOrCorporations(query, 'Alliances')"
                      :placeholder="`Select alliances ${messages.typeToSearch2}`">
         </multiselect>
-        <label class="col-form-label">Corporations</label>
+        <label class="col-form-label" for="systemSettingsFeaturesAccountDeactivationCorporations">Corporations</label>
         <multiselect v-model="accountDeactivationCorporations" :options="allCorporations"
+                     id="systemSettingsFeaturesAccountDeactivationCorporations"
                      label="name" track-by="id" :multiple="true"
                      :loading="isLoading" :searchable="true"
                      @search-change="(query) => findAlliancesOrCorporations(query, 'Corporations')"

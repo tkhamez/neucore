@@ -2,7 +2,7 @@
 [![Docker](https://img.shields.io/badge/dockerhub-images-important.svg?logo=Docker)](https://hub.docker.com/r/tkhamez/neucore)
 [![Test](https://github.com/tkhamez/neucore/actions/workflows/test.yml/badge.svg)](https://github.com/tkhamez/neucore/actions/workflows/test.yml)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=tkhamez_neucore&metric=coverage)](https://sonarcloud.io/summary/overall?id=tkhamez_neucore)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=tkhamez_neucore&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=tkhamez_neucore) <!-- previous project: https://sonarcloud.io/dashboard?id=brvneucore -->
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=tkhamez_neucore&metric=sqale_rating)](https://sonarcloud.io/summary/overall?id=tkhamez_neucore)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/4573/badge)](https://bestpractices.coreinfrastructure.org/projects/4573)
 [![Open Hub](https://www.openhub.net/p/neucore/widgets/project_thin_badge?format=gif)](https://www.openhub.net/p/neucore/)
 

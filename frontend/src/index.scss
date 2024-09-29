@@ -269,8 +269,7 @@ a {
     text-decoration-style: dotted;
 }
 a.external:after {
-    //noinspection CssNoGenericFontName
-    font-family: 'Font Awesome 6 Free';
+    font-family: 'Font Awesome 6 Free', serif;
     display: inline-block;
     margin-left: 2px;
     font-size: 0.8em;

@@ -34,15 +34,17 @@
             The mail is only sent if at least one character in a player account
             belongs to one of the following alliances or corporations:
         </p>
-        <label class="col-form-label">Alliances</label>
+        <label class="col-form-label" for="systemSettingsMailsMailInvalidTokenAlliances">Alliances</label>
         <multiselect v-model="mailInvalidTokenAlliances" :options="allAlliances"
+                     id="systemSettingsMailsMailInvalidTokenAlliances"
                      label="name" track-by="id" :multiple="true"
                      :loading="isLoading" :searchable="true"
                      @search-change="(query) => findAlliancesOrCorporations(query, 'Alliances')"
                      :placeholder="`Select alliances ${messages.typeToSearch2}`">
         </multiselect>
-        <label class="col-form-label">Corporations</label>
+        <label class="col-form-label" for="systemSettingsMailsMailInvalidTokenCorporations">Corporations</label>
         <multiselect v-model="mailInvalidTokenCorporations" :options="allCorporations"
+                     id="systemSettingsMailsMailInvalidTokenCorporations"
                      label="name" track-by="id" :multiple="true"
                      :loading="isLoading" :searchable="true"
                      @search-change="(query) => findAlliancesOrCorporations(query, 'Corporations')"
@@ -81,10 +83,11 @@
             Must be greater 0.
         </label>
         <div class="mt-3">
-            <label class="col-form-label">
+            <label class="col-form-label" for="systemSettingsMailsMailMissingCharacterCorporations">
                 The mail is only sent to characters from the following corporations:<br>
             </label>
             <multiselect v-model="mailMissingCharacterCorporations" :options="trackingCorporations"
+                         id="systemSettingsMailsMailMissingCharacterCorporations"
                          label="name" track-by="id" :multiple="true"
                          :loading="false" :searchable="true"
                          placeholder="Select corporations">

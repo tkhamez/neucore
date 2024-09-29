@@ -11,8 +11,8 @@ Modal window to add alliances or corporations to the database.
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <label class="form-label">Search {{ addType }}</label>
-                    <multiselect v-model="searchSelected" :options="searchResults"
+                    <label class="form-label" for="entityAddSearch">Search {{ addType }}</label>
+                    <multiselect v-model="searchSelected" :options="searchResults" id="entityAddSearch"
                                  label="name" track-by="id"
                                  :placeholder="messages.typeToSearch1"
                                  :searchable="true"

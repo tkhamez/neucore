@@ -93,13 +93,12 @@
                         <span class="caret"></span>
                     </button>
                     <div class="dropdown-menu" v-on:click.stop="">
-                        <span class="dropdown-item small">Search in:</span>
                         <div class="dropdown-item small" v-for="(column, idx) in columns"
-                             v-on:click="toggleSearchableColumn(idx)">
-                            <!--suppress HtmlFormInputWithoutLabel -->
-                            <input class="form-check-input" type="checkbox" v-model="column.searchable">
-                            &nbsp;
-                            <label class="">{{ column.name }}</label>
+                             @click="toggleSearchableColumn(idx, $event)">
+                            <label>
+                                <input class="form-check-input" type="checkbox" v-model="column.searchable">
+                                &nbsp; {{ column.name }}
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -202,7 +201,15 @@ export default {
     },
 
     methods: {
-        toggleSearchableColumn(index) {
+        /**
+         * @param {Number} index
+         * @param {Event} event
+         */
+        toggleSearchableColumn(index, event) {
+            if (event.target.tagName === 'LABEL') {
+                // prevent double click
+                return;
+            }
             this.columns[index].searchable = !this.columns[index].searchable;
             this.table.draw();
         },
