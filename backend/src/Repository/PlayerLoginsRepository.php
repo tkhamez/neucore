@@ -7,8 +7,7 @@ namespace Neucore\Repository;
 use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\PlayerLogins;
 use Neucore\Repository\Traits\DateHelper;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
 /**
  * @method PlayerLogins|null find($id, $lockMode = null, $lockVersion = null)
@@ -21,16 +20,16 @@ class PlayerLoginsRepository extends EntityRepository
 {
     use DateHelper;
 
-    /**
-     * @OA\Schema(
-     *     schema="PlayerLoginStatistics",
-     *     required={"unique_logins", "total_logins", "year", "month"},
-     *     @OA\Property(property="unique_logins", type="integer"),
-     *     @OA\Property(property="total_logins", type="integer"),
-     *     @OA\Property(property="year", type="integer"),
-     *     @OA\Property(property="month", type="integer"),
-     * )
-     */
+    #[OA\Schema(
+        schema: 'PlayerLoginStatistics',
+        required: ['unique_logins', 'total_logins', 'year', 'month'],
+        properties: [
+            new OA\Property(property: 'unique_logins', type: 'integer'),
+            new OA\Property(property: 'total_logins', type: 'integer'),
+            new OA\Property(property: 'year', type: 'integer'),
+            new OA\Property(property: 'month', type: 'integer')
+        ]
+    )]
     public function monthlySummary(int $endDate, int $months): array
     {
         $startDate = strtotime(date('Y-m-d H:i:s', $endDate) . " -$months months") ?: time();

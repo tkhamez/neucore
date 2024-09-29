@@ -7,8 +7,7 @@ namespace Neucore\Repository;
 use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\AppRequests;
 use Neucore\Repository\Traits\DateHelper;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
 /**
  * @method AppRequests|null find($id, $lockMode = null, $lockVersion = null)
@@ -23,15 +22,15 @@ class AppRequestsRepository extends EntityRepository
 
     private const DATE_FORMAT = 'Y-m-d H:i:s';
 
-    /**
-     * @OA\Schema(
-     *     schema="TotalMonthlyAppRequests",
-     *     required={"requests", "year", "month"},
-     *     @OA\Property(property="requests", type="integer"),
-     *     @OA\Property(property="year", type="integer"),
-     *     @OA\Property(property="month", type="integer"),
-     * )
-     */
+    #[OA\Schema(
+        schema: 'TotalMonthlyAppRequests',
+        required: ['requests', 'year', 'month'],
+        properties: [
+            new OA\Property(property: 'requests', type: 'integer'),
+            new OA\Property(property: 'year', type: 'integer'),
+            new OA\Property(property: 'month', type: 'integer')
+        ]
+    )]
     public function monthlySummary(int $endDate, int $months): array
     {
         $startDate = strtotime(date(self::DATE_FORMAT, $endDate) . " -$months months") ?: time();
@@ -58,17 +57,17 @@ class AppRequestsRepository extends EntityRepository
         }, $qb->getQuery()->getResult());
     }
 
-    /**
-     * @OA\Schema(
-     *     schema="MonthlyAppRequests",
-     *     required={"app_id", "app_name", "requests", "year", "month"},
-     *     @OA\Property(property="app_id", type="integer"),
-     *     @OA\Property(property="app_name", type="string"),
-     *     @OA\Property(property="requests", type="integer"),
-     *     @OA\Property(property="year", type="integer"),
-     *     @OA\Property(property="month", type="integer"),
-     * )
-     */
+    #[OA\Schema(
+        schema: 'MonthlyAppRequests',
+        required: ['app_id', 'app_name', 'requests', 'year', 'month'],
+        properties: [
+            new OA\Property(property: 'app_id', type: 'integer'),
+            new OA\Property(property: 'app_name', type: 'string'),
+            new OA\Property(property: 'requests', type: 'integer'),
+            new OA\Property(property: 'year', type: 'integer'),
+            new OA\Property(property: 'month', type: 'integer')
+        ]
+    )]
     public function monthlySummaryByApp(int $endDate, int $months): array
     {
         $startDate = strtotime(date(self::DATE_FORMAT, $endDate) . " -$months months") ?: time();
@@ -100,16 +99,16 @@ class AppRequestsRepository extends EntityRepository
         }, $qb->getQuery()->getResult());
     }
 
-    /**
-     * @OA\Schema(
-     *     schema="TotalDailyAppRequests",
-     *     required={"requests", "year", "month", "day_of_month"},
-     *     @OA\Property(property="requests", type="integer"),
-     *     @OA\Property(property="year", type="integer"),
-     *     @OA\Property(property="month", type="integer"),
-     *     @OA\Property(property="day_of_month", type="integer"),
-     * )
-     */
+    #[OA\Schema(
+        schema: 'TotalDailyAppRequests',
+        required: ['requests', 'year', 'month', 'day_of_month'],
+        properties: [
+            new OA\Property(property: 'requests', type: 'integer'),
+            new OA\Property(property: 'year', type: 'integer'),
+            new OA\Property(property: 'month', type: 'integer'),
+            new OA\Property(property: 'day_of_month', type: 'integer')
+        ]
+    )]
     public function dailySummary(int $endDate, int $weeks): array
     {
         $startDate = strtotime(date(self::DATE_FORMAT, $endDate) . " -$weeks weeks") ?: time();
@@ -136,19 +135,19 @@ class AppRequestsRepository extends EntityRepository
         }, $qb->getQuery()->getResult());
     }
 
-    /**
-     * @OA\Schema(
-     *     schema="HourlyAppRequests",
-     *     required={"app_id", "app_name", "requests", "year", "month", "day_of_month", "hour"},
-     *     @OA\Property(property="app_id", type="integer"),
-     *     @OA\Property(property="app_name", type="string"),
-     *     @OA\Property(property="requests", type="integer"),
-     *     @OA\Property(property="year", type="integer"),
-     *     @OA\Property(property="month", type="integer"),
-     *     @OA\Property(property="day_of_month", type="integer"),
-     *     @OA\Property(property="hour", type="integer"),
-     * )
-     */
+    #[OA\Schema(
+        schema: 'HourlyAppRequests',
+        required: ['app_id', 'app_name', 'requests', 'year', 'month', 'day_of_month', 'hour'],
+        properties: [
+            new OA\Property(property: 'app_id', type: 'integer'),
+            new OA\Property(property: 'app_name', type: 'string'),
+            new OA\Property(property: 'requests', type: 'integer'),
+            new OA\Property(property: 'year', type: 'integer'),
+            new OA\Property(property: 'month', type: 'integer'),
+            new OA\Property(property: 'day_of_month', type: 'integer'),
+            new OA\Property(property: 'hour', type: 'integer')
+        ]
+    )]
     public function hourlySummary(int $endDateTime, int $days): array
     {
         $startTime = strtotime(date(self::DATE_FORMAT, $endDateTime) . " -$days days") ?: time();
