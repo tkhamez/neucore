@@ -48,6 +48,11 @@ jobs:
           tools: composer:v2
       - name: Install
         run: cd backend && composer install
+      - name: Wait for Database
+        run: |
+          while ! mysqladmin ping --host=127.0.0.1 --silent; do
+            sleep 1
+          done
       - name: Test with code coverage
         if: ${{ github.repository_owner == 'tkhamez' && matrix.php-version == '8.2' }}
         env:
