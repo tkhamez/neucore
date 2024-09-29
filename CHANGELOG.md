@@ -1,5 +1,11 @@
 # Changelog
 
+# next
+
+dd mm yyyy
+
+- Added a css file with a minimal dark theme that plugins can use.
+
 ## 2.5.0
 
 14 Jul 2024

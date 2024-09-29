@@ -1,0 +1,11 @@
+/* A minimal dark theme for plugins */
+
+body {
+    font-family: sans-serif;
+    background-color: #222;
+    color: #aaa;
+}
+
+a {
+    color: #1e8ad6;
+}
