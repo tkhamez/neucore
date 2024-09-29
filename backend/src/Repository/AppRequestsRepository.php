@@ -21,6 +21,8 @@ class AppRequestsRepository extends EntityRepository
 {
     use DateHelper;
 
+    private const DATE_FORMAT = 'Y-m-d H:i:s';
+
     /**
      * @OA\Schema(
      *     schema="TotalMonthlyAppRequests",
@@ -32,7 +34,7 @@ class AppRequestsRepository extends EntityRepository
      */
     public function monthlySummary(int $endDate, int $months): array
     {
-        $startDate = strtotime(date('Y-m-d H:i:s', $endDate) . " -$months months") ?: time();
+        $startDate = strtotime(date(self::DATE_FORMAT, $endDate) . " -$months months") ?: time();
         $start = $this->getDateNumber($startDate);
         $end = $this->getDateNumber($endDate);
 
@@ -69,7 +71,7 @@ class AppRequestsRepository extends EntityRepository
      */
     public function monthlySummaryByApp(int $endDate, int $months): array
     {
-        $startDate = strtotime(date('Y-m-d H:i:s', $endDate) . " -$months months") ?: time();
+        $startDate = strtotime(date(self::DATE_FORMAT, $endDate) . " -$months months") ?: time();
         $start = $this->getDateNumber($startDate);
         $end = $this->getDateNumber($endDate);
 
@@ -110,7 +112,7 @@ class AppRequestsRepository extends EntityRepository
      */
     public function dailySummary(int $endDate, int $weeks): array
     {
-        $startDate = strtotime(date('Y-m-d H:i:s', $endDate) . " -$weeks weeks") ?: time();
+        $startDate = strtotime(date(self::DATE_FORMAT, $endDate) . " -$weeks weeks") ?: time();
         $start = $this->getDateNumber($startDate, 2);
         $end = $this->getDateNumber($endDate, 2);
 
@@ -149,7 +151,7 @@ class AppRequestsRepository extends EntityRepository
      */
     public function hourlySummary(int $endDateTime, int $days): array
     {
-        $startTime = strtotime(date('Y-m-d H:i:s', $endDateTime) . " -$days days") ?: time();
+        $startTime = strtotime(date(self::DATE_FORMAT, $endDateTime) . " -$days days") ?: time();
         $start = $this->getDateNumber($startTime, 3);
         $end = $this->getDateNumber($endDateTime, 3);
 

@@ -23,5 +23,6 @@ final class Version20190318212603 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
+        // There's nothing to do here.
     }
 }
