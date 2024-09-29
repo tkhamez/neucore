@@ -168,18 +168,15 @@ class Application
             $this->env = self::ENV_DEV;
         }
 
-        /** @noinspection PhpIncludeInspection */
-        $settings = require self::ROOT_DIR . '/config/settings.php';
+        $settings = $this->loadConfigFile('settings.php');
 
         if ($this->env === self::ENV_DEV) {
-            /** @noinspection PhpIncludeInspection */
-            $dev = require self::ROOT_DIR . '/config/settings_dev.php';
+            $dev = $this->loadConfigFile('settings_dev.php');
             $settings = array_replace_recursive($settings, $dev);
         }
 
         if ($unitTest) {
-            /** @noinspection PhpIncludeInspection */
-            $test = require self::ROOT_DIR . '/config/settings_tests.php';
+            $test = $this->loadConfigFile('settings_tests.php');
             $settings = array_replace_recursive($settings, $test);
         }
 
@@ -286,10 +283,9 @@ class Application
             '/api/user'
         ));
 
-        /** @noinspection PhpIncludeInspection */
         $app->add(new SecureRouteMiddleware(
             $this->container->get(ResponseFactoryInterface::class),
-            require self::ROOT_DIR . '/config/security.php'
+            $this->loadConfigFile('security.php')
         ));
 
         $app->add(new RoleMiddleware($this->container->get(AppAuth::class), ['route_pattern' => ['/api/app']]));
@@ -387,8 +383,7 @@ class Application
 
     private function registerRoutes(App $app): void
     {
-        /** @noinspection PhpIncludeInspection */
-        $routes = require self::ROOT_DIR . '/config/routes.php';
+        $routes = $this->loadConfigFile('routes.php');
 
         foreach ($routes as $pattern => $configuration) {
             if (isset($configuration[0])) { // e. g. ['GET', 'method']
@@ -457,5 +452,10 @@ class Application
             echo 'Error: ', $e->getMessage(), PHP_EOL;
             exit(1);
         }
+    }
+
+    private function loadConfigFile(string $name): mixed
+    {
+        return require self::ROOT_DIR . "/config/$name";
     }
 }
