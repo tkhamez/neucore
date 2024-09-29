@@ -8,44 +8,37 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Api;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
 /**
  * EVE corporation.
- *
- * @OA\Schema(
- *     required={"id", "name", "ticker"}
- * )
  */
 #[ORM\Entity]
 #[ORM\Table(name: "corporations", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
+#[OA\Schema(required: ['id', 'name', 'ticker'])]
 class Corporation implements \JsonSerializable
 {
     /**
      * EVE corporation ID.
-     *
-     * @OA\Property(format="int64")
      */
     #[ORM\Id]
     #[ORM\Column(type: "bigint")]
     #[ORM\GeneratedValue(strategy: "NONE")]
+    #[OA\Property(format: 'int64')]
     private ?int $id = null;
 
     /**
      * EVE corporation name.
-     *
-     * @OA\Property(nullable=true)
      */
     #[ORM\Column(type: "string", length: 255, nullable: true)]
+    #[OA\Property(nullable: true)]
     private ?string $name = null;
 
     /**
      * Corporation ticker.
-     *
-     * @OA\Property(nullable=true)
      */
     #[ORM\Column(type: "string", length: 16, nullable: true)]
+    #[OA\Property(nullable: true)]
     private ?string $ticker = null;
 
     /**
@@ -55,21 +48,18 @@ class Corporation implements \JsonSerializable
     #[ORM\Column(name: "last_update", type: "datetime", nullable: true)]
     private ?\DateTime $lastUpdate = null;
 
-    /**
-     *
-     * @OA\Property(ref="#/components/schemas/Alliance", nullable=false)
-     */
+    
     #[ORM\ManyToOne(targetEntity: Alliance::class, inversedBy: "corporations")]
+    #[OA\Property(ref: '#/components/schemas/Alliance', nullable: false)]
     private ?Alliance $alliance = null;
 
     /**
      * Groups for automatic assignment (API: not included by default).
-     *
-     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      */
     #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: "corporations")]
     #[ORM\JoinTable(name: "corporation_group")]
     #[ORM\OrderBy(["name" => "ASC"])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/Group'))]
     private Collection $groups;
 
     /**
@@ -83,10 +73,9 @@ class Corporation implements \JsonSerializable
 
     /**
      * Last update of corporation member tracking data (API: not included by default).
-     *
-     * @OA\Property(nullable=true)
      */
     #[ORM\Column(name: "tracking_last_update", type: "datetime", nullable: true)]
+    #[OA\Property(nullable: true)]
     private ?\DateTime $trackingLastUpdate = null;
 
     #[ORM\OneToMany(targetEntity: Character::class, mappedBy: "corporation")]
@@ -99,10 +88,9 @@ class Corporation implements \JsonSerializable
 
     /**
      * True if this corporation was automatically placed on the allowlist of a watchlist (API: not included by default).
-     *
-     * @OA\Property(type="boolean")
      */
     #[ORM\Column(name: "auto_allowlist", type: "boolean", nullable: false, options: ["default" => 0])]
+    #[OA\Property(type: 'boolean')]
     private bool $autoAllowlist = false;
 
     /**

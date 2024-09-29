@@ -6,21 +6,18 @@ namespace Neucore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Api;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Schema(
- *     required={"id", "player", "group", "created"},
- *     description="The player property contains only id and name."
- * )
- *
- */
+
 #[ORM\Entity]
 #[ORM\Table(
     name: "group_applications",
     uniqueConstraints: [new ORM\UniqueConstraint(name: "player_group_idx", columns: ["player_id", "group_id"])],
     options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"]
+)]
+#[OA\Schema(
+    description: 'The player property contains only id and name.',
+    required: ['id', 'player', 'group', 'created']
 )]
 class GroupApplication implements \JsonSerializable
 {
@@ -39,42 +36,31 @@ class GroupApplication implements \JsonSerializable
      */
     public const STATUS_DENIED = 'denied';
 
-    /**
-     * @OA\Property()
-     */
     #[ORM\Id]
     #[ORM\Column(type: "integer")]
     #[ORM\GeneratedValue]
+    #[OA\Property]
     private ?int $id = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/Player")
-     */
     #[ORM\ManyToOne(targetEntity: Player::class, inversedBy: "groupApplications")]
     #[ORM\JoinColumn(nullable: false)]
+    #[OA\Property(ref: '#/components/schemas/Player')]
     private Player $player;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/Group")
-     */
     #[ORM\ManyToOne(targetEntity: Group::class, inversedBy: "applications")]
     #[ORM\JoinColumn(nullable: false)]
+    #[OA\Property(ref: '#/components/schemas/Group')]
     private Group $group;
 
-    /**
-     * @OA\Property(nullable=true)
-     */
     #[ORM\Column(type: "datetime", nullable: true)]
+    #[OA\Property(nullable: true)]
     private ?\DateTime $created = null;
 
     /**
      * Group application status.
-     *
-     * @OA\Property(
-     *     enum={"pending", "accepted", "denied"})
-     * )
      */
     #[ORM\Column(type: "string", length: 16)]
+    #[OA\Property(enum: ['pending', 'accepted', 'denied'])]
     private string $status = self::STATUS_PENDING;
 
     /**

@@ -7,16 +7,11 @@ namespace Neucore\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Schema(
- *     required={"id", "name", "description", "esiScopes", "eveRoles"}
- * )
- */
 #[ORM\Entity]
 #[ORM\Table(name: "eve_logins", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
+#[OA\Schema(required: ['id', 'name', 'description', 'esiScopes', 'eveRoles'])]
 class EveLogin implements \JsonSerializable
 {
     /**
@@ -62,45 +57,35 @@ class EveLogin implements \JsonSerializable
 
     public const ROLE_DIRECTOR = 'Director';
 
-    /**
-     * @OA\Property()
-     */
     #[ORM\Id]
     #[ORM\Column(type: "integer")]
     #[ORM\GeneratedValue]
+    #[OA\Property]
     private ?int $id = null;
 
-    /**
-     * @OA\Property(
-     *     maxLength=20,
-     *     pattern="^[-._a-zA-Z0-9]+$",
-     *     nullable=false,
-     *     description="Names starting with 'core.' are reserved for internal use."
-     * )
-     */
     #[ORM\Column(type: "string", length: 20, unique: true)]
+    #[OA\Property(
+        description: "Names starting with 'core.' are reserved for internal use.",
+        maxLength: 20,
+        pattern: '^[-._a-zA-Z0-9]+$',
+        nullable: false
+    )]
     private string $name = '';
 
-    /**
-     * @OA\Property(maxLength=1024)
-     */
     #[ORM\Column(type: "string", length: 1024)]
+    #[OA\Property(maxLength: 1024)]
     private string $description = '';
 
-    /**
-     * @OA\Property(maxLength=8192)
-     */
     #[ORM\Column(name: "esi_scopes", type: "string", length: 8192)]
+    #[OA\Property(maxLength: 8192)]
     private string $esiScopes = '';
 
-    /**
-     * @OA\Property(
-     *     type="array",
-     *     @OA\Items(type="string"),
-     *     description="Maximum length of all roles separated by comma: 1024."
-     * )
-     */
     #[ORM\Column(name: "eve_roles", type: "string", length: 1024)]
+    #[OA\Property(
+        description: 'Maximum length of all roles separated by comma: 1024.',
+        type: 'array',
+        items: new OA\Items(type: 'string')
+    )]
     private string $eveRoles = '';
 
     #[ORM\OneToMany(targetEntity: EsiToken::class, mappedBy: "eveLogin")]

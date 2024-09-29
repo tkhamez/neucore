@@ -7,37 +7,26 @@ namespace Neucore\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Schema(
- *     required={"id", "name"}
- * )
- *
- */
+
 #[ORM\Entity]
 #[ORM\Table(name: "watchlists", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
+#[OA\Schema(required: ['id', 'name'])]
 class Watchlist implements \JsonSerializable
 {
-    /**
-     * @OA\Property()
-     */
     #[ORM\Id]
     #[ORM\Column(type: "integer")]
     #[ORM\GeneratedValue]
+    #[OA\Property]
     private ?int $id = null;
 
-    /**
-     * @OA\Property()
-     */
     #[ORM\Column(type: "string", length: 32)]
+    #[OA\Property]
     private ?string $name = null;
 
-    /**
-     * @OA\Property()
-     */
     #[ORM\Column(name: "lock_watchlist_settings", type: "boolean")]
+    #[OA\Property]
     private bool $lockWatchlistSettings = false;
 
     /**

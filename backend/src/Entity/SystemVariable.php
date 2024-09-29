@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
 /**
  * A system settings variable.
@@ -14,13 +13,10 @@ use OpenApi\Annotations as OA;
  * This is also used as a storage for Storage\Variables with the prefix "__storage__" if APCu is not available.
  *
  * @see \Neucore\Storage\Variables
- *
- * @OA\Schema(
- *     required={"name", "value"}
- * )
  */
 #[ORM\Entity]
 #[ORM\Table(name: "system_variables", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
+#[OA\Schema(required: ['name', 'value'])]
 class SystemVariable implements \JsonSerializable
 {
     /**
@@ -290,20 +286,18 @@ class SystemVariable implements \JsonSerializable
 
     /**
      * Variable name.
-     *
-     * @OA\Property(maxLength=255)
      */
     #[ORM\Id]
     #[ORM\Column(type: "string", length: 255)]
     #[ORM\GeneratedValue(strategy: "NONE")]
+    #[OA\Property(maxLength: 255)]
     private string $name;
 
     /**
      * Variable value.
-     *
-     * @OA\Property(nullable=true)
      */
     #[ORM\Column(name: "variable_value", type: "text", length: 16777215, nullable: true)]
+    #[OA\Property(nullable: true)]
     private ?string $value = null;
 
     #[ORM\Column(type: "string", length: 16, options: ["default" => "public"])]

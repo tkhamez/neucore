@@ -9,44 +9,37 @@ use Neucore\Data\PluginConfigurationFile;
 use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Plugin\GeneralInterface;
 use Neucore\Plugin\ServiceInterface;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Schema(required={"id", "name"})
- *
- */
+
 #[ORM\Entity()]
 #[ORM\Table(name: "plugins", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
+#[OA\Schema(required: ['id', 'name'])]
 class Plugin implements \JsonSerializable
 {
-    /**
-     * @OA\Property()
-     */
     #[ORM\Id]
     #[ORM\Column(type: "integer")]
     #[ORM\GeneratedValue]
+    #[OA\Property]
     private ?int $id = null;
 
-    /**
-     * @OA\Property()
-     */
     #[ORM\Column(type: "string", length: 255)]
+    #[OA\Property]
     private string $name = '';
 
     /**
      * JSON serialized PluginConfigurationDatabase class.
      *
-     * @OA\Property(property="configurationDatabase", ref="#/components/schemas/PluginConfigurationDatabase")
      * @see PluginConfigurationDatabase
      */
     #[ORM\Column(type: "text", length: 16777215, nullable: true)]
+    #[OA\Property(property: 'configurationDatabase', ref: '#/components/schemas/PluginConfigurationDatabase')]
     private ?string $configuration = null;
 
     /**
-     * @OA\Property(ref="#/components/schemas/PluginConfigurationFile")
      * @var ?PluginConfigurationFile
      */
+    #[OA\Property(ref: '#/components/schemas/PluginConfigurationFile')]
     private ?PluginConfigurationFile $configurationFile = null;
 
     private ?ServiceInterface $serviceImplementation = null;

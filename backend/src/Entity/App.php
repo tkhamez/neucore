@@ -7,34 +7,27 @@ namespace Neucore\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Schema(
- *     required={"id", "name"}
- * )
- */
 #[ORM\Entity]
 #[ORM\Table(name: "apps", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
+#[OA\Schema(required: ['id', 'name'])]
 class App implements \JsonSerializable
 {
     /**
      * App ID
-     *
-     * @OA\Property()
      */
     #[ORM\Id]
     #[ORM\Column(type: "integer")]
     #[ORM\GeneratedValue]
+    #[OA\Property]
     private ?int $id = null;
 
     /**
      * App name
-     *
-     * @OA\Property(maxLength=255)
      */
     #[ORM\Column(type: "string", length: 255)]
+    #[OA\Property(maxLength: 255)]
     private ?string $name = null;
 
     #[ORM\Column(type: "string", length: 255)]
@@ -42,20 +35,18 @@ class App implements \JsonSerializable
 
     /**
      * Roles for authorization.
-     *
-     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Role"))
      */
     #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: "apps")]
     #[ORM\OrderBy(["name" => "ASC"])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/Role'))]
     private Collection $roles;
 
     /**
      * Groups the app can see.
-     *
-     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      */
     #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: "apps")]
     #[ORM\OrderBy(["name" => "ASC"])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/Group'))]
     private Collection $groups;
 
     #[ORM\ManyToMany(targetEntity: Player::class, inversedBy: "managerApps")]
@@ -63,12 +54,10 @@ class App implements \JsonSerializable
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $managers;
 
-    /**
-     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/EveLogin"))
-     */
     #[ORM\ManyToMany(targetEntity: EveLogin::class)]
     #[ORM\JoinTable(name: "app_eve_login")]
     #[ORM\OrderBy(["name" => "ASC"])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/EveLogin'))]
     private Collection $eveLogins;
 
     /**

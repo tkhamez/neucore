@@ -11,40 +11,38 @@ use Neucore\Plugin\Data\CoreAccount;
 use Neucore\Plugin\Data\CoreCharacter;
 use Neucore\Plugin\Data\CoreGroup;
 use Neucore\Plugin\Data\CoreRole;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- *
- * @OA\Schema(
- *     schema="Player",
- *     required={"id", "name"},
- *     @OA\Property(
- *         property="serviceAccounts",
- *         type="array",
- *         description="External service accounts (API: not included by default)",
- *         @OA\Items(ref="#/components/schemas/ServiceAccount")
- *     ),
- *     @OA\Property(
- *         property="characterId",
- *         description="ID of main character (API: not included by default)",
- *         type="integer",
- *     ),
- *     @OA\Property(
- *         property="corporationName",
- *         description="Corporation of main character (API: not included by default)",
- *         type="string",
- *     ),
- *     @OA\Property(
- *         property="allianceName",
- *         description="Alliance of main character (API: not included by default)",
- *         type="string",
- *     )
- * )
- *
- */
+
 #[ORM\Entity]
 #[ORM\Table(name: "players", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
+#[OA\Schema(
+    schema: 'Player',
+    required: ['id', 'name'],
+    properties: [
+        new OA\Property(
+            property: 'serviceAccounts',
+            description: 'External service accounts (API: not included by default)',
+            type: 'array',
+            items: new OA\Items(ref: '#/components/schemas/ServiceAccount')
+        ),
+        new OA\Property(
+            property: 'characterId',
+            description: 'ID of main character (API: not included by default)',
+            type: 'integer'
+        ),
+        new OA\Property(
+            property: 'corporationName',
+            description: 'Corporation of main character (API: not included by default)',
+            type: 'string'
+        ),
+        new OA\Property(
+            property: 'allianceName',
+            description: 'Alliance of main character (API: not included by default)',
+            type: 'string'
+        )
+    ]
+)]
 class Player implements \JsonSerializable
 {
     /**
@@ -61,12 +59,10 @@ class Player implements \JsonSerializable
      */
     public const STATUS_MANAGED = 'managed';
 
-    /**
-     * @OA\Property()
-     */
     #[ORM\Id]
     #[ORM\Column(type: "integer")]
     #[ORM\GeneratedValue]
+    #[OA\Property]
     private ?int $id = null;
 
     /**
@@ -74,10 +70,9 @@ class Player implements \JsonSerializable
      *
      * This is the EVE character name of the current main character or of
      * the last main character if there is currently none.
-     *
-     * @OA\Property()
      */
     #[ORM\Column(type: "string", length: 255)]
+    #[OA\Property]
     private string $name = '';
 
     /**
@@ -89,12 +84,9 @@ class Player implements \JsonSerializable
 
     /**
      * Player account status.
-     *
-     * @OA\Property(
-     *     enum={"standard", "managed"})
-     * )
      */
     #[ORM\Column(type: "string", length: 16)]
+    #[OA\Property(enum: ['standard', 'managed'])]
     private string $status = self::STATUS_STANDARD;
 
     /**
@@ -110,18 +102,15 @@ class Player implements \JsonSerializable
 
     /**
      * Roles for authorization.
-     *
-     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Role"))
      */
     #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: "players")]
     #[ORM\OrderBy(["name" => "ASC"])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/Role'))]
     private Collection $roles;
 
-    /**
-     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Character"))
-     */
     #[ORM\OneToMany(targetEntity: Character::class, mappedBy: "player")]
     #[ORM\OrderBy(["name" => "ASC"])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/Character'))]
     private Collection $characters;
 
     /**
@@ -134,47 +123,42 @@ class Player implements \JsonSerializable
 
     /**
      * Group membership.
-     *
-     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      */
     #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: "players")]
     #[ORM\OrderBy(["name" => "ASC"])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/Group'))]
     private Collection $groups;
 
     /**
      * Manager of groups.
-     *
-     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      */
     #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: "managers")]
     #[ORM\OrderBy(["name" => "ASC"])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/Group'))]
     private Collection $managerGroups;
 
     /**
      * Manager of apps.
-     *
-     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/App"))
      */
     #[ORM\ManyToMany(targetEntity: App::class, mappedBy: "managers")]
     #[ORM\OrderBy(["name" => "ASC"])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/App'))]
     private Collection $managerApps;
 
     /**
      * Characters that were removed from a player (API: not included by default).
-     *
-     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/RemovedCharacter"))
      */
     #[ORM\OneToMany(targetEntity: RemovedCharacter::class, mappedBy: "player")]
     #[ORM\OrderBy(["removedDate" => "ASC"])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/RemovedCharacter'))]
     private Collection $removedCharacters;
 
     /**
      * Characters that were moved from another player account to this account (API: not included by default).
-     *
-     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/RemovedCharacter"))
      */
     #[ORM\OneToMany(targetEntity: RemovedCharacter::class, mappedBy: "newPlayer")]
     #[ORM\OrderBy(["removedDate" => "ASC"])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/RemovedCharacter'))]
     private Collection $incomingCharacters;
 
     /**

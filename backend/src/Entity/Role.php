@@ -7,24 +7,23 @@ namespace Neucore\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
 /**
  * Roles are used to determined player permissions.
  *
- * @OA\Schema(
- *     type="string",
- *     enum={"app", "app-groups", "app-chars", "app-tracking", "app-esi-login", "app-esi-proxy", "app-esi-token",
- *           "user", "user-admin", "user-manager", "user-chars", "group-admin", "group-manager", "app-admin",
- *           "app-manager", "plugin-admin", "statistics", "esi", "settings", "tracking", "tracking-admin",
- *           "watchlist", "watchlist-manager", "watchlist-admin"}
- * )
  *
  * @see doc/API.md for role descriptions
  */
 #[ORM\Entity]
 #[ORM\Table(name: "roles", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
+#[OA\Schema(
+    type: 'string',
+    enum: ['app', 'app-groups', 'app-chars', 'app-tracking', 'app-esi-login', 'app-esi-proxy',
+        'app-esi-token', 'user', 'user-admin', 'user-manager', 'user-chars', 'group-admin',
+        'group-manager', 'app-admin', 'app-manager', 'plugin-admin', 'statistics', 'esi',
+        'settings', 'tracking', 'tracking-admin', 'watchlist', 'watchlist-manager', 'watchlist-admin']
+)]
 class Role implements \JsonSerializable
 {
     public const APP = 'app';

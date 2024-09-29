@@ -9,79 +9,72 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Api;
 use Neucore\Plugin\Data\CoreCharacter;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
 /**
  * An EVE character.
- *
- * @OA\Schema(
- *     required={"id", "name"},
- *     @OA\Property(
- *         property="validToken",
- *         type="boolean",
- *         nullable=true,
- *         description="Shows if character's default refresh token is valid or not.
-                        This is null if there is no refresh token (EVE SSOv1 only)
-                        or a valid token but without scopes (SSOv2)."
- *     ),
- *     @OA\Property(
- *         property="validTokenTime",
- *         type="string",
- *         format="date-time",
- *         nullable=true,
- *         description="Date and time when the valid token property of the default token was last changed."
- *     ),
- *     @OA\Property(
- *         property="tokenLastChecked",
- *         type="string",
- *         format="date-time",
- *         nullable=true,
- *         description="Date and time when the default token was last checked."
- *     )
- * )
  */
 #[ORM\Entity]
 #[ORM\Table(name: "characters", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
+#[OA\Schema(
+    required: ['id', 'name'],
+    properties: [
+        new OA\Property(
+            property: 'validToken',
+            description: "Shows if character's default refresh token is valid or not. This is null if " .
+                "there is no refresh token (EVE SSOv1 only) or a valid token but without scopes (SSOv2).",
+            type: 'boolean',
+            nullable: true
+        ),
+        new OA\Property(
+            property: 'validTokenTime',
+            description: 'Date and time when the valid token property of the default token was last changed.',
+            type: 'string',
+            format: 'date-time',
+            nullable: true
+        ),
+        new OA\Property(
+            property: 'tokenLastChecked',
+            description: 'Date and time when the default token was last checked.',
+            type: 'string',
+            format: 'date-time',
+            nullable: true
+        )
+    ]
+)]
 class Character implements \JsonSerializable
 {
     /**
      * EVE character ID.
-     *
-     * @OA\Property(format="int64")
      */
     #[ORM\Id]
     #[ORM\Column(type: "bigint")]
     #[ORM\GeneratedValue(strategy: "NONE")]
+    #[OA\Property(format: 'int64')]
     private ?int $id = null;
 
     /**
      * EVE character name.
-     *
-     * @OA\Property()
      */
-    #[ORM\Column(type: "string", length: 255)] private string $name = '';
+    #[ORM\Column(type: "string", length: 255)]
+    #[OA\Property] private string $name = '';
 
-    /**
-     * @OA\Property()
-     */
-    #[ORM\Column(type: "boolean")] private bool $main = false;
+    #[ORM\Column(type: "boolean")]
+    #[OA\Property] private bool $main = false;
 
     #[ORM\Column(name: "character_owner_hash", type: "text", length: 65535, nullable: true)]
     private ?string $characterOwnerHash = null;
 
     /**
      * ESI tokens of the character (API: not included by default).
-     *
-     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/EsiToken"))
      */
     #[ORM\OneToMany(targetEntity: EsiToken::class, mappedBy: "character")]
-    #[ORM\OrderBy(["id" => "ASC"])] private Collection $esiTokens;
+    #[ORM\OrderBy(["id" => "ASC"])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/EsiToken'))]
+    private Collection $esiTokens;
 
-    /**
-     * @OA\Property(nullable=true)
-     */
     #[ORM\Column(name: "created", type: "datetime", nullable: true)]
+    #[OA\Property(nullable: true)]
     private ?\DateTime $created = null;
 
     #[ORM\Column(name: "last_login", type: "datetime", nullable: true)]
@@ -89,29 +82,25 @@ class Character implements \JsonSerializable
 
     /**
      * Last ESI update.
-     *
-     * @OA\Property(nullable=true)
      */
     #[ORM\Column(name: "last_update", type: "datetime", nullable: true)]
+    #[OA\Property(nullable: true)]
     private ?\DateTime $lastUpdate = null;
 
     #[ORM\ManyToOne(targetEntity: Player::class, inversedBy: "characters")]
     #[ORM\JoinColumn(nullable: false)]
     private Player $player;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/Corporation", nullable=false)
-     */
     #[ORM\ManyToOne(targetEntity: Corporation::class, inversedBy: "characters")]
+    #[OA\Property(ref: '#/components/schemas/Corporation', nullable: false)]
     private ?Corporation $corporation = null;
 
     /**
      * List of previous character names (API: not included by default).
-     *
-     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/CharacterNameChange"))
      */
     #[ORM\OneToMany(targetEntity: CharacterNameChange::class, mappedBy: "character")]
     #[ORM\OrderBy(["changeDate" => "DESC"])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/CharacterNameChange'))]
     private Collection $characterNameChanges;
 
     /**

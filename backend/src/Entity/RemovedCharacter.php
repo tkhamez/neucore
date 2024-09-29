@@ -10,20 +10,19 @@ use Neucore\Api;
 use Neucore\Plugin\Data\CoreCharacter;
 use Neucore\Plugin\Data\CoreMovedCharacter;
 use Doctrine\ORM\Mapping as ORM;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Schema(
- *     required={"characterId", "characterName", "removedDate", "reason"},
- *     @OA\Property(property="newPlayerId", type="integer"),
- *     @OA\Property(property="newPlayerName", type="string")
- * )
- */
 #[ORM\Entity]
 #[ORM\Table(
     name: "removed_characters",
     options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"]
+)]
+#[OA\Schema(
+    required: ['characterId', 'characterName', 'removedDate', 'reason'],
+    properties: [
+        new OA\Property(property: 'newPlayerId', type: 'integer'),
+        new OA\Property(property: 'newPlayerName', type: 'string')
+    ]
 )]
 class RemovedCharacter implements \JsonSerializable
 {
@@ -70,11 +69,10 @@ class RemovedCharacter implements \JsonSerializable
 
     /**
      * The old player account.
-     *
-     * @OA\Property(ref="#/components/schemas/Player", description="The old player account.", nullable=false)
      */
     #[ORM\ManyToOne(targetEntity: Player::class, inversedBy: "removedCharacters")]
     #[ORM\JoinColumn(nullable: false)]
+    #[OA\Property(ref: '#/components/schemas/Player', description: 'The old player account.', nullable: false)]
     private ?Player $player = null;
 
     /**
@@ -87,44 +85,38 @@ class RemovedCharacter implements \JsonSerializable
 
     /**
      * EVE character ID.
-     *
-     * @OA\Property(format="int64")
      */
     #[ORM\Column(name: "character_id", type: "bigint")]
+    #[OA\Property(format: 'int64')]
     private ?int $characterId = null;
 
     /**
      * EVE character name.
-     *
-     * @OA\Property()
      */
     #[ORM\Column(name: "character_name", type: "string", length: 255)]
+    #[OA\Property]
     private ?string $characterName = null;
 
     /**
      * Date of removal.
-     *
-     * @OA\Property()
      */
     #[ORM\Column(name: "removed_date", type: "datetime")]
+    #[OA\Property]
     private ?\DateTime $removedDate = null;
 
     /**
      * How it was removed (deleted or moved to another account).
-     *
-     * @OA\Property(enum={"moved", "moved-owner-changed", "deleted-biomassed",
-                          "deleted-owner-changed", "deleted-lost-access", "deleted-manually"})
      */
     #[ORM\Column(type: "string", length: 32)]
+    #[OA\Property(enum: ['moved', 'moved-owner-changed', 'deleted-biomassed', 'deleted-owner-changed', 'deleted-lost-access', 'deleted-manually'])]
     private ?string $reason = null;
 
     /**
      * The player who deleted the character (only set if it was deleted via the API).
-     *
-     * @OA\Property(ref="#/components/schemas/Player", nullable=false)
      */
     #[ORM\ManyToOne(targetEntity: Player::class)]
     #[ORM\JoinColumn(name: "deleted_by")]
+    #[OA\Property(ref: '#/components/schemas/Player', nullable: false)]
     private ?Player $deletedBy = null;
 
     /**

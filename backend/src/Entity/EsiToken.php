@@ -9,18 +9,8 @@ namespace Neucore\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Api;
 use Neucore\Plugin\Data\CoreEsiToken;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Schema(
- *     required={"eveLoginId", "characterId", "playerId", "validToken", "validTokenTime", "hasRoles"},
- *     @OA\Property(property="eveLoginId", type="integer", description="ID of EveLogin"),
- *     @OA\Property(property="characterId", type="integer", description="ID of Character"),
- *     @OA\Property(property="playerId", type="integer", description="ID of Player"),
- *     @OA\Property(property="playerName", type="string", description="Name of Player"),
- * )
- */
 #[ORM\Entity]
 #[ORM\Table(
     name: "esi_tokens",
@@ -29,6 +19,15 @@ use OpenApi\Annotations as OA;
     ],
     options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"]
 )]
+#[OA\Schema(
+    required: ['eveLoginId', 'characterId', 'playerId', 'validToken', 'validTokenTime', 'hasRoles'],
+    properties: [
+        new OA\Property(property: 'eveLoginId', description: 'ID of EveLogin', type: 'integer'),
+        new OA\Property(property: 'characterId', description: 'ID of Character', type: 'integer'),
+        new OA\Property(property: 'playerId', description: 'ID of Player', type: 'integer'),
+        new OA\Property(property: 'playerName', description: 'Name of Player', type: 'string')
+    ]
+)]
 class EsiToken implements \JsonSerializable
 {
     #[ORM\Id]
@@ -36,11 +35,9 @@ class EsiToken implements \JsonSerializable
     #[ORM\GeneratedValue]
     private ?int $id = null;
 
-    /**
-     * @OA\Property(ref="#/components/schemas/Character", nullable=false)
-     */
     #[ORM\ManyToOne(targetEntity: Character::class, inversedBy: "esiTokens")]
     #[ORM\JoinColumn(name: "character_id", nullable: false, onDelete: "CASCADE")]
+    #[OA\Property(ref: '#/components/schemas/Character', nullable: false)]
     private ?Character $character = null;
 
     #[ORM\ManyToOne(targetEntity: EveLogin::class, inversedBy: "esiTokens")]
@@ -64,28 +61,25 @@ class EsiToken implements \JsonSerializable
      *
      * This is null if there is no refresh token (EVE SSOv1 only)
      * or a valid token but without scopes (SSOv2).
-     *
-     * @OA\Property
      */
     #[ORM\Column(name: "valid_token", type: "boolean", nullable: true)]
+    #[OA\Property]
     private ?bool $validToken = null;
 
     /**
      * Date and time when the valid token property was last changed.
-     *
-     * @OA\Property
      */
     #[ORM\Column(name: "valid_token_time", type: "datetime", nullable: true)]
+    #[OA\Property]
     private ?\DateTime $validTokenTime = null;
 
     /**
      * Shows if the EVE character has all required roles for the login.
      *
      * Null if the login does not require any roles or if the token is invalid.
-     *
-     * @OA\Property
      */
     #[ORM\Column(name: "has_roles", type: "boolean", nullable: true)]
+    #[OA\Property]
     private ?bool $hasRoles = null;
 
     /**
@@ -96,10 +90,9 @@ class EsiToken implements \JsonSerializable
 
     /**
      * When the refresh token was last checked for validity.
-     *
-     * @OA\Property
      */
     #[ORM\Column(name: "last_checked", type: "datetime", nullable: true)]
+    #[OA\Property]
     private ?\DateTime $lastChecked = null;
 
     public function jsonSerialize(bool $withCharacterDetails = false): array

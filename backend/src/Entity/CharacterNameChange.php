@@ -6,21 +6,17 @@ namespace Neucore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Api;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
 /**
  * A previous character name.
- *
- * @OA\Schema(
- *     required={"oldName", "changeDate"}
- * )
  */
 #[ORM\Entity]
 #[ORM\Table(
     name: "character_name_changes",
     options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])
 ]
+#[OA\Schema(required: ['oldName', 'changeDate'])]
 class CharacterNameChange implements \JsonSerializable
 {
     #[ORM\Id]
@@ -32,16 +28,12 @@ class CharacterNameChange implements \JsonSerializable
     #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private Character $character;
 
-    /**
-     * @OA\Property()
-     */
     #[ORM\Column(name: "old_name", type: "string", length: 255)]
+    #[OA\Property]
     private string $oldName = '';
 
-    /**
-     * @OA\Property(nullable=true)
-     */
     #[ORM\Column(name: "change_date", type: "datetime")]
+    #[OA\Property(nullable: true)]
     private ?\DateTime $changeDate = null;
 
     public function jsonSerialize(): array

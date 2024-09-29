@@ -5,18 +5,14 @@ declare(strict_types=1);
 namespace Neucore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
 /**
  * An EVE location (System, Station, Structure, ...)
- *
- * @OA\Schema(
- *     required={"id", "name", "category"}
- * )
  */
 #[ORM\Entity]
 #[ORM\Table(name: "esi_locations", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
+#[OA\Schema(required: ['id', 'name', 'category'])]
 class EsiLocation implements \JsonSerializable
 {
     public const CATEGORY_SYSTEM = 'system';
@@ -25,24 +21,18 @@ class EsiLocation implements \JsonSerializable
 
     public const CATEGORY_STRUCTURE = 'structure';
 
-    /**
-     * @OA\Property(format="int64")
-     */
     #[ORM\Id]
     #[ORM\Column(type: "bigint")]
     #[ORM\GeneratedValue(strategy: "NONE")]
+    #[OA\Property(format: 'int64')]
     private ?int $id = null;
 
-    /**
-     * @OA\Property(enum={"system", "station", "structure"})
-     */
     #[ORM\Column(type: "string", length: 16)]
+    #[OA\Property(enum: ['system', 'station', 'structure'])]
     private ?string $category = null;
 
-    /**
-     * @OA\Property()
-     */
     #[ORM\Column(type: "string", length: 255, nullable: true)]
+    #[OA\Property]
     private ?string $name = null;
 
     /**

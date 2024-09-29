@@ -10,16 +10,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Neucore\Plugin\Data\CoreGroup;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Schema(
- *     required={"id", "name"}
- * )
- */
 #[ORM\Entity]
 #[ORM\Table(name: "groups_tbl", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
+#[OA\Schema(required: ['id', 'name'])]
 class Group implements \JsonSerializable
 {
     public const VISIBILITY_PRIVATE = 'private';
@@ -28,44 +23,34 @@ class Group implements \JsonSerializable
 
     /**
      * Group ID.
-     *
-     * @OA\Property()
      */
     #[ORM\Id]
     #[ORM\Column(type: "integer")]
     #[ORM\GeneratedValue]
+    #[OA\Property]
     private ?int $id = null;
 
     /**
      * A unique group name (can be changed).
-     *
-     * @OA\Property(maxLength=64, pattern="^[-._a-zA-Z0-9]+$")
      */
     #[ORM\Column(type: "string", length: 64, unique: true)]
+    #[OA\Property(maxLength: 64, pattern: '^[-._a-zA-Z0-9]+$')]
     private ?string $name = null;
 
-    /**
-     * @OA\Property(maxLength=1024)
-     */
     #[ORM\Column(type: "string", length: 1024, nullable: true)]
+    #[OA\Property(maxLength: 1024)]
     private ?string $description = null;
 
-    /**
-     * @OA\Property(enum={"private", "public"})
-     */
     #[ORM\Column(type: "string", length: 16, options: ["default" => "private"])]
+    #[OA\Property(enum: ['private', 'public'])]
     private string $visibility = self::VISIBILITY_PRIVATE;
 
-    /**
-     * @OA\Property()
-     */
     #[ORM\Column(name: "auto_accept", type: "boolean")]
+    #[OA\Property]
     private bool $autoAccept = false;
 
-    /**
-     * @OA\Property()
-     */
     #[ORM\Column(name: "is_default", type: "boolean")]
+    #[OA\Property]
     private bool $isDefault = false;
 
     #[ORM\OneToMany(targetEntity: GroupApplication::class, mappedBy: "group", cascade: ["remove"])]

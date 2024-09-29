@@ -7,44 +7,37 @@ namespace Neucore\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
 /**
  * EVE Alliance.
- *
- * @OA\Schema(
- *     required={"id", "name", "ticker"}
- * )
  */
 #[ORM\Table(name: "alliances", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
 #[ORM\Entity]
+#[OA\Schema(required: ['id', 'name', 'ticker'])]
 class Alliance implements \JsonSerializable
 {
     /**
      * EVE alliance ID.
-     *
-     * @OA\Property(format="int64")
      */
     #[ORM\Id]
     #[ORM\Column(type: "bigint")]
     #[ORM\GeneratedValue(strategy: "NONE")]
+    #[OA\Property(format: 'int64')]
     private ?int $id = null;
 
     /**
      * EVE alliance name.
-     *
-     * @OA\Property(nullable=true)
      */
     #[ORM\Column(type: "string", length: 255, nullable: true)]
+    #[OA\Property(nullable: true)]
     private ?string $name = null;
 
     /**
      * Alliance ticker.
-     *
-     * @OA\Property(nullable=true)
      */
     #[ORM\Column(type: "string", length: 16, nullable: true)]
+    #[OA\Property(nullable: true)]
     private ?string $ticker = null;
 
     /**
@@ -60,12 +53,11 @@ class Alliance implements \JsonSerializable
 
     /**
      * Groups for automatic assignment (API: not included by default).
-     *
-     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      */
     #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: "alliances")]
     #[ORM\JoinTable(name: "alliance_group")]
     #[ORM\OrderBy(["name" => "ASC"])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/Group'))]
     private Collection $groups;
 
     /**
