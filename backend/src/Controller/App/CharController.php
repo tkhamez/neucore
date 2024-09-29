@@ -431,8 +431,7 @@ class CharController extends BaseController
      * @OAT\Get(
      *     path="/app/v1/removed-characters/{characterId}",
      *     operationId="removedCharactersV1",
-     *     summary="Returns all characters that were removed from the player account to which the character ID
-                    belongs.",
+     *     summary="Returns all characters that were removed from the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.",
      *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
@@ -482,8 +481,7 @@ class CharController extends BaseController
      * @OAT\Get(
      *     path="/app/v1/incoming-characters/{characterId}",
      *     operationId="incomingCharactersV1",
-     *     summary="Returns all characters that were moved from another account to the player account to which the
-                    ID belongs.",
+     *     summary="Returns all characters that were moved from another account to the player account to which the ID belongs.",
      *     description="Needs role: app-chars.",
      *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},

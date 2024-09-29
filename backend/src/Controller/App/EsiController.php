@@ -284,8 +284,7 @@ class EsiController extends BaseController
      *     @OAT\Parameter(
      *         name="Neucore-EveCharacter",
      *         in="header",
-     *         description="The EVE character ID those token should be used. Has priority over the query
-                            parameter 'datasource'",
+     *         description="The EVE character ID those token should be used. Has priority over the query parameter 'datasource'",
      *         @OAT\Schema(type="string")
      *     ),
      *     @OAT\Parameter(
@@ -377,22 +376,17 @@ class EsiController extends BaseController
      *     operationId="esiV2",
      *     summary="Makes an ESI GET request on behalf on an EVE character and returns the result.",
      *     description="Needs role: app-esi-proxy<br>
-     *         Either the header 'Neucore-EveCharacter' and optionally 'Neucore-EveLogin' or the query parameter
-               'datasource' is required.<br>
+     *         Either the header 'Neucore-EveCharacter' and optionally 'Neucore-EveLogin' or the query parameter 'datasource' is required.<br>
      *         Public ESI routes are not allowed.<br>
-     *         The following headers from ESI are passed through to the response if they exist:
-               Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning, Warning<br>
+     *         The following headers from ESI are passed through to the response if they exist: Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning, Warning<br>
      *         The HTTP status code from ESI is also passed through, so there may be more than the documented ones.<br>
-     *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,
-               this allows to use OpenAPI clients that were generated for the ESI API,
-               see doc/api-examples for more.",
+     *         The ESI path and query parameters can alternatively be appended to the path of this endpoint, this allows to use OpenAPI clients that were generated for the ESI API, see doc/api-examples for more.",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
      *     @OAT\Parameter(
      *         name="Neucore-EveCharacter",
      *         in="header",
-     *         description="The EVE character ID those token should be used. Has priority over the query
-                            parameter 'datasource'",
+     *         description="The EVE character ID those token should be used. Has priority over the query parameter 'datasource'",
      *         @OAT\Schema(type="string")
      *     ),
      *     @OAT\Parameter(
@@ -411,16 +405,12 @@ class EsiController extends BaseController
      *     @OAT\Parameter(
      *         name="datasource",
      *         in="query",
-     *         description="The EVE character ID those token should be used from the default login to make the ESI
-                            request. Optionally followed by a colon and the name of an EVE login to use an alternative
-                            ESI token.",
+     *         description="The EVE character ID those token should be used from the default login to make the ESI request. Optionally followed by a colon and the name of an EVE login to use an alternative ESI token.",
      *         @OAT\Schema(type="string")
      *     ),
      *     @OAT\Response(
      *         response="200",
-     *         description="The data from ESI.<br>
-                            Please note that the JSON schema type can be an object, array or number etc.,
-                            unfortunately there is no way to document this.",
+     *         description="The data from ESI.<br> Please note that the JSON schema type can be an object, array or number etc., unfortunately there is no way to document this.",
      *         @OAT\JsonContent(type="string"),
      *         @OAT\Header(
      *             header="Expires",
@@ -501,8 +491,7 @@ class EsiController extends BaseController
      *     @OAT\Parameter(
      *         name="Neucore-EveCharacter",
      *         in="header",
-     *         description="The EVE character ID those token should be used. Has priority over the query
-                            parameter 'datasource'",
+     *         description="The EVE character ID those token should be used. Has priority over the query parameter 'datasource'",
      *         @OAT\Schema(type="string")
      *     ),
      *     @OAT\Parameter(
@@ -606,8 +595,7 @@ class EsiController extends BaseController
      *     @OAT\Parameter(
      *         name="Neucore-EveCharacter",
      *         in="header",
-     *         description="The EVE character ID those token should be used. Has priority over the query
-                            parameter 'datasource'",
+     *         description="The EVE character ID those token should be used. Has priority over the query parameter 'datasource'",
      *         @OAT\Schema(type="string")
      *     ),
      *     @OAT\Parameter(
