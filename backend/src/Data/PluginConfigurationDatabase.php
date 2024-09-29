@@ -4,34 +4,31 @@ declare(strict_types=1);
 
 namespace Neucore\Data;
 
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
 /**
  * Plugin configuration stored in database.
  *
  * API: The required properties are necessary for the service page where users register their account. The rest
  * is necessary for the admin page.
- *
- * @OA\Schema(required={"URLs", "textAccount", "textTop", "textRegister", "textPending", "configurationData"})
  */
+#[OA\Schema(required: ['URLs', 'textAccount', 'textTop', 'textRegister', 'textPending', 'configurationData'])]
 class PluginConfigurationDatabase extends PluginConfiguration implements \JsonSerializable
 {
     /**
      * Inactive plugins are neither updated by the cron job nor displayed to the user.
      *
      * From admin UI.
-     *
-     * @OA\Property()
      */
+    #[OA\Property]
     public bool $active = false;
 
     /**
      * From admin UI.
      *
-     * @OA\Property()
      * @var int[]
      */
+    #[OA\Property]
     public array $requiredGroups = [];
 
     /**

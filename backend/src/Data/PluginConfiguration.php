@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Data;
 
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
 /**
  * Common properties from plugin.yml (defaults) and database (current values).
@@ -16,40 +15,29 @@ abstract class PluginConfiguration
      * Directory where the plugin.yml file is stored.
      *
      * Only from database but always set when the data from the file is read.
-     *
-     * @OA\Property()
      */
+    #[OA\Property]
     public string $directoryName = '';
 
     /**
-     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/PluginConfigurationURL"))
      * @var PluginConfigurationURL[]
      */
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/PluginConfigurationURL'))]
     public array $URLs = [];
 
-    /**
-     * @OA\Property()
-     */
+    #[OA\Property]
     public string $textTop = '';
 
-    /**
-     * @OA\Property()
-     */
+    #[OA\Property]
     public string $textAccount = '';
 
-    /**
-     * @OA\Property()
-     */
+    #[OA\Property]
     public string $textRegister = '';
 
-    /**
-     * @OA\Property()
-     */
+    #[OA\Property]
     public string $textPending = '';
 
-    /**
-     * @OA\Property()
-     */
+    #[OA\Property]
     public string $configurationData = '';
 
     protected static function fromArrayCommon(self $obj, array $data): void

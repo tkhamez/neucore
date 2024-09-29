@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace Neucore\Data;
 
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
 /**
  * Plugin configuration from YAML file.
  *
  * API: The required properties are necessary for the service page where users register their account. The rest
  * is necessary for the admin page.
- *
- * @OA\Schema(required={"properties", "actions"})
  */
+#[OA\Schema(required: ['properties', 'actions'])]
 class PluginConfigurationFile extends PluginConfiguration implements \JsonSerializable
 {
     public const TYPE_GENERAL = 'general';
@@ -35,17 +33,15 @@ class PluginConfigurationFile extends PluginConfiguration implements \JsonSerial
 
     public const ACTION_RESET_PASSWORD = 'reset-password';
 
-    /**
-     * @OA\Property()
-     */
+    #[OA\Property]
     public string $name = '';
 
     /**
      * Not part of the file but will be set when the plugin implementation is loaded.
      *
-     * @OA\Property(enum={"general", "service"})
      * @var string[]
      */
+    #[OA\Property(enum: ['general', 'service'])]
     public array $types = [];
 
     public string $phpClass = '';
@@ -54,26 +50,22 @@ class PluginConfigurationFile extends PluginConfiguration implements \JsonSerial
 
     public string $psr4Path = '';
 
-    /**
-     * @OA\Property()
-     */
+    #[OA\Property]
     public bool $oneAccount = false;
 
     /**
-     * @OA\Property(enum={"username", "password", "email", "status", "name"})
      * @var string[]
      */
+    #[OA\Property(enum: ['username', 'password', 'email', 'status', 'name'])]
     public array $properties = [];
 
-    /**
-     * @OA\Property()
-     */
+    #[OA\Property]
     public bool $showPassword = false;
 
     /**
-     * @OA\Property(enum={"update-account", "reset-password"})
      * @var string[]
      */
+    #[OA\Property(enum: ['update-account', 'reset-password'])]
     public array $actions = [];
 
     /**

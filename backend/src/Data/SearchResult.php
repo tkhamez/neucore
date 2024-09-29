@@ -4,35 +4,22 @@ declare(strict_types=1);
 
 namespace Neucore\Data;
 
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Schema(
- *     required={"characterId", "characterName", "playerId", "playerName"}
- * )
- */
+#[OA\Schema(required: ['characterId', 'characterName', 'playerId', 'playerName'])]
 class SearchResult implements \JsonSerializable
 {
     public function __construct(
-        /**
-         * @OA\Property()
-         */
+        #[OA\Property]
         public int $characterId,
 
-        /**
-         * @OA\Property()
-         */
+        #[OA\Property]
         public string $characterName,
 
-        /**
-         * @OA\Property()
-         */
+        #[OA\Property]
         public int $playerId,
 
-        /**
-         * @OA\Property()
-         */
+        #[OA\Property]
         public string $playerName,
     ) {
     }

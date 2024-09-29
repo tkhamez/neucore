@@ -4,43 +4,27 @@ declare(strict_types=1);
 
 namespace Neucore\Data;
 
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Schema(required={"serviceId", "serviceName", "characterId", "username", "status", "name"})
- */
+#[OA\Schema(required: ['serviceId', 'serviceName', 'characterId', 'username', 'status', 'name'])]
 class ServiceAccount implements \JsonSerializable
 {
-    /**
-     * @OA\Property(property="serviceId", type="integer")
-     */
+    #[OA\Property(property: 'serviceId', type: 'integer')]
     private int $serviceId;
 
-    /**
-     * @OA\Property(property="serviceName", type="string")
-     */
+    #[OA\Property(property: 'serviceName', type: 'string')]
     private string $serviceName;
 
-    /**
-     * @OA\Property(property="characterId", type="integer", format="int64")
-     */
+    #[OA\Property(property: 'characterId', type: 'integer', format: 'int64')]
     private int $characterId;
 
-    /**
-     * @OA\Property(property="username", type="string", nullable=true)
-     */
+    #[OA\Property(property: 'username', type: 'string', nullable: true)]
     private ?string $username;
 
-    /**
-     * @OA\Property(property="status", type="string", nullable=true,
-     *                  enum={"Pending", "Active", "Deactivated", "Unknown"})
-     */
+    #[OA\Property(property: 'status', type: 'string', enum: ['Pending', 'Active', 'Deactivated', 'Unknown'], nullable: true)]
     private ?string $status;
 
-    /**
-     * @OA\Property(property="name", type="string", nullable=true)
-     */
+    #[OA\Property(property: 'name', type: 'string', nullable: true)]
     private ?string $name;
 
     public function __construct(
