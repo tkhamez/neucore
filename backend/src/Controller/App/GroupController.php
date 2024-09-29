@@ -10,7 +10,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\AppAuth;
 use Neucore\Service\ObjectManager;
-use OpenApi\Annotations as OAT;
+use OpenApi\Attributes as OAT;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -146,44 +146,36 @@ class GroupController extends BaseController
         return $this->response;
     }
 
-    /**
-     * @OAT\Post(
-     *     path="/app/v1/groups",
-     *     operationId="groupsBulkV1",
-     *     summary="Return groups of multiple players, identified by one of their character IDs.",
-     *     description="Needs role: app-groups.<br>
-     *                  Returns only groups that have been added to the app as well.
-     *                  Skips characters that are not found in the local database.",
-     *     tags={"Application - Groups"},
-     *     security={{"BearerAuth"={}}},
-     *     @OAT\RequestBody(
-     *         required=true,
-     *         description="EVE character IDs array.",
-     *         @OAT\MediaType(
-     *             mediaType="application/json",
-     *             @OAT\Schema(type="array", @OAT\Items(type="integer"))
-     *         ),
-     *     ),
-     *     @OAT\Response(
-     *         response="200",
-     *         description="List of characters (id, name and corporation properties only) with groups.",
-     *         @OAT\JsonContent(type="array", @OAT\Items(ref="#/components/schemas/CharacterGroups"))
-     *     ),
-     *     @OAT\Response(
-     *         response="400",
-     *         description="Invalid body."
-     *     ),
-     *     @OAT\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OAT\Response(
-     *         response="500",
-     *         description="",
-     *         @OAT\JsonContent(type="string")
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/app/v1/groups',
+        operationId: 'groupsBulkV1',
+        description: 'Needs role: app-groups.<br> Returns only groups that have been added to the app ' .
+            'as well. Skips characters that are not found in the local database.',
+        summary: 'Return groups of multiple players, identified by one of their character IDs.',
+        security: [['BearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            description: 'EVE character IDs array.',
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'application/json',
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'))
+            )
+        ),
+        tags: ['Application - Groups'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of characters (id, name and corporation properties only) with groups.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/CharacterGroups')
+                )
+            ),
+            new OA\Response(response: '400', description: 'Invalid body.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+        ],
+    )]
     public function groupsBulkV1(ServerRequestInterface $request): ResponseInterface
     {
         return $this->groupsBulkFor('Player', $request);
@@ -266,45 +258,36 @@ class GroupController extends BaseController
         return $this->response;
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OAT\Post(
-     *     path="/app/v1/corp-groups",
-     *     operationId="corpGroupsBulkV1",
-     *     summary="Return groups of multiple corporations.",
-     *     description="Needs role: app-groups.<br>
-     *                  Returns only groups that have been added to the app as well.
-     *                  Skips corporations that are not found in the local database.",
-     *     tags={"Application - Groups"},
-     *     security={{"BearerAuth"={}}},
-     *     @OAT\RequestBody(
-     *         required=true,
-     *         description="EVE corporation IDs array.",
-     *         @OAT\MediaType(
-     *             mediaType="application/json",
-     *             @OAT\Schema(type="array", @OAT\Items(type="integer"))
-     *         ),
-     *     ),
-     *     @OAT\Response(
-     *         response="200",
-     *         description="List of corporations with groups but without alliance.",
-     *         @OAT\JsonContent(type="array", @OAT\Items(ref="#/components/schemas/Corporation"))
-     *     ),
-     *     @OAT\Response(
-     *         response="400",
-     *         description="Invalid body."
-     *     ),
-     *     @OAT\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OAT\Response(
-     *         response="500",
-     *         description="",
-     *         @OAT\JsonContent(type="string")
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/app/v1/corp-groups',
+        operationId: 'corpGroupsBulkV1',
+        description: 'Needs role: app-groups.<br> Returns only groups that have been added to the app ' .
+            'as well. Skips corporations that are not found in the local database.',
+        summary: 'Return groups of multiple corporations.',
+        security: [['BearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            description: 'EVE corporation IDs array.',
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'application/json',
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'))
+            )
+        ),
+        tags: ['Application - Groups'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of corporations with groups but without alliance.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Corporation')
+                )
+            ),
+            new OA\Response(response: '400', description: 'Invalid body.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+        ],
+    )]
     public function corpGroupsBulkV1(ServerRequestInterface $request): ResponseInterface
     {
         return $this->groupsBulkFor(self::TYPE_CORPORATION, $request);
@@ -345,42 +328,36 @@ class GroupController extends BaseController
         return $this->corpOrAllianceGroups($aid, self::TYPE_ALLIANCE, $request);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OAT\Get(
-     *     path="/app/v2/alliance-groups/{aid}",
-     *     operationId="allianceGroupsV2",
-     *     summary="Return groups of the alliance.",
-     *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
-     *     tags={"Application - Groups"},
-     *     security={{"BearerAuth"={}}},
-     *     @OAT\Parameter(
-     *         name="aid",
-     *         in="path",
-     *         required=true,
-     *         description="EVE alliance ID.",
-     *         @OAT\Schema(type="integer")
-     *     ),
-     *     @OAT\Response(
-     *         response="200",
-     *         description="List of groups.",
-     *         @OAT\JsonContent(type="array", @OAT\Items(ref="#/components/schemas/Group"))
-     *     ),
-     *     @OAT\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OAT\Response(
-     *         response="404",
-     *         description="Reason phrase: Alliance not found."
-     *     ),
-     *     @OAT\Response(
-     *         response="500",
-     *         description="",
-     *         @OAT\JsonContent(type="string")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/app/v2/alliance-groups/{aid}',
+        operationId: 'allianceGroupsV2',
+        description: 'Needs role: app-groups.<br>Returns only groups that have been added to the app as well.',
+        summary: 'Return groups of the alliance.',
+        security: [['BearerAuth' => []]],
+        tags: ['Application - Groups'],
+        parameters: [
+            new OA\Parameter(
+                name: 'aid',
+                description: 'EVE alliance ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of groups.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Group')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Reason phrase: Alliance not found.'),
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+        ],
+    )]
     public function allianceGroupsV2(string $aid, ServerRequestInterface $request): ResponseInterface
     {
         $this->response = $this->allianceGroupsV1($aid, $request);
@@ -392,97 +369,84 @@ class GroupController extends BaseController
         return $this->response;
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OAT\Post(
-     *     path="/app/v1/alliance-groups",
-     *     operationId="allianceGroupsBulkV1",
-     *     summary="Return groups of multiple alliances.",
-     *     description="Needs role: app-groups.<br>
-     *                  Returns only groups that have been added to the app as well.
-     *                  Skips alliances that are not found in the local database.",
-     *     tags={"Application - Groups"},
-     *     security={{"BearerAuth"={}}},
-     *     @OAT\RequestBody(
-     *         required=true,
-     *         description="EVE alliance IDs array.",
-     *         @OAT\MediaType(
-     *             mediaType="application/json",
-     *             @OAT\Schema(type="array", @OAT\Items(type="integer"))
-     *         ),
-     *     ),
-     *     @OAT\Response(
-     *         response="200",
-     *         description="List of alliances with groups.",
-     *         @OAT\JsonContent(type="array", @OAT\Items(ref="#/components/schemas/Alliance"))
-     *     ),
-     *     @OAT\Response(
-     *         response="400",
-     *         description="Invalid body."
-     *     ),
-     *     @OAT\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OAT\Response(
-     *         response="500",
-     *         description="",
-     *         @OAT\JsonContent(type="string")
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/app/v1/alliance-groups',
+        operationId: 'allianceGroupsBulkV1',
+        description: 'Needs role: app-groups.<br>Returns only groups that have been added to the app ' .
+            'as well. Skips alliances that are not found in the local database.',
+        summary: 'Return groups of multiple alliances.',
+        security: [['BearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            description: 'EVE alliance IDs array.',
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'application/json',
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'))
+            )
+        ),
+        tags: ['Application - Groups'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of alliances with groups.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Alliance')
+                )
+            ),
+            new OA\Response(response: '400', description: 'Invalid body.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+        ],
+    )]
     public function allianceGroupsBulkV1(ServerRequestInterface $request): ResponseInterface
     {
         return $this->groupsBulkFor(self::TYPE_ALLIANCE, $request);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OAT\Get(
-     *     path="/app/v1/groups-with-fallback",
-     *     operationId="groupsWithFallbackV1",
-     *     summary="Returns groups from the character's account, if available, or the corporation and alliance.",
-     *     description="Needs role: app-groups.<br>
-     *                  Returns only groups that have been added to the app as well.<br>
-     *                  It is not checked if character, corporation and alliance match.",
-     *     tags={"Application - Groups"},
-     *     security={{"BearerAuth"={}}},
-     *     @OAT\Parameter(
-     *         name="character",
-     *         in="query",
-     *         required=true,
-     *         description="EVE character ID.",
-     *         @OAT\Schema(type="integer")
-     *     ),
-     *     @OAT\Parameter(
-     *         name="corporation",
-     *         in="query",
-     *         required=true,
-     *         description="EVE corporation ID.",
-     *         @OAT\Schema(type="integer")
-     *     ),
-     *     @OAT\Parameter(
-     *         name="alliance",
-     *         in="query",
-     *         description="EVE alliance ID.",
-     *         @OAT\Schema(type="integer")
-     *     ),
-     *     @OAT\Response(
-     *         response="200",
-     *         description="List of groups.",
-     *         @OAT\JsonContent(type="array", @OAT\Items(ref="#/components/schemas/Group"))
-     *     ),
-     *     @OAT\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OAT\Response(
-     *         response="500",
-     *         description="",
-     *         @OAT\JsonContent(type="string")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/app/v1/groups-with-fallback',
+        operationId: 'groupsWithFallbackV1',
+        description: 'Needs role: app-groups.<br> Returns only groups that have been added to the app as well.<br>' .
+            'It is not checked if character, corporation and alliance match.',
+        summary: "Returns groups from the character's account, if available, or the corporation and alliance.",
+        security: [['BearerAuth' => []]],
+        tags: ['Application - Groups'],
+        parameters: [
+            new OA\Parameter(
+                name: 'character',
+                description: 'EVE character ID.',
+                in: 'query',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'corporation',
+                description: 'EVE corporation ID.',
+                in: 'query',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'alliance',
+                description: 'EVE alliance ID.',
+                in: 'query',
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of groups.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Group')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+        ],
+    )]
     public function groupsWithFallbackV1(ServerRequestInterface $request): ResponseInterface
     {
         $characterId = (int) $this->getQueryParam($request, 'character');

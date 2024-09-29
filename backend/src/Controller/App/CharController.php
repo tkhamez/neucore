@@ -7,7 +7,6 @@ namespace Neucore\Controller\App;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Character;
 use Neucore\Entity\Player;
-use OpenApi\Annotations as OAT;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -427,41 +426,36 @@ class CharController extends BaseController
         ]);
     }
 
-    /**
-     * @OAT\Get(
-     *     path="/app/v1/removed-characters/{characterId}",
-     *     operationId="removedCharactersV1",
-     *     summary="Returns all characters that were removed from the player account to which the character ID belongs.",
-     *     description="Needs role: app-chars.",
-     *     tags={"Application - Characters"},
-     *     security={{"BearerAuth"={}}},
-     *     @OAT\Parameter(
-     *         name="characterId",
-     *         in="path",
-     *         required=true,
-     *         description="EVE character ID.",
-     *         @OAT\Schema(type="integer")
-     *     ),
-     *     @OAT\Response(
-     *         response="200",
-     *         description="All removed characters from the player account.",
-     *         @OAT\JsonContent(type="array", @OAT\Items(ref="#/components/schemas/RemovedCharacter"))
-     *     ),
-     *     @OAT\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OAT\Response(
-     *         response="404",
-     *         description="Character not found."
-     *     ),
-     *     @OAT\Response(
-     *         response="500",
-     *         description="",
-     *         @OAT\JsonContent(type="string")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/app/v1/removed-characters/{characterId}',
+        operationId: 'removedCharactersV1',
+        description: 'Needs role: app-chars.',
+        summary: 'Returns all characters that were removed from the player account to which the character ID belongs.',
+        security: [['BearerAuth' => []]],
+        tags: ['Application - Characters'],
+        parameters: [
+            new OA\Parameter(
+                name: 'characterId',
+                description: 'EVE character ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'All removed characters from the player account.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/RemovedCharacter')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Character not found.'),
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+        ],
+    )]
     public function removedCharactersV1(string $characterId): ResponseInterface
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find((int)$characterId);
@@ -477,41 +471,37 @@ class CharController extends BaseController
         return $this->withJson($result);
     }
 
-    /**
-     * @OAT\Get(
-     *     path="/app/v1/incoming-characters/{characterId}",
-     *     operationId="incomingCharactersV1",
-     *     summary="Returns all characters that were moved from another account to the player account to which the ID belongs.",
-     *     description="Needs role: app-chars.",
-     *     tags={"Application - Characters"},
-     *     security={{"BearerAuth"={}}},
-     *     @OAT\Parameter(
-     *         name="characterId",
-     *         in="path",
-     *         required=true,
-     *         description="EVE character ID.",
-     *         @OAT\Schema(type="integer")
-     *     ),
-     *     @OAT\Response(
-     *         response="200",
-     *         description="All incoming characters from the player account.",
-     *         @OAT\JsonContent(type="array", @OAT\Items(ref="#/components/schemas/RemovedCharacter"))
-     *     ),
-     *     @OAT\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OAT\Response(
-     *         response="404",
-     *         description="Character not found."
-     *     ),
-     *     @OAT\Response(
-     *         response="500",
-     *         description="",
-     *         @OAT\JsonContent(type="string")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/app/v1/incoming-characters/{characterId}',
+        operationId: 'incomingCharactersV1',
+        description: 'Needs role: app-chars.',
+        summary: 'Returns all characters that were moved from another account to the player account to ' .
+            'which the ID belongs.',
+        security: [['BearerAuth' => []]],
+        tags: ['Application - Characters'],
+        parameters: [
+            new OA\Parameter(
+                name: 'characterId',
+                description: 'EVE character ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'All incoming characters from the player account.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/RemovedCharacter')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Character not found.'),
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+        ],
+    )]
     public function incomingCharactersV1(string $characterId): ResponseInterface
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find((int)$characterId);
