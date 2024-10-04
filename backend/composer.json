@@ -19,7 +19,6 @@
         "ext-session": "*",
         "ext-simplexml": "*",
         "ext-zlib": "*",
-        "doctrine/annotations": "^2.0",
         "doctrine/collections": "^2.2",
         "doctrine/common": "^3.3",
         "doctrine/dbal": "^4.1",
@@ -103,7 +102,7 @@
         "style:fix": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix src --ansi",
         "start": "php -d max_execution_time=0 -S 0.0.0.0:8080 -t ../web ../web/app.php",
         "licenses-scan": "composer licenses:scan",
-        "require-checker": "composer-require-checker check composer.json"
+        "require-checker": "XDEBUG_MODE=off composer-require-checker check composer.json"
     },
     "config": {
         "platform": {
