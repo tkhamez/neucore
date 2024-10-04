@@ -470,6 +470,11 @@ class EsiController extends BaseController
         operationId: 'esiPostV1',
         summary: 'See POST /app/v2/esi',
         security: [['BearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            description: '',
+            required: true,
+            content: new OA\MediaType(mediaType: 'text/plain', schema: new OA\Schema(type: 'string'))
+        ),
         tags: ['Application - ESI'],
         parameters: [
             new OA\Parameter(
@@ -496,11 +501,6 @@ class EsiController extends BaseController
                 in: 'query',
                 required: true,
                 schema: new OA\Schema(type: 'string')
-            ),
-            new OA\RequestBody(
-                description: '',
-                required: true,
-                content: new OA\MediaType(mediaType: 'text/plain', schema: new OA\Schema(type: 'string'))
             ),
         ],
         responses: [
