@@ -106,7 +106,7 @@ docker exec -u www-data neucore_prod_http vendor/bin/doctrine-migrations migrati
 docker exec -u www-data neucore_prod_http bin/console doctrine-fixtures-load
 ```
 
-Now login at http://localhost:8080/ (replace localhost if you IP address if you run it on a remote host), 
+Now login at http://localhost:8080/ (replace localhost with your IP address if you run it on a remote host), 
 then make yourself an admin:
 
 ```shell
