@@ -13,7 +13,6 @@ use Neucore\Plugin\Data\CoreGroup;
 use Neucore\Plugin\Data\CoreRole;
 use OpenApi\Attributes as OA;
 
-
 #[ORM\Entity]
 #[ORM\Table(name: "players", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
 #[OA\Schema(

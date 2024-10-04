@@ -8,7 +8,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Neucore\Api;
 use OpenApi\Attributes as OA;
 
-
 #[ORM\Entity]
 #[ORM\Table(
     name: "group_applications",

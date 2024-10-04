@@ -23,7 +23,6 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-
 #[OA\SecurityScheme(securityScheme: 'Session', type: 'apiKey', name: 'neucore', in: 'cookie')]
 #[OA\SecurityScheme(
     securityScheme: 'CSRF',
@@ -255,7 +254,8 @@ class AuthController extends BaseController
         operationId: 'logout',
         description: 'Needs role: user',
         summary: 'User logout.',
-        security: [['Session' => [], 'CSRF' => []]], tags: ['Auth'],
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Auth'],
         responses: [
             new OA\Response(response: '204', description: 'User was logged out.'),
             new OA\Response(response: '403', description: 'Not authorized.')

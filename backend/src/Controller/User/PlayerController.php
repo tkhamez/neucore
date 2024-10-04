@@ -561,7 +561,8 @@ class PlayerController extends BaseController
                 description: 'Role name.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string',
+                schema: new OA\Schema(
+                    type: 'string',
                     enum: ['user', 'user-admin', 'user-manager', 'user-chars', 'group-admin', 'group-manager',
                         'plugin-admin', 'app-admin', 'app-manager', 'esi', 'settings', 'tracking', 'tracking-admin',
                         'watchlist', 'watchlist-manager', 'watchlist-admin']

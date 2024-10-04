@@ -95,7 +95,9 @@ class CharacterController extends BaseController
             ),
         ],
         responses: [
-            new OA\Response(response: '200', description: 'List of characters.',
+            new OA\Response(
+                response: '200',
+                description: 'List of characters.',
                 content: new OA\JsonContent(
                     type: 'array',
                     items: new OA\Items(ref: '#/components/schemas/SearchResult')
@@ -356,7 +358,7 @@ class CharacterController extends BaseController
 
             try {
                 $pluginResults = $plugin->getServiceImplementation()->search($name);
-            } catch(Exception) {
+            } catch (Exception) {
                 continue;
             }
 

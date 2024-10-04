@@ -22,7 +22,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-
 #[OA\Tag(name: 'Application - ESI')]
 #[OA\Schema(
     schema: 'EsiTokenData',
@@ -556,7 +555,8 @@ class EsiController extends BaseController
                 name: 'Neucore-EveCharacter',
                 description: "The EVE character ID those token should be used. Has priority over the query " .
                     "parameter 'datasource'",
-                in: 'header', schema: new OA\Schema(type: 'string')
+                in: 'header',
+                schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
                 name: 'Neucore-EveLogin',

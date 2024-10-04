@@ -22,7 +22,7 @@ abstract class RateLimit
             $variable->remaining = $maxRequests - 1;
             $variable->created = microtime(true);
         } else {
-            $variable->remaining --;
+            $variable->remaining--;
         }
 
         $resetIn = ceil(($variable->created + $resetTime - microtime(true)) * 10) / 10; // HTTP response header value

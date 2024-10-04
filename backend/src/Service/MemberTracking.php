@@ -142,7 +142,7 @@ class MemberTracking
                     $entity->setCategory($category);
                 }
 
-                $num ++;
+                $num++;
                 if ($num % 100 === 0) {
                     $this->entityManager->flush();
                     $this->entityManager->clear();

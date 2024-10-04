@@ -11,8 +11,7 @@ use Neucore\Plugin\GeneralInterface;
 use Neucore\Plugin\ServiceInterface;
 use OpenApi\Attributes as OA;
 
-
-#[ORM\Entity()]
+#[ORM\Entity]
 #[ORM\Table(name: "plugins", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
 #[OA\Schema(required: ['id', 'name'])]
 class Plugin implements \JsonSerializable

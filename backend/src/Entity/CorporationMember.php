@@ -14,8 +14,8 @@ use OpenApi\Attributes as OA;
 #[ORM\Entity]
 #[ORM\Table(
     name: "corporation_members",
-    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])
-]
+    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"]
+)]
 #[OA\Schema(
     description: 'The player property contains only id and name, character does not contain corporation.',
     required: ['id', 'name'],

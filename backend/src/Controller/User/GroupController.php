@@ -301,7 +301,8 @@ class GroupController extends BaseController
         tags: ['Group'],
         parameters: [
             new OA\Parameter(
-                name: 'id', description: 'ID of the group.',
+                name: 'id',
+                description: 'ID of the group.',
                 in: 'path',
                 required: true,
                 schema: new OA\Schema(type: 'integer')
@@ -728,7 +729,9 @@ class GroupController extends BaseController
             ),
         ],
         responses: [
-            new OA\Response(response: '200', description: 'List of groups ordered by name.',
+            new OA\Response(
+                response: '200',
+                description: 'List of groups ordered by name.',
                 content: new OA\JsonContent(
                     type: 'array',
                     items: new OA\Items(ref: '#/components/schemas/Group')
@@ -909,7 +912,8 @@ class GroupController extends BaseController
         tags: ['Group'],
         parameters: [
             new OA\Parameter(
-                name: 'id', description: 'Group ID.',
+                name: 'id',
+                description: 'Group ID.',
                 in: 'path',
                 required: true,
                 schema: new OA\Schema(type: 'integer')

@@ -11,7 +11,6 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-
 #[OA\Tag(name: 'Application - Characters')]
 #[OA\Schema(
     schema: 'PlayerWithCharcterId',
@@ -141,7 +140,9 @@ class CharController extends BaseController
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Character not found.'),
-            new OA\Response(response: '500', description: '',
+            new OA\Response(
+                response: '500',
+                description: '',
                 content: new OA\JsonContent(type: 'string')
             )
         ],
@@ -182,7 +183,9 @@ class CharController extends BaseController
             ),
             new OA\Response(response: '400', description: 'Invalid body.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '500', description: '',
+            new OA\Response(
+                response: '500',
+                description: '',
                 content: new OA\JsonContent(type: 'string')
             )
         ],
@@ -226,7 +229,9 @@ class CharController extends BaseController
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Character not found.'),
-            new OA\Response(response: '500', description: '',
+            new OA\Response(
+                response: '500',
+                description: '',
                 content: new OA\JsonContent(type: 'string')
             )
         ],

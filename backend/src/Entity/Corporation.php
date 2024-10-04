@@ -43,12 +43,10 @@ class Corporation implements \JsonSerializable
 
     /**
      * Last ESI update.
-     *
      */
     #[ORM\Column(name: "last_update", type: "datetime", nullable: true)]
     private ?\DateTime $lastUpdate = null;
 
-    
     #[ORM\ManyToOne(targetEntity: Alliance::class, inversedBy: "corporations")]
     #[OA\Property(ref: '#/components/schemas/Alliance', nullable: false)]
     private ?Alliance $alliance = null;

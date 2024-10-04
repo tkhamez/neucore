@@ -12,13 +12,10 @@ class SearchResult implements \JsonSerializable
     public function __construct(
         #[OA\Property]
         public int $characterId,
-
         #[OA\Property]
         public string $characterName,
-
         #[OA\Property]
         public int $playerId,
-
         #[OA\Property]
         public string $playerName,
     ) {

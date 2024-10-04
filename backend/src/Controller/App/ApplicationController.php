@@ -10,7 +10,6 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-
 #[OA\Tag(name: 'Application', description: 'API for applications.')]
 #[OA\SecurityScheme(
     securityScheme: 'BearerAuth',

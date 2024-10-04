@@ -15,7 +15,6 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-
 #[OA\Tag(name: 'Application - Groups')]
 #[OA\Schema(
     schema: 'CharacterGroups',
@@ -299,7 +298,8 @@ class GroupController extends BaseController
         description: 'Needs role: app-groups.<br>Returns only groups that have been added to the app as well.',
         summary: 'Return groups of the alliance.',
         security: [['BearerAuth' => []]],
-        tags: ['Application - Groups'], parameters: [
+        tags: ['Application - Groups'],
+        parameters: [
             new OA\Parameter(
                 name: 'aid',
                 description: 'EVE alliance ID.',

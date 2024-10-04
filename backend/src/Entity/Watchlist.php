@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use OpenApi\Attributes as OA;
 
-
 #[ORM\Entity]
 #[ORM\Table(name: "watchlists", options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"])]
 #[OA\Schema(required: ['id', 'name'])]

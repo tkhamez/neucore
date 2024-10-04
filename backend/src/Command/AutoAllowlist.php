@@ -212,7 +212,7 @@ class AutoAllowlist extends Command
         $allowlist = [];
         foreach ($accountsData as $corporations) {
             foreach ($corporations as $corporationId => $characters) {
-                $this->numCorporations ++;
+                $this->numCorporations++;
                 if ($characters[self::KEY_TOKEN_ID] === null) {
                     $this->writeLine("    No token for corporation $corporationId");
                     continue;
@@ -236,12 +236,12 @@ class AutoAllowlist extends Command
                         "    Invalid token for $corporationId from " . $esiToken->getCharacter()?->getId()
                     );
                 } else {
-                    $this->numCorporationsChecked ++;
+                    $this->numCorporationsChecked++;
 
                     if (empty(array_diff($members, $characters[self::KEY_CHAR_IDS]))) {
                         // all members are on this account
                         $allowlist[] = $corporationId;
-                        $this->numCorporationsAllowed ++;
+                        $this->numCorporationsAllowed++;
                     }
                 }
 
