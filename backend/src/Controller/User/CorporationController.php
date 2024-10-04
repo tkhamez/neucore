@@ -14,34 +14,23 @@ use Neucore\Service\Account;
 use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * @OA\Tag(
- *     name="Corporation",
- *     description="Corporation management (for automatic group assignment) and tracking."
- * )
- * @OA\Schema(
- *     schema="TrackingDirector",
- *     required={"id", "name", "playerId"},
- *     @OA\Property(
- *         property="id",
- *         type="integer",
- *         format="int64"
- *     ),
- *     @OA\Property(
- *         property="name",
- *         type="string"
- *     ),
- *     @OA\Property(
- *         property="playerId",
- *         type="integer"
- *     )
- * )
- */
+#[OA\Tag(
+    name: 'Corporation',
+    description: 'Corporation management (for automatic group assignment) and tracking.'
+)]
+#[OA\Schema(
+    schema: 'TrackingDirector',
+    required: ['id', 'name', 'playerId'],
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', format: 'int64'),
+        new OA\Property(property: 'name', type: 'string'),
+        new OA\Property(property: 'playerId', type: 'integer')
+    ]
+)]
 class CorporationController extends BaseController
 {
     private UserAuth $userAuth;
@@ -65,32 +54,34 @@ class CorporationController extends BaseController
         $this->accountService = $account;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/corporation/find/{query}",
-     *     operationId="userCorporationFind",
-     *     summary="Returns a list of corporations that matches the query (partial matching name or ticker).",
-     *     description="Needs role: group-admin, watchlist-manager, settings",
-     *     tags={"Corporation"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="query",
-     *         in="path",
-     *         required=true,
-     *         description="Name or ticker of the corporation (min. 3 characters).",
-     *         @OA\Schema(type="string", minLength=3)
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of corporations.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized"
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/corporation/find/{query}',
+        operationId: 'userCorporationFind',
+        description: 'Needs role: group-admin, watchlist-manager, settings',
+        summary: 'Returns a list of corporations that matches the query (partial matching name or ticker).',
+        security: [['Session' => []]],
+        tags: ['Corporation'],
+        parameters: [
+            new OA\Parameter(
+                name: 'query',
+                description: 'Name or ticker of the corporation (min. 3 characters).',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', minLength: 3)
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of corporations.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Corporation')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized')
+        ],
+    )]
     public function find(string $query): ResponseInterface
     {
         $query = trim($query);
@@ -103,37 +94,34 @@ class CorporationController extends BaseController
         return $this->withJson($this->minimalCorporationsResult($result));
     }
 
-    /**
-     * @OA\Post(
-     *     path="/user/corporation/corporations",
-     *     operationId="userCorporationCorporations",
-     *     summary="Returns corporations found by ID.",
-     *     description="Needs role: group-admin, watchlist-manager, settings",
-     *     tags={"Corporation"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         description="EVE IDs of corporations.",
-     *         @OA\MediaType(
-     *             mediaType="application/json",
-     *             @OA\Schema(type="array", @OA\Items(type="integer"))
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of corporations.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Invalid body."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/user/corporation/corporations',
+        operationId: 'userCorporationCorporations',
+        description: 'Needs role: group-admin, watchlist-manager, settings',
+        summary: 'Returns corporations found by ID.',
+        security: [['Session' => [], 'CSRF' => []]],
+        requestBody: new OA\RequestBody(
+            description: 'EVE IDs of corporations.',
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'application/json',
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'))
+            )
+        ),
+        tags: ['Corporation'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of corporations.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Corporation')
+                )
+            ),
+            new OA\Response(response: '400', description: 'Invalid body.'),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function corporations(ServerRequestInterface $request): ResponseInterface
     {
         $ids = $this->getIntegerArrayFromBody($request);
@@ -150,26 +138,25 @@ class CorporationController extends BaseController
         return $this->withJson($this->minimalCorporationsResult($result));
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/corporation/with-groups",
-     *     operationId="userCorporationWithGroups",
-     *     summary="List all corporations that have groups assigned.",
-     *     description="Needs role: group-admin",
-     *     tags={"Corporation"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of corporations (this one includes the groups property).",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/corporation/with-groups',
+        operationId: 'userCorporationWithGroups',
+        description: 'Needs role: group-admin',
+        summary: 'List all corporations that have groups assigned.',
+        security: [['Session' => []]],
+        tags: ['Corporation'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of corporations (this one includes the groups property).',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Corporation')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function withGroups(): ResponseInterface
     {
         $result = [];
@@ -183,48 +170,37 @@ class CorporationController extends BaseController
         return $this->withJson($result);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/user/corporation/add/{id}",
-     *     operationId="userCorporationAdd",
-     *     summary="Add an EVE corporation to the database.",
-     *     description="Needs role: group-admin, watchlist-manager<br>This makes an ESI request and adds the corporation only if it exists. Also adds the corresponding alliance, if there is one.",
-     *     tags={"Corporation"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="EVE corporation ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="201",
-     *         description="The new corporation.",
-     *         @OA\JsonContent(ref="#/components/schemas/Corporation")
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Invalid corporation ID."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Corporation not found."
-     *     ),
-     *     @OA\Response(
-     *         response="409",
-     *         description="The corporation already exists."
-     *     ),
-     *     @OA\Response(
-     *         response="503",
-     *         description="ESI request failed."
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/user/corporation/add/{id}',
+        operationId: 'userCorporationAdd',
+        description: 'Needs role: group-admin, watchlist-manager<br>' .
+            'This makes an ESI request and adds the corporation only if it exists. Also adds the ' .
+            'corresponding alliance, if there is one.',
+        summary: 'Add an EVE corporation to the database.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Corporation'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'EVE corporation ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '201',
+                description: 'The new corporation.',
+                content: new OA\JsonContent(ref: '#/components/schemas/Corporation')
+            ),
+            new OA\Response(response: '400', description: 'Invalid corporation ID.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Corporation not found.'),
+            new OA\Response(response: '409', description: 'The corporation already exists.'),
+            new OA\Response(response: '503', description: 'ESI request failed.')
+        ],
+    )]
     public function add(string $id, EsiData $esiData): ResponseInterface
     {
         $corpId = (int) $id;
@@ -252,42 +228,35 @@ class CorporationController extends BaseController
         return $this->flushAndReturn(201, $corporation);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/corporation/{id}/add-group/{gid}",
-     *     operationId="userCorporationAddGroup",
-     *     summary="Add a group to the corporation.",
-     *     description="Needs role: group-admin",
-     *     tags={"Corporation"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the corporation.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="gid",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group added."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Corporation and/or group not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/corporation/{id}/add-group/{gid}',
+        operationId: 'userCorporationAddGroup',
+        description: 'Needs role: group-admin',
+        summary: 'Add a group to the corporation.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Corporation'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the corporation.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'gid',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group added.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Corporation and/or group not found.')
+        ],
+    )]
     public function addGroup(string $id, string $gid): ResponseInterface
     {
         if (! $this->findCorpAndGroup($id, $gid)) {
@@ -301,42 +270,35 @@ class CorporationController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/corporation/{id}/remove-group/{gid}",
-     *     operationId="userCorporationRemoveGroup",
-     *     summary="Remove a group from the corporation.",
-     *     description="Needs role: group-admin",
-     *     tags={"Corporation"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the corporation.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="gid",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Corporation and/or group not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/corporation/{id}/remove-group/{gid}',
+        operationId: 'userCorporationRemoveGroup',
+        description: 'Needs role: group-admin',
+        summary: 'Remove a group from the corporation.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Corporation'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the corporation.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'gid',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Corporation and/or group not found.')
+        ],
+    )]
     public function removeGroup(string $id, string $gid): ResponseInterface
     {
         if (! $this->findCorpAndGroup($id, $gid)) {
@@ -348,33 +310,34 @@ class CorporationController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/corporation/{id}/tracking-director",
-     *     operationId="corporationTrackingDirector",
-     *     summary="Returns a list of directors with an ESI token for this corporation.",
-     *     description="Needs role: tracking-admin",
-     *     tags={"Corporation"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the corporation.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of directors.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/TrackingDirector"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/corporation/{id}/tracking-director',
+        operationId: 'corporationTrackingDirector',
+        description: 'Needs role: tracking-admin',
+        summary: 'Returns a list of directors with an ESI token for this corporation.',
+        security: [['Session' => []]],
+        tags: ['Corporation'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the corporation.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of directors.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/TrackingDirector')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function trackingDirector(string $id): ResponseInterface
     {
         $repository = $this->repositoryFactory->getEsiTokenRepository();
@@ -393,37 +356,35 @@ class CorporationController extends BaseController
         return $this->withJson($directors);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/corporation/{id}/get-groups-tracking",
-     *     operationId="getGroupsTracking",
-     *     summary="Returns required groups to view member tracking data.",
-     *     description="Needs role: tracking-admin",
-     *     tags={"Corporation"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the corporation.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of groups.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Corporation not found."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/corporation/{id}/get-groups-tracking',
+        operationId: 'getGroupsTracking',
+        description: 'Needs role: tracking-admin',
+        summary: 'Returns required groups to view member tracking data.',
+        security: [['Session' => []]],
+        tags: ['Corporation'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the corporation.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of groups.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Group')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Corporation not found.')
+        ],
+    )]
     public function getGroupsTracking(string $id): ResponseInterface
     {
         $corporation = $this->repositoryFactory->getCorporationRepository()->find((int) $id);
@@ -435,43 +396,35 @@ class CorporationController extends BaseController
         return $this->withJson($corporation->getGroupsTracking());
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/corporation/{id}/add-group-tracking/{groupId}",
-     *     operationId="addGroupTracking",
-     *     summary="Add a group to the corporation for member tracking permission.",
-     *     description="Needs role: tracking-admin",
-     *     tags={"Corporation"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the corporation.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="groupId",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group added."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Corporation and/or group not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/corporation/{id}/add-group-tracking/{groupId}',
+        operationId: 'addGroupTracking',
+        description: 'Needs role: tracking-admin',
+        summary: 'Add a group to the corporation for member tracking permission.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Corporation'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the corporation.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'groupId',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group added.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Corporation and/or group not found.')
+        ],
+    )]
     public function addGroupTracking(string $id, string $groupId): ResponseInterface
     {
         if (! $this->findCorpAndGroup($id, $groupId)) {
@@ -486,43 +439,35 @@ class CorporationController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/corporation/{id}/remove-group-tracking/{groupId}",
-     *     operationId="removeGroupTracking",
-     *     summary="Remove a group for member tracking permission from the corporation.",
-     *     description="Needs role: tracking-admin",
-     *     tags={"Corporation"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the corporation.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="groupId",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Corporation and/or group not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/corporation/{id}/remove-group-tracking/{groupId}',
+        operationId: 'removeGroupTracking',
+        description: 'Needs role: tracking-admin',
+        summary: 'Remove a group for member tracking permission from the corporation.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Corporation'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the corporation.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'groupId',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Corporation and/or group not found.')
+        ],
+    )]
     public function removeGroupTracking(string $id, string $groupId): ResponseInterface
     {
         if (! $this->findCorpAndGroup($id, $groupId)) {
@@ -535,26 +480,25 @@ class CorporationController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/corporation/tracked-corporations",
-     *     operationId="corporationTrackedCorporations",
-     *     summary="Returns corporations that have member tracking data.",
-     *     description="Needs role: tracking and membership in appropriate group",
-     *     tags={"Corporation"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of corporations.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/corporation/tracked-corporations',
+        operationId: 'corporationTrackedCorporations',
+        description: 'Needs role: tracking and membership in appropriate group',
+        summary: 'Returns corporations that have member tracking data.',
+        security: [['Session' => []]],
+        tags: ['Corporation'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of corporations.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Corporation')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function trackedCorporations(): ResponseInterface
     {
         $corporations = $this->repositoryFactory->getCorporationRepository()->getAllWithMemberTrackingData();
@@ -569,26 +513,25 @@ class CorporationController extends BaseController
         return $this->withJson($result);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/corporation/all-tracked-corporations",
-     *     operationId="corporationAllTrackedCorporations",
-     *     summary="Returns all corporations that have member tracking data.",
-     *     description="Needs role: tracking-admin",
-     *     tags={"Corporation"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of corporations.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/corporation/all-tracked-corporations',
+        operationId: 'corporationAllTrackedCorporations',
+        description: 'Needs role: tracking-admin',
+        summary: 'Returns all corporations that have member tracking data.',
+        security: [['Session' => []]],
+        tags: ['Corporation'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of corporations.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Corporation')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function allTrackedCorporations(): ResponseInterface
     {
         $corporations = $this->repositoryFactory->getCorporationRepository()->getAllWithMemberTrackingData();
@@ -598,68 +541,70 @@ class CorporationController extends BaseController
         }, $corporations));
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/corporation/{id}/members",
-     *     operationId="members",
-     *     summary="Returns tracking data of corporation members.",
-     *     description="Needs role: tracking and membership in appropriate group",
-     *     tags={"Corporation"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the corporation.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="inactive",
-     *         in="query",
-     *         description="Limit to members who have been inactive for x days or longer.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="active",
-     *         in="query",
-     *         description="Limit to members who were active in the last x days.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="account",
-     *         in="query",
-     *         description="Limit to members with (true) or without (false) an account.",
-     *         @OA\Schema(type="string", enum={"true", "false"})
-     *     ),
-     *     @OA\Parameter(
-     *         name="token-status",
-     *         in="query",
-     *         description="Limit to characters with a valid, invalid or no token.",
-     *         @OA\Schema(type="string", enum={"valid", "invalid", "none"})
-     *     ),
-     *     @OA\Parameter(
-     *         name="token-status-changed",
-     *         in="query",
-     *         description="Limit to characters whose ESI token status has not changed for x days.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="mail-count",
-     *         in="query",
-     *         description="Limit to characters whose 'missing player' mail count is greater than or equal to x.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of corporation members.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/CorporationMember"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/corporation/{id}/members',
+        operationId: 'members',
+        description: 'Needs role: tracking and membership in appropriate group',
+        summary: 'Returns tracking data of corporation members.',
+        security: [['Session' => []]],
+        tags: ['Corporation'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the corporation.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'inactive',
+                description: 'Limit to members who have been inactive for x days or longer.',
+                in: 'query',
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'active',
+                description: 'Limit to members who were active in the last x days.',
+                in: 'query',
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'account',
+                description: 'Limit to members with (true) or without (false) an account.',
+                in: 'query',
+                schema: new OA\Schema(type: 'string', enum: ['true', 'false'])
+            ),
+            new OA\Parameter(
+                name: 'token-status',
+                description: 'Limit to characters with a valid, invalid or no token.',
+                in: 'query',
+                schema: new OA\Schema(type: 'string', enum: ['valid', 'invalid', 'none'])
+            ),
+            new OA\Parameter(
+                name: 'token-status-changed',
+                description: 'Limit to characters whose ESI token status has not changed for x days.',
+                in: 'query',
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'mail-count',
+                description: "Limit to characters whose 'missing player' mail count is greater than or equal to x.",
+                in: 'query',
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of corporation members.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/CorporationMember')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function members(string $id, ServerRequestInterface $request): ResponseInterface
     {
         $corporation = $this->repositoryFactory->getCorporationRepository()->find((int) $id);

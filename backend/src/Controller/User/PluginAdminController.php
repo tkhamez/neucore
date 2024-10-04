@@ -14,18 +14,12 @@ use Neucore\Plugin\Exception;
 use Neucore\Service\Config;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\PluginService;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * @OA\Tag(
- *     name="PluginAdmin",
- *     description="Plugin administration."
- * )
- */
+#[OA\Tag(name: 'PluginAdmin', description: 'Plugin administration.')]
 class PluginAdminController extends BaseController
 {
     private PluginService $pluginService;
@@ -40,36 +34,32 @@ class PluginAdminController extends BaseController
         $this->pluginService = $pluginService;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/plugin-admin/{id}/get",
-     *     operationId="pluginAdminGet",
-     *     summary="Returns plugin.",
-     *     description="Needs role: plugin-admin",
-     *     tags={"PluginAdmin"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the plugin.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="The service.",
-     *         @OA\JsonContent(ref="#/components/schemas/Plugin")
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Plugin not found."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/plugin-admin/{id}/get',
+        operationId: 'pluginAdminGet',
+        description: 'Needs role: plugin-admin',
+        summary: 'Returns plugin.',
+        security: [['Session' => []]],
+        tags: ['PluginAdmin'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the plugin.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'The service.',
+                content: new OA\JsonContent(ref: '#/components/schemas/Plugin')
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Plugin not found.')
+        ],
+    )]
     public function get(string $id): ResponseInterface
     {
         // Get service with data from plugin.yml
@@ -85,53 +75,47 @@ class PluginAdminController extends BaseController
         return $this->withJson($plugin->jsonSerialize(false, true, false));
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/plugin-admin/list",
-     *     operationId="pluginAdminList",
-     *     summary="Lists all plugins.",
-     *     description="Needs role: plugin-admin",
-     *     tags={"PluginAdmin"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of plugins.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Plugin"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/plugin-admin/list',
+        operationId: 'pluginAdminList',
+        description: 'Needs role: plugin-admin',
+        summary: 'Lists all plugins.',
+        security: [['Session' => []]],
+        tags: ['PluginAdmin'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of plugins.',
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Plugin'))
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function list(): ResponseInterface
     {
         return $this->withJson($this->repositoryFactory->getPluginRepository()->findBy([], ['name' => 'ASC']));
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/plugin-admin/configurations",
-     *     operationId="pluginAdminConfigurations",
-     *     summary="Returns data from plugin.yml files and their directory.",
-     *     description="Needs role: plugin-admin",
-     *     tags={"PluginAdmin"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of files.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/PluginConfigurationFile"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="500",
-     *         description="When a YAML file could not be parsed."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/plugin-admin/configurations',
+        operationId: 'pluginAdminConfigurations',
+        description: 'Needs role: plugin-admin',
+        summary: 'Returns data from plugin.yml files and their directory.',
+        security: [['Session' => []]],
+        tags: ['PluginAdmin'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of files.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/PluginConfigurationFile')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '500', description: 'When a YAML file could not be parsed.')
+        ],
+    )]
     public function configurations(Config $config, PluginService $pluginService): ResponseInterface
     {
         $basePath = is_string($config['plugins_install_dir']) ? $config['plugins_install_dir'] : '';
@@ -179,44 +163,40 @@ class PluginAdminController extends BaseController
         }, array_values($configurations)));
     }
 
-    /**
-     * @OA\Post(
-     *     path="/user/plugin-admin/create",
-     *     operationId="pluginAdminCreate",
-     *     summary="Creates a plugin.",
-     *     description="Needs role: plugin-admin",
-     *     tags={"PluginAdmin"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\RequestBody(
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 type="object",
-     *                 required={"name"},
-     *                 @OA\Property(
-     *                     property="name",
-     *                     description="Name of the plugin.",
-     *                     type="string",
-     *                     maxLength=255,
-     *                 )
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="201",
-     *         description="The new plugin.",
-     *         @OA\JsonContent(ref="#/components/schemas/Plugin")
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Name is missing."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/user/plugin-admin/create',
+        operationId: 'pluginAdminCreate',
+        description: 'Needs role: plugin-admin',
+        summary: 'Creates a plugin.',
+        security: [['Session' => [], 'CSRF' => []]],
+        requestBody: new OA\RequestBody(
+            content: new OA\MediaType(
+                mediaType: 'application/x-www-form-urlencoded',
+                schema: new OA\Schema(
+                    required: ['name'],
+                    properties: [
+                        new OA\Property(
+                            property: 'name',
+                            description: 'Name of the plugin.',
+                            type: 'string',
+                            maxLength: 255
+                        )
+                    ],
+                    type: 'object',
+                )
+            )
+        ),
+        tags: ['PluginAdmin'],
+        responses: [
+            new OA\Response(
+                response: '201',
+                description: 'The new plugin.',
+                content: new OA\JsonContent(ref: '#/components/schemas/Plugin')
+            ),
+            new OA\Response(response: '400', description: 'Name is missing.'),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function create(ServerRequestInterface $request): ResponseInterface
     {
         $name = $this->getBodyParam($request, 'name', '');
@@ -230,55 +210,50 @@ class PluginAdminController extends BaseController
         return $this->flushAndReturn(201, $plugin);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/plugin-admin/{id}/rename",
-     *     operationId="pluginAdminRename",
-     *     summary="Renames a plugin.",
-     *     description="Needs role: plugin-admin",
-     *     tags={"PluginAdmin"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the plugin.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 type="object",
-     *                 required={"name"},
-     *                 @OA\Property(
-     *                     property="name",
-     *                     description="New name for the plugin.",
-     *                     type="string",
-     *                     maxLength=255
-     *                 )
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="Plugin was renamed.",
-     *         @OA\JsonContent(ref="#/components/schemas/Plugin")
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Name is missing."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Plugin not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/plugin-admin/{id}/rename',
+        operationId: 'pluginAdminRename',
+        description: 'Needs role: plugin-admin',
+        summary: 'Renames a plugin.',
+        security: [['Session' => [], 'CSRF' => []]],
+        requestBody: new OA\RequestBody(
+            content: new OA\MediaType(
+                mediaType: 'application/x-www-form-urlencoded',
+                schema: new OA\Schema(
+                    required: ['name'],
+                    properties: [
+                        new OA\Property(
+                            property: 'name',
+                            description: 'New name for the plugin.',
+                            type: 'string',
+                            maxLength: 255
+                        )
+                    ],
+                    type: 'object',
+                )
+            )
+        ),
+        tags: ['PluginAdmin'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the plugin.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'Plugin was renamed.',
+                content: new OA\JsonContent(ref: '#/components/schemas/Plugin')
+            ),
+            new OA\Response(response: '400', description: 'Name is missing.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Plugin not found.')
+        ],
+    )]
     public function rename(string $id, ServerRequestInterface $request): ResponseInterface
     {
         $plugin = $this->repositoryFactory->getPluginRepository()->find((int)$id);
@@ -296,35 +271,28 @@ class PluginAdminController extends BaseController
         return $this->flushAndReturn(200, $plugin);
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/user/plugin-admin/{id}/delete",
-     *     operationId="pluginAdminDelete",
-     *     summary="Deletes a plugin.",
-     *     description="Needs role: plugin-admin",
-     *     tags={"PluginAdmin"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the plugin.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Plugin was deleted."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Plugin not found."
-     *     )
-     * )
-     */
+    #[OA\Delete(
+        path: '/user/plugin-admin/{id}/delete',
+        operationId: 'pluginAdminDelete',
+        description: 'Needs role: plugin-admin',
+        summary: 'Deletes a plugin.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['PluginAdmin'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the plugin.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Plugin was deleted.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Plugin not found.')
+        ],
+    )]
     public function delete(string $id): ResponseInterface
     {
         $plugin = $this->repositoryFactory->getPluginRepository()->find((int)$id);
@@ -337,52 +305,43 @@ class PluginAdminController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/plugin-admin/{id}/save-configuration",
-     *     operationId="pluginAdminSaveConfiguration",
-     *     summary="Saves the plugin configuration.",
-     *     description="Needs role: plugin-admin",
-     *     tags={"PluginAdmin"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the plugin.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 type="object",
-     *                 @OA\Property(
-     *                     property="configuration",
-     *                     ref="#/components/schemas/PluginConfigurationDatabase"
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Configuration changed.",
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Invalid input."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Variable not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/plugin-admin/{id}/save-configuration',
+        operationId: 'pluginAdminSaveConfiguration',
+        description: 'Needs role: plugin-admin',
+        summary: 'Saves the plugin configuration.',
+        security: [['Session' => [], 'CSRF' => []]],
+        requestBody: new OA\RequestBody(
+            content: new OA\MediaType(
+                mediaType: 'application/x-www-form-urlencoded',
+                schema: new OA\Schema(
+                    properties: [
+                        new OA\Property(
+                            property: 'configuration',
+                            ref: '#/components/schemas/PluginConfigurationDatabase'
+                        )
+                    ],
+                    type: 'object',
+                )
+            )
+        ),
+        tags: ['PluginAdmin'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the plugin.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Configuration changed.'),
+            new OA\Response(response: '400', description: 'Invalid input.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Variable not found.')
+        ],
+    )]
     public function saveConfiguration(
         string                 $id,
         ServerRequestInterface $request,

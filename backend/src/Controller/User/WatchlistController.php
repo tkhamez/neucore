@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection PhpUnused */
-
 declare(strict_types=1);
 
 namespace Neucore\Controller\User;
@@ -18,17 +16,11 @@ use Neucore\Service\Account;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
 use Neucore\Service\Watchlist;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * @OA\Tag(
- *     name="Watchlist",
- *     description="View and edit watchlists."
- * )
- */
+#[OA\Tag(name: 'Watchlist', description: 'View and edit watchlists.')]
 class WatchlistController extends BaseController
 {
     private const ACTION_ADD = 'add';
@@ -51,44 +43,40 @@ class WatchlistController extends BaseController
         $this->watchlistRepository = $repositoryFactory->getWatchlistRepository();
     }
 
-    /**
-     * @OA\Post(
-     *     path="/user/watchlist/create",
-     *     operationId="watchlistCreate",
-     *     summary="Create a watchlist.",
-     *     description="Needs role: watchlist-admin",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\RequestBody(
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 type="object",
-     *                 required={"name"},
-     *                 @OA\Property(
-     *                     property="name",
-     *                     description="Name of the watchlist.",
-     *                     type="string",
-     *                     maxLength=32,
-     *                 )
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="201",
-     *         description="The new watchlist.",
-     *         @OA\JsonContent(ref="#/components/schemas/Watchlist")
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Watchlist name is missing."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/user/watchlist/create',
+        operationId: 'watchlistCreate',
+        description: 'Needs role: watchlist-admin',
+        summary: 'Create a watchlist.',
+        security: [['Session' => [], 'CSRF' => []]],
+        requestBody: new OA\RequestBody(
+            content: new OA\MediaType(
+                mediaType: 'application/x-www-form-urlencoded',
+                schema: new OA\Schema(
+                    required: ['name'],
+                    properties: [
+                        new OA\Property(
+                            property: 'name',
+                            description: 'Name of the watchlist.',
+                            type: 'string',
+                            maxLength: 32
+                        )
+                    ],
+                    type: 'object',
+                )
+            )
+        ),
+        tags: ['Watchlist'],
+        responses: [
+            new OA\Response(
+                response: '201',
+                description: 'The new watchlist.',
+                content: new OA\JsonContent(ref: '#/components/schemas/Watchlist')
+            ),
+            new OA\Response(response: '400', description: 'Watchlist name is missing.'),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function create(ServerRequestInterface $request): ResponseInterface
     {
         $name = $this->sanitizePrintable($this->getBodyParam($request, 'name', ''));
@@ -103,55 +91,50 @@ class WatchlistController extends BaseController
         return $this->flushAndReturn(201, $watchlist);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/rename",
-     *     operationId="watchlistRename",
-     *     summary="Rename a watchlist.",
-     *     description="Needs role: watchlist-admin",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the watchlist.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 type="object",
-     *                 required={"name"},
-     *                 @OA\Property(
-     *                     property="name",
-     *                     description="New name for the watchlist.",
-     *                     type="string",
-     *                     maxLength=32,
-     *                 )
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="Watchlist was renamed.",
-     *         @OA\JsonContent(ref="#/components/schemas/Watchlist")
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Watchlist name is missing."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Watchlist not found."
-     *     ),
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/rename',
+        operationId: 'watchlistRename',
+        description: 'Needs role: watchlist-admin',
+        summary: 'Rename a watchlist.',
+        security: [['Session' => [], 'CSRF' => []]],
+        requestBody: new OA\RequestBody(
+            content: new OA\MediaType(
+                mediaType: 'application/x-www-form-urlencoded',
+                schema: new OA\Schema(
+                    required: ['name'],
+                    properties: [
+                        new OA\Property(
+                            property: 'name',
+                            description: 'New name for the watchlist.',
+                            type: 'string',
+                            maxLength: 32
+                        )
+                    ],
+                    type: 'object',
+                )
+            )
+        ),
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the watchlist.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'Watchlist was renamed.',
+                content: new OA\JsonContent(ref: '#/components/schemas/Watchlist')
+            ),
+            new OA\Response(response: '400', description: 'Watchlist name is missing.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Watchlist not found.')
+        ],
+    )]
     public function rename(string $id, ServerRequestInterface $request): ResponseInterface
     {
         $name = $this->sanitizePrintable($this->getBodyParam($request, 'name', ''));
@@ -169,35 +152,28 @@ class WatchlistController extends BaseController
         return $this->flushAndReturn(200, $watchlist);
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/user/watchlist/{id}/delete",
-     *     operationId="watchlistDelete",
-     *     summary="Delete a watchlist.",
-     *     description="Needs role: watchlist-admin",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the watchlist.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Watchlist was deleted."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Watchlist not found."
-     *     )
-     * )
-     */
+    #[OA\Delete(
+        path: '/user/watchlist/{id}/delete',
+        operationId: 'watchlistDelete',
+        description: 'Needs role: watchlist-admin',
+        summary: 'Delete a watchlist.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the watchlist.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Watchlist was deleted.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Watchlist not found.')
+        ],
+    )]
     public function delete(string $id): ResponseInterface
     {
         $watchlist = $this->watchlistRepository->find($id);
@@ -210,42 +186,38 @@ class WatchlistController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/lock-watchlist-settings/{lock}",
-     *     operationId="watchlistLockWatchlistSettings",
-     *     summary="Lock or unlock the watchlist settings.",
-     *     description="Needs role: watchlist-admin",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the watchlist.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="lock",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="string", enum={"0", "1"})
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="Setting was set.",
-     *         @OA\JsonContent(ref="#/components/schemas/Watchlist")
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Watchlist not found."
-     *     ),
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/lock-watchlist-settings/{lock}',
+        operationId: 'watchlistLockWatchlistSettings',
+        description: 'Needs role: watchlist-admin',
+        summary: 'Lock or unlock the watchlist settings.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the watchlist.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'lock',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', enum: ['0', '1'])
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'Setting was set.',
+                content: new OA\JsonContent(ref: '#/components/schemas/Watchlist')
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Watchlist not found.')
+        ],
+    )]
     public function lockWatchlistSettings(string $id, string $lock): ResponseInterface
     {
         $watchlist = $this->watchlistRepository->find($id);
@@ -258,49 +230,49 @@ class WatchlistController extends BaseController
         return $this->flushAndReturn(200, $watchlist);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/watchlist/listAll",
-     *     operationId="watchlistListAll",
-     *     summary="Lists all watchlists.",
-     *     description="Needs role: watchlist-admin",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of watchlists.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Watchlist"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/watchlist/listAll',
+        operationId: 'watchlistListAll',
+        description: 'Needs role: watchlist-admin',
+        summary: 'Lists all watchlists.',
+        security: [['Session' => []]],
+        tags: ['Watchlist'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of watchlists.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Watchlist')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function listAll(): ResponseInterface
     {
         return $this->withJson($this->watchlistRepository->findBy([], ['name' => 'ASC']));
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/watchlist/list-available",
-     *     operationId="watchlistListAvailable",
-     *     summary="Lists all watchlists with view permission.",
-     *     description="Needs role: watchlist",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of watchlists.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Watchlist"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/watchlist/list-available',
+        operationId: 'watchlistListAvailable',
+        description: 'Needs role: watchlist',
+        summary: 'Lists all watchlists with view permission.',
+        security: [['Session' => []]],
+        tags: ['Watchlist'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of watchlists.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Watchlist')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function listAvailable(UserAuth $userAuth): ResponseInterface
     {
         $result = [];
@@ -312,25 +284,25 @@ class WatchlistController extends BaseController
         return $this->withJson($result);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/watchlist/list-available-manage",
-     *     operationId="watchlistListAvailableManage",
-     *     summary="Lists all watchlists with manage permission.",
-     *     description="Needs role: watchlist-manager",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of watchlists.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Watchlist"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/watchlist/list-available-manage',
+        operationId: 'watchlistListAvailableManage',
+        description: 'Needs role: watchlist-manager',
+        summary: 'Lists all watchlists with manage permission.',
+        security: [['Session' => []]],
+        tags: ['Watchlist'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of watchlists.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Watchlist')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function listAvailableManage(UserAuth $userAuth): ResponseInterface
     {
         $result = [];
@@ -342,32 +314,36 @@ class WatchlistController extends BaseController
         return $this->withJson($result);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/watchlist/{id}/players",
-     *     operationId="watchlistPlayers",
-     *     summary="List of player accounts that have characters in one of the configured alliances or corporations and additionally have other characters in another player (not NPC) corporation that is not on the allowlist and have not been manually excluded.",
-     *     description="Needs role: watchlist",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of players.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/watchlist/{id}/players',
+        operationId: 'watchlistPlayers',
+        description: 'Needs role: watchlist',
+        summary: 'List of player accounts that have characters in one of the configured alliances' .
+            ' or corporations and additionally have other characters in another player (not NPC) ' .
+            'corporation that is not on the allowlist and have not been manually excluded.',
+        security: [['Session' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of players.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Player')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function players(string $id, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, Role::WATCHLIST)) {
@@ -381,32 +357,35 @@ class WatchlistController extends BaseController
         return $this->withJson($players);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/watchlist/{id}/players-kicklist",
-     *     operationId="watchlistPlayersKicklist",
-     *     summary="Accounts from the watchlist with members in one of the alliances or corporations from the kicklist.",
-     *     description="Needs role: watchlist",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of players.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/watchlist/{id}/players-kicklist',
+        operationId: 'watchlistPlayersKicklist',
+        description: 'Needs role: watchlist',
+        summary: 'Accounts from the watchlist with members in one of the alliances or corporations' .
+            ' from the kicklist.',
+        security: [['Session' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of players.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Player')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function playersKicklist(string $id, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, Role::WATCHLIST)) {
@@ -416,32 +395,34 @@ class WatchlistController extends BaseController
         return $this->withJson($this->watchlistService->getKicklist((int) $id));
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/watchlist/{id}/exemption/list",
-     *     operationId="watchlistExemptionList",
-     *     summary="List of exempt players.",
-     *     description="Needs role: watchlist, watchlist-manager",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of players, only ID and name properties are included.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/watchlist/{id}/exemption/list',
+        operationId: 'watchlistExemptionList',
+        description: 'Needs role: watchlist, watchlist-manager',
+        summary: 'List of exempt players.',
+        security: [['Session' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of players, only ID and name properties are included.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Player')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function exemptionList(string $id, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth)) {
@@ -455,42 +436,35 @@ class WatchlistController extends BaseController
         return $this->withJson($data);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/exemption/add/{player}",
-     *     operationId="watchlistExemptionAdd",
-     *     summary="Add player to exemption list.",
-     *     description="Needs role: watchlist-manager",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="player",
-     *         in="path",
-     *         required=true,
-     *         description="Player ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Player added."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="List or Player not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/exemption/add/{player}',
+        operationId: 'watchlistExemptionAdd',
+        description: 'Needs role: watchlist-manager',
+        summary: 'Add player to exemption list.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'player',
+                description: 'Player ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Player added.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'List or Player not found.')
+        ],
+    )]
     public function exemptionAdd(string $id, string $player, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
@@ -500,42 +474,35 @@ class WatchlistController extends BaseController
         return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::EXEMPTION, (int) $player);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/exemption/remove/{player}",
-     *     operationId="watchlistExemptionRemove",
-     *     summary="Remove player from exemption list.",
-     *     description="Needs role: watchlist-manager",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="player",
-     *         in="path",
-     *         required=true,
-     *         description="Player ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Player removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="List or Player not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/exemption/remove/{player}',
+        operationId: 'watchlistExemptionRemove',
+        description: 'Needs role: watchlist-manager',
+        summary: 'Remove player from exemption list.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'player',
+                description: 'Player ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Player removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'List or Player not found.')
+        ],
+    )]
     public function exemptionRemove(string $id, string $player, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
@@ -545,32 +512,34 @@ class WatchlistController extends BaseController
         return $this->addOrRemoveEntity((int) $id, self::ACTION_REMOVE, Watchlist::EXEMPTION, (int) $player);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/watchlist/{id}/corporation/list",
-     *     operationId="watchlistCorporationList",
-     *     summary="List of corporations for this list.",
-     *     description="Needs role: watchlist, watchlist-manager, watchlist-admin",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of corporation.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/watchlist/{id}/corporation/list',
+        operationId: 'watchlistCorporationList',
+        description: 'Needs role: watchlist, watchlist-manager, watchlist-admin',
+        summary: 'List of corporations for this list.',
+        security: [['Session' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of corporation.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Corporation')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function corporationList(string $id, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, null, true)) {
@@ -580,42 +549,35 @@ class WatchlistController extends BaseController
         return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::CORPORATION));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/corporation/add/{corporation}",
-     *     operationId="watchlistCorporationAdd",
-     *     summary="Add corporation to the list.",
-     *     description="Needs role: watchlist-manager, watchlist-admin",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="corporation",
-     *         in="path",
-     *         required=true,
-     *         description="Corporation ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Corporation added."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="List or Corporation not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/corporation/add/{corporation}',
+        operationId: 'watchlistCorporationAdd',
+        description: 'Needs role: watchlist-manager, watchlist-admin',
+        summary: 'Add corporation to the list.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'corporation',
+                description: 'Corporation ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Corporation added.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'List or Corporation not found.')
+        ],
+    )]
     public function corporationAdd(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER, true, true)) {
@@ -625,42 +587,35 @@ class WatchlistController extends BaseController
         return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::CORPORATION, (int) $corporation);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/corporation/remove/{corporation}",
-     *     operationId="watchlistCorporationRemove",
-     *     summary="Remove corporation from the list.",
-     *     description="Needs role: watchlist-manager, watchlist-admin",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="corporation",
-     *         in="path",
-     *         required=true,
-     *         description="Corporation ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Corporation removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="List or Corporation not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/corporation/remove/{corporation}',
+        operationId: 'watchlistCorporationRemove',
+        description: 'Needs role: watchlist-manager, watchlist-admin',
+        summary: 'Remove corporation from the list.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'corporation',
+                description: 'Corporation ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Corporation removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'List or Corporation not found.')
+        ],
+    )]
     public function corporationRemove(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER, true, true)) {
@@ -670,32 +625,34 @@ class WatchlistController extends BaseController
         return $this->addOrRemoveEntity((int) $id, self::ACTION_REMOVE, Watchlist::CORPORATION, (int) $corporation);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/watchlist/{id}/alliance/list",
-     *     operationId="watchlistAllianceList",
-     *     summary="List of alliances for this list.",
-     *     description="Needs role: watchlist, watchlist-manager, watchlist-admin",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of alliances.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Alliance"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/watchlist/{id}/alliance/list',
+        operationId: 'watchlistAllianceList',
+        description: 'Needs role: watchlist, watchlist-manager, watchlist-admin',
+        summary: 'List of alliances for this list.',
+        security: [['Session' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of alliances.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Alliance')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function allianceList(string $id, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, null, true)) {
@@ -705,42 +662,35 @@ class WatchlistController extends BaseController
         return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::ALLIANCE));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/alliance/add/{alliance}",
-     *     operationId="watchlistAllianceAdd",
-     *     summary="Add alliance to the list.",
-     *     description="Needs role: watchlist-manager, watchlist-admin",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="alliance",
-     *         in="path",
-     *         required=true,
-     *         description="Alliance ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Alliance added."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="List or Alliance not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/alliance/add/{alliance}',
+        operationId: 'watchlistAllianceAdd',
+        description: 'Needs role: watchlist-manager, watchlist-admin',
+        summary: 'Add alliance to the list.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'alliance',
+                description: 'Alliance ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Alliance added.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'List or Alliance not found.')
+        ],
+    )]
     public function allianceAdd(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER, true, true)) {
@@ -750,42 +700,35 @@ class WatchlistController extends BaseController
         return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::ALLIANCE, (int) $alliance);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/alliance/remove/{alliance}",
-     *     operationId="watchlistAllianceRemove",
-     *     summary="Remove alliance from the list.",
-     *     description="Needs role: watchlist-manager, watchlist-admin",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="alliance",
-     *         in="path",
-     *         required=true,
-     *         description="Alliance ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Alliance removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="List or Alliance not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/alliance/remove/{alliance}',
+        operationId: 'watchlistAllianceRemove',
+        description: 'Needs role: watchlist-manager, watchlist-admin',
+        summary: 'Remove alliance from the list.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'alliance',
+                description: 'Alliance ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Alliance removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'List or Alliance not found.')
+        ],
+    )]
     public function allianceRemove(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER, true, true)) {
@@ -795,69 +738,67 @@ class WatchlistController extends BaseController
         return $this->addOrRemoveEntity((int) $id, self::ACTION_REMOVE, Watchlist::ALLIANCE, (int) $alliance);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/watchlist/{id}/group/list",
-     *     operationId="watchlistGroupList",
-     *     summary="List of groups with access to this list.",
-     *     description="Needs role: watchlist-admin",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of groups.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/watchlist/{id}/group/list',
+        operationId: 'watchlistGroupList',
+        description: 'Needs role: watchlist-admin',
+        summary: 'List of groups with access to this list.',
+        security: [['Session' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of groups.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Group')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function groupList(string $id): ResponseInterface
     {
         return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::GROUP));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/group/add/{group}",
-     *     operationId="watchlistGroupAdd",
-     *     summary="Add access group to the list.",
-     *     description="Needs role: watchlist-admin",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="group",
-     *         in="path",
-     *         required=true,
-     *         description="Group ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group added."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/group/add/{group}',
+        operationId: 'watchlistGroupAdd',
+        description: 'Needs role: watchlist-admin',
+        summary: 'Add access group to the list.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'group',
+                description: 'Group ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group added.'),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function groupAdd(string $id, string $group, Account $account): ResponseInterface
     {
         $response = $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::GROUP, (int) $group);
@@ -870,38 +811,34 @@ class WatchlistController extends BaseController
         return $response;
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/group/remove/{group}",
-     *     operationId="watchlistGroupRemove",
-     *     summary="Remove access group from the list.",
-     *     description="Needs role: watchlist-admin",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="group",
-     *         in="path",
-     *         required=true,
-     *         description="Group ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/group/remove/{group}',
+        operationId: 'watchlistGroupRemove',
+        description: 'Needs role: watchlist-admin',
+        summary: 'Remove access group from the list.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'group',
+                description: 'Group ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function groupRemove(string $id, string $group, Account $account): ResponseInterface
     {
         $response = $this->addOrRemoveEntity((int) $id, self::ACTION_REMOVE, Watchlist::GROUP, (int) $group);
@@ -914,69 +851,67 @@ class WatchlistController extends BaseController
         return $response;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/watchlist/{id}/manager-group/list",
-     *     operationId="watchlistManagerGroupList",
-     *     summary="List of groups with manager access to this list.",
-     *     description="Needs role: watchlist-admin",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of groups.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/watchlist/{id}/manager-group/list',
+        operationId: 'watchlistManagerGroupList',
+        description: 'Needs role: watchlist-admin',
+        summary: 'List of groups with manager access to this list.',
+        security: [['Session' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of groups.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Group')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function managerGroupList(string $id): ResponseInterface
     {
         return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::MANAGER_GROUP));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/manager-group/add/{group}",
-     *     operationId="watchlistManagerGroupAdd",
-     *     summary="Add manager access group to the list.",
-     *     description="Needs role: watchlist-admin",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="group",
-     *         in="path",
-     *         required=true,
-     *         description="Group ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group added."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/manager-group/add/{group}',
+        operationId: 'watchlistManagerGroupAdd',
+        description: 'Needs role: watchlist-admin',
+        summary: 'Add manager access group to the list.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'group',
+                description: 'Group ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group added.'),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function managerGroupAdd(string $id, string $group, Account $account): ResponseInterface
     {
         $response = $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::MANAGER_GROUP, (int) $group);
@@ -989,38 +924,34 @@ class WatchlistController extends BaseController
         return $response;
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/manager-group/remove/{group}",
-     *     operationId="watchlistManagerGroupRemove",
-     *     summary="Remove manager access group from the list.",
-     *     description="Needs role: watchlist-admin",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="group",
-     *         in="path",
-     *         required=true,
-     *         description="Group ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/manager-group/remove/{group}',
+        operationId: 'watchlistManagerGroupRemove',
+        description: 'Needs role: watchlist-admin',
+        summary: 'Remove manager access group from the list.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'group',
+                description: 'Group ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function managerGroupRemove(string $id, string $group, Account $account): ResponseInterface
     {
         $response = $this->addOrRemoveEntity((int) $id, self::ACTION_REMOVE, Watchlist::MANAGER_GROUP, (int) $group);
@@ -1033,32 +964,34 @@ class WatchlistController extends BaseController
         return $response;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/watchlist/{id}/kicklist-corporation/list",
-     *     operationId="watchlistKicklistCorporationList",
-     *     summary="List of corporations for the kicklist.",
-     *     description="Needs role: watchlist, watchlist-manager",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of corporation.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/watchlist/{id}/kicklist-corporation/list',
+        operationId: 'watchlistKicklistCorporationList',
+        description: 'Needs role: watchlist, watchlist-manager',
+        summary: 'List of corporations for the kicklist.',
+        security: [['Session' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of corporation.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Corporation')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function kicklistCorporationList(string $id, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth)) {
@@ -1068,42 +1001,35 @@ class WatchlistController extends BaseController
         return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::KICKLIST_CORPORATION));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/kicklist-corporation/add/{corporation}",
-     *     operationId="watchlistKicklistCorporationAdd",
-     *     summary="Add corporation to the kicklist.",
-     *     description="Needs role: watchlist-manager",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="corporation",
-     *         in="path",
-     *         required=true,
-     *         description="Corporation ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Corporation added."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="List or Corporation not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/kicklist-corporation/add/{corporation}',
+        operationId: 'watchlistKicklistCorporationAdd',
+        description: 'Needs role: watchlist-manager',
+        summary: 'Add corporation to the kicklist.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'corporation',
+                description: 'Corporation ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Corporation added.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'List or Corporation not found.')
+        ],
+    )]
     public function kicklistCorporationAdd(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
@@ -1119,42 +1045,35 @@ class WatchlistController extends BaseController
         );
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/kicklist-corporation/remove/{corporation}",
-     *     operationId="watchlistKicklistCorporationRemove",
-     *     summary="Remove corporation from the kicklist.",
-     *     description="Needs role: watchlist-manager",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="corporation",
-     *         in="path",
-     *         required=true,
-     *         description="Corporation ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Corporation removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="List or Corporation not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/kicklist-corporation/remove/{corporation}',
+        operationId: 'watchlistKicklistCorporationRemove',
+        description: 'Needs role: watchlist-manager',
+        summary: 'Remove corporation from the kicklist.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'corporation',
+                description: 'Corporation ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Corporation removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'List or Corporation not found.')
+        ],
+    )]
     public function kicklistCorporationRemove(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
@@ -1169,32 +1088,34 @@ class WatchlistController extends BaseController
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/watchlist/{id}/kicklist-alliance/list",
-     *     operationId="watchlistKicklistAllianceList",
-     *     summary="List of alliances for the kicklist.",
-     *     description="Needs role: watchlist, watchlist-manager",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of alliances.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Alliance"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/watchlist/{id}/kicklist-alliance/list',
+        operationId: 'watchlistKicklistAllianceList',
+        description: 'Needs role: watchlist, watchlist-manager',
+        summary: 'List of alliances for the kicklist.',
+        security: [['Session' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of alliances.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Alliance')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function kicklistAllianceList(string $id, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth)) {
@@ -1204,42 +1125,35 @@ class WatchlistController extends BaseController
         return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::KICKLIST_ALLIANCE));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/kicklist-alliance/add/{alliance}",
-     *     operationId="watchlistKicklistAllianceAdd",
-     *     summary="Add alliance to the kicklist.",
-     *     description="Needs role: watchlist-manager",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="alliance",
-     *         in="path",
-     *         required=true,
-     *         description="Alliance ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Alliance added."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="List or Alliance not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/kicklist-alliance/add/{alliance}',
+        operationId: 'watchlistKicklistAllianceAdd',
+        description: 'Needs role: watchlist-manager',
+        summary: 'Add alliance to the kicklist.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'alliance',
+                description: 'Alliance ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Alliance added.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'List or Alliance not found.')
+        ],
+    )]
     public function kicklistAllianceAdd(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
@@ -1249,42 +1163,35 @@ class WatchlistController extends BaseController
         return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::KICKLIST_ALLIANCE, (int) $alliance);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/kicklist-alliance/remove/{alliance}",
-     *     operationId="watchlistKicklistAllianceRemove",
-     *     summary="Remove alliance from the kicklist.",
-     *     description="Needs role: watchlist-manager",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="alliance",
-     *         in="path",
-     *         required=true,
-     *         description="Alliance ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Alliance removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="List or Alliance not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/kicklist-alliance/remove/{alliance}',
+        operationId: 'watchlistKicklistAllianceRemove',
+        description: 'Needs role: watchlist-manager',
+        summary: 'Remove alliance from the kicklist.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'alliance',
+                description: 'Alliance ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Alliance removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'List or Alliance not found.')
+        ],
+    )]
     public function kicklistAllianceRemove(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
@@ -1299,32 +1206,34 @@ class WatchlistController extends BaseController
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/watchlist/{id}/allowlist-corporation/list",
-     *     operationId="watchlistAllowlistCorporationList",
-     *     summary="List of corporations for the corporation allowlist.",
-     *     description="Needs role: watchlist, watchlist-manager",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of corporation.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/watchlist/{id}/allowlist-corporation/list',
+        operationId: 'watchlistAllowlistCorporationList',
+        description: 'Needs role: watchlist, watchlist-manager',
+        summary: 'List of corporations for the corporation allowlist.',
+        security: [['Session' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of corporation.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Corporation')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function allowlistCorporationList(string $id, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth)) {
@@ -1338,42 +1247,35 @@ class WatchlistController extends BaseController
         return $this->withJson($data);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/allowlist-corporation/add/{corporation}",
-     *     operationId="watchlistAllowlistCorporationAdd",
-     *     summary="Add corporation to the corporation allowlist.",
-     *     description="Needs role: watchlist-manager",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="corporation",
-     *         in="path",
-     *         required=true,
-     *         description="Corporation ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Corporation added."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="List or Corporation not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/allowlist-corporation/add/{corporation}',
+        operationId: 'watchlistAllowlistCorporationAdd',
+        description: 'Needs role: watchlist-manager',
+        summary: 'Add corporation to the corporation allowlist.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'corporation',
+                description: 'Corporation ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Corporation added.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'List or Corporation not found.')
+        ],
+    )]
     public function allowlistCorporationAdd(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
@@ -1388,42 +1290,35 @@ class WatchlistController extends BaseController
         );
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/allowlist-corporation/remove/{corporation}",
-     *     operationId="watchlistAllowlistCorporationRemove",
-     *     summary="Remove corporation from the corporation allowlist.",
-     *     description="Needs role: watchlist-manager",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="corporation",
-     *         in="path",
-     *         required=true,
-     *         description="Corporation ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Corporation removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="List or Corporation not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/allowlist-corporation/remove/{corporation}',
+        operationId: 'watchlistAllowlistCorporationRemove',
+        description: 'Needs role: watchlist-manager',
+        summary: 'Remove corporation from the corporation allowlist.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'corporation',
+                description: 'Corporation ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Corporation removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'List or Corporation not found.')
+        ],
+    )]
     public function allowlistCorporationRemove(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
@@ -1438,32 +1333,34 @@ class WatchlistController extends BaseController
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/watchlist/{id}/allowlist-alliance/list",
-     *     operationId="watchlistAllowlistAllianceList",
-     *     summary="List of alliances for the alliance allowlist.",
-     *     description="Needs role: watchlist, watchlist-manager",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of alliances.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Alliance"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/watchlist/{id}/allowlist-alliance/list',
+        operationId: 'watchlistAllowlistAllianceList',
+        description: 'Needs role: watchlist, watchlist-manager',
+        summary: 'List of alliances for the alliance allowlist.',
+        security: [['Session' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of alliances.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Alliance')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function allowlistAllianceList(string $id, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth)) {
@@ -1473,42 +1370,35 @@ class WatchlistController extends BaseController
         return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::ALLOWLIST_ALLIANCE));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/allowlist-alliance/add/{alliance}",
-     *     operationId="watchlistAllowlistAllianceAdd",
-     *     summary="Add alliance to the alliance allowlist.",
-     *     description="Needs role: watchlist-manager",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="alliance",
-     *         in="path",
-     *         required=true,
-     *         description="Alliance ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Alliance added."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="List or Alliance not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/allowlist-alliance/add/{alliance}',
+        operationId: 'watchlistAllowlistAllianceAdd',
+        description: 'Needs role: watchlist-manager',
+        summary: 'Add alliance to the alliance allowlist.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'alliance',
+                description: 'Alliance ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Alliance added.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'List or Alliance not found.')
+        ],
+    )]
     public function allowlistAllianceAdd(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
@@ -1518,42 +1408,35 @@ class WatchlistController extends BaseController
         return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::ALLOWLIST_ALLIANCE, (int) $alliance);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/watchlist/{id}/allowlist-alliance/remove/{alliance}",
-     *     operationId="watchlistAllowlistAllianceRemove",
-     *     summary="Remove alliance from the alliance allowlist.",
-     *     description="Needs role: watchlist-manager",
-     *     tags={"Watchlist"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Watchlist ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="alliance",
-     *         in="path",
-     *         required=true,
-     *         description="Alliance ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Alliance removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="List or Alliance not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/watchlist/{id}/allowlist-alliance/remove/{alliance}',
+        operationId: 'watchlistAllowlistAllianceRemove',
+        description: 'Needs role: watchlist-manager',
+        summary: 'Remove alliance from the alliance allowlist.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Watchlist'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Watchlist ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'alliance',
+                description: 'Alliance ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Alliance removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'List or Alliance not found.')
+        ],
+    )]
     public function allowlistAllianceRemove(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {

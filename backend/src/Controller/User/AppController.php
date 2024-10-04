@@ -13,18 +13,12 @@ use Neucore\Entity\Role;
 use Neucore\Service\Account;
 use Neucore\Util\Random;
 use Neucore\Service\UserAuth;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * @OA\Tag(
- *     name="App",
- *     description="Application management."
- * )
- */
+#[OA\Tag(name: 'App', description: 'Application management.')]
 class AppController extends BaseController
 {
     private App $application;
@@ -46,25 +40,25 @@ class AppController extends BaseController
         Role::APP_ESI_TOKEN,
     ];
 
-    /**
-     * @OA\Get(
-     *     path="/user/app/all",
-     *     operationId="userAppAll",
-     *     summary="List all apps.",
-     *     description="Needs role: app-admin",
-     *     tags={"App"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of apps (only id and name properties are returned).",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/App"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/app/all',
+        operationId: 'userAppAll',
+        description: 'Needs role: app-admin',
+        summary: 'List all apps.',
+        security: [['Session' => []]],
+        tags: ['App'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of apps (only id and name properties are returned).',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/App')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function all(): ResponseInterface
     {
         $apps = [];
@@ -77,48 +71,42 @@ class AppController extends BaseController
         return $this->withJson($apps);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/user/app/create",
-     *     operationId="create",
-     *     summary="Create an app.",
-     *     description="Needs role: app-admin<br>Generates a random secret that must be changed by an app manager.",
-     *     tags={"App"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\RequestBody(
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 type="object",
-     *                 required={"name"},
-     *                 @OA\Property(
-     *                     property="name",
-     *                     description="Name of the app.",
-     *                     type="string",
-     *                     maxLength=255
-     *                 )
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="201",
-     *         description="The new app.",
-     *         @OA\JsonContent(ref="#/components/schemas/App")
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="App name is invalid/missing."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="500",
-     *         description="If creation of app failed."
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/user/app/create',
+        operationId: 'create',
+        description: 'Needs role: app-admin<br>' .
+            'Generates a random secret that must be changed by an app manager.',
+        summary: 'Create an app.',
+        security: [['Session' => [], 'CSRF' => []]],
+        requestBody: new OA\RequestBody(
+            content: new OA\MediaType(
+                mediaType: 'application/x-www-form-urlencoded',
+                schema: new OA\Schema(
+                    required: ['name'],
+                    properties: [
+                        new OA\Property(
+                            property: 'name',
+                            description: 'Name of the app.',
+                            type: 'string',
+                            maxLength: 255
+                        )
+                    ],
+                    type: 'object'
+                )
+            )
+        ),
+        tags: ['App'],
+        responses: [
+            new OA\Response(
+                response: '201',
+                description: 'The new app.',
+                content: new OA\JsonContent(ref: '#/components/schemas/App')
+            ),
+            new OA\Response(response: '400', description: 'App name is invalid/missing.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '500', description: 'If creation of app failed.')
+        ],
+    )]
     public function create(ServerRequestInterface $request, LoggerInterface $log): ResponseInterface
     {
         $name = $this->sanitizePrintable($this->getBodyParam($request, 'name', ''));
@@ -149,55 +137,50 @@ class AppController extends BaseController
         return $this->flushAndReturn(201, $app);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/app/{id}/rename",
-     *     operationId="rename",
-     *     summary="Rename an app.",
-     *     description="Needs role: app-admin",
-     *     tags={"App"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the app.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 type="object",
-     *                 required={"name"},
-     *                 @OA\Property(
-     *                     property="name",
-     *                     description="New name for the app.",
-     *                     type="string",
-     *                     maxLength=255
-     *                 )
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="App was renamed.",
-     *         @OA\JsonContent(ref="#/components/schemas/App")
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="App name is invalid/missing."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="App not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/app/{id}/rename',
+        operationId: 'rename',
+        description: 'Needs role: app-admin',
+        summary: 'Rename an app.',
+        security: [['Session' => [], 'CSRF' => []]],
+        requestBody: new OA\RequestBody(
+            content: new OA\MediaType(
+                mediaType: 'application/x-www-form-urlencoded',
+                schema: new OA\Schema(
+                    required: ['name'],
+                    properties: [
+                        new OA\Property(
+                            property: 'name',
+                            description: 'New name for the app.',
+                            type: 'string',
+                            maxLength: 255
+                        )
+                    ],
+                    type: 'object'
+                )
+            )
+        ),
+        tags: ['App'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the app.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'App was renamed.',
+                content: new OA\JsonContent(ref: '#/components/schemas/App')
+            ),
+            new OA\Response(response: '400', description: 'App name is invalid/missing.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'App not found.')
+        ],
+    )]
     public function rename(string $id, ServerRequestInterface $request): ResponseInterface
     {
         $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
@@ -215,35 +198,28 @@ class AppController extends BaseController
         return $this->flushAndReturn(200, $app);
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/user/app/{id}/delete",
-     *     operationId="delete",
-     *     summary="Delete an app.",
-     *     description="Needs role: app-admin",
-     *     tags={"App"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the app.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="App was deleted."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="App not found."
-     *     )
-     * )
-     */
+    #[OA\Delete(
+        path: '/user/app/{id}/delete',
+        operationId: 'delete',
+        description: 'Needs role: app-admin',
+        summary: 'Delete an app.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['App'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the app.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'App was deleted.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'App not found.')
+        ],
+    )]
     public function delete(string $id): ResponseInterface
     {
         $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
@@ -256,36 +232,35 @@ class AppController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/app/{id}/managers",
-     *     operationId="managers",
-     *     summary="List all managers of an app.",
-     *     description="Needs role: app-admin",
-     *     tags={"App"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="App ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of players ordered by name. Only id, name and roles properties are returned.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="App not found."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/app/{id}/managers',
+        operationId: 'managers',
+        description: 'Needs role: app-admin',
+        summary: 'List all managers of an app.',
+        security: [['Session' => []]],
+        tags: ['App'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'App ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of players ordered by name. Only id, name and roles properties are returned.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Player')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'App not found.')
+        ],
+    )]
     public function managers(string $id): ResponseInterface
     {
         $ret = [];
@@ -306,43 +281,35 @@ class AppController extends BaseController
         return $this->withJson($ret);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/app/{id}/add-manager/{pid}",
-     *     operationId="addManager",
-     *     summary="Assign a player as manager to an app.",
-     *     description="Needs role: app-admin",
-     *     tags={"App"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the app.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="pid",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the player.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Player added as manager."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Player and/or app not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/app/{id}/add-manager/{pid}',
+        operationId: 'addManager',
+        description: 'Needs role: app-admin',
+        summary: 'Assign a player as manager to an app.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['App'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the app.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'pid',
+                description: 'ID of the player.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Player added as manager.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Player and/or app not found.')
+        ],
+    )]
     public function addManager(string $id, string $pid, Account $account): ResponseInterface
     {
         if (!$this->findAppAndPlayer($id, $pid)) {
@@ -365,43 +332,35 @@ class AppController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/app/{id}/remove-manager/{pid}",
-     *     operationId="removeManager",
-     *     summary="Remove a manager (player) from an app.",
-     *     description="Needs role: app-admin",
-     *     tags={"App"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the app.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="pid",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the player.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Player removed from managers."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Player and/or app not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/app/{id}/remove-manager/{pid}',
+        operationId: 'removeManager',
+        description: 'Needs role: app-admin',
+        summary: 'Remove a manager (player) from an app.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['App'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the app.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'pid',
+                description: 'ID of the player.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Player removed from managers.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Player and/or app not found.')
+        ],
+    )]
     public function removeManager(string $id, string $pid, Account $account): ResponseInterface
     {
         if (! $this->findAppAndPlayer($id, $pid)) {
@@ -415,36 +374,33 @@ class AppController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/app/{id}/show",
-     *     operationId="show",
-     *     summary="Shows app information.",
-     *     description="Needs role: app-admin, app-manager<br>Managers can only see groups of their own apps.",
-     *     tags={"App"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="App ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="The app information",
-     *         @OA\JsonContent(ref="#/components/schemas/App")
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="App not found."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/app/{id}/show',
+        operationId: 'show',
+        description: 'Needs role: app-admin, app-manager<br>' .
+            'Managers can only see groups of their own apps.',
+        summary: 'Shows app information.',
+        security: [['Session' => []]],
+        tags: ['App'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'App ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'The app information',
+                content: new OA\JsonContent(ref: '#/components/schemas/App')
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'App not found.')
+        ],
+    )]
     public function show(string $id, UserAuth $uas): ResponseInterface
     {
         $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
@@ -461,42 +417,35 @@ class AppController extends BaseController
         return $this->withJson($app);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/app/{id}/add-group/{gid}",
-     *     operationId="userAppAddGroup",
-     *     summary="Add a group to an app.",
-     *     description="Needs role: app-admin",
-     *     tags={"App"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the app.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="gid",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group added to app."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group and/or app not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/app/{id}/add-group/{gid}',
+        operationId: 'userAppAddGroup',
+        description: 'Needs role: app-admin',
+        summary: 'Add a group to an app.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['App'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the app.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'gid',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group added to app.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group and/or app not found.')
+        ],
+    )]
     public function addGroup(string $id, string $gid): ResponseInterface
     {
         if (! $this->findAppAndGroup($id, $gid)) {
@@ -514,42 +463,35 @@ class AppController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/app/{id}/remove-group/{gid}",
-     *     operationId="userAppRemoveGroup",
-     *     summary="Remove a group from an app.",
-     *     description="Needs role: app-admin",
-     *     tags={"App"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the app.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="gid",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group removed from the app."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group and/or app not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/app/{id}/remove-group/{gid}',
+        operationId: 'userAppRemoveGroup',
+        description: 'Needs role: app-admin',
+        summary: 'Remove a group from an app.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['App'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the app.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'gid',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group removed from the app.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group and/or app not found.')
+        ],
+    )]
     public function removeGroup(string $id, string $gid): ResponseInterface
     {
         if (! $this->findAppAndGroup($id, $gid)) {
@@ -561,42 +503,39 @@ class AppController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/app/{id}/add-role/{name}",
-     *     operationId="addRole",
-     *     summary="Add a role to the app.",
-     *     description="Needs role: app-admin",
-     *     tags={"App"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the app.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="name",
-     *         in="path",
-     *         required=true,
-     *         description="Name of the role.",
-     *         @OA\Schema(type="string", enum={"app-groups", "app-chars", "app-tracking", "app-esi-login", "app-esi-proxy", "app-esi-token"})
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Role added."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="App and/or role not found or invalid."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/app/{id}/add-role/{name}',
+        operationId: 'addRole',
+        description: 'Needs role: app-admin',
+        summary: 'Add a role to the app.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['App'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the app.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'name',
+                description: 'Name of the role.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['app-groups', 'app-chars', 'app-tracking', 'app-esi-login',
+                        'app-esi-proxy', 'app-esi-token']
+                )
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Role added.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'App and/or role not found or invalid.')
+        ],
+    )]
     public function addRole(string $id, string $name): ResponseInterface
     {
         if (! $this->findAppAndRole($id, $name)) {
@@ -610,43 +549,39 @@ class AppController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/app/{id}/remove-role/{name}",
-     *     operationId="removeRole",
-     *     summary="Remove a role from an app.",
-     *     description="Needs role: app-admin",
-     *     tags={"App"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the app.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="name",
-     *         in="path",
-     *         required=true,
-     *         description="Name of the role.",
-     *         @OA\Schema(type="string", enum={"app-groups", "app-chars", "app-tracking", "app-esi-login", "app-esi-proxy", "app-esi-token"})
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Role removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="App and/or role not found or invalid."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/app/{id}/remove-role/{name}',
+        operationId: 'removeRole',
+        description: 'Needs role: app-admin',
+        summary: 'Remove a role from an app.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['App'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the app.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'name',
+                description: 'Name of the role.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['app-groups', 'app-chars', 'app-tracking', 'app-esi-login', 'app-esi-proxy',
+                        'app-esi-token']
+                )
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Role removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'App and/or role not found or invalid.')
+        ],
+    )]
     public function removeRole(string $id, string $name): ResponseInterface
     {
         if (! $this->findAppAndRole($id, $name)) {
@@ -658,42 +593,35 @@ class AppController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/app/{id}/add-eve-login/{eveLoginId}",
-     *     operationId="userAppAddEveLogin",
-     *     summary="Add an EVE login to an app.",
-     *     description="Needs role: app-admin",
-     *     tags={"App"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the app.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="eveLoginId",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the EVE login.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="EVE login added."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="EVE login and/or app not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/app/{id}/add-eve-login/{eveLoginId}',
+        operationId: 'userAppAddEveLogin',
+        description: 'Needs role: app-admin',
+        summary: 'Add an EVE login to an app.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['App'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the app.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'eveLoginId',
+                description: 'ID of the EVE login.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'EVE login added.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'EVE login and/or app not found.')
+        ],
+    )]
     public function addEveLogin(string $id, string $eveLoginId): ResponseInterface
     {
         if (!$this->findAppAndEveLogin($id, $eveLoginId)) {
@@ -711,42 +639,35 @@ class AppController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/app/{id}/remove-eve-login/{eveLoginId}",
-     *     operationId="userAppRemoveEveLogin",
-     *     summary="Remove an EVE login from an app.",
-     *     description="Needs role: app-admin",
-     *     tags={"App"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the app.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="eveLoginId",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the EVE login.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="EVE login removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="EVE login and/or app not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/app/{id}/remove-eve-login/{eveLoginId}',
+        operationId: 'userAppRemoveEveLogin',
+        description: 'Needs role: app-admin',
+        summary: 'Remove an EVE login from an app.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['App'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the app.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'eveLoginId',
+                description: 'ID of the EVE login.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'EVE login removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'EVE login and/or app not found.')
+        ],
+    )]
     public function removeEveLogin(string $id, string $eveLoginId): ResponseInterface
     {
         if (!$this->findAppAndEveLogin($id, $eveLoginId)) {
@@ -758,41 +679,33 @@ class AppController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/app/{id}/change-secret",
-     *     operationId="changeSecret",
-     *     summary="Generates a new application secret. The new secret is returned, it cannot be retrieved afterwards.",
-     *     description="Needs role: app-manager",
-     *     tags={"App"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the app.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="The new secret.",
-     *         @OA\JsonContent(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="App not found."
-     *     ),
-     *     @OA\Response(
-     *         response="500",
-     *         description="Failed to created new secret."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/app/{id}/change-secret',
+        operationId: 'changeSecret',
+        description: 'Needs role: app-manager',
+        summary: 'Generates a new application secret. The new secret is returned, it cannot be retrieved afterwards.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['App'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the app.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'The new secret.',
+                content: new OA\JsonContent(type: 'string')
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'App not found.'),
+            new OA\Response(response: '500', description: 'Failed to created new secret.')
+        ],
+    )]
     public function changeSecret(string $id, UserAuth $uas): ResponseInterface
     {
         $app = $this->repositoryFactory->getAppRepository()->find((int) $id);

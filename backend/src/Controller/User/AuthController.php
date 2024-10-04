@@ -1,8 +1,5 @@
 <?php
 
-/** @noinspection PhpUnusedAliasInspection */
-/** @noinspection PhpUnused */
-
 declare(strict_types=1);
 
 namespace Neucore\Controller\User;
@@ -22,43 +19,28 @@ use Neucore\Service\ObjectManager;
 use Neucore\Util\Random;
 use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * @OA\SecurityScheme(
- *     securityScheme="Session",
- *     type="apiKey",
- *     name="neucore",
- *     in="cookie"
- * )
- * @OA\SecurityScheme(
- *     securityScheme="CSRF",
- *     type="apiKey",
- *     name="X-CSRF-Token",
- *     in="header",
- *     description="The CSRF token for POST, PUT and DELETE requests."
- * )
- *
- * @OA\Tag(
- *     name="Auth",
- *     description="User authentication."
- * )
- * @OA\Schema(
- *     schema="LoginResult",
- *     required={"success", "message"},
- *     @OA\Property(
- *         property="success",
- *         type="boolean"
- *     ),
- *     @OA\Property(
- *         property="message",
- *         type="string"
- *     )
- * )
- */
+
+#[OA\SecurityScheme(securityScheme: 'Session', type: 'apiKey', name: 'neucore', in: 'cookie')]
+#[OA\SecurityScheme(
+    securityScheme: 'CSRF',
+    type: 'apiKey',
+    description: 'The CSRF token for POST, PUT and DELETE requests.',
+    name: 'X-CSRF-Token',
+    in: 'header'
+)]
+#[OA\Tag(name: 'Auth', description: 'User authentication.')]
+#[OA\Schema(
+    schema: 'LoginResult',
+    required: ['success', 'message'],
+    properties: [
+        new OA\Property(property: 'success', type: 'boolean'),
+        new OA\Property(property: 'message', type: 'string')
+    ]
+)]
 class AuthController extends BaseController
 {
     /**
@@ -243,19 +225,19 @@ class AuthController extends BaseController
         return $this->redirect($redirectUrl);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/auth/result",
-     *     operationId="result",
-     *     summary="Result of last SSO attempt.",
-     *     tags={"Auth"},
-     *     @OA\Response(
-     *         response="200",
-     *         description="The result.",
-     *         @OA\JsonContent(ref="#/components/schemas/LoginResult")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/auth/result',
+        operationId: 'result',
+        summary: 'Result of last SSO attempt.',
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'The result.',
+                content: new OA\JsonContent(ref: '#/components/schemas/LoginResult')
+            )
+        ],
+    )]
     public function result(): ResponseInterface
     {
         $result = $this->session->get(self::SESS_AUTH_RESULT);
@@ -268,24 +250,17 @@ class AuthController extends BaseController
         return $this->withJson($result ?: $default);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/user/auth/logout",
-     *     operationId="logout",
-     *     summary="User logout.",
-     *     description="Needs role: user",
-     *     tags={"Auth"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Response(
-     *         response="204",
-     *         description="User was logged out."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/user/auth/logout',
+        operationId: 'logout',
+        description: 'Needs role: user',
+        summary: 'User logout.',
+        security: [['Session' => [], 'CSRF' => []]], tags: ['Auth'],
+        responses: [
+            new OA\Response(response: '204', description: 'User was logged out.'),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function logout(): ResponseInterface
     {
         $this->session->destroy();
@@ -293,20 +268,20 @@ class AuthController extends BaseController
         return $this->response->withStatus(204);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/auth/csrf-token",
-     *     operationId="authCsrfToken",
-     *     summary="The CSRF token to use in POST, PUT and DELETE requests.",
-     *     description="Needs role: user",
-     *     tags={"Auth"},
-     *     @OA\Response(
-     *         response="200",
-     *         description="The CSRF token.",
-     *         @OA\JsonContent(type="string")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/auth/csrf-token',
+        operationId: 'authCsrfToken',
+        description: 'Needs role: user',
+        summary: 'The CSRF token to use in POST, PUT and DELETE requests.',
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'The CSRF token.',
+                content: new OA\JsonContent(type: 'string')
+            )
+        ],
+    )]
     public function csrfToken(SessionData $sessionData): ResponseInterface
     {
         $token = $sessionData->get(CSRFToken::CSRF_SESSION_NAME);

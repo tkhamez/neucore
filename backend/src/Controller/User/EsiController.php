@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection PhpUnused */
-
 declare(strict_types=1);
 
 namespace Neucore\Controller\User;
@@ -12,18 +10,12 @@ use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EsiClient;
 use Neucore\Service\ObjectManager;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * @OA\Tag(
- *     name="ESI",
- *     description="ESI requests"
- * )
- */
+#[OA\Tag(name: 'ESI', description: 'ESI requests')]
 class EsiController extends BaseController
 {
     private EsiClient $esiClient;
@@ -39,54 +31,57 @@ class EsiController extends BaseController
         $this->esiClient = $esiClient;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/esi/request",
-     *     operationId="request",
-     *     summary="ESI request.",
-     *     description="Needs role: esi<br>Example route: /characters/{character_id}/stats/<br>Only for GET request.<br> {character_id}, {corporation_id} and {alliance_id} are automatically replaced with the corresponding IDs of the selected character",
-     *     tags={"ESI"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="character",
-     *         in="query",
-     *         description="EVE character ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="login",
-     *         in="query",
-     *         description="The EVE login name.",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="route",
-     *         in="query",
-     *         description="The ESI route.",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="debug",
-     *         in="query",
-     *         description="Show all headers, do not use cache",
-     *         @OA\Schema(type="string", enum={"true", "false"})
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="The result from ESI or an error message.",
-     *         @OA\JsonContent(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Error.",
-     *         @OA\JsonContent(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/esi/request',
+        operationId: 'request',
+        description: 'Needs role: esi<br>' .
+            'Example route: /characters/{character_id}/stats/<br>' .
+            'Only for GET request.<br>' .
+            '{character_id}, {corporation_id} and {alliance_id} are automatically replaced with the ' .
+            'corresponding IDs of the selected character',
+        summary: 'ESI request.',
+        security: [['Session' => []]],
+        tags: ['ESI'],
+        parameters: [
+            new OA\Parameter(
+                name: 'character',
+                description: 'EVE character ID.',
+                in: 'query',
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'login',
+                description: 'The EVE login name.',
+                in: 'query',
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'route',
+                description: 'The ESI route.',
+                in: 'query',
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'debug',
+                description: 'Show all headers, do not use cache',
+                in: 'query',
+                schema: new OA\Schema(type: 'string', enum: ['true', 'false'])
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'The result from ESI or an error message.',
+                content: new OA\JsonContent(type: 'string')
+            ),
+            new OA\Response(
+                response: '400',
+                description: 'Error.',
+                content: new OA\JsonContent(type: 'string')
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function request(ServerRequestInterface $request, string $method = 'GET'): ResponseInterface
     {
         $charId = $this->getQueryParam($request, 'character', '');
@@ -151,55 +146,54 @@ class EsiController extends BaseController
         return $this->prepareResponse($responseBody, $debug, $response, $response->getStatusCode());
     }
 
-    /**
-     * @OA\Post(
-     *     path="/user/esi/request",
-     *     operationId="requestPost",
-     *     summary="Same as GET /user/esi/request, but for POST requests.",
-     *     tags={"ESI"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="character",
-     *         in="query",
-     *         description="EVE character ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="route",
-     *         in="query",
-     *         description="The ESI route.",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="debug",
-     *         in="query",
-     *         description="Show all headers, do not use cache",
-     *         @OA\Schema(type="string", enum={"true", "false"})
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         description="JSON encoded data.",
-     *         @OA\MediaType(
-     *             mediaType="text/plain",
-     *             @OA\Schema(type="string")
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="The result from ESI or an error message.",
-     *         @OA\JsonContent(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Error.",
-     *         @OA\JsonContent(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/user/esi/request',
+        operationId: 'requestPost',
+        summary: 'Same as GET /user/esi/request, but for POST requests.',
+        security: [['Session' => [], 'CSRF' => []]],
+        requestBody: new OA\RequestBody(
+            description: 'JSON encoded data.',
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'text/plain',
+                schema: new OA\Schema(type: 'string')
+            )
+        ),
+        tags: ['ESI'],
+        parameters: [
+            new OA\Parameter(
+                name: 'character',
+                description: 'EVE character ID.',
+                in: 'query',
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'route',
+                description: 'The ESI route.',
+                in: 'query',
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'debug',
+                description: 'Show all headers, do not use cache',
+                in: 'query',
+                schema: new OA\Schema(type: 'string', enum: ['true', 'false'])
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'The result from ESI or an error message.',
+                content: new OA\JsonContent(type: 'string')
+            ),
+            new OA\Response(
+                response: '400',
+                description: 'Error.',
+                content: new OA\JsonContent(type: 'string')
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function requestPost(ServerRequestInterface $request): ResponseInterface
     {
         return $this->request($request, 'POST');

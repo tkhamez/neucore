@@ -7,8 +7,7 @@ namespace Neucore\Controller\User;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;
@@ -17,40 +16,33 @@ class SettingsEveLoginController extends BaseController
 {
     private string $namePattern = "/^[-._a-zA-Z0-9]+$/";
 
-    /**
-     * @OA\Post(
-     *     path="/user/settings/eve-login/{name}",
-     *     operationId="userSettingsEveLoginCreate",
-     *     summary="Create a new login.",
-     *     description="Needs role: settings",
-     *     tags={"Settings"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="name",
-     *         in="path",
-     *         required=true,
-     *         description="The new login name.",
-     *         @OA\Schema(type="string", maxLength=20, pattern="^[-._a-zA-Z0-9]+$")
-     *     ),
-     *     @OA\Response(
-     *         response="201",
-     *         description="The new login.",
-     *         @OA\JsonContent(ref="#/components/schemas/EveLogin")
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Login name is invalid."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="409",
-     *         description="A login with this ID already exists."
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/user/settings/eve-login/{name}',
+        operationId: 'userSettingsEveLoginCreate',
+        description: 'Needs role: settings',
+        summary: 'Create a new login.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Settings'],
+        parameters: [
+            new OA\Parameter(
+                name: 'name',
+                description: 'The new login name.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '201',
+                description: 'The new login.',
+                content: new OA\JsonContent(ref: '#/components/schemas/EveLogin')
+            ),
+            new OA\Response(response: '400', description: 'Login name is invalid.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '409', description: 'A login with this ID already exists.')
+        ],
+    )]
     public function create(string $name): ResponseInterface
     {
         if (!preg_match($this->namePattern, $name) || str_starts_with($name, EveLogin::INTERNAL_LOGIN_PREFIX)) {
@@ -68,39 +60,29 @@ class SettingsEveLoginController extends BaseController
         return $this->flushAndReturn(201, $login);
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/user/settings/eve-login/{id}",
-     *     operationId="userSettingsEveLoginDelete",
-     *     summary="Delete login.",
-     *     description="Needs role: settings",
-     *     tags={"Settings"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="The login ID.",
-     *         @OA\Schema(type="string", maxLength=20, pattern="^[-._a-zA-Z0-9]+$")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Login was deleted."
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Protected login."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Login not found."
-     *     )
-     * )
-     */
+    #[OA\Delete(
+        path: '/user/settings/eve-login/{id}',
+        operationId: 'userSettingsEveLoginDelete',
+        description: 'Needs role: settings',
+        summary: 'Delete login.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Settings'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'The login ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Login was deleted.'),
+            new OA\Response(response: '400', description: 'Protected login.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Login not found.')
+        ],
+    )]
     public function delete(string $id): ResponseInterface
     {
         $login = $this->repositoryFactory->getEveLoginRepository()->find((int)$id);
@@ -117,37 +99,35 @@ class SettingsEveLoginController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-
-    /**
-     * @OA\Get(
-     *     path="/user/settings/eve-login/{id}/tokens",
-     *     operationId="userSettingsEveLoginTokens",
-     *     summary="List ESI tokens from an EVE login.",
-     *     description="Needs role: settings",
-     *     tags={"Settings"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="The login ID. The default login is not allowed.",
-     *         @OA\Schema(type="string", maxLength=20, pattern="^[-._a-zA-Z0-9]+$")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of tokens.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/EsiToken"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Login not found."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/settings/eve-login/{id}/tokens',
+        operationId: 'userSettingsEveLoginTokens',
+        description: 'Needs role: settings',
+        summary: 'List ESI tokens from an EVE login.',
+        security: [['Session' => []]],
+        tags: ['Settings'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'The login ID. The default login is not allowed.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of tokens.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/EsiToken')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Login not found.')
+        ],
+    )]
     public function tokens(string $id): ResponseInterface
     {
         $login = $this->repositoryFactory->getEveLoginRepository()->find((int)$id);
@@ -167,63 +147,57 @@ class SettingsEveLoginController extends BaseController
         return $this->withJson($tokens);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/settings/eve-login/list",
-     *     operationId="userSettingsEveLoginList",
-     *     summary="List all logins.",
-     *     description="Needs role: user",
-     *     tags={"Settings"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of logins.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/EveLogin"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/settings/eve-login/list',
+        operationId: 'userSettingsEveLoginList',
+        description: 'Needs role: user',
+        summary: 'List all logins.',
+        security: [['Session' => []]],
+        tags: ['Settings'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of logins.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/EveLogin')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function list(): ResponseInterface
     {
         $logins = $this->repositoryFactory->getEveLoginRepository()->findBy([], ['name' => 'ASC']);
         return $this->withJson($logins);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/settings/eve-login",
-     *     operationId="userSettingsEveLoginUpdate",
-     *     summary="Update login.",
-     *     description="Needs role: settings",
-     *     tags={"Settings"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         description="JSON encoded data.",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/EveLogin"))
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="The updated login.",
-     *         @OA\JsonContent(ref="#/components/schemas/EveLogin")
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Invalid body or invalid login name."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Login not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/settings/eve-login',
+        operationId: 'userSettingsEveLoginUpdate',
+        description: 'Needs role: settings',
+        summary: 'Update login.',
+        security: [['Session' => [], 'CSRF' => []]],
+        requestBody: new OA\RequestBody(
+            description: 'JSON encoded data.',
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'application/json',
+                schema: new OA\Schema(ref: '#/components/schemas/EveLogin')
+            )
+        ),
+        tags: ['Settings'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'The updated login.',
+                content: new OA\JsonContent(ref: '#/components/schemas/EveLogin')
+            ),
+            new OA\Response(response: '400', description: 'Invalid body or invalid login name.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Login not found.')
+        ],
+    )]
     public function update(ServerRequestInterface $request): ResponseInterface
     {
         $data = $request->getParsedBody();
@@ -251,21 +225,21 @@ class SettingsEveLoginController extends BaseController
         return $this->flushAndReturn(200, $login);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/settings/eve-login/roles",
-     *     operationId="userSettingsEveLoginRoles",
-     *     summary="List in-game roles (without HQ, base and other 'Hangar Access' and 'Container Access' roles).",
-     *     description="Needs role: settings",
-     *     tags={"Settings"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of roles.",
-     *         @OA\JsonContent(type="array", @OA\Items(type="string"))
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/settings/eve-login/roles',
+        operationId: 'userSettingsEveLoginRoles',
+        description: 'Needs role: settings',
+        summary: "List in-game roles (without HQ, base and other 'Hangar Access' and 'Container Access' roles).",
+        security: [['Session' => []]],
+        tags: ['Settings'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of roles.',
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(type: 'string'))
+            )
+        ],
+    )]
     public function roles(): ResponseInterface
     {
         return $this->withJson((new GetCharactersCharacterIdRolesOk())->getRolesAllowableValues());

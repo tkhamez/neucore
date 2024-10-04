@@ -21,38 +21,32 @@ use Neucore\Service\AccountGroup;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\PluginService;
 use Neucore\Service\UserAuth;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * @OA\Tag(
- *     name="Player",
- *     description="Player management."
- * )
- * @OA\Schema(
- *     schema="CharacterGroup",
- *     required={"player_id", "characters"},
- *     @OA\Property(
- *         property="player_id",
- *         type="integer",
- *         nullable=true
- *     ),
- *     @OA\Property(
- *         property="characters",
- *         type="array",
- *         @OA\Items(ref="#/components/schemas/Character")
- *     )
- * )
- * @OA\Schema(
- *     schema="GroupsDisabled",
- *     required={"withDelay", "withoutDelay"},
- *     @OA\Property(property="withDelay", type="boolean"),
- *     @OA\Property(property="withoutDelay", type="boolean"),
- * )
- */
+#[OA\Tag(name: 'Player', description: 'Player management.')]
+#[OA\Schema(
+    schema: 'CharacterGroup',
+    required: ['player_id', 'characters'],
+    properties: [
+        new OA\Property(property: 'player_id', type: 'integer', nullable: true),
+        new OA\Property(
+            property: 'characters',
+            type: 'array',
+            items: new OA\Items(ref: '#/components/schemas/Character')
+        )
+    ],
+)]
+#[OA\Schema(
+    schema: 'GroupsDisabled',
+    required: ['withDelay', 'withoutDelay'],
+    properties: [
+        new OA\Property(property: 'withDelay', type: 'boolean'),
+        new OA\Property(property: 'withoutDelay', type: 'boolean')
+    ],
+)]
 class PlayerController extends BaseController
 {
     private const COLUMN_PLAYER = 'player';
@@ -99,50 +93,43 @@ class PlayerController extends BaseController
         $this->account = $account;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/player/show",
-     *     operationId="userPlayerShow",
-     *     summary="Return the logged-in player with all properties.",
-     *     description="Needs role: user",
-     *     tags={"Player"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="The player information.",
-     *         @OA\JsonContent(ref="#/components/schemas/Player")
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/player/show',
+        operationId: 'userPlayerShow',
+        description: 'Needs role: user',
+        summary: 'Return the logged-in player with all properties.',
+        security: [['Session' => []]],
+        tags: ['Player'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'The player information.',
+                content: new OA\JsonContent(ref: '#/components/schemas/Player')
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function show(): ResponseInterface
     {
         return $this->withJson($this->getUser($this->userAuth)->getPlayer()->jsonSerialize(false, false, true));
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/player/groups-disabled",
-     *     operationId="groupsDisabled",
-     *     summary="Checks whether groups for this account are disabled or will be disabled soon.",
-     *     description="Needs role: user",
-     *     tags={"Player"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="True if groups are disabled, otherwise false.",
-     *         @OA\JsonContent(ref="#/components/schemas/GroupsDisabled")
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/player/groups-disabled',
+        operationId: 'groupsDisabled',
+        description: 'Needs role: user',
+        summary: 'Checks whether groups for this account are disabled or will be disabled soon.',
+        security: [['Session' => []]],
+        tags: ['Player'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'True if groups are disabled, otherwise false.',
+                content: new OA\JsonContent(ref: '#/components/schemas/GroupsDisabled')
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function groupsDisabled(AccountGroup $accountGroupService): ResponseInterface
     {
         $player = $this->getUser($this->userAuth)->getPlayer();
@@ -153,37 +140,32 @@ class PlayerController extends BaseController
         ]);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/player/{id}/groups-disabled",
-     *     operationId="groupsDisabledById",
-     *     summary="Checks whether groups for this account are disabled or will be disabled soon.",
-     *     description="Needs role: user-admin or the same permissions as for the 'userPlayerCharacters' endpoint.",
-     *     tags={"Player"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the player.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="True if groups are disabled, otherwise false.",
-     *         @OA\JsonContent(ref="#/components/schemas/GroupsDisabled")
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Player not found."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/player/{id}/groups-disabled',
+        operationId: 'groupsDisabledById',
+        description: "Needs role: user-admin or the same permissions as for the 'userPlayerCharacters' endpoint.",
+        summary: 'Checks whether groups for this account are disabled or will be disabled soon.',
+        security: [['Session' => []]],
+        tags: ['Player'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the player.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'True if groups are disabled, otherwise false.',
+                content: new OA\JsonContent(ref: '#/components/schemas/GroupsDisabled')
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Player not found.')
+        ],
+    )]
     public function groupsDisabledById(
         string $id,
         UserAuth $userAuth,
@@ -209,40 +191,29 @@ class PlayerController extends BaseController
         ]);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/player/add-application/{gid}",
-     *     operationId="addApplication",
-     *     summary="Submit a group application.",
-     *     description="Needs role: user",
-     *     tags={"Player"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="gid",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Application submitted."
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="This player is not allowed to be a member of the group."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/player/add-application/{gid}',
+        operationId: 'addApplication',
+        description: 'Needs role: user',
+        summary: 'Submit a group application.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Player'],
+        parameters: [
+            new OA\Parameter(
+                name: 'gid',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Application submitted.'),
+            new OA\Response(response: '400', description: 'This player is not allowed to be a member of the group.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group not found.')
+        ],
+    )]
     public function addApplication(string $gid): ResponseInterface
     {
         // players can only apply to public groups
@@ -285,41 +256,33 @@ class PlayerController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/player/remove-application/{gid}",
-     *     operationId="removeApplication",
-     *     summary="Cancel a group application.",
-     *     description="Needs role: user",
-     *     tags={"Player"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="gid",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Application canceled."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Application not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/player/remove-application/{gid}',
+        operationId: 'removeApplication',
+        description: 'Needs role: user',
+        summary: 'Cancel a group application.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Player'],
+        parameters: [
+            new OA\Parameter(
+                name: 'gid',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Application canceled.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Application not found.')
+        ],
+    )]
     public function removeApplication(string $gid): ResponseInterface
     {
         $groupApplications = $this->repositoryFactory->getGroupApplicationRepository()->findBy([
             self::COLUMN_PLAYER => $this->getUser($this->userAuth)->getPlayer()->getId(),
-            self::COLUMN_GROUP => (int) $gid
+            self::COLUMN_GROUP => (int)$gid
         ]);
 
         if (empty($groupApplications)) {
@@ -333,26 +296,25 @@ class PlayerController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/player/show-applications",
-     *     operationId="showApplications",
-     *     summary="Show all group applications.",
-     *     description="Needs role: user",
-     *     tags={"Player"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="The group applications.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/GroupApplication"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/player/show-applications',
+        operationId: 'showApplications',
+        description: 'Needs role: user',
+        summary: 'Show all group applications.',
+        security: [['Session' => []]],
+        tags: ['Player'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'The group applications.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/GroupApplication')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function showApplications(): ResponseInterface
     {
         $groupApplications = $this->repositoryFactory->getGroupApplicationRepository()->findBy([
@@ -362,36 +324,28 @@ class PlayerController extends BaseController
         return $this->withJson($groupApplications);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/player/leave-group/{gid}",
-     *     operationId="leaveGroup",
-     *     summary="Leave a group.",
-     *     description="Needs role: user",
-     *     tags={"Player"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="gid",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group left."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/player/leave-group/{gid}',
+        operationId: 'leaveGroup',
+        description: 'Needs role: user',
+        summary: 'Leave a group.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Player'],
+        parameters: [
+            new OA\Parameter(
+                name: 'gid',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group left.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group not found.')
+        ],
+    )]
     public function leaveGroup(string $gid, AccountGroup $accountGroup): ResponseInterface
     {
         $group = $this->repositoryFactory->getGroupRepository()->findOneBy(['id' => (int) $gid]);
@@ -404,36 +358,32 @@ class PlayerController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/player/set-main/{cid}",
-     *     operationId="setMain",
-     *     summary="Change the main character from the player account.",
-     *     description="Needs role: user",
-     *     tags={"Player"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="cid",
-     *         in="path",
-     *         required=true,
-     *         description="Character ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="The main character.",
-     *         @OA\JsonContent(ref="#/components/schemas/Character")
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Character not found on this account."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/player/set-main/{cid}',
+        operationId: 'setMain',
+        description: 'Needs role: user',
+        summary: 'Change the main character from the player account.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Player'],
+        parameters: [
+            new OA\Parameter(
+                name: 'cid',
+                description: 'Character ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'The main character.',
+                content: new OA\JsonContent(ref: '#/components/schemas/Character')
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Character not found on this account.')
+        ],
+    )]
     public function setMain(string $cid): ResponseInterface
     {
         $main = null;
@@ -455,42 +405,35 @@ class PlayerController extends BaseController
         return $this->flushAndReturn(200, $main);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/player/{id}/set-status/{status}",
-     *     operationId="setStatus",
-     *     summary="Change the player's account status.",
-     *     description="Needs role: user-manager",
-     *     tags={"Player"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the player.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="status",
-     *         in="path",
-     *         required=true,
-     *         description="The new status.",
-     *         @OA\Schema(type="string", enum={"standard", "managed"})
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Status changed."
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Invalid player or status."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/player/{id}/set-status/{status}',
+        operationId: 'setStatus',
+        description: 'Needs role: user-manager',
+        summary: "Change the player's account status.",
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Player'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the player.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'status',
+                description: 'The new status.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', enum: ['standard', 'managed'])
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Status changed.'),
+            new OA\Response(response: '400', description: 'Invalid player or status.'),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function setStatus(
         string $id,
         string $status,
@@ -521,140 +464,120 @@ class PlayerController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/player/with-characters",
-     *     operationId="withCharacters",
-     *     summary="List all players with characters.",
-     *     description="Needs role: user-admin",
-     *     tags={"Player"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/player/with-characters',
+        operationId: 'withCharacters',
+        description: 'Needs role: user-admin',
+        summary: 'List all players with characters.',
+        security: [['Session' => []]],
+        tags: ['Player'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of players ordered by name. Only id and name properties are returned.',
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player'))
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function withCharacters(): ResponseInterface
     {
         return $this->playerList($this->repositoryFactory->getPlayerRepository()->findWithCharacters());
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/player/without-characters",
-     *     operationId="withoutCharacters",
-     *     summary="List all players without characters.",
-     *     description="Needs role: user-admin",
-     *     tags={"Player"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/player/without-characters',
+        operationId: 'withoutCharacters',
+        description: 'Needs role: user-admin',
+        summary: 'List all players without characters.',
+        security: [['Session' => []]],
+        tags: ['Player'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of players ordered by name. Only id and name properties are returned.',
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player'))
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function withoutCharacters(): ResponseInterface
     {
         return $this->playerList($this->repositoryFactory->getPlayerRepository()->findWithoutCharacters());
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/player/app-managers",
-     *     operationId="appManagers",
-     *     summary="List all players with the role app-manger.",
-     *     description="Needs role: app-admin",
-     *     tags={"Player"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/player/app-managers',
+        operationId: 'appManagers',
+        description: 'Needs role: app-admin',
+        summary: 'List all players with the role app-manger.',
+        security: [['Session' => []]],
+        tags: ['Player'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of players ordered by name. Only id and name properties are returned.',
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player'))
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function appManagers(): ResponseInterface
     {
         return $this->getPlayerByRole(Role::APP_MANAGER);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/player/group-managers",
-     *     operationId="groupManagers",
-     *     summary="List all players with the role group-manger.",
-     *     description="Needs role: group-admin",
-     *     tags={"Player"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/player/group-managers',
+        operationId: 'groupManagers',
+        description: 'Needs role: group-admin',
+        summary: 'List all players with the role group-manger.',
+        security: [['Session' => []]],
+        tags: ['Player'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of players ordered by name. Only id and name properties are returned.',
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player'))
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function groupManagers(): ResponseInterface
     {
         return $this->getPlayerByRole(Role::GROUP_MANAGER);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/player/with-role/{name}",
-     *     operationId="withRole",
-     *     summary="List all players with a role.",
-     *     description="Needs role: user-admin",
-     *     tags={"Player"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="name",
-     *         in="path",
-     *         required=true,
-     *         description="Role name.",
-     *         @OA\Schema(
-     *             type="string",
-     *             enum={"user", "user-admin", "user-manager", "user-chars", "group-admin", "group-manager", "plugin-admin", "app-admin", "app-manager", "esi", "settings", "tracking", "tracking-admin", "watchlist", "watchlist-manager", "watchlist-admin"}
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Invalid role name."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/player/with-role/{name}',
+        operationId: 'withRole',
+        description: 'Needs role: user-admin',
+        summary: 'List all players with a role.',
+        security: [['Session' => []]],
+        tags: ['Player'],
+        parameters: [
+            new OA\Parameter(
+                name: 'name',
+                description: 'Role name.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string',
+                    enum: ['user', 'user-admin', 'user-manager', 'user-chars', 'group-admin', 'group-manager',
+                        'plugin-admin', 'app-admin', 'app-manager', 'esi', 'settings', 'tracking', 'tracking-admin',
+                        'watchlist', 'watchlist-manager', 'watchlist-admin']
+                )
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of players ordered by name. Only id and name properties are returned.',
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player'))
+            ),
+            new OA\Response(response: '400', description: 'Invalid role name.'),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function withRole(string $name): ResponseInterface
     {
         if (! in_array($name, [
@@ -681,36 +604,32 @@ class PlayerController extends BaseController
         return $this->getPlayerByRole($name);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/player/with-status/{name}",
-     *     operationId="withStatus",
-     *     summary="Lists all players with characters who have a certain status.",
-     *     description="Needs role: user-admin, user-manager",
-     *     tags={"Player"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="name",
-     *         in="path",
-     *         required=true,
-     *         description="Status name.",
-     *         @OA\Schema(type="string", enum={"standard", "managed"})
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Invalid status name."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/player/with-status/{name}',
+        operationId: 'withStatus',
+        description: 'Needs role: user-admin, user-manager',
+        summary: 'Lists all players with characters who have a certain status.',
+        security: [['Session' => []]],
+        tags: ['Player'],
+        parameters: [
+            new OA\Parameter(
+                name: 'name',
+                description: 'Status name.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', enum: ['standard', 'managed'])
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of players ordered by name. Only id and name properties are returned.',
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player'))
+            ),
+            new OA\Response(response: '400', description: 'Invalid status name.'),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function withStatus(string $name): ResponseInterface
     {
         if (! in_array($name, $this->availableStatus)) {
@@ -720,45 +639,39 @@ class PlayerController extends BaseController
         return $this->playerList($this->repositoryFactory->getPlayerRepository()->findWithCharactersAndStatus($name));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/player/{id}/add-role/{name}",
-     *     operationId="userPlayerAddRole",
-     *     summary="Add a role to the player.",
-     *     description="Needs role: user-admin",
-     *     tags={"Player"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the player.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="name",
-     *         in="path",
-     *         required=true,
-     *         description="Name of the role.",
-     *         @OA\Schema(
-     *             type="string",
-     *             enum={"app-admin", "user-manager", "user-chars", "group-admin", "plugin-admin", "user-admin", "app-admin", "esi", "settings", "tracking-admin", "watchlist-admin"}
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Role added."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Player and/or role not found or invalid."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/player/{id}/add-role/{name}',
+        operationId: 'userPlayerAddRole',
+        description: 'Needs role: user-admin',
+        summary: 'Add a role to the player.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Player'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the player.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'name',
+                description: 'Name of the role.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['app-admin', 'user-manager', 'user-chars', 'group-admin', 'plugin-admin',
+                        'user-admin', 'app-admin', 'esi', 'settings', 'tracking-admin', 'watchlist-admin']
+                )
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Role added.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Player and/or role not found or invalid.')
+        ],
+    )]
     public function addRole(string $id, string $name): ResponseInterface
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
@@ -779,46 +692,39 @@ class PlayerController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/player/{id}/remove-role/{name}",
-     *     operationId="userPlayerRemoveRole",
-     *     summary="Remove a role from a player.",
-     *     description="Needs role: user-admin",
-     *     tags={"Player"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the player.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="name",
-     *         in="path",
-     *         required=true,
-     *         description="Name of the role.",
-     *         @OA\Schema(
-     *             type="string",
-     *             enum={"app-admin", "user-manager", "user-chars", "group-admin", "plugin-admin", "user-admin", "app-admin", "esi", "settings", "tracking-admin", "watchlist-admin"}
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Role removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Player and/or role not found or invalid."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/player/{id}/remove-role/{name}',
+        operationId: 'userPlayerRemoveRole',
+        description: 'Needs role: user-admin',
+        summary: 'Remove a role from a player.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Player'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the player.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'name',
+                description: 'Name of the role.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['app-admin', 'user-manager', 'user-chars', 'group-admin', 'plugin-admin',
+                        'user-admin', 'app-admin', 'esi', 'settings', 'tracking-admin', 'watchlist-admin']
+                )
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Role removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Player and/or role not found or invalid.')
+        ],
+    )]
     public function removeRole(string $id, string $name): ResponseInterface
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
@@ -833,37 +739,33 @@ class PlayerController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/player/{id}/show",
-     *     operationId="showById",
-     *     summary="Show all data from a player.",
-     *     description="Needs role: user-admin, user-manager",
-     *     tags={"Player"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the player.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="The player (this includes the removedCharacters, incomingCharacters and serviceAccounts properties).",
-     *         @OA\JsonContent(ref="#/components/schemas/Player")
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Player not found."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/player/{id}/show',
+        operationId: 'showById',
+        description: 'Needs role: user-admin, user-manager',
+        summary: 'Show all data from a player.',
+        security: [['Session' => []]],
+        tags: ['Player'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the player.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'The player (this includes the removedCharacters, incomingCharacters and ' .
+                    'serviceAccounts properties).',
+                content: new OA\JsonContent(ref: '#/components/schemas/Player')
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Player not found.')
+        ],
+    )]
     public function showById(string $id, PluginService $pluginService): ResponseInterface
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
@@ -880,36 +782,35 @@ class PlayerController extends BaseController
         return $this->withJson($json);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/player/{id}/characters",
-     *     operationId="userPlayerCharacters",
-     *     summary="Show player with characters, moved characters, groups and service accounts.",
-     *     description="Needs role: app-admin, group-admin, user-manager, user-chars, watchlist, tracking.<br> If a user only has the tracking or watchlist roles, the player must have a character in a corporation for which the user has access to the member tracking data or the player must be on a watchlist that the user can view.",
-     *     tags={"Player"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the player.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="The player.",
-     *         @OA\JsonContent(ref="#/components/schemas/Player")
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Player not found."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/player/{id}/characters',
+        operationId: 'userPlayerCharacters',
+        description: 'Needs role: app-admin, group-admin, user-manager, user-chars, watchlist, tracking.<br>' .
+            'If a user only has the tracking or watchlist roles, the player must have a character in a ' .
+            'corporation for which the user has access to the member tracking data or the player must ' .
+            'be on a watchlist that the user can view.',
+        summary: 'Show player with characters, moved characters, groups and service accounts.',
+        security: [['Session' => []]],
+        tags: ['Player'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the player.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'The player.',
+                content: new OA\JsonContent(ref: '#/components/schemas/Player')
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Player not found.')
+        ],
+    )]
     public function characters(
         string $id,
         UserAuth $userAuth,
@@ -939,31 +840,32 @@ class PlayerController extends BaseController
         ]);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Post(
-     *     path="/user/player/group-characters-by-account",
-     *     operationId="playerGroupCharactersByAccount",
-     *     summary="Accepts a list of character names and returns them grouped by account.",
-     *     description="Needs role: user-chars.<br>The returned character list always contains the main character as the first character in the list. Characters that do not exist will all be added to a separate group as the last element of the result list.",
-     *     tags={"Player"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         description="List of character names, one per line.",
-     *         @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string")),
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of character groups, only the id and name properties will be included.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/CharacterGroup"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/user/player/group-characters-by-account',
+        operationId: 'playerGroupCharactersByAccount',
+        description: 'Needs role: user-chars.<br>The returned character list always contains the main ' .
+            'character as the first character in the list. Characters that do not exist will all be ' .
+            'added to a separate group as the last element of the result list.',
+        summary: 'Accepts a list of character names and returns them grouped by account.',
+        security: [['Session' => [], 'CSRF' => []]],
+        requestBody: new OA\RequestBody(
+            description: 'List of character names, one per line.',
+            required: true,
+            content: new OA\MediaType(mediaType: 'text/plain', schema: new OA\Schema(type: 'string'))
+        ),
+        tags: ['Player'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of character groups, only the id and name properties will be included.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/CharacterGroup')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function groupCharactersByAccount(ServerRequestInterface $request): ResponseInterface
     {
         $result = [];
@@ -1009,49 +911,39 @@ class PlayerController extends BaseController
         return $this->withJson($result);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Delete(
-     *     path="/user/player/delete-character/{id}",
-     *     operationId="deleteCharacter",
-     *     summary="Delete a character.",
-     *     description="Needs role: user, user-admin",
-     *     tags={"Player"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the character.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="admin-reason",
-     *         in="query",
-     *         description="Specifies a reason if a user admin triggered the deletion. ('deleted-by-admin' will not create a 'Removed Character' entry.)",
-     *         @OA\Schema(
-     *             type="string",
-     *             enum={"deleted-owner-changed", "deleted-lost-access", "deleted-manually", "deleted-by-admin"}
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Character was deleted."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized or feature disabled."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Character not found."
-     *     ),
-     *     @OA\Response(
-     *         response="409",
-     *         description="Trying to delete logged-in character."
-     *     )
-     * )
-     */
+    #[OA\Delete(
+        path: '/user/player/delete-character/{id}',
+        operationId: 'deleteCharacter',
+        description: 'Needs role: user, user-admin',
+        summary: 'Delete a character.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Player'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the character.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'admin-reason',
+                description: "Specifies a reason if a user admin triggered the deletion. ('deleted-by-admin' " .
+                    "will not create a 'Removed Character' entry.)",
+                in: 'query',
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['deleted-owner-changed', 'deleted-lost-access', 'deleted-manually', 'deleted-by-admin']
+                )
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Character was deleted.'),
+            new OA\Response(response: '403', description: 'Not authorized or feature disabled.'),
+            new OA\Response(response: '404', description: 'Character not found.'),
+            new OA\Response(response: '409', description: 'Trying to delete logged-in character.')
+        ],
+    )]
     public function deleteCharacter(
         string $id,
         ServerRequestInterface $request,

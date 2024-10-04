@@ -15,20 +15,15 @@ use Neucore\Service\Config;
 use Neucore\Service\EveMail;
 use Neucore\Service\PluginService;
 use Neucore\Service\UserAuth;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
 /**
  * Controller for system settings (and maybe user settings later).
- *
- * @OA\Tag(
- *     name="Settings",
- *     description="System settings."
- * )
  */
+#[OA\Tag(name: 'Settings', description: 'System settings.')]
 class SettingsController extends BaseController
 {
     private const COLUMN_NAME = 'name';
@@ -37,22 +32,24 @@ class SettingsController extends BaseController
 
     private const VALID_SCOPES = [SystemVariable::SCOPE_PUBLIC, SystemVariable::SCOPE_SETTINGS];
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/settings/system/list",
-     *     operationId="systemList",
-     *     summary="List all settings.",
-     *     description="Some variables need the role 'settings'",
-     *     tags={"Settings"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of settings.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/SystemVariable"))
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/settings/system/list',
+        operationId: 'systemList',
+        description: "Some variables need the role 'settings'",
+        summary: 'List all settings.',
+        security: [['Session' => []]],
+        tags: ['Settings'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of settings.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/SystemVariable')
+                )
+            )
+        ],
+    )]
     public function systemList(
         UserAuth $userAuth,
         Config $config,
@@ -109,52 +106,50 @@ class SettingsController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/settings/system/change/{name}",
-     *     operationId="systemChange",
-     *     summary="Change a system settings variable.",
-     *     description="Needs role: settings",
-     *     tags={"Settings"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="name",
-     *         in="path",
-     *         required=true,
-     *         description="Name of the variable.",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 type="object",
-     *                 required={"value"},
-     *                 @OA\Property(
-     *                     property="value",
-     *                     description="New value for the variable.",
-     *                     type="string",
-     *                 )
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="Variable value changed.",
-     *         @OA\JsonContent(ref="#/components/schemas/SystemVariable")
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Variable not found."
-     *     )
-     * )
-     *
      * @see EveMail::deleteToken();
      */
+    #[OA\Put(
+        path: '/user/settings/system/change/{name}',
+        operationId: 'systemChange',
+        description: 'Needs role: settings',
+        summary: 'Change a system settings variable.',
+        security: [['Session' => [], 'CSRF' => []]],
+        requestBody: new OA\RequestBody(
+            content: new OA\MediaType(
+                mediaType: 'application/x-www-form-urlencoded',
+                schema: new OA\Schema(
+                    required: ['value'],
+                    properties: [
+                        new OA\Property(
+                            property: 'value',
+                            description: 'New value for the variable.',
+                            type: 'string'
+                        )
+                    ],
+                    type: 'object',
+                )
+            )
+        ),
+        tags: ['Settings'],
+        parameters: [
+            new OA\Parameter(
+                name: 'name',
+                description: 'Name of the variable.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'Variable value changed.',
+                content: new OA\JsonContent(ref: '#/components/schemas/SystemVariable')
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Variable not found.')
+        ],
+    )]
     public function systemChange(string $name, ServerRequestInterface $request, EveMail $eveMail): ResponseInterface
     {
         $variable = $this->repositoryFactory->getSystemVariableRepository()->find($name);
@@ -178,26 +173,22 @@ class SettingsController extends BaseController
         return $this->withJson($variable);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Post(
-     *     path="/user/settings/system/send-invalid-token-mail",
-     *     operationId="sendInvalidTokenMail",
-     *     summary="Sends a 'invalid ESI token' test mail to the logged-in character.",
-     *     description="Needs role: settings",
-     *     tags={"Settings"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="Error message, if available.",
-     *         @OA\JsonContent(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/user/settings/system/send-invalid-token-mail',
+        operationId: 'sendInvalidTokenMail',
+        description: 'Needs role: settings',
+        summary: "Sends a 'invalid ESI token' test mail to the logged-in character.",
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Settings'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'Error message, if available.',
+                content: new OA\JsonContent(type: 'string')
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function sendInvalidTokenMail(EveMail $eveMail, UserAuth $userAuth): ResponseInterface
     {
         $charId = $this->getUser($userAuth)->getId();
@@ -213,26 +204,22 @@ class SettingsController extends BaseController
         return $this->withJson($result);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Post(
-     *     path="/user/settings/system/send-missing-character-mail",
-     *     operationId="sendMissingCharacterMail",
-     *     summary="Sends a 'missing character' test mail to the logged-in character.",
-     *     description="Needs role: settings",
-     *     tags={"Settings"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="Error message, if available.",
-     *         @OA\JsonContent(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/user/settings/system/send-missing-character-mail',
+        operationId: 'sendMissingCharacterMail',
+        description: 'Needs role: settings',
+        summary: "Sends a 'missing character' test mail to the logged-in character.",
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Settings'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'Error message, if available.',
+                content: new OA\JsonContent(type: 'string')
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function sendMissingCharacterMail(EveMail $eveMail, UserAuth $userAuth): ResponseInterface
     {
         $charId = $this->getUser($userAuth)->getId();

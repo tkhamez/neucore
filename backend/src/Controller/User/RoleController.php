@@ -7,52 +7,42 @@ namespace Neucore\Controller\User;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Group;
 use Neucore\Entity\Role;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 
-/**
- * @OA\Tag(
- *     name="Role",
- *     description="Role management."
- * )
- */
+#[OA\Tag(name: 'Role', description: 'Role management.')]
 class RoleController extends BaseController
 {
     private ?Role $role = null;
 
     private ?Group $group = null;
 
-    /**
-     * @OA\Get(
-     *     path="/user/role/{roleName}/required-groups",
-     *     operationId="userRoleRequiredGroups",
-     *     summary="List all required groups of a role.",
-     *     description="Needs role: user-admin",
-     *     tags={"Role"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="roleName",
-     *         in="path",
-     *         required=true,
-     *         description="Role name.",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of required groups.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Role not found."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/role/{roleName}/required-groups',
+        operationId: 'userRoleRequiredGroups',
+        description: 'Needs role: user-admin',
+        summary: 'List all required groups of a role.',
+        security: [['Session' => []]],
+        tags: ['Role'],
+        parameters: [
+            new OA\Parameter(
+                name: 'roleName',
+                description: 'Role name.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of required groups.',
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Group'))
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Role not found.')
+        ],
+    )]
     public function getRequiredGroups(string $roleName): ResponseInterface
     {
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $roleName]);
@@ -64,42 +54,35 @@ class RoleController extends BaseController
         return $this->withJson($role->getRequiredGroups());
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/role/{roleName}/add-required-group/{groupId}",
-     *     operationId="userRoleAddRequiredGroup",
-     *     summary="Add a group as a requirement to the role.",
-     *     description="Needs role: user-admin",
-     *     tags={"Role"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="roleName",
-     *         in="path",
-     *         required=true,
-     *         description="Name of the role.",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="groupId",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group added."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized or role not allowed."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Role and/or group not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/role/{roleName}/add-required-group/{groupId}',
+        operationId: 'userRoleAddRequiredGroup',
+        description: 'Needs role: user-admin',
+        summary: 'Add a group as a requirement to the role.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Role'],
+        parameters: [
+            new OA\Parameter(
+                name: 'roleName',
+                description: 'Name of the role.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'groupId',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group added.'),
+            new OA\Response(response: '403', description: 'Not authorized or role not allowed.'),
+            new OA\Response(response: '404', description: 'Role and/or group not found.')
+        ],
+    )]
     public function addRequiredGroups(string $roleName, string $groupId): ResponseInterface
     {
         $response = $this->fetchEntitiesAndValidate($roleName, (int) $groupId);
@@ -114,42 +97,35 @@ class RoleController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/role/{roleName}/remove-required-group/{groupId}",
-     *     operationId="userRoleRemoveRequiredGroup",
-     *     summary="Remove a group from being a requirement from the role.",
-     *     description="Needs role: user-admin",
-     *     tags={"Role"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="roleName",
-     *         in="path",
-     *         required=true,
-     *         description="Name of the role.",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="groupId",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Role and/or group not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/role/{roleName}/remove-required-group/{groupId}',
+        operationId: 'userRoleRemoveRequiredGroup',
+        description: 'Needs role: user-admin',
+        summary: 'Remove a group from being a requirement from the role.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Role'],
+        parameters: [
+            new OA\Parameter(
+                name: 'roleName',
+                description: 'Name of the role.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'groupId',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Role and/or group not found.')
+        ],
+    )]
     public function removeRequiredGroups(string $roleName, string $groupId): ResponseInterface
     {
         $response = $this->fetchEntitiesAndValidate($roleName, (int) $groupId);

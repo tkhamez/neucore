@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection PhpUnusedAliasInspection */
-
 declare(strict_types=1);
 
 namespace Neucore\Controller\User;
@@ -16,17 +14,11 @@ use Neucore\Service\Account;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * @OA\Tag(
- *     name="Group",
- *     description="Group management."
- * )
- */
+#[OA\Tag(name: 'Group', description: 'Group management.')]
 class GroupController extends BaseController
 {
     private const TYPE_MANAGERS = 'managers';
@@ -60,49 +52,49 @@ class GroupController extends BaseController
         $this->accountGroup = $accountGroup;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/group/all",
-     *     operationId="userGroupAll",
-     *     summary="List all groups.",
-     *     description="Needs role: app-admin, group-admin, watchlist-admin, plugin-admin or user-manager",
-     *     tags={"Group"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of groups.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/group/all',
+        operationId: 'userGroupAll',
+        description: 'Needs role: app-admin, group-admin, watchlist-admin, plugin-admin or user-manager',
+        summary: 'List all groups.',
+        security: [['Session' => []]],
+        tags: ['Group'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of groups.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Group')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function all(): ResponseInterface
     {
         return $this->withJson($this->repositoryFactory->getGroupRepository()->findBy([], ['name' => 'ASC']));
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/group/public",
-     *     operationId="userGroupPublic",
-     *     summary="List all public groups that the player can join.",
-     *     description="Needs role: user",
-     *     tags={"Group"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of groups.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/group/public',
+        operationId: 'userGroupPublic',
+        description: 'Needs role: user',
+        summary: 'List all public groups that the player can join.',
+        security: [['Session' => []]],
+        tags: ['Group'],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of groups.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Group')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.')
+        ],
+    )]
     public function public(): ResponseInterface
     {
         $publicGroups = $this->repositoryFactory->getGroupRepository()->findBy(
@@ -122,49 +114,42 @@ class GroupController extends BaseController
         return $this->withJson($groups);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/user/group/create",
-     *     operationId="userGroupCreate",
-     *     summary="Create a group.",
-     *     description="Needs role: group-admin",
-     *     tags={"Group"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\RequestBody(
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 type="object",
-     *                 required={"name"},
-     *                 @OA\Property(
-     *                     property="name",
-     *                     description="Name of the group.",
-     *                     type="string",
-     *                     maxLength=64,
-     *                     pattern="^[-._a-zA-Z0-9]+$"
-     *                 )
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="201",
-     *         description="The new group.",
-     *         @OA\JsonContent(ref="#/components/schemas/Group")
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Group name is invalid."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="409",
-     *         description="A group with this name already exists."
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/user/group/create',
+        operationId: 'userGroupCreate',
+        description: 'Needs role: group-admin',
+        summary: 'Create a group.',
+        security: [['Session' => [], 'CSRF' => []]],
+        requestBody: new OA\RequestBody(
+            content: new OA\MediaType(
+                mediaType: 'application/x-www-form-urlencoded',
+                schema: new OA\Schema(
+                    required: ['name'],
+                    properties: [
+                        new OA\Property(
+                            property: 'name',
+                            description: 'Name of the group.',
+                            type: 'string',
+                            maxLength: 64,
+                            pattern: '^[-._a-zA-Z0-9]+$'
+                        )
+                    ],
+                    type: 'object'
+                )
+            )
+        ),
+        tags: ['Group'],
+        responses: [
+            new OA\Response(
+                response: '201',
+                description: 'The new group.',
+                content: new OA\JsonContent(ref: '#/components/schemas/Group')
+            ),
+            new OA\Response(response: '400', description: 'Group name is invalid.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '409', description: 'A group with this name already exists.')
+        ],
+    )]
     public function create(ServerRequestInterface $request): ResponseInterface
     {
         $name = $this->getBodyParam($request, 'name', '');
@@ -184,60 +169,52 @@ class GroupController extends BaseController
         return $this->flushAndReturn(201, $newGroup);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/group/{id}/rename",
-     *     operationId="userGroupRename",
-     *     summary="Rename a group.",
-     *     description="Needs role: group-admin",
-     *     tags={"Group"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 type="object",
-     *                 required={"name"},
-     *                 @OA\Property(
-     *                     property="name",
-     *                     description="New name for the group.",
-     *                     type="string",
-     *                     maxLength=64,
-     *                     pattern="^[-._a-zA-Z0-9]+$"
-     *                 )
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="Group was renamed.",
-     *         @OA\JsonContent(ref="#/components/schemas/Group")
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Group name is invalid."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     ),
-     *     @OA\Response(
-     *         response="409",
-     *         description="A group with this name already exists."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/group/{id}/rename',
+        operationId: 'userGroupRename',
+        description: 'Needs role: group-admin',
+        summary: 'Rename a group.',
+        security: [['Session' => [], 'CSRF' => []]],
+        requestBody: new OA\RequestBody(
+            content: new OA\MediaType(
+                mediaType: 'application/x-www-form-urlencoded',
+                schema: new OA\Schema(
+                    required: ['name'],
+                    properties: [
+                        new OA\Property(
+                            property: 'name',
+                            description: 'New name for the group.',
+                            type: 'string',
+                            maxLength: 64,
+                            pattern: '^[-._a-zA-Z0-9]+$'
+                        )
+                    ],
+                    type: 'object',
+                )
+            )
+        ),
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'Group was renamed.',
+                content: new OA\JsonContent(ref: '#/components/schemas/Group')
+            ),
+            new OA\Response(response: '400', description: 'Group name is invalid.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group not found.'),
+            new OA\Response(response: '409', description: 'A group with this name already exists.')
+        ],
+    )]
     public function rename(string $id, ServerRequestInterface $request): ResponseInterface
     {
         $this->findGroup($id);
@@ -259,51 +236,49 @@ class GroupController extends BaseController
         return $this->flushAndReturn(200, $this->group);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/group/{id}/update-description",
-     *     operationId="userGroupUpdateDescription",
-     *     summary="Update group description.",
-     *     description="Needs role: group-admin",
-     *     tags={"Group"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 type="object",
-     *                 required={"description"},
-     *                 @OA\Property(
-     *                     property="description",
-     *                     description="The description for the group.",
-     *                     type="string",
-     *                     maxLength=1024
-     *                 )
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="Description was updated.",
-     *         @OA\JsonContent(ref="#/components/schemas/Group")
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/group/{id}/update-description',
+        operationId: 'userGroupUpdateDescription',
+        description: 'Needs role: group-admin',
+        summary: 'Update group description.',
+        security: [['Session' => [], 'CSRF' => []]],
+        requestBody: new OA\RequestBody(
+            content: new OA\MediaType(
+                mediaType: 'application/x-www-form-urlencoded',
+                schema: new OA\Schema(
+                    required: ['description'],
+                    properties: [
+                        new OA\Property(
+                            property: 'description',
+                            description: 'The description for the group.',
+                            type: 'string',
+                            maxLength: 1024
+                        )
+                    ],
+                    type: 'object'
+                )
+            )
+        ),
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'Description was updated.',
+                content: new OA\JsonContent(ref: '#/components/schemas/Group')
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group not found.')
+        ],
+    )]
     public function updateDescription(string $id, ServerRequestInterface $request): ResponseInterface
     {
         $this->findGroup($id);
@@ -317,46 +292,38 @@ class GroupController extends BaseController
         return $this->flushAndReturn(200, $this->group);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/group/{id}/set-visibility/{choice}",
-     *     operationId="setVisibility",
-     *     summary="Change visibility of a group.",
-     *     description="Needs role: group-admin",
-     *     tags={"Group"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="choice",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="string", enum={"private", "public"})
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="Visibility changed.",
-     *         @OA\JsonContent(ref="#/components/schemas/Group")
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Invalid 'choice' parameter."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/group/{id}/set-visibility/{choice}',
+        operationId: 'setVisibility',
+        description: 'Needs role: group-admin',
+        summary: 'Change visibility of a group.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id', description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'choice',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', enum: ['private', 'public'])
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'Visibility changed.',
+                content: new OA\JsonContent(ref: '#/components/schemas/Group')
+            ),
+            new OA\Response(response: '400', description: "Invalid 'choice' parameter."),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group not found.')
+        ],
+    )]
     public function setVisibility(string $id, string $choice): ResponseInterface
     {
         $this->findGroup($id);
@@ -373,46 +340,39 @@ class GroupController extends BaseController
         return $this->flushAndReturn(200, $this->group);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/group/{id}/set-auto-accept/{choice}",
-     *     operationId="userGroupSetAutoAccept",
-     *     summary="Change the auto-accept setting of a group.",
-     *     description="Needs role: group-admin",
-     *     tags={"Group"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="choice",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="string", enum={"on", "off"})
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="Auto-accept changed.",
-     *         @OA\JsonContent(ref="#/components/schemas/Group")
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Invalid 'choice' parameter."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/group/{id}/set-auto-accept/{choice}',
+        operationId: 'userGroupSetAutoAccept',
+        description: 'Needs role: group-admin',
+        summary: 'Change the auto-accept setting of a group.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'choice',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', enum: ['on', 'off'])
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'Auto-accept changed.',
+                content: new OA\JsonContent(ref: '#/components/schemas/Group')
+            ),
+            new OA\Response(response: '400', description: "Invalid 'choice' parameter."),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group not found.')
+        ],
+    )]
     public function setAutoAccept(string $id, string $choice): ResponseInterface
     {
         $this->findGroup($id);
@@ -429,46 +389,39 @@ class GroupController extends BaseController
         return $this->flushAndReturn(200, $this->group);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/group/{id}/set-is-default/{choice}",
-     *     operationId="userGroupSetIsDefault",
-     *     summary="Change the is-default setting of a group.",
-     *     description="Needs role: group-admin",
-     *     tags={"Group"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="choice",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="string", enum={"on", "off"})
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="Is-default changed.",
-     *         @OA\JsonContent(ref="#/components/schemas/Group")
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Invalid 'choice' parameter."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/group/{id}/set-is-default/{choice}',
+        operationId: 'userGroupSetIsDefault',
+        description: 'Needs role: group-admin',
+        summary: 'Change the is-default setting of a group.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'choice',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', enum: ['on', 'off'])
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'Is-default changed.',
+                content: new OA\JsonContent(ref: '#/components/schemas/Group')
+            ),
+            new OA\Response(response: '400', description: "Invalid 'choice' parameter."),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group not found.')
+        ],
+    )]
     public function setIsDefault(string $id, string $choice): ResponseInterface
     {
         $this->findGroup($id);
@@ -485,35 +438,28 @@ class GroupController extends BaseController
         return $this->flushAndReturn(200, $this->group);
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/user/group/{id}/delete",
-     *     operationId="userGroupDelete",
-     *     summary="Delete a group.",
-     *     description="Needs role: group-admin",
-     *     tags={"Group"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group was deleted."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     )
-     * )
-     */
+    #[OA\Delete(
+        path: '/user/group/{id}/delete',
+        operationId: 'userGroupDelete',
+        description: 'Needs role: group-admin',
+        summary: 'Delete a group.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group was deleted.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group not found.')
+        ],
+    )]
     public function delete(string $id): ResponseInterface
     {
         $this->findGroup($id);
@@ -526,36 +472,36 @@ class GroupController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/group/{id}/managers",
-     *     operationId="userGroupManagers",
-     *     summary="List all managers of a group.",
-     *     description="Needs role: group-admin, group-manager",
-     *     tags={"Group"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Group ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of players ordered by name. Only id and name, and roles for users with group-admin role, properties are returned.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/group/{id}/managers',
+        operationId: 'userGroupManagers',
+        description: 'Needs role: group-admin, group-manager',
+        summary: 'List all managers of a group.',
+        security: [['Session' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Group ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of players ordered by name. Only id and name, and roles for users with' .
+                    ' group-admin role, properties are returned.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Player')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group not found.')
+        ],
+    )]
     public function managers(string $id): ResponseInterface
     {
         $user = $this->getUser($this->userAuth)->getPlayer();
@@ -564,36 +510,35 @@ class GroupController extends BaseController
         return $this->getPlayersFromGroup($id, self::TYPE_MANAGERS, false, $withRole);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/group/{id}/corporations",
-     *     operationId="corporations",
-     *     summary="List all corporations of a group.",
-     *     description="Needs role: group-admin",
-     *     tags={"Group"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Group ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of corporations ordered by name.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/group/{id}/corporations',
+        operationId: 'corporations',
+        description: 'Needs role: group-admin',
+        summary: 'List all corporations of a group.',
+        security: [['Session' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Group ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of corporations ordered by name.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Corporation')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group not found.')
+        ],
+    )]
     public function corporations(string $id): ResponseInterface
     {
         $this->findGroup($id);
@@ -604,36 +549,35 @@ class GroupController extends BaseController
         return $this->withJson($this->group->getCorporations());
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/group/{id}/alliances",
-     *     operationId="alliances",
-     *     summary="List all alliances of a group.",
-     *     description="Needs role: group-admin",
-     *     tags={"Group"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Group ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of alliances ordered by name.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Alliance"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/group/{id}/alliances',
+        operationId: 'alliances',
+        description: 'Needs role: group-admin',
+        summary: 'List all alliances of a group.',
+        security: [['Session' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Group ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of alliances ordered by name.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Alliance')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group not found.')
+        ],
+    )]
     public function alliances(string $id): ResponseInterface
     {
         $this->findGroup($id);
@@ -644,37 +588,35 @@ class GroupController extends BaseController
         return $this->withJson($this->group->getAlliances());
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/group/{id}/required-groups",
-     *     operationId="requiredGroups",
-     *     summary="List all required groups of a group.",
-     *     description="Needs role: group-admin, group-manager",
-     *     tags={"Group"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Group ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of groups ordered by name.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/group/{id}/required-groups',
+        operationId: 'requiredGroups',
+        description: 'Needs role: group-admin, group-manager',
+        summary: 'List all required groups of a group.',
+        security: [['Session' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Group ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of groups ordered by name.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Group')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group not found.')
+        ],
+    )]
     public function requiredGroups(string $id): ResponseInterface
     {
         $this->findGroup($id);
@@ -685,43 +627,35 @@ class GroupController extends BaseController
         return $this->withJson($this->group->getRequiredGroups());
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/group/{id}/add-required/{groupId}",
-     *     operationId="addRequiredGroup",
-     *     summary="Add required group to a group.",
-     *     description="Needs role: group-admin",
-     *     tags={"Group"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="groupId",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group to add.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group added."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group(s) not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/group/{id}/add-required/{groupId}',
+        operationId: 'addRequiredGroup',
+        description: 'Needs role: group-admin',
+        summary: 'Add required group to a group.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'groupId',
+                description: 'ID of the group to add.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group added.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group(s) not found.')
+        ],
+    )]
     public function addRequiredGroup(string $id, string $groupId): ResponseInterface
     {
         $requiredGroup = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
@@ -735,43 +669,35 @@ class GroupController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/group/{id}/remove-required/{groupId}",
-     *     operationId="removeRequiredGroup",
-     *     summary="Remove required group from a group.",
-     *     description="Needs role: group-admin",
-     *     tags={"Group"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="groupId",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group to remove.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group(s) not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/group/{id}/remove-required/{groupId}',
+        operationId: 'removeRequiredGroup',
+        description: 'Needs role: group-admin',
+        summary: 'Remove required group from a group.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'groupId',
+                description: 'ID of the group to remove.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group(s) not found.')
+        ],
+    )]
     public function removeRequiredGroup(string $id, string $groupId): ResponseInterface
     {
         $requiredGroup = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
@@ -785,37 +711,33 @@ class GroupController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/group/{id}/forbidden-groups",
-     *     operationId="userGroupForbiddenGroups",
-     *     summary="List all forbidden groups of a group.",
-     *     description="Needs role: group-admin, group-manager",
-     *     tags={"Group"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Group ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of groups ordered by name.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/group/{id}/forbidden-groups',
+        operationId: 'userGroupForbiddenGroups',
+        description: 'Needs role: group-admin, group-manager',
+        summary: 'List all forbidden groups of a group.',
+        security: [['Session' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Group ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '200', description: 'List of groups ordered by name.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Group')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group not found.')
+        ],
+    )]
     public function forbiddenGroups(string $id): ResponseInterface
     {
         $this->findGroup($id);
@@ -826,42 +748,35 @@ class GroupController extends BaseController
         return $this->withJson($this->group->getForbiddenGroups());
     }
 
-    /**
-     * @OA\Put(
-     *     path="/user/group/{id}/add-forbidden/{groupId}",
-     *     operationId="userGroupAddForbiddenGroup",
-     *     summary="Add forbidden group to a group.",
-     *     description="Needs role: group-admin",
-     *     tags={"Group"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="groupId",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group to add.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group added."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group(s) not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/group/{id}/add-forbidden/{groupId}',
+        operationId: 'userGroupAddForbiddenGroup',
+        description: 'Needs role: group-admin',
+        summary: 'Add forbidden group to a group.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'groupId',
+                description: 'ID of the group to add.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group added.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group(s) not found.')
+        ],
+    )]
     public function addForbiddenGroup(string $id, string $groupId): ResponseInterface
     {
         $forbiddenGroup = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
@@ -875,43 +790,35 @@ class GroupController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/group/{id}/remove-forbidden/{groupId}",
-     *     operationId="userGroupRemoveForbiddenGroup",
-     *     summary="Remove forbidden group from a group.",
-     *     description="Needs role: group-admin",
-     *     tags={"Group"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="groupId",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group to remove.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Group removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group(s) not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/group/{id}/remove-forbidden/{groupId}',
+        operationId: 'userGroupRemoveForbiddenGroup',
+        description: 'Needs role: group-admin',
+        summary: 'Remove forbidden group from a group.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'groupId',
+                description: 'ID of the group to remove.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Group removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group(s) not found.')
+        ],
+    )]
     public function removeForbiddenGroup(string $id, string $groupId): ResponseInterface
     {
         $forbiddenGroup = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
@@ -925,120 +832,102 @@ class GroupController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/group/{id}/add-manager/{pid}",
-     *     operationId="userGroupAddManager",
-     *     summary="Assign a player as manager to a group.",
-     *     description="Needs role: group-admin",
-     *     tags={"Group"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="pid",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the player.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Player added as manager."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Player and/or group not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/group/{id}/add-manager/{pid}',
+        operationId: 'userGroupAddManager',
+        description: 'Needs role: group-admin',
+        summary: 'Assign a player as manager to a group.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'pid',
+                description: 'ID of the player.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Player added as manager.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Player and/or group not found.')
+        ],
+    )]
     public function addManager(string $id, string $pid): ResponseInterface
     {
         return $this->addPlayerAs($id, $pid, 'manager', false);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/group/{id}/remove-manager/{pid}",
-     *     operationId="userGroupRemoveManager",
-     *     summary="Remove a manager (player) from a group.",
-     *     description="Needs role: group-admin",
-     *     tags={"Group"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="pid",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the player.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Player removed from managers."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Player and/or group not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/group/{id}/remove-manager/{pid}',
+        operationId: 'userGroupRemoveManager',
+        description: 'Needs role: group-admin',
+        summary: 'Remove a manager (player) from a group.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'pid',
+                description: 'ID of the player.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Player removed from managers.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Player and/or group not found.')
+        ],
+    )]
     public function removeManager(string $id, string $pid): ResponseInterface
     {
         return $this->removePlayerFrom($id, $pid, self::TYPE_MANAGERS, false);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/group/{id}/applications",
-     *     operationId="applications",
-     *     summary="List all applications of a group.",
-     *     description="Needs role: group-manager",
-     *     tags={"Group"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Group ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of group applications ordered by created date.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/GroupApplication"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/group/{id}/applications',
+        operationId: 'applications',
+        description: 'Needs role: group-manager',
+        summary: 'List all applications of a group.',
+        security: [['Session' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id', description: 'Group ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of group applications ordered by created date.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/GroupApplication')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group not found.')
+        ],
+    )]
     public function applications(string $id): ResponseInterface
     {
         $this->findGroup($id);
@@ -1055,198 +944,162 @@ class GroupController extends BaseController
         return $this->withJson($apps);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/group/accept-application/{id}",
-     *     operationId="acceptApplication",
-     *     summary="Accept a player's request to join a group.",
-     *     description="Needs role: group-manager",
-     *     tags={"Group"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the application.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Application accepted."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Application not found."
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Player is not allowed to be a member of the group."
-     *     ),
-     * )
-     */
+    #[OA\Put(
+        path: '/user/group/accept-application/{id}',
+        operationId: 'acceptApplication',
+        description: 'Needs role: group-manager',
+        summary: "Accept a player's request to join a group.",
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the application.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Application accepted.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Application not found.'),
+            new OA\Response(response: '400', description: 'Player is not allowed to be a member of the group.')
+        ],
+    )]
     public function acceptApplication(string $id): ResponseInterface
     {
         return $this->handleApplication($id, 'accept');
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/group/deny-application/{id}",
-     *     operationId="denyApplication",
-     *     summary="Deny a player's request to join a group.",
-     *     description="Needs role: group-manager",
-     *     tags={"Group"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the application.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Application denied."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Application not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/group/deny-application/{id}',
+        operationId: 'denyApplication',
+        description: 'Needs role: group-manager',
+        summary: "Deny a player's request to join a group.",
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the application.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Application denied.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Application not found.')
+        ],
+    )]
     public function denyApplication(string $id): ResponseInterface
     {
         return $this->handleApplication($id, 'deny');
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/group/{id}/add-member/{pid}",
-     *     operationId="addMember",
-     *     summary="Adds a player to a group.",
-     *     description="Needs role: group-manager or user-manager",
-     *     tags={"Group"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="pid",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the player.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Player added."
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="This player is not a member of one of the required groups."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Player and/or group not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/group/{id}/add-member/{pid}',
+        operationId: 'addMember',
+        description: 'Needs role: group-manager or user-manager',
+        summary: 'Adds a player to a group.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'pid',
+                description: 'ID of the player.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Player added.'),
+            new OA\Response(
+                response: '400',
+                description: 'This player is not a member of one of the required groups.'
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Player and/or group not found.')
+        ],
+    )]
     public function addMember(string $id, string $pid): ResponseInterface
     {
         return $this->addPlayerAs($id, $pid, 'member', true);
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @OA\Put(
-     *     path="/user/group/{id}/remove-member/{pid}",
-     *     operationId="removeMember",
-     *     summary="Remove player from a group.",
-     *     description="Needs role: group-manager or user-manager",
-     *     tags={"Group"},
-     *     security={{"Session"={}, "CSRF"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the group.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="pid",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the player.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="Player removed."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Player and/or group not found."
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/user/group/{id}/remove-member/{pid}',
+        operationId: 'removeMember',
+        description: 'Needs role: group-manager or user-manager',
+        summary: 'Remove player from a group.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'pid',
+                description: 'ID of the player.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Player removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Player and/or group not found.')
+        ],
+    )]
     public function removeMember(string $id, string $pid): ResponseInterface
     {
         return $this->removePlayerFrom($id, $pid, self::TYPE_MEMBERS, true);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/user/group/{id}/members",
-     *     operationId="userGroupMembers",
-     *     summary="List all members of a group.",
-     *     description="Needs role: group-admin, group-manager",
-     *     tags={"Group"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Group ID.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of players ordered by name.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/user/group/{id}/members',
+        operationId: 'userGroupMembers',
+        description: 'Needs role: group-admin, group-manager',
+        summary: 'List all members of a group.',
+        security: [['Session' => []]],
+        tags: ['Group'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Group ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: '200',
+                description: 'List of players ordered by name.',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Player')
+                )
+            ),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'Group not found.')
+        ],
+    )]
     public function members(string $id): ResponseInterface
     {
         $user = $this->getUser($this->userAuth)->getPlayer();
