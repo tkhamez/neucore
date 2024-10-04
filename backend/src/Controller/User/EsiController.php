@@ -44,7 +44,7 @@ class EsiController extends BaseController
      *     path="/user/esi/request",
      *     operationId="request",
      *     summary="ESI request.",
-     *     description="Needs role: user-admin<br>Example route: /characters/{character_id}/stats/<br>Only for GET request.<br> {character_id}, {corporation_id} and {alliance_id} are automatically replaced with the corresponding IDs of the selected character",
+     *     description="Needs role: esi<br>Example route: /characters/{character_id}/stats/<br>Only for GET request.<br> {character_id}, {corporation_id} and {alliance_id} are automatically replaced with the corresponding IDs of the selected character",
      *     tags={"ESI"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
