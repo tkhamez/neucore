@@ -6,6 +6,7 @@ dd mm yyyy
 
 - Added API for alternative password login.
 - Added a css file with a minimal dark theme that plugins can use.
+- Removed support for build-in PHP development server.
 
 ## 2.5.0
 

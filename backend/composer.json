@@ -99,7 +99,6 @@
         "test:cov": "phpunit --colors=always --coverage-html var/phpunit",
         "style:check": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix src --dry-run --diff --ansi",
         "style:fix": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix src --ansi",
-        "start": "php -d max_execution_time=0 -S 0.0.0.0:8080 -t ../web ../web/app.php",
         "licenses-scan": "composer licenses:scan",
         "require-checker": "XDEBUG_MODE=off composer-require-checker check composer.json"
     },

@@ -139,14 +139,6 @@ composer phan
 composer psalm
 ```
 
-Run the built-in web server (the application should work with it, but is rarely tested):
-```
-composer start
-```
-
-Then open http://localhost:8080/index.html.
-
-
 ### Doctrine
 
 Generate proxy classes:
