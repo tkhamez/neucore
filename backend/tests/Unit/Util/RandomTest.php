@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Util;
 
-use Neucore\Util\Random;
+use Neucore\Util\Crypto;
 use PHPUnit\Framework\TestCase;
 
 class RandomTest extends TestCase
@@ -14,7 +14,7 @@ class RandomTest extends TestCase
      */
     public function testString()
     {
-        $string = Random::chars(12);
+        $string = Crypto::chars(12);
         $this->assertSame(12, strlen($string));
         $this->assertSame(1, preg_match('/^[0-9a-zA-Z]+$/', $string));
     }
@@ -24,11 +24,11 @@ class RandomTest extends TestCase
      */
     public function testHex()
     {
-        $hex1 = Random::hex(32);
+        $hex1 = Crypto::hex(32);
         $this->assertSame(32, strlen($hex1));
         $this->assertSame(1, preg_match('/^[0-9a-f]+$/', $hex1));
 
-        $hex2 = Random::hex(31);
+        $hex2 = Crypto::hex(31);
         $this->assertSame(32, strlen($hex2));
     }
 }

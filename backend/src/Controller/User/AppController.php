@@ -11,7 +11,7 @@ use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Service\Account;
-use Neucore\Util\Random;
+use Neucore\Util\Crypto;
 use Neucore\Service\UserAuth;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
@@ -121,11 +121,11 @@ class AppController extends BaseController
         }
 
         try {
-            $secret = Random::hex(64);
+            $secret = Crypto::hex(64);
         } catch (\Exception) {
             return $this->response->withStatus(500);
         }
-        $hash = password_hash($secret, PASSWORD_BCRYPT);
+        $hash = password_hash($secret, Crypto::PASSWORD_HASH);
 
         $app = new App();
         $app->setName($name);
@@ -719,11 +719,11 @@ class AppController extends BaseController
         }
 
         try {
-            $secret = Random::hex(64);
+            $secret = Crypto::hex(64);
         } catch (\Exception) {
             return $this->response->withStatus(500);
         }
-        $hash = password_hash($secret, PASSWORD_BCRYPT);
+        $hash = password_hash($secret, Crypto::PASSWORD_HASH);
 
         $app->setSecret($hash);
 

@@ -10,6 +10,7 @@ use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
+use Neucore\Util\Crypto;
 use PHPUnit\Framework\TestCase;
 
 class AppTest extends TestCase
@@ -43,7 +44,7 @@ class AppTest extends TestCase
     public function testSetGetSecret()
     {
         $app = new App();
-        $pw = password_hash('00h', PASSWORD_BCRYPT);
+        $pw = password_hash('00h', Crypto::PASSWORD_HASH);
         $app->setSecret($pw);
         $this->assertSame($pw, $app->getSecret());
     }

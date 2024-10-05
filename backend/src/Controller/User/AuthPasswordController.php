@@ -6,7 +6,7 @@ namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
 use Neucore\Service\UserAuth;
-use Neucore\Util\Random;
+use Neucore\Util\Crypto;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -34,11 +34,11 @@ class AuthPasswordController extends BaseController
         $user = $this->getUser($userAuth);
 
         try {
-            $password = Random::chars(20, Random::CHARS_PASSWORD);
+            $password = Crypto::chars(20, Crypto::CHARS_PASSWORD);
         } catch (\Exception) {
             return $this->response->withStatus(500);
         }
-        $hash = password_hash($password, PASSWORD_BCRYPT);
+        $hash = password_hash($password, Crypto::PASSWORD_HASH);
 
         $user->getPlayer()->setPassword($hash);
 
@@ -90,8 +90,8 @@ class AuthPasswordController extends BaseController
             return $this->response->withStatus(401);
         }
 
-        if (password_needs_rehash($player->getPassword(), PASSWORD_BCRYPT)) {
-            $player->setPassword(password_hash($password, PASSWORD_BCRYPT));
+        if (password_needs_rehash($player->getPassword(), Crypto::PASSWORD_HASH)) {
+            $player->setPassword(password_hash($password, Crypto::PASSWORD_HASH));
             $this->objectManager->flush();
         }
 

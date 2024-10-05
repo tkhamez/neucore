@@ -16,7 +16,7 @@ use Neucore\Service\Config;
 use Neucore\Service\EsiData;
 use Neucore\Service\EveMail;
 use Neucore\Service\ObjectManager;
-use Neucore\Util\Random;
+use Neucore\Util\Crypto;
 use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
 use OpenApi\Attributes as OA;
@@ -287,7 +287,7 @@ class AuthController extends BaseController
         $token = $sessionData->get(CSRFToken::CSRF_SESSION_NAME);
         if (empty($token)) {
             try {
-                $token = Random::chars(39);
+                $token = Crypto::chars(39);
             } catch (Exception) {
                 $this->response->getBody()->write('Error.');
                 return $this->response->withStatus(500);
@@ -313,7 +313,7 @@ class AuthController extends BaseController
     private function redirectToLoginUrl(string $loginName): ResponseInterface
     {
         try {
-            $randomString = Random::chars(12);
+            $randomString = Crypto::chars(12);
         } catch (Exception) {
             $this->response->getBody()->write('Error.');
             return $this->response->withStatus(500);

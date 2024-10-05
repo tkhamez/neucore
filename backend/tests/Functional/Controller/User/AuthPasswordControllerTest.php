@@ -9,6 +9,7 @@ use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Psr15\CSRFToken;
 use Neucore\Repository\PlayerRepository;
+use Neucore\Util\Crypto;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 
@@ -82,7 +83,7 @@ class AuthPasswordControllerTest extends WebTestCase
     public function testLogin204()
     {
         $player = $this->helper->addCharacterMain('User 8', 8)->getPlayer();
-        $player->setPassword(password_hash('123456', PASSWORD_BCRYPT));
+        $player->setPassword(password_hash('123456', Crypto::PASSWORD_HASH));
         $this->helper->getEm()->flush();
 
         $csrfResponse1 = $this->runApp('GET', '/api/user/auth/csrf-token');

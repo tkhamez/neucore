@@ -6,6 +6,7 @@ namespace Neucore\Service;
 
 use Neucore\Entity\App;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Util\Crypto;
 use Tkhamez\Slim\RoleAuth\RoleProviderInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -103,8 +104,8 @@ class AppAuth implements RoleProviderInterface
      */
     private function upgradeHash(string $secret, App $app): void
     {
-        if (password_needs_rehash($app->getSecret(), PASSWORD_BCRYPT)) {
-            $hash = password_hash($secret, PASSWORD_BCRYPT);
+        if (password_needs_rehash($app->getSecret(), Crypto::PASSWORD_HASH)) {
+            $hash = password_hash($secret, Crypto::PASSWORD_HASH);
             $app->setSecret($hash);
             $this->objectManager->flush();
         }

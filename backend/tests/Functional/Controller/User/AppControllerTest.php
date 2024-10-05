@@ -18,6 +18,7 @@ use Neucore\Entity\App;
 use Doctrine\ORM\Events;
 use Monolog\Handler\TestHandler;
 use Neucore\Repository\PlayerRepository;
+use Neucore\Util\Crypto;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
@@ -823,7 +824,7 @@ class AppControllerTest extends WebTestCase
 
         $a = new App();
         $a->setName('app one');
-        $a->setSecret(password_hash('abc123', PASSWORD_BCRYPT));
+        $a->setSecret(password_hash('abc123', Crypto::PASSWORD_HASH));
         if (in_array('app', $addRoles)) {
             $a->addRole($roles[0]); // Role::APP
         }

@@ -14,6 +14,7 @@ use Neucore\Service\AppAuth;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\SystemVariableStorage;
 use Neucore\Storage\Variables;
+use Neucore\Util\Crypto;
 use PHPUnit\Framework\TestCase;
 use Slim\Psr7\Factory\ResponseFactory;
 use Tests\Helper;
@@ -41,7 +42,7 @@ class RateLimitAppTest extends TestCase
         $helper->emptyDb();
         $this->om = $helper->getObjectManager();
 
-        $app = (new App())->setName('Test app')->setSecret(password_hash('secret', PASSWORD_BCRYPT));
+        $app = (new App())->setName('Test app')->setSecret(password_hash('secret', Crypto::PASSWORD_HASH));
         $maxRequests = (new SystemVariable(SystemVariable::RATE_LIMIT_APP_MAX_REQUESTS))->setValue('50');
         $reset = (new SystemVariable(SystemVariable::RATE_LIMIT_APP_RESET_TIME))->setValue('10');
         $active = (new SystemVariable(SystemVariable::RATE_LIMIT_APP_ACTIVE))->setValue('1');

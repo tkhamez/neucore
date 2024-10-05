@@ -8,6 +8,7 @@ use Neucore\Entity\App;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Psr15\AppRequestCount;
 use Neucore\Service\AppAuth;
+use Neucore\Util\Crypto;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Tests\RequestFactory;
@@ -27,7 +28,7 @@ class AppRequestCountTest extends TestCase
         $helper->emptyDb();
         $om = $helper->getObjectManager();
 
-        $app = (new App())->setName('Test app')->setSecret(password_hash('secret', PASSWORD_BCRYPT));
+        $app = (new App())->setName('Test app')->setSecret(password_hash('secret', Crypto::PASSWORD_HASH));
         $om->persist($app);
         $om->flush();
 

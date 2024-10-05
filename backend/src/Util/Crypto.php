@@ -6,8 +6,13 @@ namespace Neucore\Util;
 
 use Exception;
 
-abstract class Random
+/**
+ * Functions related to cryptography.
+ */
+abstract class Crypto
 {
+    public const PASSWORD_HASH = PASSWORD_DEFAULT;
+
     /**
      * Numbers and alphabet with look-alike characters excluded (O0Il1).
      */

@@ -54,6 +54,7 @@ use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
 use Neucore\Storage\StorageInterface;
 use Neucore\Storage\SystemVariableStorage;
+use Neucore\Util\Crypto;
 use Neucore\Util\Database;
 use Symfony\Component\Yaml\Parser;
 
@@ -492,7 +493,7 @@ class Helper
         string $secret,
         array $roles,
         array $eveLoginNames = [],
-        string $hashAlgorithm = PASSWORD_BCRYPT
+        string $hashAlgorithm = Crypto::PASSWORD_HASH
     ): App
     {
         $hash = $hashAlgorithm === 'md5' ? crypt($secret, '$1$12345678$') : password_hash($secret, $hashAlgorithm);
