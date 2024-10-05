@@ -1,5 +1,23 @@
 <!--suppress HtmlUnknownAnchorTarget -->
 <template>
+<div v-cloak class="modal" id="generatePasswordModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Generate Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>This password can be used to log in instead of using EVE SSO.</p>
+                <code>{{ newPassword }}</code>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
     <div class="container-fluid">
         <a v-cloak class="navbar-brand" :href="settings.customization_website">
@@ -52,6 +70,9 @@
                                 <span role="img" class="fas fa-sign-out"></span>
                                 Sign out
                             </a>
+                            <a href="#" class="dropdown-item" @click.prevent="generatePassword()">
+                                Generate password
+                            </a>
                             <h6 class="dropdown-header">Themes</h6>
                             <a v-for="theme in themes" class="dropdown-item" href="#"
                                :class="{ 'active': selectedTheme === theme }"
@@ -67,7 +88,8 @@
 
 <script>
 import {toRef} from "vue";
-import {Collapse, Dropdown} from 'bootstrap';
+import {Collapse, Dropdown, Modal} from 'bootstrap';
+import { AuthApi } from 'neucore-js-client';
 import Data from '../classes/Data';
 import Helper from "../classes/Helper";
 import Util from "../classes/Util";
@@ -122,6 +144,8 @@ export default {
             page: '',
             themes: Data.themes,
             selectedTheme: '',
+            generatePasswordModal: null,
+            newPassword: '',
         }
     },
 
@@ -243,6 +267,21 @@ export default {
                 }))
 
             return items;
+        },
+
+        generatePassword() {
+            if (!this.generatePasswordModal) {
+                this.generatePasswordModal = new Modal('#generatePasswordModal');
+            }
+            this.generatePasswordModal.show();
+
+            new AuthApi().userAuthPasswordGenerate((error, data) => {
+                if (error) {
+                    this.newPassword = 'Error, please try again.';
+                    return;
+                }
+                this.newPassword = data;
+            });
         },
     },
 }

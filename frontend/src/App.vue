@@ -201,33 +201,36 @@ export default {
             this.updateRoute();
         });
 
-        // event listeners
-        this.emitter.on('playerChange', () => {
-            this.getPlayer();
-            this.getSettings(); // roles and groups of a player can affect settings
-        });
-        this.emitter.on('settingsChange', () => {
-            this.getSettings();
-        });
-        this.emitter.on('message', data => {
-            this.showMessage(data.text, data.type, data.timeout);
-        });
-        this.emitter.on('showCharacters', playerId => {
-            this.$refs.playerModal.showCharacters(playerId);
-        });
-        this.emitter.on('copyText', characters => {
-            this.$refs.copyText.exec(characters);
-        });
+        // Get initial data.
+        // Make sure the first request is finished before making another one, so the rest of
+        // them have the session cookie.
+        this.getSettings(_ => {
+            // event listeners
+            this.emitter.on('playerChange', () => {
+                this.getPlayer();
+                this.getSettings(); // roles and groups of a player can affect settings
+            });
+            this.emitter.on('settingsChange', () => {
+                this.getSettings();
+            });
+            this.emitter.on('message', data => {
+                this.showMessage(data.text, data.type, data.timeout);
+            });
+            this.emitter.on('showCharacters', playerId => {
+                this.$refs.playerModal.showCharacters(playerId);
+            });
+            this.emitter.on('copyText', characters => {
+                this.$refs.copyText.exec(characters);
+            });
 
-        // refresh session every 5 minutes
-        window.setInterval(() => {
-            this.getAuthenticatedCharacter(true);
-        }, 1000*60*5);
+            // refresh session every 5 minutes
+            window.setInterval(() => {
+                this.getAuthenticatedCharacter(true);
+            }, 1000*60*5);
 
-        // get initial data
-        this.getSettings();
-        getCsrfHeader(this);
-        this.getAuthenticatedCharacter();
+            getCsrfHeader(this);
+            this.getAuthenticatedCharacter();
+        });
     },
 
     mounted() {
@@ -308,7 +311,7 @@ export default {
             }
         },
 
-        getSettings() {
+        getSettings(callback) {
             new SettingsApi().systemList((error, data) => {
                 if (error) {
                     return;
@@ -322,6 +325,10 @@ export default {
                 }
                 this.store.setSettings(settings);
                 this.settingsLoaded = true;
+
+                if (callback) {
+                    callback();
+                }
             });
         },
 
@@ -354,6 +361,9 @@ export default {
                 this.authChar = null;
                 this.store.setPlayer(null);
                 window.location.hash = '';
+
+                // This is necessary to get a new CSRF token from the new session.
+                window.location.reload();
             });
         },
     },

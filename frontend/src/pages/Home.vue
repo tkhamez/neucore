@@ -2,6 +2,35 @@
 
 <esi-tokens :eveLogins="eveLogins" :page="'Home'" ref="esiTokensModal"></esi-tokens>
 
+<div v-cloak class="modal" id="passwordLoginModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Login</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body form-group">
+                <label>
+                    Account ID
+                    <input type="text" class="form-control" v-model="passwordLoginAccountId">
+                </label>
+                <label>
+                    Password
+                    <input type="password" class="form-control" v-model="passwordLoginPassword">
+                </label>
+                <p class="mt-2">
+                    <button type="submit" class="btn btn-primary"
+                            @click.prevent="passwordLoginSubmit">Login</button>
+                    {{ passwordLoginMessage }}
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="eveLoginsModal">
     <div v-cloak v-if="eveLogins" class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -91,9 +120,7 @@
                 </a>
                 <p class="small mb-0">
                     <br>
-                    Learn more about
-                    <a class="external" href="https://support.eveonline.com/hc/en-us/articles/205381192"
-                       target="_blank" rel="noopener noreferrer">EVE Online Single Sign On</a>.
+                    <a href="#" @click.prevent="passwordLoginShow">Password login</a>
                 </p>
             </template>
             <!-- logged-in -->
@@ -238,7 +265,7 @@ import mdIns from 'markdown-it-ins';
 import mdAbbr from 'markdown-it-abbr';
 import mdMark from 'markdown-it-mark';
 import mdAttrs from 'markdown-it-attrs';
-import {PlayerApi, SettingsApi} from 'neucore-js-client';
+import {AuthApi, PlayerApi, SettingsApi} from 'neucore-js-client';
 import Data from "../classes/Data";
 import Character from "../classes/Character";
 import Helper from "../classes/Helper";
@@ -274,6 +301,10 @@ export default {
             redirectQuery: '',
             eveLogins: null,
             deleteCharModal: null,
+            passwordLoginModal: null,
+            passwordLoginAccountId: '',
+            passwordLoginPassword: '',
+            passwordLoginMessage: '',
         }
     },
 
@@ -362,6 +393,31 @@ export default {
             return this.eveLogins.filter(eveLogin => {
                 return eveLogin.name.indexOf(Data.loginPrefixProtected) !== 0 ||
                        eveLogin.name === Data.loginNames.tracking
+            });
+        },
+
+        passwordLoginShow() {
+            if (!this.passwordLoginModal) {
+                this.passwordLoginModal = new Modal('#passwordLoginModal');
+            }
+            this.passwordLoginMessage = '';
+            this.passwordLoginAccountId = '';
+            this.passwordLoginPassword = '';
+            this.passwordLoginModal.show();
+        },
+
+        passwordLoginSubmit() {
+            this.passwordLoginMessage = '';
+            new AuthApi().userAuthPasswordLogin(
+                this.passwordLoginAccountId,
+                this.passwordLoginPassword,
+                (error, data, response) => {
+                    if (response.statusCode === 204) {
+                        this.passwordLoginMessage = 'Success';
+                        window.location.reload();
+                    } else {
+                        this.passwordLoginMessage = 'Error';
+                    }
             });
         },
     }
