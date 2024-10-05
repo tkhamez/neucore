@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(
     name: "player_logins",
     indexes: [
-        new ORM\Index(columns: ["request_year"], name: "pl_year_idx"),
-        new ORM\Index(columns: ["request_month"], name: "pl_month_idx")
+        new ORM\Index(name: "pl_year_idx", columns: ["request_year"]),
+        new ORM\Index(name: "pl_month_idx", columns: ["request_month"])
     ],
     options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"]
 )]
