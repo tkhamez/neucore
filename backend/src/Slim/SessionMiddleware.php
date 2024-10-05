@@ -57,8 +57,7 @@ class SessionMiddleware implements MiddlewareInterface
         private readonly SessionData           $sessionData,
         private readonly SessionHandlerFactory $sessionHandlerFactory,
         private readonly array $options = []
-    )
-    {
+    ) {
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
