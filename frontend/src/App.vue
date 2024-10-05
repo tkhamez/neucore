@@ -201,10 +201,24 @@ export default {
             this.updateRoute();
         });
 
+        // event listener
+        this.emitter.on('message', data => {
+            this.showMessage(data.text, data.type, data.timeout);
+        });
+        this.emitter.on('copyText', characters => {
+            this.$refs.copyText.exec(characters);
+        });
+
+        // refresh session every 5 minutes
+        window.setInterval(() => {
+            this.getAuthenticatedCharacter(true);
+        }, 1000*60*5);
+
         // Get initial data.
-        // Make sure the first request is finished before making another one, so the rest of
-        // them have the session cookie.
         this.getSettings(_ => {
+            // Make sure the first request is finished before making another one, so the rest of
+            // them have the session cookie.
+
             // event listeners
             this.emitter.on('playerChange', () => {
                 this.getPlayer();
@@ -213,20 +227,9 @@ export default {
             this.emitter.on('settingsChange', () => {
                 this.getSettings();
             });
-            this.emitter.on('message', data => {
-                this.showMessage(data.text, data.type, data.timeout);
-            });
             this.emitter.on('showCharacters', playerId => {
                 this.$refs.playerModal.showCharacters(playerId);
             });
-            this.emitter.on('copyText', characters => {
-                this.$refs.copyText.exec(characters);
-            });
-
-            // refresh session every 5 minutes
-            window.setInterval(() => {
-                this.getAuthenticatedCharacter(true);
-            }, 1000*60*5);
 
             getCsrfHeader(this);
             this.getAuthenticatedCharacter();
