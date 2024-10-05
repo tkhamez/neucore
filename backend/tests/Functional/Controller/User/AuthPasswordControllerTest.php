@@ -6,7 +6,9 @@ namespace Tests\Functional\Controller\User;
 
 use Neucore\Controller\User\AuthController;
 use Neucore\Entity\Role;
+use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Psr15\CSRFToken;
+use Neucore\Repository\PlayerRepository;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 
@@ -14,20 +16,31 @@ class AuthPasswordControllerTest extends WebTestCase
 {
     private Helper $helper;
 
+    private PlayerRepository $playerRepo;
+
     protected function setUp(): void
     {
         $_SESSION = null;
         $this->helper = new Helper();
 
         $this->helper->emptyDb();
+        $repositoryFactory = new RepositoryFactory($this->helper->getEm());
+        $this->playerRepo = $repositoryFactory->getPlayerRepository();
 
         $this->helper->addRoles([Role::USER]);
     }
 
-    public function testGeneratePassword()
+    public function testGeneratePassword403()
     {
-        $this->helper->addCharacterMain('User 8', 8, [Role::USER])->getPlayer();
+        $response = $this->runApp('POST', '/api/user/auth/password-generate');
+        $this->assertSame(403, $response->getStatusCode());
+    }
+
+    public function testGeneratePassword200()
+    {
+        $player = $this->helper->addCharacterMain('User 8', 8, [Role::USER])->getPlayer();
         $this->loginUser(8);
+        $this->helper->getEm()->clear();
 
         $response = $this->runApp('POST', '/api/user/auth/password-generate');
         $body = $this->parseJsonBody($response);
@@ -35,6 +48,9 @@ class AuthPasswordControllerTest extends WebTestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertIsString($body);
         $this->assertGreaterThan(0, strlen($body));
+
+        $player = $this->playerRepo->find($player->getId());
+        $this->assertTrue(password_verify($body, $player->getPassword()));
     }
 
     public function testLogin400()

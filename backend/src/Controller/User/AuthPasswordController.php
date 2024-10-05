@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
-use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
 use Neucore\Util\Random;
 use OpenApi\Attributes as OA;
@@ -72,11 +71,7 @@ class AuthPasswordController extends BaseController
             new OA\Response(response: '401', description: 'Login failed.'),
         ],
     )]
-    public function login(
-        ServerRequestInterface $request,
-        UserAuth $userAuth,
-        SessionData $session,
-    ): ResponseInterface
+    public function login(ServerRequestInterface $request, UserAuth $userAuth): ResponseInterface
     {
         $playerId = $this->getBodyParam($request, 'playerId');
         $password = $this->getBodyParam($request, 'password');
