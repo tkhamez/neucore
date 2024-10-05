@@ -9,6 +9,11 @@ use Exception;
 abstract class Random
 {
     /**
+     * Numbers and alphabet with look-alike characters excluded (O0Il1).
+     */
+    public const CHARS_PASSWORD = '23456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ';
+
+    /**
      * Generates a random string.
      *
      * @throws Exception

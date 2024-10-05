@@ -102,6 +102,16 @@ class UserAuth implements RoleProviderInterface
         return $this->user;
     }
 
+    /**
+     * Used for the password login and after the SSO login after the character has been determined.
+     */
+    public function loginCharacter(Character $character): void
+    {
+        $this->accountService->increaseLoginCount($character->getPlayer());
+        $this->user = $character;
+        $this->session->set('character_id', $this->user->getId());
+    }
+
     public function login(EveAuthentication $eveAuth): int
     {
         $this->getUser();
@@ -242,9 +252,7 @@ class UserAuth implements RoleProviderInterface
             return 1;
         }
 
-        $this->accountService->increaseLoginCount($char->getPlayer());
-        $this->user = $char;
-        $this->session->set('character_id', $this->user->getId());
+        $this->loginCharacter($char);
 
         return 0;
     }

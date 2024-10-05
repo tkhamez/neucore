@@ -87,7 +87,7 @@ class SessionMiddlewareTest extends TestCase
         $request = $this->createRequestWithRoute('GET', $path);
 
         $em = (new Helper())->getEm();
-        $nbs = new SessionMiddleware(new SessionHandlerFactory($em), $conf);
+        $nbs = new SessionMiddleware(new SessionData, new SessionHandlerFactory($em), $conf);
 
         $nbs->process($request, new RequestHandler());
     }

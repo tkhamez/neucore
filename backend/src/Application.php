@@ -300,6 +300,7 @@ class Application
         ));
 
         $app->add(new SessionMiddleware(
+            $this->container->get(SessionData::class),
             $this->container->get(SessionHandlerFactory::class),
             [
                 SessionMiddleware::OPTION_NAME                   => 'neucore_session',

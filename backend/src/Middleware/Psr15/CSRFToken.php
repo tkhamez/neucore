@@ -41,6 +41,7 @@ class CSRFToken implements MiddlewareInterface
         if ($route === null) {
             return $handler->handle($request);
         }
+
         if (!str_starts_with($route->getPattern(), $this->includeRoute)) {
             return $handler->handle($request);
         }

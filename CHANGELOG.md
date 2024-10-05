@@ -4,6 +4,7 @@
 
 dd mm yyyy
 
+- Added API for alternative password login.
 - Added a css file with a minimal dark theme that plugins can use.
 
 ## 2.5.0

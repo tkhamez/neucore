@@ -6,6 +6,7 @@ namespace Neucore\Slim;
 
 use Neucore\Controller\User\AuthController;
 use Neucore\Factory\SessionHandlerFactory;
+use Neucore\Middleware\Psr15\CSRFToken;
 use Neucore\Service\SessionData;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -34,10 +35,6 @@ class SessionMiddleware implements MiddlewareInterface
 
     public const OPTION_NAME  = 'name';
 
-    private SessionHandlerFactory $sessionHandlerFactory;
-
-    private array $options;
-
     /**
      *
      * Available options (all optional):
@@ -56,10 +53,12 @@ class SessionMiddleware implements MiddlewareInterface
      *      'route_blocking_pattern' => ['/path/one/set', '/path/one/delete'],
      * ]
      */
-    public function __construct(SessionHandlerFactory $sessionHandlerFactory, array $options = [])
+    public function __construct(
+        private readonly SessionData           $sessionData,
+        private readonly SessionHandlerFactory $sessionHandlerFactory,
+        private readonly array $options = []
+    )
     {
-        $this->sessionHandlerFactory = $sessionHandlerFactory;
-        $this->options = $options;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -81,8 +80,11 @@ class SessionMiddleware implements MiddlewareInterface
 
         $response = $handler->handle($request);
 
-        if ($response->hasHeader(AuthController::HEADER_LOGIN) && PHP_SAPI !== 'cli') {
-            session_regenerate_id();
+        if ($response->hasHeader(AuthController::HEADER_LOGIN)) {
+            $this->sessionData->delete(CSRFToken::CSRF_SESSION_NAME);
+            if (PHP_SAPI !== 'cli') {
+                session_regenerate_id();
+            }
         }
 
         return $response;

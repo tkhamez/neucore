@@ -12,6 +12,7 @@ use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Middleware\Psr15\CSRFToken;
 use Neucore\Service\SessionData;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
@@ -413,7 +414,8 @@ class AuthControllerTest extends WebTestCase
         list($token, $keySet) = Helper::generateToken(['read-this', 'and-this']);
         $state = $this->getStatePrefix(EveLogin::NAME_DEFAULT) . self::$state;
         /** @noinspection PhpArrayWriteIsNotUsedInspection */
-        $_SESSION = ['auth_state' => $state, 'auth_result' => null];
+        $_SESSION = ['auth_state' => $state, 'auth_result' => null, CSRFToken::CSRF_SESSION_NAME => 'token'];
+        $session = new SessionData();
 
         $this->client->setResponse(
             new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'), // for getAccessToken()
@@ -433,7 +435,8 @@ class AuthControllerTest extends WebTestCase
         );
         $this->assertSame(302, $response->getStatusCode());
 
-        $this->assertSame(['success' => true, 'message' => 'Login successful.'], $_SESSION['auth_result']);
+        $this->assertSame(['success' => true, 'message' => 'Login successful.'], $session->get('auth_result'));
+        $this->assertNull($session->get(CSRFToken::CSRF_SESSION_NAME));
         $this->assertSame('1', $response->getHeaderLine(AuthController::HEADER_LOGIN));
     }
 
@@ -702,13 +705,14 @@ class AuthControllerTest extends WebTestCase
         $this->assertSame(204, $response->getStatusCode());
     }
 
-    public function testCsrfToken403()
+    public function testCsrfToken200Unauthenticated()
     {
         $response = $this->runApp('GET', '/api/user/auth/csrf-token');
-        $this->assertSame(403, $response->getStatusCode());
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(39, strlen($this->parseJsonBody($response)));
     }
 
-    public function testCsrfToken200()
+    public function testCsrfToken200Authenticated()
     {
         $this->helper->addCharacterMain('Test User', 123456, [Role::USER]);
         $this->loginUser(123456);

@@ -64,6 +64,9 @@ class Player implements \JsonSerializable
     #[OA\Property]
     private ?int $id = null;
 
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $password = null;
+
     /**
      * A name for the player.
      *
@@ -230,6 +233,17 @@ class Player implements \JsonSerializable
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    public function getPassword(): string
+    {
+        return (string)$this->password;
     }
 
     public function setLastUpdate(\DateTime $lastUpdate): self

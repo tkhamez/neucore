@@ -11,6 +11,7 @@ use Neucore\Controller\PluginController;
 use Neucore\Controller\User\AllianceController;
 use Neucore\Controller\User\AppController;
 use Neucore\Controller\User\AuthController;
+use Neucore\Controller\User\AuthPasswordController;
 use Neucore\Controller\User\CharacterController;
 use Neucore\Controller\User\CorporationController;
 use Neucore\Controller\User\EsiController;
@@ -34,6 +35,8 @@ return [
     '/api/user/auth/result'     => ['GET',  [AuthController::class, 'result']],
     '/api/user/auth/logout'     => ['POST', [AuthController::class, 'logout']],
     '/api/user/auth/csrf-token' => ['GET',  [AuthController::class, 'csrfToken']],
+    '/api/user/auth/password-generate' => ['POST', [AuthPasswordController::class, 'generatePassword']],
+    '/api/user/auth/password-login'    => ['POST', [AuthPasswordController::class, 'login']],
 
     '/api/app/v1/show' => ['GET', [ApplicationController::class, 'showV1']],
 

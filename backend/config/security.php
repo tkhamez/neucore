@@ -54,7 +54,9 @@ return [
 
     '/api/user/auth/callback'   => [Role::ANONYMOUS, Role::USER], // only for backwards compatibility
     '/api/user/auth/result'     => [Role::ANONYMOUS, Role::USER],
-    '/api/user/auth/csrf-token' => [Role::USER],
+    '/api/user/auth/csrf-token' => [Role::ANONYMOUS, Role::USER],
+    '/api/user/auth/password-generate' => [Role::USER],
+    '/api/user/auth/password-login'    => [Role::ANONYMOUS],
 
     '/api/user/character/find-character' => [Role::USER_ADMIN, Role::USER_MANAGER, Role::USER_CHARS],
     '/api/user/character/find-player'    => [Role::GROUP_MANAGER],

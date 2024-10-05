@@ -119,6 +119,18 @@ class UserAuthTest extends TestCase
         $this->assertSame(9013, $user->getId());
     }
 
+    public function testLoginCharacter()
+    {
+        SessionData::setReadOnly(false);
+        $char = $this->helper->addCharacterMain('User 756', 756);
+
+        $this->service->loginCharacter($char);
+
+        $user = $this->service->getUser();
+        $this->assertSame(756, $_SESSION['character_id']);
+        $this->assertSame(756, $user->getId());
+    }
+
     public function testLogin_Authenticate_NoUserRoleError()
     {
         $token = new AccessToken(['access_token' => 'token']);

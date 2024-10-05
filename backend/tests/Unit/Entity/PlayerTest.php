@@ -146,6 +146,13 @@ class PlayerTest extends TestCase
         $this->assertSame('nam', $play->getName());
     }
 
+    public function testSetGetPassword()
+    {
+        $play= new Player();
+        $play->setPassword('123456');
+        $this->assertSame('123456', $play->getPassword());
+    }
+
     /**
      * @throws \Exception
      */
