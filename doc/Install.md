@@ -221,10 +221,10 @@ docker build -f setup/Dockerfile --no-cache -t neucore dist
 A Linux server (others may work, but were not tested).
 
 To run the application:
-* PHP >=8.1.0 - 8.3 (64bit version), see [backend/composer.json](../backend/composer.json) for necessary and 
-  suggested extensions (APCu highly recommended).
-* MariaDB or MySQL Server (tested with MariaDB 10.5, 10.11, 11.4 and MySQL 8.0.22, 8.4.0, 
-  NO_BACKSLASH_ESCAPES should not be on). Unit tests can also be run with a SQLite in-memory database.
+* PHP >=8.1.0 - 8.3 (64bit version), see [backend/composer.json](../backend/composer.json) for
+  necessary and  suggested extensions (APCu highly recommended).
+* MariaDB or MySQL Server (tested with MariaDB 10.5, 10.11, 11.4 and MySQL 8.0.22, 8.4.0). Unit
+  tests can also be run with a SQLite in-memory database.
 * An HTTP Server with support for PHP and URL rewriting.
   * Set the document root to the `web` directory.
   * Configure URL rewriting to `app.php`:
@@ -233,7 +233,8 @@ To run the application:
     * For Nginx there's a sample [configuration](../setup/docker-nginx.conf) file in the `setup` directory.
 
 Additionally, for a development environment and to build the application:
-* PHP extensions: ast (optional for phan), pdo_sqlite (optional for unit tests), xdebug (optional for debugging).
+* PHP extensions: ast (optional for phan), pdo_sqlite (optional for unit tests), xdebug
+  (optional for debugging).
 * Composer 2.
 * Node.js, only tested with version 18.12.1 (LTS) with npm 8.19.2.
 * Java runtime >=11 (but only tested with v17) to generate the OpenAPI JavaScript client.

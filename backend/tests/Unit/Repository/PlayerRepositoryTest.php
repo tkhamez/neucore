@@ -64,7 +64,8 @@ class PlayerRepositoryTest extends TestCase
         self::$player1 = $helper->addCharacterMain('c1', 1)->getPlayer();
         self::$player1->getCharacters()[0]->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(true);
         self::$player1->getCharacters()[0]->setCorporation($corp1)->setCreated(new \DateTime());
-        $char1b = $helper->addCharacterToPlayer('c1b 12\ 12_ 12% 12', 12, self::$player1, true)->setCorporation($corp2);
+        $char1b = $helper->addCharacterToPlayer('c1b 12\ 12_ 12% 12', 12, self::$player1, true)
+            ->setCorporation($corp2);
         $char1b->setCorporation($corp1);
         $char1b->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(false);
         $char1c = $helper->addCharacterToPlayer('c1c', 1313, self::$player1, true)->setCorporation($corp4);
@@ -258,9 +259,6 @@ class PlayerRepositoryTest extends TestCase
 
     public function testFindCharacters_SpecialChars()
     {
-        if (Database::getDbName(self::$em) === 'sqlite') {
-            $this->markTestSkipped('This is not implemented for SQLite.');
-        }
         $this->assertSame([], $this->repo->findCharacters('c1_', false));
         $this->assertSame([], $this->repo->findCharacters('c1%', false));
         $this->assertSame(1, count($this->repo->findCharacters('12_ 12', false)));

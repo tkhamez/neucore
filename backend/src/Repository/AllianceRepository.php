@@ -37,17 +37,29 @@ class AllianceRepository extends EntityRepository
 
     /**
      * @return Alliance[]
+     * @see CorporationRepository::findByNameOrTickerPartialMatch
      */
     public function findByNameOrTickerPartialMatch(string $search): array
     {
-        $search = Database::escapeForLike($this->getEntityManager(), $search);
+        $search = Database::escapeForLike($search);
 
-        $query = $this->createQueryBuilder('a')
-            ->where('a.name LIKE :search')
-            ->orWhere('a.ticker LIKE :search')
+        // For some reason there's an error "SQLSTATE[HY093]: Invalid parameter number: number
+        // of bound variables does not match number of tokens" when both are used in the same
+        // query with MariaDB if the sql mode includes NO_BACKSLASH_ESCAPES and "ESCAPE" is used
+        // in the query.
+
+        $query1 = $this->createQueryBuilder('a')
+            ->where("a.name LIKE :name ESCAPE '\'")
             ->addOrderBy('a.name', 'ASC')
-            ->setParameter('search', "%$search%");
+            ->setParameter('name', "%$search%");
+        $result1 = $query1->getQuery()->getResult();
 
-        return $query->getQuery()->getResult();
+        $query2 = $this->createQueryBuilder('a')
+            ->where("a.ticker LIKE :ticker ESCAPE '\'")
+            ->addOrderBy('a.name', 'ASC')
+            ->setParameter('ticker', "%$search%");
+        $result2 = $query2->getQuery()->getResult();
+
+        return array_merge($result1, $result2);
     }
 }

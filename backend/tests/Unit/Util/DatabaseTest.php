@@ -23,12 +23,11 @@ class DatabaseTest extends TestCase
         $this->assertMatchesRegularExpression('/mysql|sqlite/', Database::getDbName(self::$em));
     }
 
+    /**
+     * @see PlayerRepositoryTest::testFindCharacters_SpecialChars
+     */
     public function testEscapeForLike()
     {
-        if (Database::getDbName(self::$em) === Database::PLATFORM_MYSQL) {
-            $this->assertSame('T\_s\%\\\\t', Database::escapeForLike(self::$em, 'T_s%\t'));
-        } else {
-            $this->assertSame('T_s%\t', Database::escapeForLike(self::$em, 'T_s%\t'));
-        }
+        $this->assertSame('T\_s\%\\\\t', Database::escapeForLike('T_s%\t'));
     }
 }

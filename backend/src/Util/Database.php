@@ -36,11 +36,8 @@ class Database
         }
     }
 
-    public static function escapeForLike(EntityManagerInterface $em, string $query): string
+    public static function escapeForLike(string $query): string
     {
-        if (self::getDbName($em) === self::PLATFORM_MYSQL) {
-            return str_replace(['\\', '_', '%'], ['\\\\', '\_', '\%'], $query);
-        }
-        return $query;
+        return str_replace(['\\', '_', '%'], ['\\\\', '\_', '\%'], $query);
     }
 }

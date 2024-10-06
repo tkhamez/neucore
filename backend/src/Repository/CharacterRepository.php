@@ -27,10 +27,10 @@ class CharacterRepository extends EntityRepository
      */
     public function findMainByNamePartialMatch(string $name): array
     {
-        $name = Database::escapeForLike($this->getEntityManager(), $name);
+        $name = Database::escapeForLike($name);
 
         $query = $this->createQueryBuilder('c')
-            ->where('c.name LIKE :name')
+            ->where("c.name LIKE :name ESCAPE '\'")
             ->addOrderBy('c.name', 'ASC')
             ->setParameter('name', "%$name%")
             ->andWhere('c.main = :main')

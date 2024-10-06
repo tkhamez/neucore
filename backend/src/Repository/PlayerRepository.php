@@ -215,7 +215,7 @@ class PlayerRepository extends EntityRepository
      */
     public function findCharacters(string $nameOrId, bool $currentOnly): array
     {
-        $nameOrIdForLike = Database::escapeForLike($this->getEntityManager(), $nameOrId);
+        $nameOrIdForLike = Database::escapeForLike($nameOrId);
 
         // current characters
         $query1 = $this
@@ -227,7 +227,7 @@ class PlayerRepository extends EntityRepository
                 'p.name AS player_name',
             ])
             ->leftJoin('p.characters', 'c')
-            ->where('c.name LIKE :name')
+            ->where("c.name LIKE :name ESCAPE '\'")
             ->orWhere('c.id = :id')
             ->orderBy('c.name', 'ASC')
             ->setParameter('name', "%$nameOrIdForLike%")
@@ -245,8 +245,8 @@ class PlayerRepository extends EntityRepository
                 ])
                 ->distinct()
                 ->leftJoin('p.removedCharacters', 'rc')
-                ->where('rc.characterName LIKE :name')
-                ->orWhere('rc.characterId LIKE :id')
+                ->where("rc.characterName LIKE :name ESCAPE '\'")
+                ->orWhere('rc.characterId = :id')
                 ->orderBy('rc.characterName', 'ASC')
                 ->setParameter('name', "%$nameOrIdForLike%")
                 ->setParameter('id', $nameOrId);
@@ -263,7 +263,7 @@ class PlayerRepository extends EntityRepository
                 ])
                 ->leftJoin('p.characters', 'c')
                 ->leftJoin('c.characterNameChanges', 'ccn')
-                ->where('ccn.oldName LIKE :name')
+                ->where("ccn.oldName LIKE :name ESCAPE '\'")
                 ->orderBy('ccn.oldName', 'ASC')
                 ->setParameter('name', "%$nameOrIdForLike%");
         }
