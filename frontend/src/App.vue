@@ -361,8 +361,8 @@ export default {
 
         logout() {
             new AuthApi().logout(() => {
-                this.authChar = null;
-                this.store.setPlayer(null);
+                //this.authChar = null;
+                //this.store.setPlayer(null);
                 window.location.hash = '';
 
                 // This is necessary to get a new CSRF token from the new session.

@@ -8,7 +8,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>This password can be used to log in instead of using EVE SSO.</p>
+                <p>
+                    This password can be used together with your account ID to log in instead
+                    of using EVE SSO.
+                </p>
                 <code>{{ newPassword }}</code>
             </div>
             <div class="modal-footer">
