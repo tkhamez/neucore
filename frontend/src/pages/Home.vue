@@ -10,19 +10,23 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body form-group">
-                <label>
-                    Account ID
-                    <input type="text" class="form-control" v-model="passwordLoginAccountId">
-                </label>
-                <label>
-                    Password
-                    <input type="password" class="form-control" v-model="passwordLoginPassword">
-                </label>
-                <p class="mt-2">
-                    <button type="submit" class="btn btn-primary"
-                            @click.prevent="passwordLoginSubmit">Login</button>
-                    {{ passwordLoginMessage }}
-                </p>
+                <form action="#" method="post">
+                    <label>
+                        Account ID
+                        <input name="username" autocomplete="username" type="text"
+                               class="form-control" v-model="passwordLoginAccountId">
+                    </label>
+                    <label>
+                        Password
+                        <input name="password" autocomplete="current-password" type="password"
+                               class="form-control" v-model="passwordLoginPassword">
+                    </label>
+                    <p class="mt-2">
+                        <button type="submit" class="btn btn-primary"
+                                @click.prevent="passwordLoginSubmit">Login</button>
+                        {{ passwordLoginMessage }}
+                    </p>
+            </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -416,7 +420,7 @@ export default {
                         this.passwordLoginMessage = 'Success';
                         window.location.reload();
                     } else {
-                        this.passwordLoginMessage = 'Error';
+                        this.passwordLoginMessage = 'Login failed.';
                     }
             });
         },
