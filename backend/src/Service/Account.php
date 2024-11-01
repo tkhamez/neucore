@@ -464,7 +464,7 @@ class Account
                 }
             }
 
-            // Note: tracking, watchlist and 'watchlist-manager cannot have a group requirement,
+            // Note: tracking, watchlist and watchlist-manager cannot have a group requirement,
             // so there's no conflict with that assignment which is solely based on groups.
 
             $player->removeRole($role);
