@@ -12,6 +12,7 @@ dd mm yyyy
 - Small UI improvement.
 - Added a css file with a minimal dark theme that plugins can use.
 - Removed support for build-in PHP development server.
+- Updated dependencies.
 
 ## 2.5.0
 
