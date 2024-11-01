@@ -72,10 +72,10 @@ class TrackingController extends BaseController
 
         $members = $this->repositoryFactory
             ->getCorporationMemberRepository()
-            ->setInactive($inactive !== null ? (int) $inactive : null)
-            ->setActive($active !== null ? (int) $active : null)
+            ->setInactive($inactive !== null ? (int)$inactive : null)
+            ->setActive($active !== null ? (int)$active : null)
             ->setAccount($account)
-            ->findMatching((int) $id);
+            ->findMatching((int)$id);
 
         $result = [];
         foreach ($members as $member) {

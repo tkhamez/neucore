@@ -89,7 +89,7 @@ class Watchlist
 
         // get kicklist
         $playersOnKicklist = [];
-        if (! $includeKicklist) {
+        if (!$includeKicklist) {
             $playersFromKicklistCorporations = $this->playerRepository->findInCorporationsWithExcludes(
                 $this->getCorporationIds($id, self::KICKLIST_ALLIANCE, self::KICKLIST_CORPORATION),
                 $exemptPlayers

@@ -89,11 +89,11 @@ class SendMissingCharacterMail extends Command
 
         // read config
         $daysVar = $this->sysVarRepository->find(SystemVariable::MAIL_MISSING_CHARACTER_RESEND);
-        if (! $daysVar || (int) $daysVar->getValue() <= 0) {
+        if (!$daysVar || (int)$daysVar->getValue() <= 0) {
             $this->writeLine(' Invalid config.', false);
             return;
         }
-        $days = (int) $daysVar->getValue();
+        $days = (int)$daysVar->getValue();
 
         $dbResultLimit = 1000;
         $offset = $dbResultLimit * -1;
@@ -110,7 +110,7 @@ class SendMissingCharacterMail extends Command
             $this->entityManager->clear(); // detaches all objects from Doctrine
 
             foreach ($memberIds as $memberId) {
-                if (! $this->entityManager->isOpen()) {
+                if (!$this->entityManager->isOpen()) {
                     $this->logger->critical('SendInvalidTokenMail: cannot continue without an open entity manager.');
                     break;
                 }

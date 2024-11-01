@@ -96,7 +96,7 @@ class SendInvalidTokenMail extends Command
             $this->entityManager->clear(); // detaches all objects from Doctrine
 
             foreach ($playerIds as $playerId) {
-                if (! $this->entityManager->isOpen()) {
+                if (!$this->entityManager->isOpen()) {
                     $this->logger->critical('SendInvalidTokenMail: cannot continue without an open entity manager.');
                     break;
                 }

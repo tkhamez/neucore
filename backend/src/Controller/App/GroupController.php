@@ -95,7 +95,7 @@ class GroupController extends BaseController
     public function groupsV1(string $cid, ServerRequestInterface $request): ResponseInterface
     {
         $appGroups = $this->getAppGroups($request);
-        $result = $this->getGroupsForPlayer((int) $cid, $appGroups);
+        $result = $this->getGroupsForPlayer((int)$cid, $appGroups);
 
         if ($result === null) {
             return $this->response->withStatus(404);
@@ -449,9 +449,9 @@ class GroupController extends BaseController
     )]
     public function groupsWithFallbackV1(ServerRequestInterface $request): ResponseInterface
     {
-        $characterId = (int) $this->getQueryParam($request, 'character');
-        $corporationId = (int) $this->getQueryParam($request, 'corporation');
-        $allianceId = (int) $this->getQueryParam($request, 'alliance');
+        $characterId = (int)$this->getQueryParam($request, 'character');
+        $corporationId = (int)$this->getQueryParam($request, 'corporation');
+        $allianceId = (int)$this->getQueryParam($request, 'alliance');
 
         $appGroups = $this->getAppGroups($request);
 
@@ -522,14 +522,14 @@ class GroupController extends BaseController
     )]
     public function members(string $groupId, ServerRequestInterface $request): ResponseInterface
     {
-        $group = $this->getGroup((int) $groupId, $request);
+        $group = $this->getGroup((int)$groupId, $request);
         if ($group === null) {
             return $this->response->withStatus(404, 'Group not found.');
         }
 
         $corporationId = $this->getQueryParam($request, 'corporation');
         if ($corporationId !== null) {
-            $corporationId = (int) $corporationId;
+            $corporationId = (int)$corporationId;
         }
 
         $members = $this->repositoryFactory
@@ -542,7 +542,7 @@ class GroupController extends BaseController
     private function corpOrAllianceGroups(string $id, string $type, ServerRequestInterface $request): ResponseInterface
     {
         $appGroups = $this->getAppGroups($request);
-        $result = $this->getGroupsFor($type, (int) $id, $appGroups);
+        $result = $this->getGroupsFor($type, (int)$id, $appGroups);
 
         if ($result === null) {
             return $this->response->withStatus(404);

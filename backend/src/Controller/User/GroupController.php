@@ -659,9 +659,9 @@ class GroupController extends BaseController
     )]
     public function addRequiredGroup(string $id, string $groupId): ResponseInterface
     {
-        $requiredGroup = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
+        $requiredGroup = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
         $this->findGroup($id);
-        if (!$this->group || ! $requiredGroup) {
+        if (!$this->group || !$requiredGroup) {
             return $this->response->withStatus(404);
         }
 
@@ -782,7 +782,7 @@ class GroupController extends BaseController
     )]
     public function addForbiddenGroup(string $id, string $groupId): ResponseInterface
     {
-        $forbiddenGroup = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
+        $forbiddenGroup = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
         $this->findGroup($id);
         if (!$this->group || !$forbiddenGroup) {
             return $this->response->withStatus(404);
@@ -1107,7 +1107,7 @@ class GroupController extends BaseController
     public function members(string $id): ResponseInterface
     {
         $user = $this->getUser($this->userAuth)->getPlayer();
-        $onlyIfManager = ! $user->hasRole(Role::GROUP_ADMIN);
+        $onlyIfManager = !$user->hasRole(Role::GROUP_ADMIN);
 
         return $this->getPlayersFromGroup($id, self::TYPE_MEMBERS, $onlyIfManager, false);
     }
@@ -1145,7 +1145,7 @@ class GroupController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        if ($onlyIfManager && ! $this->checkManager($this->group)) {
+        if ($onlyIfManager && !$this->checkManager($this->group)) {
             return $this->response->withStatus(403);
         }
 
@@ -1223,7 +1223,7 @@ class GroupController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        if ($onlyIfManager && ! $this->checkManager($this->group) && ! $this->isUserManager()) {
+        if ($onlyIfManager && !$this->checkManager($this->group) && !$this->isUserManager()) {
             return $this->response->withStatus(403);
         }
 
@@ -1279,7 +1279,7 @@ class GroupController extends BaseController
 
     private function findGroup(string $id): bool
     {
-        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int) $id);
+        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int)$id);
         if ($groupEntity === null) {
             return false;
         }
@@ -1290,7 +1290,7 @@ class GroupController extends BaseController
 
     private function findGroupAndPlayer(string $groupId, string $playerId): void
     {
-        $playerEntity = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
+        $playerEntity = $this->repositoryFactory->getPlayerRepository()->find((int)$playerId);
         if (!$this->findGroup($groupId) || $playerEntity === null) {
             return;
         }

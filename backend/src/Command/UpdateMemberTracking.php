@@ -198,11 +198,11 @@ class UpdateMemberTracking extends Command
         $structures = [];
         foreach ($trackingData as $item) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
-            $charIds[] = (int) $item->getCharacterId();
-            $typeIds[] = (int) $item->getShipTypeId();
+            $charIds[] = (int)$item->getCharacterId();
+            $typeIds[] = (int)$item->getShipTypeId();
 
             // see also https://github.com/esi/esi-docs/blob/master/docs/asset_location_id.md
-            $locationId = (int) $item->getLocationId();
+            $locationId = (int)$item->getLocationId();
             if ($locationId >= 30000000 && $locationId <= 33000000) {
                 $systemIds[] = $locationId;
             } elseif ($locationId >= 60000000 && $locationId <= 64000000) {

@@ -230,10 +230,10 @@ class CharacterController extends BaseController
             $player->hasRole(Role::TRACKING) ||
             $player->hasRole(Role::WATCHLIST)
         ) {
-            $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
+            $char = $this->repositoryFactory->getCharacterRepository()->find((int)$id);
         } else {
             foreach ($player->getCharacters() as $c) {
-                if ($c->getId() === (int) $id) {
+                if ($c->getId() === (int)$id) {
                     $char = $c;
                     break;
                 }
@@ -304,7 +304,7 @@ class CharacterController extends BaseController
         Config $config,
         LoggerInterface $log
     ): ResponseInterface {
-        $charId = (int) $id;
+        $charId = (int)$id;
 
         $userRole = $this->repositoryFactory->getRoleRepository()->findBy(['name' => Role::USER]);
         if (count($userRole) !== 1) {

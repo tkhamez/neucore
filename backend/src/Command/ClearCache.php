@@ -42,7 +42,7 @@ class ClearCache extends Command
     private function deleteDirectoryContent(string $directory): string
     {
         $dir = realpath($directory);
-        if (! $dir) {
+        if (!$dir) {
             return '';
         }
 

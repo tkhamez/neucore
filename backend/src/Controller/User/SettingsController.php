@@ -163,10 +163,10 @@ class SettingsController extends BaseController
             $variable->setValue(''); // only removal is allowed here
             $eveMail->deleteToken();
         } else {
-            $variable->setValue((string) $this->getBodyParam($request, self::COLUMN_VALUE));
+            $variable->setValue((string)$this->getBodyParam($request, self::COLUMN_VALUE));
         }
 
-        if (! $this->objectManager->flush()) {
+        if (!$this->objectManager->flush()) {
             return $this->response->withStatus(500);
         }
 

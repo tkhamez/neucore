@@ -143,18 +143,18 @@ class EveMail
         }
         $player = $char->getPlayer();
 
-        if (! $ignoreAlreadySentAndStatus && $player->getStatus() === Player::STATUS_MANAGED) {
+        if (!$ignoreAlreadySentAndStatus && $player->getStatus() === Player::STATUS_MANAGED) {
             return 'Player account status is manually managed.';
         }
 
         // check if player account has at least one character in one of the configured alliances or corporations
         $valid = $player->hasCharacterInAllianceOrCorporation($alliances, $corporations);
-        if (! $valid) {
+        if (!$valid) {
             return 'No character found on account that belongs to one of the configured alliances or corporations.';
         }
 
         // check if mail was sent before
-        if (! $ignoreAlreadySentAndStatus && $player->getDeactivationMailSent()) {
+        if (!$ignoreAlreadySentAndStatus && $player->getDeactivationMailSent()) {
             return 'Mail already sent.';
         }
 
@@ -238,7 +238,7 @@ class EveMail
         $result = [];
         $corpRepo = $this->repositoryFactory->getCorporationRepository();
         foreach (explode(',', $corporations->getValue()) as $corporationId) {
-            $corporation = $corpRepo->find((int) $corporationId);
+            $corporation = $corpRepo->find((int)$corporationId);
             if (
                 $corporation &&
                 $corporation->getTrackingLastUpdate() > $yesterday &&
@@ -265,7 +265,7 @@ class EveMail
     {
         $daysVar = $this->sysVarRepo->find(SystemVariable::MAIL_MISSING_CHARACTER_RESEND);
 
-        if (! $daysVar || (int) $daysVar->getValue() <= 0) {
+        if (!$daysVar || (int)$daysVar->getValue() <= 0) {
             return 'Invalid config.';
         }
 
@@ -275,11 +275,11 @@ class EveMail
 
         $memberRepo = $this->repositoryFactory->getCorporationMemberRepository();
         $member = $memberRepo->find($corporationMemberId);
-        if (! $member) {
+        if (!$member) {
             return 'Member not found.';
         }
 
-        $minDateSent = date_create('now -' . (int) $daysVar->getValue() . ' days');
+        $minDateSent = date_create('now -' . (int)$daysVar->getValue() . ' days');
         if ($member->getMissingCharacterMailSentDate() && $member->getMissingCharacterMailSentDate() > $minDateSent) {
             return 'Already sent.';
         }

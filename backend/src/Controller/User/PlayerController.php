@@ -171,7 +171,7 @@ class PlayerController extends BaseController
         UserAuth $userAuth,
         AccountGroup $accountGroupService
     ): ResponseInterface {
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int)$id);
 
         if ($player === null) {
             return $this->response->withStatus(404);
@@ -217,7 +217,7 @@ class PlayerController extends BaseController
     public function addApplication(string $gid): ResponseInterface
     {
         // players can only apply to public groups
-        $criteria = ['id' => (int) $gid, 'visibility' => Group::VISIBILITY_PUBLIC];
+        $criteria = ['id' => (int)$gid, 'visibility' => Group::VISIBILITY_PUBLIC];
         $group = $this->repositoryFactory->getGroupRepository()->findOneBy($criteria);
         if ($group === null) {
             return $this->response->withStatus(404);
@@ -348,7 +348,7 @@ class PlayerController extends BaseController
     )]
     public function leaveGroup(string $gid, AccountGroup $accountGroup): ResponseInterface
     {
-        $group = $this->repositoryFactory->getGroupRepository()->findOneBy(['id' => (int) $gid]);
+        $group = $this->repositoryFactory->getGroupRepository()->findOneBy(['id' => (int)$gid]);
         if ($group === null) {
             return $this->response->withStatus(404);
         }
@@ -389,7 +389,7 @@ class PlayerController extends BaseController
         $main = null;
         $player = $this->getUser($this->userAuth)->getPlayer();
         foreach ($player->getCharacters() as $char) {
-            if ($char->getId() === (int) $cid) {
+            if ($char->getId() === (int)$cid) {
                 $char->setMain(true);
                 $main = $char;
                 $player->setName($main->getName());
@@ -444,8 +444,8 @@ class PlayerController extends BaseController
             Player::STATUS_STANDARD,
             Player::STATUS_MANAGED,
         ];
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
-        if (! in_array($status, $validStatus) || ! $player) {
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int)$id);
+        if (! in_array($status, $validStatus) || !$player) {
             return $this->response->withStatus(400);
         }
 
@@ -675,7 +675,7 @@ class PlayerController extends BaseController
     )]
     public function addRole(string $id, string $name): ResponseInterface
     {
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int)$id);
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
 
         if (!$player || !$role || !in_array($role->getName(), $this->assignableRoles)) {
@@ -728,10 +728,10 @@ class PlayerController extends BaseController
     )]
     public function removeRole(string $id, string $name): ResponseInterface
     {
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int)$id);
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
 
-        if (! $player || ! $role || ! in_array($role->getName(), $this->assignableRoles)) {
+        if (!$player || !$role || ! in_array($role->getName(), $this->assignableRoles)) {
             return $this->response->withStatus(404);
         }
 
@@ -769,7 +769,7 @@ class PlayerController extends BaseController
     )]
     public function showById(string $id, PluginService $pluginService): ResponseInterface
     {
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int)$id);
 
         if ($player === null) {
             return $this->response->withStatus(404);
@@ -817,7 +817,7 @@ class PlayerController extends BaseController
         UserAuth $userAuth,
         PluginService $pluginService
     ): ResponseInterface {
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int)$id);
 
         if ($player === null) {
             return $this->response->withStatus(404);
@@ -955,7 +955,7 @@ class PlayerController extends BaseController
         $admin = $authPlayer->hasRole(Role::USER_ADMIN) && $reason !== '';
 
         // check "allow deletion" settings
-        if (! $admin) {
+        if (!$admin) {
             $allowDeletion = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
                 ['name' => SystemVariable::ALLOW_CHARACTER_DELETION]
             );
@@ -965,12 +965,12 @@ class PlayerController extends BaseController
         }
 
         // check if character to delete is logged in
-        if ((int) $id === $this->getUser($this->userAuth)->getId()) {
+        if ((int)$id === $this->getUser($this->userAuth)->getId()) {
             return $this->response->withStatus(409);
         }
 
         // get character to delete
-        $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
+        $char = $this->repositoryFactory->getCharacterRepository()->find((int)$id);
         $player = $char?->getPlayer();
         if ($char === null || $player === null) {
             return $this->response->withStatus(404);
@@ -987,7 +987,7 @@ class PlayerController extends BaseController
             return $this->response->withStatus(403);
         } elseif (!$admin && $authPlayer->hasCharacter($char->getId())) {
             $reason = RemovedCharacter::REASON_DELETED_MANUALLY;
-        } elseif (! $admin) {
+        } elseif (!$admin) {
             return $this->response->withStatus(403);
         }
 

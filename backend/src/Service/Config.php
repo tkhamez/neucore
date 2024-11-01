@@ -72,10 +72,10 @@ class Config implements \ArrayAccess
             $value = $_ENV[$legacyName] ?? null;
         }
 
-        if ((string) $value === '' && isset($this->config['env_var_defaults'][$name])) {
+        if ((string)$value === '' && isset($this->config['env_var_defaults'][$name])) {
             $value = $this->config['env_var_defaults'][$name];
         }
 
-        return (string) $value;
+        return (string)$value;
     }
 }

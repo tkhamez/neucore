@@ -217,7 +217,7 @@ class RemovedCharacter implements \JsonSerializable
 
     public function getReason(): string
     {
-        return (string) $this->reason;
+        return (string)$this->reason;
     }
 
     public function setDeletedBy(?Player $deletedBy): self

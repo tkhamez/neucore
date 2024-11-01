@@ -30,7 +30,7 @@ class PluginController extends BaseController
         LoggerInterface        $logger,
         AccountGroup           $accountGroup,
     ): ResponseInterface {
-        $plugin = $this->repositoryFactory->getPluginRepository()->find((int) $id);
+        $plugin = $this->repositoryFactory->getPluginRepository()->find((int)$id);
         if ($plugin === null) {
             $this->response->getBody()->write($this->getBodyWithHomeLink('Plugin not found.'));
             return $this->response->withStatus(404);

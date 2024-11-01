@@ -48,7 +48,7 @@ class AssureMain extends Command
         foreach ($this->getPlayerIds($dbResultLimit) as $i => $playerIds) {
             $this->entityManager->clear(); // detaches all objects from Doctrine
             foreach ($playerIds as $j => $playerId) {
-                if (! $this->entityManager->isOpen()) {
+                if (!$this->entityManager->isOpen()) {
                     $output->writeln('AssureMain: cannot continue without an open entity manager.');
                     break;
                 }

@@ -144,7 +144,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $active = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_ACTIVE))->setValue('1');
         $days = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_RESEND))->setValue('20');
         $corps = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_CORPORATIONS))->setValue('2010,2030');
-        if (! $invalidConfig) {
+        if (!$invalidConfig) {
             $subj = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_SUBJECT))->setValue('subj');
         }
         $body = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_BODY))->setValue('text');

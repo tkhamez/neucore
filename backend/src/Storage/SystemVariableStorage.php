@@ -29,7 +29,7 @@ class SystemVariableStorage implements StorageInterface
         }
 
         $variable = $this->systemVariableRepository->find(self::PREFIX . $key);
-        if (! $variable) {
+        if (!$variable) {
             $variable = new SystemVariable(self::PREFIX . $key);
             $variable->setScope(SystemVariable::SCOPE_BACKEND);
         }

@@ -205,7 +205,7 @@ class CorporationMemberRepository extends EntityRepository
 
         return array_map(function ($r) {
             $member = (new CorporationMember())
-                ->setId((int) $r['id'])
+                ->setId((int)$r['id'])
                 ->setName($r['name'])
             ;
             if ($r['logoffDate']) {
@@ -225,16 +225,16 @@ class CorporationMemberRepository extends EntityRepository
 
             if ($r['locationId']) {
                 $location = (new EsiLocation())
-                    ->setId((int) $r['locationId'])
-                    ->setName((string) $r['locationName'])
+                    ->setId((int)$r['locationId'])
+                    ->setName((string)$r['locationName'])
                     ->setCategory($r['locationCategory']);
                 $member->setLocation($location);
             }
 
             if ($r['shipId']) {
                 $ship = (new EsiType())
-                    ->setId((int) $r['shipId'])
-                    ->setName((string) $r['shipName']);
+                    ->setId((int)$r['shipId'])
+                    ->setName((string)$r['shipName']);
                 $member->setShipType($ship);
             }
 
@@ -243,7 +243,7 @@ class CorporationMemberRepository extends EntityRepository
                 $defaultToken = (new EsiToken())->setEveLogin($eveLogin);
                 $defaultToken->setValidToken($r['validToken'] !== null ? (bool) $r['validToken'] : null);
                 $character = (new Character())
-                    ->setId((int) $r['characterId'])
+                    ->setId((int)$r['characterId'])
                     ->setName($r['characterName'])
                     ->setMain((bool) $r['main'])
                     ->addEsiToken($defaultToken);
@@ -263,7 +263,7 @@ class CorporationMemberRepository extends EntityRepository
 
                 if ($r['playerId']) {
                     $player = (new Player())
-                        ->setId((int) $r['playerId'])
+                        ->setId((int)$r['playerId'])
                         ->setName($r['playerName']);
                     $character->setPlayer($player);
                 }
@@ -305,7 +305,7 @@ class CorporationMemberRepository extends EntityRepository
         }
 
         $minLoginDate = date_create(self::NOW.' -'.$loginDays.' '.self::DAYS);
-        if (! $minLoginDate) {
+        if (!$minLoginDate) {
             return [];
         }
 
@@ -336,7 +336,7 @@ class CorporationMemberRepository extends EntityRepository
             ->getResult();
 
         return array_map(function ($corporation) {
-            return (int) $corporation['id'];
+            return (int)$corporation['id'];
         }, $corporations);
     }
 }

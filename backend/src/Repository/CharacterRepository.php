@@ -56,7 +56,7 @@ class CharacterRepository extends EntityRepository
         }
 
         return array_map(function (array $char) {
-            return (int) $char['id'];
+            return (int)$char['id'];
         }, $query->getQuery()->getResult());
     }
 
@@ -75,8 +75,8 @@ class CharacterRepository extends EntityRepository
 
         return array_map(function (array $row) {
             return [
-                'id' => (int) $row['id'],
-                'playerId' => (int) $row['playerId'],
+                'id' => (int)$row['id'],
+                'playerId' => (int)$row['playerId'],
             ];
         }, $qb->getQuery()->getResult());
     }
@@ -96,7 +96,7 @@ class CharacterRepository extends EntityRepository
             ->setFirstResult($offset);
 
         return array_map(function (array $row) {
-            return (int) $row['id'];
+            return (int)$row['id'];
         }, $qb->getQuery()->getResult());
     }
 
@@ -111,7 +111,7 @@ class CharacterRepository extends EntityRepository
             ->setFirstResult($offset);
 
         return array_map(function (array $row) {
-            return (int) $row['id'];
+            return (int)$row['id'];
         }, $qb->getQuery()->getResult());
     }
 

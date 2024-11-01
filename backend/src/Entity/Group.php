@@ -137,7 +137,7 @@ class Group implements \JsonSerializable
 
     public function getId(): int
     {
-        return (int) $this->id;
+        return (int)$this->id;
     }
 
     public function setName(string $name): self
@@ -149,7 +149,7 @@ class Group implements \JsonSerializable
 
     public function getName(): string
     {
-        return (string) $this->name;
+        return (string)$this->name;
     }
 
     public function setDescription(string $description): self
@@ -161,7 +161,7 @@ class Group implements \JsonSerializable
 
     public function getDescription(): string
     {
-        return (string) $this->description;
+        return (string)$this->description;
     }
 
     /**

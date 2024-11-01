@@ -87,12 +87,12 @@ class UpdatePlayerGroups extends Command
             $this->entityManager->clear(); // detaches all objects from Doctrine
 
             foreach ($playerIds as $i => $playerId) {
-                if (! $this->entityManager->isOpen()) {
+                if (!$this->entityManager->isOpen()) {
                     $this->logger->critical('UpdatePlayerGroups: cannot continue without an open entity manager.');
                     break;
                 }
                 $success = $this->account->updateGroups($playerId);
-                if (! $success) {
+                if (!$success) {
                     $this->writeLine('  Error updating ' . $playerId);
                 } else {
                     $this->writeLine('  Account ' . $playerId . ' groups updated');

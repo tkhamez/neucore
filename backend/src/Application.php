@@ -167,7 +167,7 @@ class Application
             );
         }
 
-        if ($appEnv === self::ENV_PROD && ! $forceDevMode) {
+        if ($appEnv === self::ENV_PROD && !$forceDevMode) {
             $this->env = self::ENV_PROD;
         } else {
             $this->env = self::ENV_DEV;
@@ -451,7 +451,7 @@ class Application
         if ($log) {
             $log->error($e->getMessage(), [Context::EXCEPTION => $e]);
         } else {
-            error_log((string) $e);
+            error_log((string)$e);
         }
 
         if ($this->runEnv === self::RUN_CONSOLE) {

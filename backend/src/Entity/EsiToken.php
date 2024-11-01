@@ -156,7 +156,7 @@ class EsiToken implements \JsonSerializable
 
     public function getRefreshToken(): string
     {
-        return (string) $this->refreshToken;
+        return (string)$this->refreshToken;
     }
 
     public function setAccessToken(string $accessToken): self
@@ -167,7 +167,7 @@ class EsiToken implements \JsonSerializable
 
     public function getAccessToken(): string
     {
-        return (string) $this->accessToken;
+        return (string)$this->accessToken;
     }
 
     public function setExpires(int $expires): self

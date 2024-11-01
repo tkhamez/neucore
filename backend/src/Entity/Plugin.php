@@ -51,7 +51,7 @@ class Plugin implements \JsonSerializable
         bool $includeBackendOnly = true
     ): array {
         $data = [
-            'id' => (int) $this->id,
+            'id' => (int)$this->id,
             'name' => $this->name,
         ];
         if (!$onlyRequired && !empty($this->configuration)) {
@@ -66,7 +66,7 @@ class Plugin implements \JsonSerializable
 
     public function getId(): int
     {
-        return (int) $this->id;
+        return (int)$this->id;
     }
 
     public function setName(string $name): self

@@ -108,7 +108,7 @@ class WebTestCase extends TestCase
 
     protected function parseJsonBody(?ResponseInterface $response, bool $assoc = true): mixed
     {
-        if (! $response) {
+        if (!$response) {
             return '';
         }
 

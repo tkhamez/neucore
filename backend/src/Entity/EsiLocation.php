@@ -78,7 +78,7 @@ class EsiLocation implements \JsonSerializable
     public function getId(): ?int
     {
         // cast to int because Doctrine creates string for type bigint
-        return $this->id !== null ? (int) $this->id : null;
+        return $this->id !== null ? (int)$this->id : null;
     }
 
     public function setName(string $name): self
@@ -90,7 +90,7 @@ class EsiLocation implements \JsonSerializable
 
     public function getName(): string
     {
-        return (string) $this->name;
+        return (string)$this->name;
     }
 
     /**
@@ -108,7 +108,7 @@ class EsiLocation implements \JsonSerializable
 
     public function getCategory(): string
     {
-        return (string) $this->category;
+        return (string)$this->category;
     }
 
     public function setOwnerId(int $id): self

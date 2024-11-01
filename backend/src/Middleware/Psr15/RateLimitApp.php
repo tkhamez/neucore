@@ -103,8 +103,8 @@ class RateLimitApp extends RateLimit implements MiddlewareInterface
         $resetTimeVar = $sysRepo->find(SystemVariable::RATE_LIMIT_APP_RESET_TIME);
         $activeVar = $sysRepo->find(SystemVariable::RATE_LIMIT_APP_ACTIVE);
 
-        $this->maxRequests = $maxRequestsVar ? abs((int) $maxRequestsVar->getValue()) : 0;
-        $this->resetTime = $resetTimeVar ? abs((int) $resetTimeVar->getValue()) : 0;
+        $this->maxRequests = $maxRequestsVar ? abs((int)$maxRequestsVar->getValue()) : 0;
+        $this->resetTime = $resetTimeVar ? abs((int)$resetTimeVar->getValue()) : 0;
         $this->active = $activeVar && $activeVar->getValue();
     }
 }

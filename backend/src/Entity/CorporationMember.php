@@ -131,7 +131,7 @@ class CorporationMember implements \JsonSerializable
     public function getId(): int
     {
         // cast to int because Doctrine creates string for type bigint, also make sure it's no null
-        return (int) $this->id;
+        return (int)$this->id;
     }
 
     public function setName(?string $name = null): static

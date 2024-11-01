@@ -102,7 +102,7 @@ class EsiData
             }
         }
 
-        if (! $this->objectManager->flush()) {
+        if (!$this->objectManager->flush()) {
             return null;
         }
 
@@ -179,10 +179,10 @@ class EsiData
             $affiliation = $this->fetchCharactersAffiliation([$id]);
             if (isset($affiliation[0])) {
                 /** @noinspection PhpCastIsUnnecessaryInspection */
-                $corpId = (int) $affiliation[0]->getCorporationId();
+                $corpId = (int)$affiliation[0]->getCorporationId();
             } elseif ($eveChar instanceof GetCharactersCharacterIdOk) {
                 /** @noinspection PhpCastIsUnnecessaryInspection */
-                $corpId = (int) $eveChar->getCorporationId();
+                $corpId = (int)$eveChar->getCorporationId();
             }
         }
         if ($corpId) {
@@ -279,7 +279,7 @@ class EsiData
         }
 
         // update corporation with alliance entity - does not fetch data from ESI
-        $alliId = (int) $eveCorp->getAllianceId();
+        $alliId = (int)$eveCorp->getAllianceId();
         if ($alliId > 0) {
             $alliance = $this->getAllianceEntity($alliId);
             $corp->setAlliance($alliance);
@@ -289,7 +289,7 @@ class EsiData
         }
 
         // flush
-        if ($flush && ! $this->objectManager->flush()) {
+        if ($flush && !$this->objectManager->flush()) {
             return null;
         }
 
@@ -342,7 +342,7 @@ class EsiData
         }
 
         // flush
-        if ($flush && ! $this->objectManager->flush()) {
+        if ($flush && !$this->objectManager->flush()) {
             return null;
         }
 
@@ -482,11 +482,11 @@ class EsiData
         // Set result
         if ($result instanceof GetUniverseStructuresStructureIdOk) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
-            $location->setName((string) $result->getName());
+            $location->setName((string)$result->getName());
             /** @noinspection PhpCastIsUnnecessaryInspection */
-            $location->setOwnerId((int) $result->getOwnerId());
+            $location->setOwnerId((int)$result->getOwnerId());
             /** @noinspection PhpCastIsUnnecessaryInspection */
-            $location->setSystemId((int) $result->getSolarSystemId());
+            $location->setSystemId((int)$result->getSolarSystemId());
             $location->setErrorCount(0);
         } elseif ($authError) {
             $location->setErrorCount($location->getErrorCount() + 1);

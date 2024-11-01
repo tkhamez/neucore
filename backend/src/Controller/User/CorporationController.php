@@ -203,7 +203,7 @@ class CorporationController extends BaseController
     )]
     public function add(string $id, EsiData $esiData): ResponseInterface
     {
-        $corpId = (int) $id;
+        $corpId = (int)$id;
 
         if ($this->repositoryFactory->getCorporationRepository()->find($corpId)) {
             return $this->response->withStatus(409);
@@ -259,11 +259,11 @@ class CorporationController extends BaseController
     )]
     public function addGroup(string $id, string $gid): ResponseInterface
     {
-        if (! $this->findCorpAndGroup($id, $gid)) {
+        if (!$this->findCorpAndGroup($id, $gid)) {
             return $this->response->withStatus(404);
         }
 
-        if (! $this->corp->hasGroup($this->group->getId())) {
+        if (!$this->corp->hasGroup($this->group->getId())) {
             $this->corp->addGroup($this->group);
         }
 
@@ -301,7 +301,7 @@ class CorporationController extends BaseController
     )]
     public function removeGroup(string $id, string $gid): ResponseInterface
     {
-        if (! $this->findCorpAndGroup($id, $gid)) {
+        if (!$this->findCorpAndGroup($id, $gid)) {
             return $this->response->withStatus(404);
         }
 
@@ -387,7 +387,7 @@ class CorporationController extends BaseController
     )]
     public function getGroupsTracking(string $id): ResponseInterface
     {
-        $corporation = $this->repositoryFactory->getCorporationRepository()->find((int) $id);
+        $corporation = $this->repositoryFactory->getCorporationRepository()->find((int)$id);
 
         if ($corporation === null) {
             return $this->response->withStatus(404);
@@ -427,11 +427,11 @@ class CorporationController extends BaseController
     )]
     public function addGroupTracking(string $id, string $groupId): ResponseInterface
     {
-        if (! $this->findCorpAndGroup($id, $groupId)) {
+        if (!$this->findCorpAndGroup($id, $groupId)) {
             return $this->response->withStatus(404);
         }
 
-        if (! $this->corp->hasGroupTracking($this->group->getId())) {
+        if (!$this->corp->hasGroupTracking($this->group->getId())) {
             $this->corp->addGroupTracking($this->group);
             $this->accountService->syncTrackingRole(null, $this->corp);
         }
@@ -470,7 +470,7 @@ class CorporationController extends BaseController
     )]
     public function removeGroupTracking(string $id, string $groupId): ResponseInterface
     {
-        if (! $this->findCorpAndGroup($id, $groupId)) {
+        if (!$this->findCorpAndGroup($id, $groupId)) {
             return $this->response->withStatus(404);
         }
 
@@ -607,8 +607,8 @@ class CorporationController extends BaseController
     )]
     public function members(string $id, ServerRequestInterface $request): ResponseInterface
     {
-        $corporation = $this->repositoryFactory->getCorporationRepository()->find((int) $id);
-        if (! $corporation || !$this->checkPermission($corporation)) {
+        $corporation = $this->repositoryFactory->getCorporationRepository()->find((int)$id);
+        if (!$corporation || !$this->checkPermission($corporation)) {
             return $this->response->withStatus(403);
         }
 
@@ -635,21 +635,21 @@ class CorporationController extends BaseController
 
         $members = $this->repositoryFactory
             ->getCorporationMemberRepository()
-            ->setInactive($inactive !== null ? (int) $inactive : null)
-            ->setActive($active !== null ? (int) $active : null)
+            ->setInactive($inactive !== null ? (int)$inactive : null)
+            ->setActive($active !== null ? (int)$active : null)
             ->setAccount($account)
             ->setTokenStatus($tokenStatus)
-            ->setTokenChanged($tokenStatusChanged !== null ? (int) $tokenStatusChanged : null)
-            ->setMailCount((int) $mailCount)
-            ->findMatching((int) $id);
+            ->setTokenChanged($tokenStatusChanged !== null ? (int)$tokenStatusChanged : null)
+            ->setMailCount((int)$mailCount)
+            ->findMatching((int)$id);
 
         return $this->withJson($members);
     }
 
     private function findCorpAndGroup(string $corpId, string $groupId): bool
     {
-        $corpEntity = $this->repositoryFactory->getCorporationRepository()->find((int) $corpId);
-        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
+        $corpEntity = $this->repositoryFactory->getCorporationRepository()->find((int)$corpId);
+        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
 
         if ($corpEntity === null || $groupEntity === null) {
             return false;

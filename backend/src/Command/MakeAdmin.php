@@ -65,12 +65,12 @@ class MakeAdmin extends Command
             Role::WATCHLIST_ADMIN,
         ];
         foreach ($this->roleRepository->findBy(['name' => $newRoles]) as $newRole) {
-            if (! $player->hasRole($newRole->getName())) {
+            if (!$player->hasRole($newRole->getName())) {
                 $player->addRole($newRole);
             }
         }
 
-        if (! $this->objectManager->flush()) {
+        if (!$this->objectManager->flush()) {
             return 0;
         }
 

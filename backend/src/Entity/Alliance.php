@@ -95,7 +95,7 @@ class Alliance implements \JsonSerializable
     public function getId(): int
     {
         // Cast to int because Doctrine creates string for type bigint, also make sure it's not null.
-        return (int) $this->id;
+        return (int)$this->id;
     }
 
     public function setName(string $name): self

@@ -106,7 +106,7 @@ class UpdateCorporations extends Command
             }
 
             foreach ($corpIds as $corpId) {
-                if (! $this->entityManager->isOpen()) {
+                if (!$this->entityManager->isOpen()) {
                     $this->logger->critical('UpdateCharacters: cannot continue without an open entity manager.');
                     break;
                 }
@@ -132,7 +132,7 @@ class UpdateCorporations extends Command
         }, $this->alliRepo->findBy([], ['lastUpdate' => 'ASC']));
 
         foreach ($alliIds as $alliId) {
-            if (! $this->entityManager->isOpen()) {
+            if (!$this->entityManager->isOpen()) {
                 $this->logger->critical('UpdateCharacters: cannot continue without an open entity manager.');
                 break;
             }

@@ -168,7 +168,7 @@ class CheckTokens extends Command
                 $days = 0;
                 $daysVar = $this->sysVarRepo->find(SystemVariable::ACCOUNT_DEACTIVATION_ACTIVE_DAYS);
                 if ($daysVar !== null && !empty($daysVar->getValue())) {
-                    $days = (int) $daysVar->getValue();
+                    $days = (int)$daysVar->getValue();
                 }
 
                 $allianceIds = [];

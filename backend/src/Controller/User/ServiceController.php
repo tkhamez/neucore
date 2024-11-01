@@ -94,7 +94,7 @@ class ServiceController extends BaseController
     )]
     public function get(string $id): ResponseInterface
     {
-        $plugin = $this->getPlugin((int) $id);
+        $plugin = $this->getPlugin((int)$id);
         if (!$plugin) {
             return $this->response->withStatus($this->responseErrorCode);
         }
@@ -134,7 +134,7 @@ class ServiceController extends BaseController
     )]
     public function accounts(string $id, UserAuth $userAuth): ResponseInterface
     {
-        $serviceImplementation = $this->getPluginAndServiceImplementation((int) $id);
+        $serviceImplementation = $this->getPluginAndServiceImplementation((int)$id);
         if (!$serviceImplementation) {
             return $this->response->withStatus($this->responseErrorCode);
         }
@@ -210,7 +210,7 @@ class ServiceController extends BaseController
             return $this->withJson('no_main', 409);
         }
 
-        $plugin = $this->getPlugin((int) $id);
+        $plugin = $this->getPlugin((int)$id);
         if (!$plugin) {
             return $this->response->withStatus($this->responseErrorCode);
         }
@@ -360,7 +360,7 @@ class ServiceController extends BaseController
         // this does not return any data, otherwise this would need to check permissions like it's done
         // for /user/player/{id}/characters.
 
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int)$playerId);
         if (!$player) {
             return $this->response->withStatus(404);
         }

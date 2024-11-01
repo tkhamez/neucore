@@ -27,6 +27,6 @@ class ApcuStorage implements StorageInterface
             return null;
         }
 
-        return (string) $value;
+        return (string)$value;
     }
 }

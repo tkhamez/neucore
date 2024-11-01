@@ -167,7 +167,7 @@ class AllianceController extends BaseController
     )]
     public function add(string $id, EsiData $service): ResponseInterface
     {
-        $allianceId = (int) $id;
+        $allianceId = (int)$id;
 
         if ($this->repositoryFactory->getAllianceRepository()->find($allianceId)) {
             return $this->response->withStatus(409);
@@ -218,11 +218,11 @@ class AllianceController extends BaseController
     )]
     public function addGroup(string $id, string $gid): ResponseInterface
     {
-        if (! $this->findAllianceAndGroup($id, $gid)) {
+        if (!$this->findAllianceAndGroup($id, $gid)) {
             return $this->response->withStatus(404);
         }
 
-        if (! $this->alliance->hasGroup($this->group->getId())) {
+        if (!$this->alliance->hasGroup($this->group->getId())) {
             $this->alliance->addGroup($this->group);
         }
 
@@ -260,7 +260,7 @@ class AllianceController extends BaseController
     )]
     public function removeGroup(string $id, string $gid): ResponseInterface
     {
-        if (! $this->findAllianceAndGroup($id, $gid)) {
+        if (!$this->findAllianceAndGroup($id, $gid)) {
             return $this->response->withStatus(404);
         }
 
@@ -271,8 +271,8 @@ class AllianceController extends BaseController
 
     private function findAllianceAndGroup(string $allianceId, string $groupId): bool
     {
-        $allianceEntity = $this->repositoryFactory->getAllianceRepository()->find((int) $allianceId);
-        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
+        $allianceEntity = $this->repositoryFactory->getAllianceRepository()->find((int)$allianceId);
+        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
 
         if ($allianceEntity === null || $groupEntity === null) {
             return false;

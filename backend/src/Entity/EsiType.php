@@ -43,7 +43,7 @@ class EsiType implements \JsonSerializable
     public function getId(): ?int
     {
         // cast to int because Doctrine creates string for type bigint
-        return $this->id !== null ? (int) $this->id : null;
+        return $this->id !== null ? (int)$this->id : null;
     }
 
     public function setName(string $name): self

@@ -183,7 +183,7 @@ class AppController extends BaseController
     )]
     public function rename(string $id, ServerRequestInterface $request): ResponseInterface
     {
-        $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
+        $app = $this->repositoryFactory->getAppRepository()->find((int)$id);
         if ($app === null) {
             return $this->response->withStatus(404);
         }
@@ -222,7 +222,7 @@ class AppController extends BaseController
     )]
     public function delete(string $id): ResponseInterface
     {
-        $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
+        $app = $this->repositoryFactory->getAppRepository()->find((int)$id);
         if ($app === null) {
             return $this->response->withStatus(404);
         }
@@ -265,7 +265,7 @@ class AppController extends BaseController
     {
         $ret = [];
 
-        $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
+        $app = $this->repositoryFactory->getAppRepository()->find((int)$id);
         if ($app === null) {
             return $this->response->withStatus(404);
         }
@@ -363,7 +363,7 @@ class AppController extends BaseController
     )]
     public function removeManager(string $id, string $pid, Account $account): ResponseInterface
     {
-        if (! $this->findAppAndPlayer($id, $pid)) {
+        if (!$this->findAppAndPlayer($id, $pid)) {
             return $this->response->withStatus(404);
         }
 
@@ -403,14 +403,14 @@ class AppController extends BaseController
     )]
     public function show(string $id, UserAuth $uas): ResponseInterface
     {
-        $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
+        $app = $this->repositoryFactory->getAppRepository()->find((int)$id);
         if ($app === null) {
             return $this->response->withStatus(404);
         }
 
         // check if logged-in user is manager of this app or has the role app-admin
         $authedPlayer = $this->getUser($uas)->getPlayer();
-        if (! $authedPlayer->hasRole(Role::APP_ADMIN) && ! $app->isManager($authedPlayer)) {
+        if (!$authedPlayer->hasRole(Role::APP_ADMIN) && !$app->isManager($authedPlayer)) {
             return $this->response->withStatus(403);
         }
 
@@ -448,7 +448,7 @@ class AppController extends BaseController
     )]
     public function addGroup(string $id, string $gid): ResponseInterface
     {
-        if (! $this->findAppAndGroup($id, $gid)) {
+        if (!$this->findAppAndGroup($id, $gid)) {
             return $this->response->withStatus(404);
         }
 
@@ -494,7 +494,7 @@ class AppController extends BaseController
     )]
     public function removeGroup(string $id, string $gid): ResponseInterface
     {
-        if (! $this->findAppAndGroup($id, $gid)) {
+        if (!$this->findAppAndGroup($id, $gid)) {
             return $this->response->withStatus(404);
         }
 
@@ -538,11 +538,11 @@ class AppController extends BaseController
     )]
     public function addRole(string $id, string $name): ResponseInterface
     {
-        if (! $this->findAppAndRole($id, $name)) {
+        if (!$this->findAppAndRole($id, $name)) {
             return $this->response->withStatus(404);
         }
 
-        if (! $this->application->hasRole($this->role->getName())) {
+        if (!$this->application->hasRole($this->role->getName())) {
             $this->application->addRole($this->role);
         }
 
@@ -584,7 +584,7 @@ class AppController extends BaseController
     )]
     public function removeRole(string $id, string $name): ResponseInterface
     {
-        if (! $this->findAppAndRole($id, $name)) {
+        if (!$this->findAppAndRole($id, $name)) {
             return $this->response->withStatus(404);
         }
 
@@ -629,7 +629,7 @@ class AppController extends BaseController
         }
 
         foreach ($this->application->getEveLogins() as $existingEveLogin) {
-            if ($existingEveLogin->getId() === (int) $eveLoginId) {
+            if ($existingEveLogin->getId() === (int)$eveLoginId) {
                 return $this->response->withStatus(204);
             }
         }
@@ -708,13 +708,13 @@ class AppController extends BaseController
     )]
     public function changeSecret(string $id, UserAuth $uas): ResponseInterface
     {
-        $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
+        $app = $this->repositoryFactory->getAppRepository()->find((int)$id);
         if ($app === null) {
             return $this->response->withStatus(404);
         }
 
         // check if logged-in user is manager
-        if (! $app->isManager($this->getUser($uas)->getPlayer())) {
+        if (!$app->isManager($this->getUser($uas)->getPlayer())) {
             return $this->response->withStatus(403);
         }
 
@@ -732,8 +732,8 @@ class AppController extends BaseController
 
     private function findAppAndPlayer(string $id, string $playerId): bool
     {
-        $playerEntity = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
-        if (! $this->findApp($id) || $playerEntity === null) {
+        $playerEntity = $this->repositoryFactory->getPlayerRepository()->find((int)$playerId);
+        if (!$this->findApp($id) || $playerEntity === null) {
             return false;
         }
         $this->player = $playerEntity;
@@ -743,8 +743,8 @@ class AppController extends BaseController
 
     private function findAppAndGroup(string $appId, string $groupId): bool
     {
-        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
-        if (! $this->findApp($appId) || $groupEntity === null) {
+        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
+        if (!$this->findApp($appId) || $groupEntity === null) {
             return false;
         }
         $this->group = $groupEntity;
@@ -755,7 +755,7 @@ class AppController extends BaseController
     private function findAppAndRole(string $id, string $name): bool
     {
         $roleEntity = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
-        if (! $this->findApp($id) || ! $roleEntity || ! in_array($roleEntity->getName(), $this->availableRoles)) {
+        if (!$this->findApp($id) || !$roleEntity || ! in_array($roleEntity->getName(), $this->availableRoles)) {
             return false;
         }
         $this->role = $roleEntity;
@@ -776,8 +776,8 @@ class AppController extends BaseController
 
     private function findApp(string $id): bool
     {
-        $applicationEntity = $this->repositoryFactory->getAppRepository()->find((int) $id);
-        if (! $applicationEntity) {
+        $applicationEntity = $this->repositoryFactory->getAppRepository()->find((int)$id);
+        if (!$applicationEntity) {
             return false;
         }
         $this->application = $applicationEntity;

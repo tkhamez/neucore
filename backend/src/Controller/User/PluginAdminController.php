@@ -63,7 +63,7 @@ class PluginAdminController extends BaseController
     public function get(string $id): ResponseInterface
     {
         // Get service with data from plugin.yml
-        $plugin = $this->pluginService->getPlugin((int) $id, true);
+        $plugin = $this->pluginService->getPlugin((int)$id, true);
 
         if (!$plugin) {
             return $this->response->withStatus(404);

@@ -67,7 +67,7 @@ class AutoGroupAssignmentTest extends TestCase
         $this->om->clear();
 
         $playerBefore = $this->playerRepo->find($this->playerManagedId);
-        if (! $playerBefore) {
+        if (!$playerBefore) {
             $this->fail();
         } else { // put in else block to prevent errors from static code analysis
             $this->assertSame([], $playerBefore->getGroupIds());
@@ -93,7 +93,7 @@ class AutoGroupAssignmentTest extends TestCase
         // Group 7 belongs to the player's alliance and corp 2
 
         $playerBefore = $this->playerRepo->find($this->playerId);
-        if (! $playerBefore) {
+        if (!$playerBefore) {
             $this->fail();
         } else { // put in else block to prevent errors from static code analysis
             $this->assertSame([$this->group4->getId(), $this->group5Id], $playerBefore->getGroupIds());
@@ -134,7 +134,7 @@ class AutoGroupAssignmentTest extends TestCase
     {
         $this->setUpData();
         $playerBefore = $this->playerRepo->find($this->playerId);
-        if (! $playerBefore) {
+        if (!$playerBefore) {
             $this->fail();
         } else { // put in else block to prevent errors from static code analysis
             $playerBefore->addGroup($this->group1);

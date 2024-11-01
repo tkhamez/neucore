@@ -145,6 +145,6 @@ try {
     print_r($result->headers);
     echo 'item id: ', $result[0]->item_id, PHP_EOL;
 } catch (Exception $e) {
-    echo ((string) $e), PHP_EOL;
+    echo ((string)$e), PHP_EOL;
 }
 echo PHP_EOL;

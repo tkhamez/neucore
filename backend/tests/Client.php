@@ -34,7 +34,7 @@ class Client extends \GuzzleHttp\Client
     public function send(RequestInterface $request, array $options = []): ResponseInterface
     {
         $response = array_shift($this->responses);
-        if (! $response) {
+        if (!$response) {
             /** @noinspection PhpUnhandledExceptionInspection */
             throw new \Exception('Missing Response');
         }

@@ -121,7 +121,7 @@ class UpdateCharacters extends Command
 
             $updateOk = [];
             foreach ($characters as $char) {
-                if (! $this->entityManager->isOpen()) {
+                if (!$this->entityManager->isOpen()) {
                     $this->logger->critical('UpdateCharacters: cannot continue without an open entity manager.');
                     break;
                 }

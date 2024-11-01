@@ -48,7 +48,7 @@ class MemberTracking
         $this->esiData = $esiData;
         $this->oauthToken = $oauthToken;
 
-        $this->datasource = (string) $config['eve']['datasource'];
+        $this->datasource = (string)$config['eve']['datasource'];
     }
 
     /**
@@ -72,7 +72,7 @@ class MemberTracking
         $charNames = [];
         foreach ($this->esiData->fetchUniverseNames($charIds) as $name) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
-            $charNames[(int) $name->getId()] = $name->getName();
+            $charNames[(int)$name->getId()] = $name->getName();
         }
         return $charNames;
     }
@@ -167,7 +167,7 @@ class MemberTracking
         GetCorporationsCorporationIdMembertracking200Ok $memberData,
         ?EsiToken $esiToken
     ): void {
-        $structureId = (int) $memberData->getLocationId();
+        $structureId = (int)$memberData->getLocationId();
 
         // fetch ESI data, try director token first, then character's token if available
         $location = null;
@@ -205,7 +205,7 @@ class MemberTracking
     {
         $corporation = null;
         foreach ($trackingData as $num => $data) {
-            if (! $this->entityManager->isOpen()) {
+            if (!$this->entityManager->isOpen()) {
                 $this->log->critical('MemberTracking::processData: cannot continue without an open entity manager.');
                 break;
             }
@@ -218,7 +218,7 @@ class MemberTracking
             }
 
             /** @noinspection PhpCastIsUnnecessaryInspection */
-            $id = (int) $data->getCharacterId();
+            $id = (int)$data->getCharacterId();
             $corpMember = $this->repositoryFactory->getCorporationMemberRepository()->find($id);
             $character = $this->repositoryFactory->getCharacterRepository()->find($id);
             if ($corpMember === null) {

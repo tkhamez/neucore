@@ -85,7 +85,7 @@ class RoleController extends BaseController
     )]
     public function addRequiredGroups(string $roleName, string $groupId): ResponseInterface
     {
-        $response = $this->fetchEntitiesAndValidate($roleName, (int) $groupId);
+        $response = $this->fetchEntitiesAndValidate($roleName, (int)$groupId);
         if ($response) {
             return $response;
         }
@@ -128,7 +128,7 @@ class RoleController extends BaseController
     )]
     public function removeRequiredGroups(string $roleName, string $groupId): ResponseInterface
     {
-        $response = $this->fetchEntitiesAndValidate($roleName, (int) $groupId);
+        $response = $this->fetchEntitiesAndValidate($roleName, (int)$groupId);
         if ($response) {
             return $response;
         }

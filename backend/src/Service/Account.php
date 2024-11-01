@@ -401,7 +401,7 @@ class Account
                 break;
             }
         }
-        if (! $mainFound && $oldestCharacter !== null) {
+        if (!$mainFound && $oldestCharacter !== null) {
             $oldestCharacter->setMain(true);
             $player->setName($oldestCharacter->getName());
         }
@@ -594,9 +594,9 @@ class Account
             $addRole = true;
         }
 
-        if ($addRole && ! $player->hasRole($role->getName())) {
+        if ($addRole && !$player->hasRole($role->getName())) {
             $player->addRole($role);
-        } elseif (! $addRole && $player->hasRole($role->getName())) {
+        } elseif (!$addRole && $player->hasRole($role->getName())) {
             $player->removeRole($role);
         }
     }
@@ -644,7 +644,7 @@ class Account
 
         // assign role
         foreach ($playersAdd as $playerAdd) {
-            if (! $playerAdd->hasRole($role->getName())) {
+            if (!$playerAdd->hasRole($role->getName())) {
                 $playerAdd->addRole($role);
             }
         }
@@ -661,7 +661,7 @@ class Account
 
         // remove role if needed
         foreach ($playersRemove as $playerRemove) {
-            if (! $playerRemove->hasAnyGroup($groupIds)) {
+            if (!$playerRemove->hasAnyGroup($groupIds)) {
                 $playerRemove->removeRole($role);
             }
         }
