@@ -4,7 +4,7 @@ DIR=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 
 # generate the OpenAPI client
 
-VERSION=7.8.0
+VERSION=7.9.0
 FILENAME=openapi-generator-cli-${VERSION}.jar
 
 if [ ! -f "${DIR}"/${FILENAME} ]; then
