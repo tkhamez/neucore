@@ -1,8 +1,8 @@
 # Changelog
 
-# next
+# 2.6.0
 
-dd mm yyyy
+01 Nov 2024
 
 - Added password login as an alternative to EVE SSO.
 - Fixed a bug where a group was incorrectly removed automatically (if it had a forbidden group that 

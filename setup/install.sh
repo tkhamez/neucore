@@ -19,7 +19,9 @@ npm install
 npm run build
 
 # Build frontend
-cd "${DIR}"/../frontend && npm ci
+cd "${DIR}"/../frontend || exit
+npm i file:neucore-js-client
+npm ci
 if [[ $1 = prod ]]; then
     npm run build
 fi
