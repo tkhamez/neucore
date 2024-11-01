@@ -5,9 +5,11 @@
 dd mm yyyy
 
 - Added password login as an alternative to EVE SSO.
-- Small UI improvement.
 - Fixed a bug where a group was incorrectly removed automatically (if it had a forbidden group that 
   was removed at the same time).
+- Fix: Groups are now updated when a player joins or leaves a group themselves or is added to a 
+  group after applying for it.
+- Small UI improvement.
 - Added a css file with a minimal dark theme that plugins can use.
 - Removed support for build-in PHP development server.
 

@@ -1266,9 +1266,7 @@ class GroupController extends BaseController
             $app->setStatus(GroupApplication::STATUS_ACCEPTED);
             if (!$player->hasGroup($group->getId())) {
                 $player->addGroup($group);
-                $this->account->syncTrackingRole($player);
-                $this->account->syncWatchlistRole($player);
-                $this->account->syncWatchlistManagerRole($player);
+                $this->account->updateGroups($player->getId());
             }
         } elseif ($action === 'deny') {
             $app->setStatus(GroupApplication::STATUS_DENIED);

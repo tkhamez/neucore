@@ -245,9 +245,7 @@ class PlayerController extends BaseController
             $groupApplication->setStatus(GroupApplication::STATUS_ACCEPTED);
             if (!$player->hasGroup($group->getId())) {
                 $player->addGroup($group);
-                $this->account->syncTrackingRole($groupApplication->getPlayer());
-                $this->account->syncWatchlistRole($groupApplication->getPlayer());
-                $this->account->syncWatchlistManagerRole($groupApplication->getPlayer());
+                $this->account->updateGroups($player->getId());
             }
         } else {
             $groupApplication->setStatus(GroupApplication::STATUS_PENDING);
@@ -353,7 +351,9 @@ class PlayerController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $accountGroup->removeGroupAndApplication($this->getUser($this->userAuth)->getPlayer(), $group);
+        $player = $this->getUser($this->userAuth)->getPlayer();
+        $accountGroup->removeGroupAndApplication($player, $group);
+        $this->account->updateGroups($player->getId());
 
         return $this->flushAndReturn(204);
     }

@@ -11,7 +11,7 @@
                     <div class="modal-body">
                         <p>
                             Are you sure you want to leave this group?
-                            You may lose access to some external services.
+                            If you wish to rejoin later, you must reapply.
                         </p>
                         <p class="text-warning">{{ groupToLeave.name }}</p>
                     </div>
