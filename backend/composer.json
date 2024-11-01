@@ -50,7 +50,8 @@
         "tkhamez/eve-sso": "^5.0",
         "tkhamez/neucore-plugin": "^4.0",
         "tkhamez/slim-role-auth": "^5.0",
-        "tkhamez/swagger-eve-php": "~10.0.0"
+        "tkhamez/swagger-eve-php": "~10.0.0",
+        "zircote/swagger-php": "^4.4"
     },
     "require-dev": {
         "arokettu/composer-license-manager": "^1.2",
@@ -58,8 +59,7 @@
         "maglnet/composer-require-checker": "^4.7",
         "phpstan/phpstan": "^1.3",
         "phpunit/phpunit": "^10.5",
-        "web-token/jwt-library": "^3.2",
-        "zircote/swagger-php": "^4.4"
+        "web-token/jwt-library": "^3.2"
     },
     "suggest": {
         "ext-apcu": "*",
