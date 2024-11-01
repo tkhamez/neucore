@@ -6,6 +6,7 @@ namespace Neucore\Service;
 
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\AllianceRepository;
@@ -71,9 +72,9 @@ class AutoGroupAssignment
      * A player gets all groups that belongs to his corporation or
      * alliance.
      *
-     * Only groups belonging to a company or alliance will be removed
-     * from a player when he no longer is a member of that corporation
-     * or alliance.
+     * Only groups belonging to a corporation or alliance will be removed
+     * from players when they are no longer a member of those corporations
+     * or alliances.
      *
      * Does not flush the entity manager.
      *
@@ -141,7 +142,7 @@ class AutoGroupAssignment
     /**
      * Removes groups from player if they are
      * - not a member of at least one of the required groups.
-     * - a member of any of the forbidden groups.
+     * - a member of any forbidden group.
      *
      * Does not flush the entity manager.
      */
@@ -149,12 +150,50 @@ class AutoGroupAssignment
     {
         do {
             $lastGroupCount = count($player->getGroups());
-            foreach ($player->getGroups() as $group) {
+            foreach ($this->getGroupsOrderedByHasRequiredOrForbiddenGroups($player) as $group) {
                 if (!$player->isAllowedMember($group)) {
                     $this->accountGroup->removeGroupAndApplication($player, $group);
                 }
             }
         } while ($lastGroupCount !== count($player->getGroups()));
+    }
+
+    /**
+     * @return Group[]
+     */
+    private function getGroupsOrderedByHasRequiredOrForbiddenGroups(Player $player): array
+    {
+        // If group A has a forbidden group B, and the player is currently a member of
+        // group A and B, then group A must be removed unless group B is removed for another
+        // reason. So it's important to check groups with forbidden groups last.
+
+        $groups1 = [];
+        $groups2 = [];
+        $groups3 = [];
+        $groups4 = [];
+
+        foreach ($player->getGroups() as $group) {
+            if (
+                count($group->getRequiredGroups()) === 0 &&
+                count($group->getForbiddenGroups()) === 0
+            ) {
+                $groups1[] = $group;
+            } elseif (
+                count($group->getRequiredGroups()) > 0 &&
+                count($group->getForbiddenGroups()) === 0
+            ) {
+                $groups2[] = $group;
+            } elseif (
+                count($group->getRequiredGroups()) > 0 &&
+                count($group->getForbiddenGroups()) > 0
+            ) {
+                $groups3[] = $group;
+            } else { // 0 required groups, >0 forbidden groups
+                $groups4[] = $group;
+            }
+        }
+
+        return array_merge($groups1, $groups2, $groups3, $groups4);
     }
 
     private function loadMapping(): void

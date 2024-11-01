@@ -99,7 +99,7 @@ Allows a player to change the system settings.
 #### tracking
 
 Allows a player to view corporation member tracking data.  
-In addition, membership in a group that determines which company is visible is necessary.  
+In addition, membership in a group that determines which corporation is visible is necessary.  
 This role is assigned automatically based on group membership.
 
 {tracking}

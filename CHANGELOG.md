@@ -6,6 +6,8 @@ dd mm yyyy
 
 - Added password login as an alternative to EVE SSO.
 - Small UI improvement.
+- Fixed a bug where a group was incorrectly removed automatically (if it had a forbidden group that 
+  was removed at the same time).
 - Added a css file with a minimal dark theme that plugins can use.
 - Removed support for build-in PHP development server.
 

@@ -14,6 +14,7 @@ use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\TestHandler;
 use Neucore\Data\PluginConfigurationDatabase;
+use Neucore\Entity\Alliance;
 use Neucore\Entity\App;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
@@ -808,8 +809,11 @@ class AccountTest extends TestCase
         $this->service->assureMain($player);
 
         $this->assertSame(2, count($player->getCharacters()));
+        /** @noinspection PhpConditionAlreadyCheckedInspection */
         $this->assertTrue($main->getMain());
+        /** @noinspection PhpConditionAlreadyCheckedInspection */
         $this->assertFalse($alt1->getMain());
+        /** @noinspection PhpConditionAlreadyCheckedInspection */
         $this->assertTrue($alt2->getMain());
     }
 
@@ -827,6 +831,39 @@ class AccountTest extends TestCase
         $player = $this->playerRepo->find($player->getId());
         $this->assertSame([], $player->getRoleNames());
         $this->assertSame([$this->group2->getId()], $player->getGroupIds());
+    }
+
+    public function testUpdateGroups_guestGroupIsAssignedIfCorporationIsNotInAlliance()
+    {
+        // Setup:
+        // - Player is in corporation A.
+        // - Corporation A is not in alliance X.
+        // - Group 1 if in alliance X.
+        // - Group 2 if in corporation A and in group 1 (member group).
+        // - Group 3 always, unless in group 2 (guest group).
+        $group1 = (new Group())->setName('g1');
+        $group2 = (new Group())->setName('g2')->addRequiredGroup($group1);
+        $group3 = (new Group())->setName('g3')->setIsDefault(true)->addForbiddenGroup($group2);
+        $alliance = (new Alliance())->setId(1)->addGroup($group1);
+        $corporation = (new Corporation())->setId(1)->addGroup($group2);
+        $player = (new Player())->setName('p1');
+        $character = (new Character())->setId(1)->setName('c1')->setMain(true)
+            ->setPlayer($player)->setCorporation($corporation);
+        $this->om->persist($group1);
+        $this->om->persist($group2);
+        $this->om->persist($group3);
+        $this->om->persist($alliance);
+        $this->om->persist($corporation);
+        $this->om->persist($player);
+        $this->om->persist($character);
+        $this->om->flush();
+        $this->om->clear();
+
+        $this->service->updateGroups($player->getId());
+        $this->om->clear();
+
+        $playerAfter = $this->playerRepo->find($player->getId());
+        $this->assertSame([$group3->getId()], $playerAfter->getGroupIds());
     }
 
     public function testCheckRoles()
