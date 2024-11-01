@@ -19,7 +19,8 @@ rm    "${DIR}"/../../neucore/backend/var/logs/.gitkeep
 
 mv    "${DIR}"/../doc "${DIR}"/../../neucore/doc
 rm -r "${DIR}"/../../neucore/doc/screenshots
-rm    "${DIR}"/../../neucore/doc/api-examples/.gitignore
+rm    "${DIR}"/../../neucore/doc/api-examples/php/.gitignore
+rm    "${DIR}"/../../neucore/doc/api-examples/python/.gitignore
 rm    "${DIR}"/../../neucore/doc/API.tpl.md
 rm    "${DIR}"/../../neucore/doc/er-model.mwb
 
@@ -29,7 +30,6 @@ mv    "${DIR}"/../setup/logo.svg          "${DIR}"/../../neucore/setup/logo.svg
 mv    "${DIR}"/../setup/logo-small.svg    "${DIR}"/../../neucore/setup/logo-small.svg
 
 mv "${DIR}"/../web "${DIR}"/../../neucore/web
-rm "${DIR}"/../../neucore/web/plugin/.gitkeep
 rm "${DIR}"/../../neucore/web/.gitignore
 
 mv "${DIR}"/../CHANGELOG.md "${DIR}"/../../neucore/CHANGELOG.md
