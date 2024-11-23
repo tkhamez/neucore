@@ -50,7 +50,7 @@
         "tkhamez/eve-sso": "^5.0",
         "tkhamez/neucore-plugin": "^4.0",
         "tkhamez/slim-role-auth": "^5.0",
-        "tkhamez/swagger-eve-php": "^10.1",
+        "tkhamez/swagger-eve-php": "~10.1.0",
         "zircote/swagger-php": "^4.4"
     },
     "require-dev": {
