@@ -21,7 +21,7 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Swagger\Client\Eve\ApiException;
+use Swagger\Client\Eve\Model\GetCharactersCharacterIdNotFound;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 
 #[OA\Tag(name: 'Character', description: 'Character related functions.')]
@@ -321,17 +321,15 @@ class CharacterController extends BaseController
             $eveChar = $esiApiFactory
                 ->getCharacterApi()
                 ->getCharactersCharacterId($charId, $config['eve']['datasource']);
-        } catch (ApiException $e) {
-            $body = $e->getResponseBody();
-            if ($e->getCode() === 404 && is_string($body) && str_contains($body, 'Character not found')) {
-                return $this->withJson('Character not found.', 404);
-            } else {
-                $log->error($e->getMessage());
-                return $this->withJson('ESI error.', 500);
-            }
-        } catch (\Exception $e) { // InvalidArgumentException
+        } catch (\Exception $e) {
             $log->error($e->getMessage());
             return $this->withJson('ESI error.', 500);
+        }
+        if (
+            $eveChar instanceof GetCharactersCharacterIdNotFound &&
+            str_contains($eveChar->getError(), 'Character not found')
+        ) {
+            return $this->withJson('Character not found.', 404);
         }
 
         // Create new account

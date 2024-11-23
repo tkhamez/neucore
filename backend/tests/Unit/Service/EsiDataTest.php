@@ -187,9 +187,8 @@ class EsiDataTest extends TestCase
         $this->client->setResponse(new Response(404));
         $char = $this->esiData->fetchCharacter(123);
 
-        $this->assertStringContainsString('404', $this->log->getMessages()[0]);
         $this->assertNull($char);
-        $this->assertStringStartsWith('[404] Error ', $this->log->getMessages()[0]);
+        $this->assertStringStartsWith('Error JSON decoding server response', $this->log->getMessages()[0]);
     }
 
     public function testFetchCharacter_404Deleted()
@@ -204,7 +203,7 @@ class EsiDataTest extends TestCase
         );
         $char = $this->esiData->fetchCharacter(123);
 
-        $this->assertFalse(isset($this->log->getHandler()->getRecords()[0]));
+        $this->assertFalse(isset($this->log->getMessages()[0]));
 
         $this->assertSame(123, $char->getId());
         $this->assertSame('old char name', $char->getName());
@@ -350,7 +349,7 @@ class EsiDataTest extends TestCase
 
         $corp = $this->esiData->fetchCorporation(123);
         $this->assertNull($corp);
-        $this->assertStringStartsWith('[500] Error ', $this->log->getMessages()[0]);
+        $this->assertStringStartsWith('Error JSON decoding server response', $this->log->getMessages()[0]);
     }
 
     public function testFetchCorporationNoFlushNoAlliance()
@@ -445,7 +444,7 @@ class EsiDataTest extends TestCase
 
         $alli = $this->esiData->fetchAlliance(123);
         $this->assertNull($alli);
-        $this->assertStringStartsWith('[500] Error ', $this->log->getMessages()[0]);
+        $this->assertStringStartsWith('Error JSON decoding server response', $this->log->getMessages()[0]);
     }
 
     public function testFetchAllianceNoFlush()
@@ -794,7 +793,7 @@ class EsiDataTest extends TestCase
     {
         $this->client->setResponse(new Response(500));
         $this->assertFalse($this->esiData->verifyRoles(['Auditor'], 100, 'access-token'));
-        $this->assertStringStartsWith('[500]', $this->log->getMessages()[0]);
+        $this->assertStringStartsWith('Error JSON decoding server response', $this->log->getMessages()[0]);
     }
 
     public function testVerifyRoles_CharacterNotFound()

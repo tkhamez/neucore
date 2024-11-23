@@ -16,6 +16,7 @@ use Neucore\Service\Character as CharacterService;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\ApiException;
 use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
+use Swagger\Client\Eve\Model\GetCharactersCharacterIdNotFound;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
@@ -138,27 +139,22 @@ class EsiData
 
         // Get data from character
         $this->lastErrorCode = null;
-        $eveChar = null;
         $corpId = null;
         try {
             // ESI cache = 24 hours.
             // But maybe faster than /characters/affiliation/ if character was deleted.
             $eveChar = $this->esiApiFactory->getCharacterApi()
                 ->getCharactersCharacterId($id, $this->config['eve']['datasource']);
-        } catch (ApiException $e) {
-            // Do not log and continue if character was deleted/biomassed
-            $body = $e->getResponseBody();
-            if ($e->getCode() === 404 && is_string($body) && str_contains($body, 'Character has been deleted')) {
-                $corpId = self::CORPORATION_DOOMHEIM_ID;
-            } else {
-                $this->lastErrorCode = $e->getCode();
-                $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
-                return null;
-            }
-        } catch (\Exception $e) { // e.g. InvalidArgumentException
+        } catch (\Exception $e) {
             $this->lastErrorCode = $e->getCode();
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return null;
+        }
+        if (
+            $eveChar instanceof GetCharactersCharacterIdNotFound &&
+            str_contains($eveChar->getError(), 'Character has been deleted')
+        ) {
+            $corpId = self::CORPORATION_DOOMHEIM_ID;
         }
 
         $updated = false;

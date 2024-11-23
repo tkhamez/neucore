@@ -414,7 +414,7 @@ class CharacterControllerTest extends WebTestCase
 
         $this->assertSame(500, $response->getStatusCode());
         $this->assertSame('ESI error.', $this->parseJsonBody($response));
-        $this->assertStringStartsWith('[400] Error connecting to the API', $this->log->getMessages()[0]);
+        $this->assertStringStartsWith('Error JSON decoding server response', $this->log->getMessages()[0]);
     }
 
     public function testAdd_500EsiError2()
