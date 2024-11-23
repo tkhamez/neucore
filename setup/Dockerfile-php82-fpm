@@ -4,11 +4,9 @@ RUN apk update && \
     apk add --no-cache autoconf gcc g++ make gmp-dev libzip-dev icu-dev linux-headers
 RUN mkdir -p /usr/src/php/ext/apcu && \
     curl -fsSL https://pecl.php.net/get/apcu-5.1.22.tgz | tar xvz -C "/usr/src/php/ext/apcu" --strip 1
-RUN mkdir -p /usr/src/php/ext/ast && \
-    curl -fsSL https://pecl.php.net/get/ast-1.1.0.tgz | tar xvz -C "/usr/src/php/ext/ast" --strip 1
 RUN mkdir -p /usr/src/php/ext/xdebug && \
     curl -fsSL https://pecl.php.net/get/xdebug-3.2.0.tgz | tar xvz -C "/usr/src/php/ext/xdebug" --strip 1
-RUN docker-php-ext-install pdo_mysql bcmath gmp zip intl ast apcu xdebug opcache mysqli
+RUN docker-php-ext-install pdo_mysql bcmath gmp zip intl apcu xdebug opcache mysqli
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 RUN mkdir -p /home/www-data/.composer && chmod 0777 /home/www-data/.composer

@@ -25,6 +25,9 @@ jobs:
           - php-version: '8.3'
             db-image: mysql
             db-version: '8.4.0'
+          - php-version: '8.4'
+            db-image: mysql
+            db-version: '8.4.0'
       fail-fast: false
     services:
       database:

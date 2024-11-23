@@ -1,8 +1,12 @@
 # Changelog
 
+# next
+
+- Added PHP 8.4 compatibility.
+
 # 2.6.0
 
-01 Nov 2024
+1 Nov 2024
 
 - Added password login as an alternative to EVE SSO.
 - Fixed a bug where a group was incorrectly removed automatically (if it had a forbidden group that 

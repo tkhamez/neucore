@@ -29,4 +29,9 @@ return [
             'issuer'    => 'login.eveonline.com',
         ],
     ],
+    'error_reporting' => (string)(
+        version_compare(PHP_VERSION, '8.4.0') >= 0 ?
+            E_ALL & ~E_DEPRECATED : // Temporarily reduce error level for PHP 8.4
+            E_ALL
+    ),
 ];
