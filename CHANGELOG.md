@@ -1,8 +1,11 @@
 # Changelog
 
-# next
+# 2.7.0
+
+23 Nov 2024
 
 - Added PHP 8.4 compatibility.
+- Updated backend dependencies.
 
 # 2.6.0
 
