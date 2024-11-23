@@ -108,9 +108,9 @@ class EsiController extends BaseController
         $path = str_replace(
             ['{character_id}', '{corporation_id}', '{alliance_id}'],
             [
-                $character->getId(),
-                $corp ? $corp->getId() : '',
-                $corp && $corp->getAlliance() !== null ? $corp->getAlliance()->getId() : ''
+                (string)$character->getId(),
+                (string)$corp?->getId(),
+                $corp && $corp->getAlliance() !== null ? (string)$corp->getAlliance()->getId() : ''
             ],
             $route
         );

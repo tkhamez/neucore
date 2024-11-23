@@ -390,12 +390,12 @@ class UserAuthTest extends TestCase
         $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 200]);
         $this->assertSame($main2Loaded->getId(), $removedChar->getcharacterId());
         $this->assertNotSame($main2Loaded->getPlayer()->getId(), $removedChar->getPlayer()->getId());
-        $this->assertNotNull($main2Loaded->getPlayer()->getId());
+        $this->assertGreaterThan(0, $main2Loaded->getPlayer()->getId());
         $this->assertSame($oldPlayerId, $removedChar->getPlayer()->getId());
-        $this->assertNotNull($oldPlayerId);
+        $this->assertGreaterThan(0, $oldPlayerId);
         $this->assertSame($newPlayerId, $removedChar->getNewPlayer()->getId());
         $this->assertSame(RemovedCharacter::REASON_MOVED, $removedChar->getReason());
-        $this->assertNotNull($newPlayerId);
+        $this->assertGreaterThan(0, $newPlayerId);
     }
 
     /**
@@ -449,12 +449,12 @@ class UserAuthTest extends TestCase
         $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 200]);
         $this->assertSame($main2Loaded->getId(), $removedChar->getcharacterId());
         $this->assertNotSame($main2Loaded->getPlayer()->getId(), $removedChar->getPlayer()->getId());
-        $this->assertNotNull($main2Loaded->getPlayer()->getId());
+        $this->assertGreaterThan(0, $main2Loaded->getPlayer()->getId());
         $this->assertSame($oldPlayerId, $removedChar->getPlayer()->getId());
-        $this->assertNotNull($oldPlayerId);
+        $this->assertGreaterThan(0, $oldPlayerId);
         $this->assertSame($newPlayerId, $removedChar->getNewPlayer()->getId());
         $this->assertSame(RemovedCharacter::REASON_MOVED_OWNER_CHANGED, $removedChar->getReason());
-        $this->assertNotNull($newPlayerId);
+        $this->assertGreaterThan(0, $newPlayerId);
     }
 
     public function testLogin_addAltMoveOrMergeAccounts_LoggedInChar()

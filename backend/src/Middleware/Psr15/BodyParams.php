@@ -24,9 +24,7 @@ class BodyParams implements MiddlewareInterface
         } elseif (str_starts_with($contentType, 'application/x-www-form-urlencoded')) {
             if ($request->getMethod() !== 'POST') { // POST data is already handled
                 parse_str($request->getBody()->__toString(), $contents);
-                if (is_array($contents)) {
-                    $request = $request->withParsedBody($contents);
-                }
+                $request = $request->withParsedBody($contents);
             }
         }
 
