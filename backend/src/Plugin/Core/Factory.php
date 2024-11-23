@@ -38,7 +38,7 @@ class Factory implements FactoryInterface
         string $method,
         string $url,
         array $headers = [],
-        string $body = null
+        ?string $body = null
     ): RequestInterface {
         return new Request($method, $url, $headers, $body);
     }

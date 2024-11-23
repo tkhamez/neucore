@@ -144,9 +144,9 @@ class Helper
     }
 
     public static function getPluginFactory(
-        Client $client = null,
-        Logger $logger = null,
-        StorageInterface $storage = null
+        ?Client $client = null,
+        ?Logger $logger = null,
+        ?StorageInterface $storage = null
     ): Factory {
         if (!$client) {
             $client = new Client();
@@ -456,7 +456,7 @@ class Helper
         string $loginName = EveLogin::NAME_DEFAULT,
         array $scopes = [], // only added if EveLogin does not already exist
         array $roles = [], // only added if EveLogin does not already exist
-        \DateTime $lastChecked = null,
+        ?\DateTime $lastChecked = null,
         string $refreshToken = 'rt',
     ): EsiToken {
         $om = $this->getObjectManager();
@@ -537,7 +537,7 @@ class Helper
     }
 
     public function setupDeactivateAccount(
-        Player $player = null,
+        ?Player $player = null,
         int $charId = 100200,
         string $charName = 'Char',
         int $corpId = 101,

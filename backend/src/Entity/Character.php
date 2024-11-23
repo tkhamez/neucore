@@ -194,7 +194,7 @@ class Character implements \JsonSerializable
         return $this->main;
     }
 
-    public function setCharacterOwnerHash(string $characterOwnerHash = null): self
+    public function setCharacterOwnerHash(?string $characterOwnerHash = null): self
     {
         $this->characterOwnerHash = $characterOwnerHash;
 
@@ -291,7 +291,7 @@ class Character implements \JsonSerializable
         return $this->player;
     }
 
-    public function setCorporation(Corporation $corporation = null): Character
+    public function setCorporation(?Corporation $corporation = null): Character
     {
         $this->corporation = $corporation;
 

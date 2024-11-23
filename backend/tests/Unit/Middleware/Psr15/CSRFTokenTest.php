@@ -6,6 +6,7 @@ namespace Tests\Unit\Middleware\Psr15;
 
 use Neucore\Middleware\Psr15\CSRFToken;
 use Neucore\Service\SessionData;
+use PHPUnit\Framework\MockObject\Exception;
 use Slim\Psr7\Factory\ResponseFactory;
 use Tests\Helper;
 use Tests\RequestHandler;
@@ -18,6 +19,9 @@ class CSRFTokenTest extends TestCase
         (new Helper())->resetSessionData();
     }
 
+    /**
+     * @throws Exception
+     */
     public function testProcess()
     {
         $request = $this->createRequestWithRoute('POST', '/include-route/something');

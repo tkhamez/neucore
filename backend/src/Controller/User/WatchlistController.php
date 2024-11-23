@@ -1465,7 +1465,7 @@ class WatchlistController extends BaseController
     private function checkPermission(
         int $id,
         UserAuth $userAuth,
-        string $roleName = null,
+        ?string $roleName = null,
         bool $admin = false,
         bool $checkSettingsLock = false
     ): bool {

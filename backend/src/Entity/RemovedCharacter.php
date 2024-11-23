@@ -159,7 +159,7 @@ class RemovedCharacter implements \JsonSerializable
         return $this->player;
     }
 
-    public function setNewPlayer(Player $newPlayer = null): self
+    public function setNewPlayer(?Player $newPlayer = null): self
     {
         $this->newPlayer = $newPlayer;
 

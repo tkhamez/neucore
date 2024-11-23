@@ -89,7 +89,7 @@ class SessionMiddleware implements MiddlewareInterface
         return $response;
     }
 
-    private function shouldStartSession(RouteInterface $route = null): bool
+    private function shouldStartSession(?RouteInterface $route = null): bool
     {
         $start = false;
 
@@ -155,7 +155,7 @@ class SessionMiddleware implements MiddlewareInterface
         }
     }
 
-    private function isReadOnly(RouteInterface $route = null): bool
+    private function isReadOnly(?RouteInterface $route = null): bool
     {
         $routePattern = $route?->getPattern();
         if ($routePattern === null) {

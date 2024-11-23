@@ -452,7 +452,7 @@ class CharacterControllerTest extends WebTestCase
         $this->assertSame([Role::USER], $char->getPlayer()->getRoleNames());
     }
 
-    private function setupDb(string $token = null): void
+    private function setupDb(?string $token = null): void
     {
         $this->helper->emptyDb();
         $char = $this->helper->addCharacterMain('User', 96061222, [Role::USER])->setCharacterOwnerHash('coh1');

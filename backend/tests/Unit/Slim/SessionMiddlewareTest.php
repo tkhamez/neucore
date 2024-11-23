@@ -82,7 +82,7 @@ class SessionMiddlewareTest extends TestCase
         $this->assertFalse(SessionData::isReadOnly());
     }
 
-    private function invokeMiddleware(array $conf, string $path = null): void
+    private function invokeMiddleware(array $conf, ?string $path = null): void
     {
         $request = $this->createRequestWithRoute('GET', $path);
 

@@ -75,7 +75,7 @@ class UserAuth implements RoleProviderInterface
      * {@inheritdoc}
      * @see RoleProviderInterface::getRoles
      */
-    public function getRoles(ServerRequestInterface $request = null): array
+    public function getRoles(?ServerRequestInterface $request = null): array
     {
         $this->getUser();
 

@@ -209,7 +209,7 @@ class EsiController extends BaseController
     private function prepareResponse(
         mixed $body,
         bool $debug,
-        ResponseInterface $response = null,
+        ?ResponseInterface $response = null,
         int $code = 200
     ): ResponseInterface {
         return $this->withJson([
@@ -218,7 +218,7 @@ class EsiController extends BaseController
         ], $code);
     }
 
-    private function extractHeaders(bool $debug, ResponseInterface $response = null): ?array
+    private function extractHeaders(bool $debug, ?ResponseInterface $response = null): ?array
     {
         if ($response === null) {
             return null;

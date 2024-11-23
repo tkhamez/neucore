@@ -116,7 +116,7 @@ class AppAuthTest extends TestCase
         $this->assertStringStartsNotWith('$1$', $newHash);
     }
 
-    private function getRequest(string $authHeader = null): ServerRequestInterface
+    private function getRequest(?string $authHeader = null): ServerRequestInterface
     {
         $request = RequestFactory::createRequest();
         if ($authHeader !== null) {

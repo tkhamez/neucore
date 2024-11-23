@@ -357,7 +357,7 @@ class Account
      *
      * @param Character $character Entity attached to the entity manager.
      */
-    public function deleteCharacter(Character $character, string $reason, Player $deletedBy = null): void
+    public function deleteCharacter(Character $character, string $reason, ?Player $deletedBy = null): void
     {
         $oldPlayer = $character->getPlayer();
         if ($reason === RemovedCharacter::REASON_DELETED_BY_ADMIN) {
@@ -507,7 +507,7 @@ class Account
      * If the player object is provided, the corporation/group relations must be up-to-date in the database.
      * If the corporation object is provided, the player/group relations must be up-to-date in the database.
      */
-    public function syncTrackingRole(Player $changedPlayer = null, Corporation $changedCorporation = null): void
+    public function syncTrackingRole(?Player $changedPlayer = null, ?Corporation $changedCorporation = null): void
     {
         // validate params
         if (($changedPlayer === null && $changedCorporation === null) ||
@@ -539,7 +539,7 @@ class Account
      * If the player object is provided, the watchlist/group relations must be up to date in the database,
      * otherwise the watchlist/group and player/group relations must be up to date in the DB.
      */
-    public function syncWatchlistRole(Player $changedPlayer = null): void
+    public function syncWatchlistRole(?Player $changedPlayer = null): void
     {
         $watchlistRepository = $this->repositoryFactory->getWatchlistRepository();
 
@@ -554,7 +554,7 @@ class Account
         $this->syncRoleByGroupMembership(Role::WATCHLIST, $groupIds, $changedPlayer);
     }
 
-    public function syncWatchlistManagerRole(Player $changedPlayer = null): void
+    public function syncWatchlistManagerRole(?Player $changedPlayer = null): void
     {
         $watchlistRepository = $this->repositoryFactory->getWatchlistRepository();
 
@@ -621,7 +621,7 @@ class Account
     /**
      * @param int[] $groupIds Group IDs that grant the role
      */
-    private function syncRoleByGroupMembership(string $roleName, array $groupIds, Player $changedPlayer = null): void
+    private function syncRoleByGroupMembership(string $roleName, array $groupIds, ?Player $changedPlayer = null): void
     {
         // get role
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $roleName]);
@@ -670,8 +670,8 @@ class Account
     private function createRemovedCharacter(
         Character $character,
         string $reason,
-        Player $newPlayer = null,
-        Player $deletedBy = null
+        ?Player $newPlayer = null,
+        ?Player $deletedBy = null
     ): void {
         if ($character->getId() === 0) { // should never be true, but that's not obvious here
             $this->log->error('Account::createRemovedCharacter(): Missing character ID.');

@@ -182,7 +182,7 @@ class CorporationMember implements \JsonSerializable
         return $this->logonDate;
     }
 
-    public function setShipType(EsiType $shipType = null): CorporationMember
+    public function setShipType(?EsiType $shipType = null): CorporationMember
     {
         $this->shipType = $shipType;
 

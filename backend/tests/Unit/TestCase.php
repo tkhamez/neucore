@@ -16,7 +16,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
      * @throws Exception
      * @phan-suppress PhanTypeInvalidThrowsIsInterface
      */
-    protected function createRequestWithRoute(string $method = 'GET', string $path = null): ServerRequestInterface
+    protected function createRequestWithRoute(string $method = 'GET', ?string $path = null): ServerRequestInterface
     {
         $routeParser = $this->createMock(RouteParserInterface::class);
         $routingResults = $this->createMock(RoutingResults::class);

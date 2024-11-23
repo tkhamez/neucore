@@ -1119,7 +1119,7 @@ class GroupController extends BaseController
      * @param int|null $id Group ID.
      * @return boolean
      */
-    private function otherGroupExists(string $name, int $id = null): bool
+    private function otherGroupExists(string $name, ?int $id = null): bool
     {
         $otherGroup = $this->repositoryFactory->getGroupRepository()->findOneBy(['name' => $name]);
 

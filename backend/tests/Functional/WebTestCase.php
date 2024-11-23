@@ -30,8 +30,8 @@ class WebTestCase extends TestCase
     protected function runApp(
         string $requestMethod,
         string $requestUri,
-        object|array|string $requestData = null,
-        array $headers = null,
+        object|array|string|null $requestData = null,
+        ?array $headers = null,
         array $mocks = [],
         array $envVars = []
     ): ?ResponseInterface {
