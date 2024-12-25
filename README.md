@@ -30,8 +30,6 @@ monitor them and provide access to external services.
 This application focuses on providing core functionality related to player identities, [ESI](http://esi.evetech.net)
 access and an API that other applications can build upon.
 
-Demo: https://neucore.tian-space.net.
-
 Main features:
 
 - Management of group memberships, manually and with various ways to automate membership.

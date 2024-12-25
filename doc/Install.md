@@ -145,7 +145,7 @@ sudo a2ensite default-ssl
 
 sudo nano /etc/apache2/sites-available/z-neucore.conf
   <VirtualHost *:443>
-    ServerName neucore.tian-space.net
+    ServerName your.domain.tld
     ProxyPreserveHost On
     ProxyRequests off
     ProxyPass / http://localhost:8080/
