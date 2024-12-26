@@ -14,7 +14,7 @@ return [
         'NEUCORE_LOG_FORMAT'        => 'multiline',
         'NEUCORE_CACHE_DIR'         => Application::ROOT_DIR . '/var/cache',
         'NEUCORE_SESSION_SECURE'    => '1',
-        'NEUCORE_ERROR_REPORTING'   => (string)E_ALL,
+        'NEUCORE_ERROR_REPORTING'   => (string)(E_ALL & ~E_DEPRECATED),
         'NEUCORE_RATE_LIMIT_MAX'   => '0',
         'NEUCORE_RATE_LIMIT_TIME'   => '0',
     ],

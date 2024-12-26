@@ -1,5 +1,12 @@
 # Changelog
 
+# Next
+
+dd mm yyyy
+
+- Changed default error reporting level to "E_ALL & ~E_DEPRECATED".
+
+
 # 2.7.0
 
 23 Nov 2024
