@@ -1,8 +1,8 @@
 # Changelog
 
-# Next
+# 2.7.1
 
-dd mm yyyy
+27 Dec 2024
 
 - Fix: Deleted characters were no longer removed.
 - Changed default error reporting level to "E_ALL & ~E_DEPRECATED".
