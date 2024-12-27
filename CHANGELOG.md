@@ -6,7 +6,7 @@ dd mm yyyy
 
 - Fix: Deleted characters were no longer removed.
 - Changed default error reporting level to "E_ALL & ~E_DEPRECATED".
-
+- Updated backend dependencies.
 
 # 2.7.0
 
