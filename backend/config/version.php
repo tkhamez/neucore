@@ -1,5 +1,6 @@
 <?php
 
-// Note: rebuild the fronted when changed because the version is included in the generated JS API client.
+// Note: Rebuild the frontend after the version was changed because the version is
+// included in the generated JS API client.
 
-const NEUCORE_VERSION = '2.7.1';
+const NEUCORE_VERSION = '2.8.0-dev';
