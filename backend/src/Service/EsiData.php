@@ -140,16 +140,30 @@ class EsiData
         // Get data from character
         $this->lastErrorCode = null;
         $corpId = null;
+        $eveChar = null;
         try {
             // ESI cache = 24 hours.
             // But maybe faster than /characters/affiliation/ if character was deleted.
             $eveChar = $this->esiApiFactory->getCharacterApi()
                 ->getCharactersCharacterId($id, $this->config['eve']['datasource']);
+        } catch (ApiException $e) {
+            // Do not log and continue if character was deleted/biomassed
+            $body = $e->getResponseBody();
+            if ($e->getCode() === 404 && is_string($body) && str_contains($body, 'Character has been deleted')) {
+                $corpId = self::CORPORATION_DOOMHEIM_ID;
+            } else {
+                $this->lastErrorCode = $e->getCode();
+                $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
+                return null;
+            }
         } catch (\Exception $e) {
             $this->lastErrorCode = $e->getCode();
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return null;
         }
+
+        // This is currently (tkhamez/swagger-eve-php v10.1.0) not used, but I think that's a bug, see
+        // https://github.com/OpenAPITools/openapi-generator/pull/19483
         if (
             $eveChar instanceof GetCharactersCharacterIdNotFound &&
             str_contains($eveChar->getError(), 'Character has been deleted')
