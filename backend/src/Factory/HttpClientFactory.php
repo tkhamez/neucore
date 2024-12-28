@@ -99,14 +99,18 @@ class HttpClientFactory implements HttpClientFactoryInterface
 
         if (!empty($cacheKey)) {
             $dir = $this->config['guzzle']['cache']['dir'] . DIRECTORY_SEPARATOR . $cacheKey;
-            if (is_writable($dir)) {
+            $dirExists = is_dir($dir);
+            if (!$dirExists && @mkdir($dir, 0775, true)) {
+                $dirExists = true;
+            }
+            if ($dirExists && is_writable($dir)) {
                 $cache = new CacheMiddleware(new PrivateCacheStrategy(new Psr6CacheStorage(
                     // 86400 = one day lifetime
                     new FilesystemAdapter('', 86400, $dir)
                 )));
                 $stack->push($cache, 'cache');
             } else {
-                $this->logger->error("$dir is not writable.");
+                $this->logger->error("$dir is not writable or does not exist.");
             }
         }
 
