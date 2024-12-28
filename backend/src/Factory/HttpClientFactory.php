@@ -98,15 +98,16 @@ class HttpClientFactory implements HttpClientFactoryInterface
         #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
 
         if (!empty($cacheKey)) {
-            $cache = new CacheMiddleware(new PrivateCacheStrategy(new Psr6CacheStorage(
-                // 86400 = one day lifetime
-                new FilesystemAdapter(
-                    '',
-                    86400,
-                    $this->config['guzzle']['cache']['dir'] . DIRECTORY_SEPARATOR . $cacheKey
-                )
-            )));
-            $stack->push($cache, 'cache');
+            $dir = $this->config['guzzle']['cache']['dir'] . DIRECTORY_SEPARATOR . $cacheKey;
+            if (is_writable($dir)) {
+                $cache = new CacheMiddleware(new PrivateCacheStrategy(new Psr6CacheStorage(
+                    // 86400 = one day lifetime
+                    new FilesystemAdapter('', 86400, $dir)
+                )));
+                $stack->push($cache, 'cache');
+            } else {
+                $this->logger->error("$dir is not writable.");
+            }
         }
 
         $stack->push($this->esiHeaders);
