@@ -41,7 +41,7 @@ class SendMissingCharacterMail extends Command
         RepositoryFactory $repositoryFactory,
         EntityManagerInterface $entityManager,
         LoggerInterface $logger,
-        StorageInterface $storage
+        StorageInterface $storage,
     ) {
         parent::__construct();
         $this->logOutput($logger);
@@ -62,7 +62,7 @@ class SendMissingCharacterMail extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in seconds after each mail sent (ESI rate limit is 4/min)',
-                $this->sleep
+                $this->sleep,
             );
         $this->configureLogOutput($this);
     }
@@ -89,11 +89,11 @@ class SendMissingCharacterMail extends Command
 
         // read config
         $daysVar = $this->sysVarRepository->find(SystemVariable::MAIL_MISSING_CHARACTER_RESEND);
-        if (!$daysVar || (int)$daysVar->getValue() <= 0) {
+        if (!$daysVar || (int) $daysVar->getValue() <= 0) {
             $this->writeLine(' Invalid config.', false);
             return;
         }
-        $days = (int)$daysVar->getValue();
+        $days = (int) $daysVar->getValue();
 
         $dbResultLimit = 1000;
         $offset = $dbResultLimit * -1;
@@ -105,7 +105,7 @@ class SendMissingCharacterMail extends Command
                 $this->eveMail->missingCharacterGetCorporations(),
                 $days,
                 $dbResultLimit,
-                $offset
+                $offset,
             ));
             $this->entityManager->clear(); // detaches all objects from Doctrine
 
@@ -138,7 +138,7 @@ class SendMissingCharacterMail extends Command
                         $this->writeLine(
                             "  Missing character mail could not be sent to $memberId " .
                                 "because of CSPA charge or blocked sender",
-                            false
+                            false,
                         );
                     }
                     usleep($this->sleep * 1000 * 1000);

@@ -21,8 +21,7 @@ class EsiClient
         private Config $config,
         private OAuthToken $tokenService,
         private HttpClientFactoryInterface $httpClientFactory,
-    ) {
-    }
+    ) {}
 
     /**
      * Returns the time (Unix timestamp) to wait until when the error limit was reached.
@@ -35,7 +34,7 @@ class EsiClient
      */
     public static function getErrorLimitWaitTime(StorageInterface $storage, int $limitRemain): int
     {
-        $data = EsiErrorLimit::fromJson((string)$storage->get(Variables::ESI_ERROR_LIMIT));
+        $data = EsiErrorLimit::fromJson((string) $storage->get(Variables::ESI_ERROR_LIMIT));
 
         if (!$data->updated || !$data->remain || !$data->reset) {
             return 0;
@@ -59,7 +58,7 @@ class EsiClient
      */
     public static function getRateLimitWaitTime(StorageInterface $storage): int
     {
-        return (int)$storage->get(Variables::ESI_RATE_LIMIT);
+        return (int) $storage->get(Variables::ESI_RATE_LIMIT);
     }
 
     /**
@@ -67,7 +66,7 @@ class EsiClient
      */
     public static function getThrottledWaitTime(StorageInterface $storage): int
     {
-        return (int)$storage->get(Variables::ESI_THROTTLED);
+        return (int) $storage->get(Variables::ESI_THROTTLED);
     }
 
     /**
@@ -83,7 +82,7 @@ class EsiClient
         string $eveLoginName = EveLogin::NAME_DEFAULT,
         bool $debug = false,
     ): ResponseInterface {
-        $url = $this->config['eve']['esi_host'] . $esiPath.
+        $url = $this->config['eve']['esi_host'] . $esiPath .
             (strpos($esiPath, '?') ? '&' : '?') .
             'datasource=' . $this->config['eve']['datasource'];
 

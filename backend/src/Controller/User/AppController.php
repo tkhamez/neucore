@@ -53,10 +53,10 @@ class AppController extends BaseController
                 description: 'List of apps (only id and name properties are returned).',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/App')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/App'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function all(): ResponseInterface
@@ -88,23 +88,23 @@ class AppController extends BaseController
                             property: 'name',
                             description: 'Name of the app.',
                             type: 'string',
-                            maxLength: 255
-                        )
+                            maxLength: 255,
+                        ),
                     ],
-                    type: 'object'
-                )
-            )
+                    type: 'object',
+                ),
+            ),
         ),
         tags: ['App'],
         responses: [
             new OA\Response(
                 response: '201',
                 description: 'The new app.',
-                content: new OA\JsonContent(ref: '#/components/schemas/App')
+                content: new OA\JsonContent(ref: '#/components/schemas/App'),
             ),
             new OA\Response(response: '400', description: 'App name is invalid/missing.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '500', description: 'If creation of app failed.')
+            new OA\Response(response: '500', description: 'If creation of app failed.'),
         ],
     )]
     public function create(ServerRequestInterface $request, LoggerInterface $log): ResponseInterface
@@ -116,7 +116,7 @@ class AppController extends BaseController
 
         $appRole = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => Role::APP]);
         if ($appRole === null) {
-            $log->critical('AppController->create(): Role "'.Role::APP.'" not found.');
+            $log->critical('AppController->create(): Role "' . Role::APP . '" not found.');
             return $this->response->withStatus(500);
         }
 
@@ -153,12 +153,12 @@ class AppController extends BaseController
                             property: 'name',
                             description: 'New name for the app.',
                             type: 'string',
-                            maxLength: 255
-                        )
+                            maxLength: 255,
+                        ),
                     ],
-                    type: 'object'
-                )
-            )
+                    type: 'object',
+                ),
+            ),
         ),
         tags: ['App'],
         parameters: [
@@ -167,23 +167,23 @@ class AppController extends BaseController
                 description: 'ID of the app.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'App was renamed.',
-                content: new OA\JsonContent(ref: '#/components/schemas/App')
+                content: new OA\JsonContent(ref: '#/components/schemas/App'),
             ),
             new OA\Response(response: '400', description: 'App name is invalid/missing.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'App not found.')
+            new OA\Response(response: '404', description: 'App not found.'),
         ],
     )]
     public function rename(string $id, ServerRequestInterface $request): ResponseInterface
     {
-        $app = $this->repositoryFactory->getAppRepository()->find((int)$id);
+        $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
             return $this->response->withStatus(404);
         }
@@ -211,18 +211,18 @@ class AppController extends BaseController
                 description: 'ID of the app.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'App was deleted.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'App not found.')
+            new OA\Response(response: '404', description: 'App not found.'),
         ],
     )]
     public function delete(string $id): ResponseInterface
     {
-        $app = $this->repositoryFactory->getAppRepository()->find((int)$id);
+        $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
             return $this->response->withStatus(404);
         }
@@ -245,7 +245,7 @@ class AppController extends BaseController
                 description: 'App ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -254,18 +254,18 @@ class AppController extends BaseController
                 description: 'List of players ordered by name. Only id, name and roles properties are returned.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Player')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Player'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'App not found.')
+            new OA\Response(response: '404', description: 'App not found.'),
         ],
     )]
     public function managers(string $id): ResponseInterface
     {
         $ret = [];
 
-        $app = $this->repositoryFactory->getAppRepository()->find((int)$id);
+        $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
             return $this->response->withStatus(404);
         }
@@ -294,20 +294,20 @@ class AppController extends BaseController
                 description: 'ID of the app.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'pid',
                 description: 'ID of the player.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Player added as manager.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Player and/or app not found.')
+            new OA\Response(response: '404', description: 'Player and/or app not found.'),
         ],
     )]
     public function addManager(string $id, string $pid, Account $account): ResponseInterface
@@ -345,20 +345,20 @@ class AppController extends BaseController
                 description: 'ID of the app.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'pid',
                 description: 'ID of the player.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Player removed from managers.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Player and/or app not found.')
+            new OA\Response(response: '404', description: 'Player and/or app not found.'),
         ],
     )]
     public function removeManager(string $id, string $pid, Account $account): ResponseInterface
@@ -388,22 +388,22 @@ class AppController extends BaseController
                 description: 'App ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'The app information',
-                content: new OA\JsonContent(ref: '#/components/schemas/App')
+                content: new OA\JsonContent(ref: '#/components/schemas/App'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'App not found.')
+            new OA\Response(response: '404', description: 'App not found.'),
         ],
     )]
     public function show(string $id, UserAuth $uas): ResponseInterface
     {
-        $app = $this->repositoryFactory->getAppRepository()->find((int)$id);
+        $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
             return $this->response->withStatus(404);
         }
@@ -430,20 +430,20 @@ class AppController extends BaseController
                 description: 'ID of the app.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'gid',
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group added to app.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group and/or app not found.')
+            new OA\Response(response: '404', description: 'Group and/or app not found.'),
         ],
     )]
     public function addGroup(string $id, string $gid): ResponseInterface
@@ -476,20 +476,20 @@ class AppController extends BaseController
                 description: 'ID of the app.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'gid',
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group removed from the app.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group and/or app not found.')
+            new OA\Response(response: '404', description: 'Group and/or app not found.'),
         ],
     )]
     public function removeGroup(string $id, string $gid): ResponseInterface
@@ -516,7 +516,7 @@ class AppController extends BaseController
                 description: 'ID of the app.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'name',
@@ -526,14 +526,14 @@ class AppController extends BaseController
                 schema: new OA\Schema(
                     type: 'string',
                     enum: ['app-groups', 'app-chars', 'app-tracking', 'app-esi-login',
-                        'app-esi-proxy', 'app-esi-token']
-                )
+                        'app-esi-proxy', 'app-esi-token'],
+                ),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Role added.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'App and/or role not found or invalid.')
+            new OA\Response(response: '404', description: 'App and/or role not found or invalid.'),
         ],
     )]
     public function addRole(string $id, string $name): ResponseInterface
@@ -562,7 +562,7 @@ class AppController extends BaseController
                 description: 'ID of the app.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'name',
@@ -572,14 +572,14 @@ class AppController extends BaseController
                 schema: new OA\Schema(
                     type: 'string',
                     enum: ['app-groups', 'app-chars', 'app-tracking', 'app-esi-login', 'app-esi-proxy',
-                        'app-esi-token']
-                )
+                        'app-esi-token'],
+                ),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Role removed.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'App and/or role not found or invalid.')
+            new OA\Response(response: '404', description: 'App and/or role not found or invalid.'),
         ],
     )]
     public function removeRole(string $id, string $name): ResponseInterface
@@ -606,20 +606,20 @@ class AppController extends BaseController
                 description: 'ID of the app.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'eveLoginId',
                 description: 'ID of the EVE login.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'EVE login added.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'EVE login and/or app not found.')
+            new OA\Response(response: '404', description: 'EVE login and/or app not found.'),
         ],
     )]
     public function addEveLogin(string $id, string $eveLoginId): ResponseInterface
@@ -629,7 +629,7 @@ class AppController extends BaseController
         }
 
         foreach ($this->application->getEveLogins() as $existingEveLogin) {
-            if ($existingEveLogin->getId() === (int)$eveLoginId) {
+            if ($existingEveLogin->getId() === (int) $eveLoginId) {
                 return $this->response->withStatus(204);
             }
         }
@@ -652,20 +652,20 @@ class AppController extends BaseController
                 description: 'ID of the app.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'eveLoginId',
                 description: 'ID of the EVE login.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'EVE login removed.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'EVE login and/or app not found.')
+            new OA\Response(response: '404', description: 'EVE login and/or app not found.'),
         ],
     )]
     public function removeEveLogin(string $id, string $eveLoginId): ResponseInterface
@@ -692,23 +692,23 @@ class AppController extends BaseController
                 description: 'ID of the app.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'The new secret.',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'App not found.'),
-            new OA\Response(response: '500', description: 'Failed to created new secret.')
+            new OA\Response(response: '500', description: 'Failed to created new secret.'),
         ],
     )]
     public function changeSecret(string $id, UserAuth $uas): ResponseInterface
     {
-        $app = $this->repositoryFactory->getAppRepository()->find((int)$id);
+        $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
             return $this->response->withStatus(404);
         }
@@ -732,7 +732,7 @@ class AppController extends BaseController
 
     private function findAppAndPlayer(string $id, string $playerId): bool
     {
-        $playerEntity = $this->repositoryFactory->getPlayerRepository()->find((int)$playerId);
+        $playerEntity = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
         if (!$this->findApp($id) || $playerEntity === null) {
             return false;
         }
@@ -743,7 +743,7 @@ class AppController extends BaseController
 
     private function findAppAndGroup(string $appId, string $groupId): bool
     {
-        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
+        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
         if (!$this->findApp($appId) || $groupEntity === null) {
             return false;
         }
@@ -776,7 +776,7 @@ class AppController extends BaseController
 
     private function findApp(string $id): bool
     {
-        $applicationEntity = $this->repositoryFactory->getAppRepository()->find((int)$id);
+        $applicationEntity = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if (!$applicationEntity) {
             return false;
         }

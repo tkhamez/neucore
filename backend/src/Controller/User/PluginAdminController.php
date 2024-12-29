@@ -47,23 +47,23 @@ class PluginAdminController extends BaseController
                 description: 'ID of the plugin.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'The service.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Plugin')
+                content: new OA\JsonContent(ref: '#/components/schemas/Plugin'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Plugin not found.')
+            new OA\Response(response: '404', description: 'Plugin not found.'),
         ],
     )]
     public function get(string $id): ResponseInterface
     {
         // Get service with data from plugin.yml
-        $plugin = $this->pluginService->getPlugin((int)$id, true);
+        $plugin = $this->pluginService->getPlugin((int) $id, true);
 
         if (!$plugin) {
             return $this->response->withStatus(404);
@@ -86,9 +86,9 @@ class PluginAdminController extends BaseController
             new OA\Response(
                 response: '200',
                 description: 'List of plugins.',
-                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Plugin'))
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Plugin')),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function list(): ResponseInterface
@@ -109,11 +109,11 @@ class PluginAdminController extends BaseController
                 description: 'List of files.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/PluginConfigurationFile')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/PluginConfigurationFile'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '500', description: 'When a YAML file could not be parsed.')
+            new OA\Response(response: '500', description: 'When a YAML file could not be parsed.'),
         ],
     )]
     public function configurations(Config $config, PluginService $pluginService): ResponseInterface
@@ -179,22 +179,22 @@ class PluginAdminController extends BaseController
                             property: 'name',
                             description: 'Name of the plugin.',
                             type: 'string',
-                            maxLength: 255
-                        )
+                            maxLength: 255,
+                        ),
                     ],
                     type: 'object',
-                )
-            )
+                ),
+            ),
         ),
         tags: ['PluginAdmin'],
         responses: [
             new OA\Response(
                 response: '201',
                 description: 'The new plugin.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Plugin')
+                content: new OA\JsonContent(ref: '#/components/schemas/Plugin'),
             ),
             new OA\Response(response: '400', description: 'Name is missing.'),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function create(ServerRequestInterface $request): ResponseInterface
@@ -226,12 +226,12 @@ class PluginAdminController extends BaseController
                             property: 'name',
                             description: 'New name for the plugin.',
                             type: 'string',
-                            maxLength: 255
-                        )
+                            maxLength: 255,
+                        ),
                     ],
                     type: 'object',
-                )
-            )
+                ),
+            ),
         ),
         tags: ['PluginAdmin'],
         parameters: [
@@ -240,23 +240,23 @@ class PluginAdminController extends BaseController
                 description: 'ID of the plugin.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'Plugin was renamed.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Plugin')
+                content: new OA\JsonContent(ref: '#/components/schemas/Plugin'),
             ),
             new OA\Response(response: '400', description: 'Name is missing.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Plugin not found.')
+            new OA\Response(response: '404', description: 'Plugin not found.'),
         ],
     )]
     public function rename(string $id, ServerRequestInterface $request): ResponseInterface
     {
-        $plugin = $this->repositoryFactory->getPluginRepository()->find((int)$id);
+        $plugin = $this->repositoryFactory->getPluginRepository()->find((int) $id);
         if ($plugin === null) {
             return $this->response->withStatus(404);
         }
@@ -284,18 +284,18 @@ class PluginAdminController extends BaseController
                 description: 'ID of the plugin.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Plugin was deleted.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Plugin not found.')
+            new OA\Response(response: '404', description: 'Plugin not found.'),
         ],
     )]
     public function delete(string $id): ResponseInterface
     {
-        $plugin = $this->repositoryFactory->getPluginRepository()->find((int)$id);
+        $plugin = $this->repositoryFactory->getPluginRepository()->find((int) $id);
         if ($plugin === null) {
             return $this->response->withStatus(404);
         }
@@ -318,12 +318,12 @@ class PluginAdminController extends BaseController
                     properties: [
                         new OA\Property(
                             property: 'configuration',
-                            ref: '#/components/schemas/PluginConfigurationDatabase'
-                        )
+                            ref: '#/components/schemas/PluginConfigurationDatabase',
+                        ),
                     ],
                     type: 'object',
-                )
-            )
+                ),
+            ),
         ),
         tags: ['PluginAdmin'],
         parameters: [
@@ -332,14 +332,14 @@ class PluginAdminController extends BaseController
                 description: 'ID of the plugin.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Configuration changed.'),
             new OA\Response(response: '400', description: 'Invalid input.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Variable not found.')
+            new OA\Response(response: '404', description: 'Variable not found.'),
         ],
     )]
     public function saveConfiguration(
@@ -348,7 +348,7 @@ class PluginAdminController extends BaseController
         PluginService          $pluginService,
         LoggerInterface        $logger,
     ): ResponseInterface {
-        $plugin = $this->repositoryFactory->getPluginRepository()->find((int)$id);
+        $plugin = $this->repositoryFactory->getPluginRepository()->find((int) $id);
         if ($plugin === null) {
             return $this->response->withStatus(404);
         }

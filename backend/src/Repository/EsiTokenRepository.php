@@ -48,7 +48,7 @@ class EsiTokenRepository extends EntityRepository
             ->getResult();
 
         return array_map(function (array $token) {
-            return (int)$token['character_id'];
+            return (int) $token['character_id'];
         }, $result);
     }
 
@@ -58,12 +58,12 @@ class EsiTokenRepository extends EntityRepository
 
         $qb = $this->createQueryBuilder('token');
         $qb->select([
-                'token.lastChecked',
-                'char.id AS characterId',
-                'char.name AS characterName',
-                'corp.id AS corporationId',
-                'alliance.id AS allianceId',
-            ])
+            'token.lastChecked',
+            'char.id AS characterId',
+            'char.name AS characterName',
+            'corp.id AS corporationId',
+            'alliance.id AS allianceId',
+        ])
             ->join('token.character', 'char')
             ->leftJoin('char.corporation', 'corp')
             ->leftJoin('corp.alliance', 'alliance')
@@ -71,17 +71,17 @@ class EsiTokenRepository extends EntityRepository
             ->andWhere('token.validToken = 1')
             ->andWhere($qb->expr()->orX(
                 $qb->expr()->isNull('token.hasRoles'),
-                $qb->expr()->eq('token.hasRoles', '1')
+                $qb->expr()->eq('token.hasRoles', '1'),
             ))
             ->setParameter('loginId', $loginId);
 
         return array_map(function (array $data) {
             return [
                 'lastChecked' => $data['lastChecked'] ? $data['lastChecked']->format(Api::DATE_FORMAT) : null,
-                'characterId' => (int)$data['characterId'],
-                'characterName' => (string)$data['characterName'],
-                'corporationId' => $data['corporationId'] ? (int)$data['corporationId'] : null,
-                'allianceId' => $data['allianceId'] ? (int)$data['allianceId'] : null,
+                'characterId' => (int) $data['characterId'],
+                'characterName' => (string) $data['characterName'],
+                'corporationId' => $data['corporationId'] ? (int) $data['corporationId'] : null,
+                'allianceId' => $data['allianceId'] ? (int) $data['allianceId'] : null,
             ];
         }, $qb->getQuery()->getResult());
     }

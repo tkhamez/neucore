@@ -23,7 +23,7 @@ abstract class BaseController
     public function __construct(
         ResponseInterface $response,
         ObjectManager $objectManager,
-        RepositoryFactory $repositoryFactory
+        RepositoryFactory $repositoryFactory,
     ) {
         $this->response = $response;
         $this->objectManager = $objectManager;
@@ -116,6 +116,6 @@ abstract class BaseController
 
     protected function getBodyWithHomeLink(string $message): string
     {
-        return $message.'<br><br><a href="/">Home</a>';
+        return $message . '<br><br><a href="/">Home</a>';
     }
 }

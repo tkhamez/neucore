@@ -13,6 +13,4 @@ use Neucore\Entity\RemovedCharacter;
  *
  * @psalm-suppress MissingTemplateParam
  */
-class RemovedCharacterRepository extends EntityRepository
-{
-}
+class RemovedCharacterRepository extends EntityRepository {}

@@ -14,6 +14,4 @@ use Neucore\Entity\Plugin;
  *
  * @psalm-suppress MissingTemplateParam
  */
-class PluginRepository extends EntityRepository
-{
-}
+class PluginRepository extends EntityRepository {}

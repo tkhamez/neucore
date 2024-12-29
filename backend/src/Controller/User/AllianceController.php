@@ -32,7 +32,7 @@ class AllianceController extends BaseController
                 description: 'Name or ticker of the alliance (min. 3 characters).',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string', minLength: 3)
+                schema: new OA\Schema(type: 'string', minLength: 3),
             ),
         ],
         responses: [
@@ -41,10 +41,10 @@ class AllianceController extends BaseController
                 description: 'List of alliances.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Alliance')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Alliance'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized')
+            new OA\Response(response: '403', description: 'Not authorized'),
         ],
     )]
     public function find(string $query): ResponseInterface
@@ -70,8 +70,8 @@ class AllianceController extends BaseController
             required: true,
             content: new OA\MediaType(
                 mediaType: 'application/json',
-                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'))
-            )
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer')),
+            ),
         ),
         tags: ['Alliance'],
         responses: [
@@ -80,11 +80,11 @@ class AllianceController extends BaseController
                 description: 'List of alliances.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Alliance')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Alliance'),
+                ),
             ),
             new OA\Response(response: '400', description: 'Invalid body.'),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function alliances(ServerRequestInterface $request): ResponseInterface
@@ -116,10 +116,10 @@ class AllianceController extends BaseController
                 description: 'List of alliances (this one includes the groups property).',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Alliance')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Alliance'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function withGroups(): ResponseInterface
@@ -149,25 +149,25 @@ class AllianceController extends BaseController
                 description: 'EVE alliance ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '201',
                 description: 'The new alliance.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Alliance')
+                content: new OA\JsonContent(ref: '#/components/schemas/Alliance'),
             ),
             new OA\Response(response: '400', description: 'Invalid alliance ID.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Alliance not found.'),
             new OA\Response(response: '409', description: 'The alliance already exists.'),
-            new OA\Response(response: '503', description: 'ESI request failed.')
+            new OA\Response(response: '503', description: 'ESI request failed.'),
         ],
     )]
     public function add(string $id, EsiData $service): ResponseInterface
     {
-        $allianceId = (int)$id;
+        $allianceId = (int) $id;
 
         if ($this->repositoryFactory->getAllianceRepository()->find($allianceId)) {
             return $this->response->withStatus(409);
@@ -200,20 +200,20 @@ class AllianceController extends BaseController
                 description: 'ID of the alliance.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'gid',
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group added.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Alliance and/or group not found.')
+            new OA\Response(response: '404', description: 'Alliance and/or group not found.'),
         ],
     )]
     public function addGroup(string $id, string $gid): ResponseInterface
@@ -242,20 +242,20 @@ class AllianceController extends BaseController
                 description: 'ID of the alliance.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'gid',
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group removed.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Alliance and/or group not found.')
+            new OA\Response(response: '404', description: 'Alliance and/or group not found.'),
         ],
     )]
     public function removeGroup(string $id, string $gid): ResponseInterface
@@ -271,8 +271,8 @@ class AllianceController extends BaseController
 
     private function findAllianceAndGroup(string $allianceId, string $groupId): bool
     {
-        $allianceEntity = $this->repositoryFactory->getAllianceRepository()->find((int)$allianceId);
-        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
+        $allianceEntity = $this->repositoryFactory->getAllianceRepository()->find((int) $allianceId);
+        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
 
         if ($allianceEntity === null || $groupEntity === null) {
             return false;

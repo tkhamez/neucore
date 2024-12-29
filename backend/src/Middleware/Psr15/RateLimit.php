@@ -35,9 +35,9 @@ abstract class RateLimit
             $resetIn = $resetTime;
         }
 
-        $storage->set($key, (string)\json_encode($variable));
+        $storage->set($key, (string) \json_encode($variable));
 
-        return [$variable->remaining, (float)sprintf("%.1F", $resetIn), $numRequests, $elapsedTime];
+        return [$variable->remaining, (float) sprintf("%.1F", $resetIn), $numRequests, $elapsedTime];
     }
 
     protected function addHeader(ResponseInterface $response, int $newRemaining, float $newResetIn): ResponseInterface
@@ -53,7 +53,7 @@ abstract class RateLimit
         }
 
         return $response
-            ->withHeader(self::HEADER_REMAIN, (string)$remaining)
-            ->withHeader(self::HEADER_RESET, (string)$resetIn);
+            ->withHeader(self::HEADER_REMAIN, (string) $remaining)
+            ->withHeader(self::HEADER_RESET, (string) $resetIn);
     }
 }

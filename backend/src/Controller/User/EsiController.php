@@ -47,39 +47,39 @@ class EsiController extends BaseController
                 name: 'character',
                 description: 'EVE character ID.',
                 in: 'query',
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'login',
                 description: 'The EVE login name.',
                 in: 'query',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'route',
                 description: 'The ESI route.',
                 in: 'query',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'debug',
                 description: 'Show all headers, do not use cache',
                 in: 'query',
-                schema: new OA\Schema(type: 'string', enum: ['true', 'false'])
+                schema: new OA\Schema(type: 'string', enum: ['true', 'false']),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'The result from ESI or an error message.',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(
                 response: '400',
                 description: 'Error.',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function request(ServerRequestInterface $request, string $method = 'GET'): ResponseInterface
@@ -108,16 +108,16 @@ class EsiController extends BaseController
         $path = str_replace(
             ['{character_id}', '{corporation_id}', '{alliance_id}'],
             [
-                (string)$character->getId(),
-                (string)$corp?->getId(),
-                $corp && $corp->getAlliance() !== null ? (string)$corp->getAlliance()->getId() : ''
+                (string) $character->getId(),
+                (string) $corp?->getId(),
+                $corp && $corp->getAlliance() !== null ? (string) $corp->getAlliance()->getId() : '',
             ],
-            $route
+            $route,
         );
 
         // Send request and handle errors.
         try {
-            $response = $this->esiClient->request($path, $method, $body, (int)$charId, $eveLoginName, $debug);
+            $response = $this->esiClient->request($path, $method, $body, (int) $charId, $eveLoginName, $debug);
         } catch (RuntimeException $e) {
             if ($e->getCode() === 568420) {
                 // should not happen because that was already checked above
@@ -156,8 +156,8 @@ class EsiController extends BaseController
             required: true,
             content: new OA\MediaType(
                 mediaType: 'text/plain',
-                schema: new OA\Schema(type: 'string')
-            )
+                schema: new OA\Schema(type: 'string'),
+            ),
         ),
         tags: ['ESI'],
         parameters: [
@@ -165,33 +165,33 @@ class EsiController extends BaseController
                 name: 'character',
                 description: 'EVE character ID.',
                 in: 'query',
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'route',
                 description: 'The ESI route.',
                 in: 'query',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'debug',
                 description: 'Show all headers, do not use cache',
                 in: 'query',
-                schema: new OA\Schema(type: 'string', enum: ['true', 'false'])
+                schema: new OA\Schema(type: 'string', enum: ['true', 'false']),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'The result from ESI or an error message.',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(
                 response: '400',
                 description: 'Error.',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function requestPost(ServerRequestInterface $request): ResponseInterface
@@ -210,7 +210,7 @@ class EsiController extends BaseController
         mixed $body,
         bool $debug,
         ?ResponseInterface $response = null,
-        int $code = 200
+        int $code = 200,
     ): ResponseInterface {
         return $this->withJson([
             'headers' => $this->extractHeaders($debug, $response),

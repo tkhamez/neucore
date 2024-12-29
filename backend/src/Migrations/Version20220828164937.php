@@ -25,17 +25,17 @@ final class Version20220828164937 extends AbstractMigration
 
         $directorSettings = $this->connection->executeQuery(
             'SELECT name, variable_value, scope FROM system_variables WHERE name LIKE ? OR name LIKE ?',
-            ['director_char_%', 'director_token_%']
+            ['director_char_%', 'director_token_%'],
         );
         $data = [];
         foreach ($directorSettings->fetchAllAssociative() as $setting) {
-            $number = (int)substr($setting['name'], strrpos($setting['name'], '_') + 1);
+            $number = (int) substr($setting['name'], strrpos($setting['name'], '_') + 1);
             $value = json_decode($setting['variable_value']);
             if (str_starts_with($setting['name'], 'director_char_')) {
                 $data[$number]['characterId'] = $value->character_id;
             } elseif (str_starts_with($setting['name'], 'director_token_')) {
-                $data[$number]['access'] = (string)$value->access;
-                $data[$number]['refresh'] = (string)$value->refresh;
+                $data[$number]['access'] = (string) $value->access;
+                $data[$number]['refresh'] = (string) $value->refresh;
                 $data[$number]['expires'] = $value->expires ?? time();
             }
         }
@@ -44,7 +44,7 @@ final class Version20220828164937 extends AbstractMigration
             $charId = $token['characterId'] ?? 0;
             $character = $this->connection->executeQuery(
                 'SELECT id FROM characters WHERE id = ?',
-                [$charId]
+                [$charId],
             )->fetchAssociative();
             if (!$character || !isset($character['id'])) {
                 continue;
@@ -61,7 +61,7 @@ final class Version20220828164937 extends AbstractMigration
                     'expires' => $token['expires'] ?? 0,
                     'valid' => empty($token['refresh']) ? null : 1, // assume it is valid, or it will not be checked again
                     'validTime' => date('Y-m-d H:i:s'),
-                ]
+                ],
             );
         }
     }
@@ -81,7 +81,7 @@ final class Version20220828164937 extends AbstractMigration
     {
         $eveLogin = $this->connection->executeQuery(
             'SELECT id FROM eve_logins WHERE name = ?',
-            [EveLogin::NAME_TRACKING]
+            [EveLogin::NAME_TRACKING],
         )->fetchAssociative();
         return $eveLogin ? (isset($eveLogin['id']) ? intval($eveLogin['id']) : null) : null;
     }

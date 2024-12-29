@@ -48,7 +48,7 @@ class OAuthToken
             $token = new AccessToken([
                 'access_token' => $esiToken->getAccessToken(),
                 'refresh_token' => $esiToken->getRefreshToken(),
-                'expires' => (int)$esiToken->getExpires()
+                'expires' => (int) $esiToken->getExpires(),
             ]);
         } catch (\Exception) {
             // characters without a default "access_token" are okay.

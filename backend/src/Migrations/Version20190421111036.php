@@ -27,16 +27,16 @@ final class Version20190421111036 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
 
         $this->addSql(
-            "UPDATE removed_characters SET reason = '".RemovedCharacter::REASON_DELETED_MANUALLY."' 
-            WHERE reason = 'deleted (manually)'"
+            "UPDATE removed_characters SET reason = '" . RemovedCharacter::REASON_DELETED_MANUALLY . "' 
+            WHERE reason = 'deleted (manually)'",
         );
         $this->addSql(
-            "UPDATE removed_characters SET reason = '".RemovedCharacter::REASON_DELETED_BIOMASSED."' 
-            WHERE reason = 'deleted (biomassed)'"
+            "UPDATE removed_characters SET reason = '" . RemovedCharacter::REASON_DELETED_BIOMASSED . "' 
+            WHERE reason = 'deleted (biomassed)'",
         );
         $this->addSql(
-            "UPDATE removed_characters SET reason = '".RemovedCharacter::REASON_DELETED_OWNER_CHANGED."' 
-            WHERE reason = 'deleted (EVE account changed)'"
+            "UPDATE removed_characters SET reason = '" . RemovedCharacter::REASON_DELETED_OWNER_CHANGED . "' 
+            WHERE reason = 'deleted (EVE account changed)'",
         );
 
         $this->addSql('ALTER TABLE removed_characters CHANGE reason reason VARCHAR(32) NOT NULL');
@@ -53,15 +53,15 @@ final class Version20190421111036 extends AbstractMigration
 
         $this->addSql(
             "UPDATE removed_characters SET reason = 'deleted (manually)' 
-            WHERE reason = '".RemovedCharacter::REASON_DELETED_MANUALLY."'"
+            WHERE reason = '" . RemovedCharacter::REASON_DELETED_MANUALLY . "'",
         );
         $this->addSql(
             "UPDATE removed_characters SET reason = 'deleted (biomassed)' 
-            WHERE reason = '".RemovedCharacter::REASON_DELETED_BIOMASSED."'"
+            WHERE reason = '" . RemovedCharacter::REASON_DELETED_BIOMASSED . "'",
         );
         $this->addSql(
             "UPDATE removed_characters SET reason = 'deleted (EVE account changed)' 
-            WHERE reason = '".RemovedCharacter::REASON_DELETED_OWNER_CHANGED."'"
+            WHERE reason = '" . RemovedCharacter::REASON_DELETED_OWNER_CHANGED . "'",
         );
     }
 }

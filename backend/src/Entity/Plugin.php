@@ -48,14 +48,14 @@ class Plugin implements \JsonSerializable
     public function jsonSerialize(
         bool $onlyRequired = true,
         bool $fullConfig = false,
-        bool $includeBackendOnly = true
+        bool $includeBackendOnly = true,
     ): array {
         $data = [
-            'id' => (int)$this->id,
+            'id' => (int) $this->id,
             'name' => $this->name,
         ];
         if (!$onlyRequired && !empty($this->configuration)) {
-            $config = \json_decode((string)$this->configuration, true);
+            $config = \json_decode((string) $this->configuration, true);
             $configurationDatabase = PluginConfigurationDatabase::fromArray($config);
             $data['configurationDatabase'] = $configurationDatabase->jsonSerialize($fullConfig, $includeBackendOnly);
 
@@ -66,7 +66,7 @@ class Plugin implements \JsonSerializable
 
     public function getId(): int
     {
-        return (int)$this->id;
+        return (int) $this->id;
     }
 
     public function setName(string $name): self
@@ -82,13 +82,13 @@ class Plugin implements \JsonSerializable
 
     public function setConfigurationDatabase(PluginConfigurationDatabase $configuration): self
     {
-        $this->configuration = (string)\json_encode($configuration);
+        $this->configuration = (string) \json_encode($configuration);
         return $this;
     }
 
     public function getConfigurationDatabase(): ?PluginConfigurationDatabase
     {
-        $data = \json_decode((string)$this->configuration, true);
+        $data = \json_decode((string) $this->configuration, true);
 
         if (!is_array($data)) {
             return null;

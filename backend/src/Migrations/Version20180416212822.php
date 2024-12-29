@@ -15,7 +15,7 @@ class Version20180416212822 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // Previously an app was added in Version20171229114138
-        $this->addSql('DELETE FROM apps WHERE id = :id', array('id' => 1));
+        $this->addSql('DELETE FROM apps WHERE id = :id', ['id' => 1]);
     }
 
     public function down(Schema $schema): void

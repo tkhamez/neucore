@@ -46,7 +46,7 @@ class UpdateServiceAccounts extends Command
         EntityManagerInterface $entityManager,
         RepositoryFactory      $repositoryFactory,
         PluginService          $pluginService,
-        AccountGroup           $accountGroup
+        AccountGroup           $accountGroup,
     ) {
         parent::__construct();
         $this->logOutput($logger);
@@ -68,7 +68,7 @@ class UpdateServiceAccounts extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each update',
-                '25'
+                '25',
             );
         $this->configureLogOutput($this);
     }
@@ -85,7 +85,7 @@ class UpdateServiceAccounts extends Command
         foreach ($this->pluginService->getActivePlugins($limit) as $plugin) {
             $implementation = $this->pluginService->getPluginImplementation($plugin);
             if ($implementation instanceof ServiceInterface) {
-                $this->writeLine('  Updating '. $plugin->getName() . ' ...', false);
+                $this->writeLine('  Updating ' . $plugin->getName() . ' ...', false);
                 $this->updateService($plugin->getName(), $implementation, $sleep);
             }
             unset($implementation); // Allows the plugin to free up resources.
@@ -116,14 +116,14 @@ class UpdateServiceAccounts extends Command
         $this->charactersOrPlayersNotFound = 0;
 
         foreach (array_values($allAccounts) as $i => $characterId) {
-            $this->updateAccount((int)$characterId, $implementation);
+            $this->updateAccount((int) $characterId, $implementation);
             if ($i % 100 === 0) {
                 $this->entityManager->clear(); // reduce memory usage
             }
             usleep($sleep * 1000); // reduce CPU usage
         }
         foreach (array_values($allPlayerAccounts) as $i => $playerId) {
-            $this->updatePlayerAccount((int)$playerId, $implementation);
+            $this->updatePlayerAccount((int) $playerId, $implementation);
             if ($i % 100 === 0) {
                 $this->entityManager->clear(); // reduce memory usage
             }
@@ -134,7 +134,7 @@ class UpdateServiceAccounts extends Command
             "  Updated $serviceName: " .
             "$this->accountsUpdated accounts updated, " .
             "$this->updatesFailed updates failed, " .
-            "$this->charactersOrPlayersNotFound characters or players not found."
+            "$this->charactersOrPlayersNotFound characters or players not found.",
         );
     }
 

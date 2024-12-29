@@ -11,9 +11,9 @@ use Doctrine\ORM\Mapping as ORM;
     name: "player_logins",
     indexes: [
         new ORM\Index(name: "pl_year_idx", columns: ["request_year"]),
-        new ORM\Index(name: "pl_month_idx", columns: ["request_month"])
+        new ORM\Index(name: "pl_month_idx", columns: ["request_month"]),
     ],
-    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"]
+    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"],
 )]
 class PlayerLogins
 {

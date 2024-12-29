@@ -16,6 +16,4 @@ use Neucore\Entity\SystemVariable;
  *
  * @psalm-suppress MissingTemplateParam
  */
-class SystemVariableRepository extends EntityRepository
-{
-}
+class SystemVariableRepository extends EntityRepository {}

@@ -14,6 +14,4 @@ use Neucore\Entity\CharacterNameChange;
  *
  * @psalm-suppress MissingTemplateParam
  */
-class CharacterNameChangeRepository extends EntityRepository
-{
-}
+class CharacterNameChangeRepository extends EntityRepository {}

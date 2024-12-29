@@ -21,7 +21,7 @@ final class Version20220828184413 extends AbstractMigration
     {
         $this->addSql(
             'DELETE FROM system_variables WHERE name LIKE ? OR name LIKE ?',
-            ['director_char_%', 'director_token_%']
+            ['director_char_%', 'director_token_%'],
         );
     }
 
@@ -29,7 +29,7 @@ final class Version20220828184413 extends AbstractMigration
     {
         $eveLogin = $this->connection->executeQuery(
             'SELECT id FROM eve_logins WHERE name = ?',
-            [EveLogin::NAME_TRACKING]
+            [EveLogin::NAME_TRACKING],
         )->fetchAssociative();
         $eveLoginId = $eveLogin ? $eveLogin['id'] ?? null : null;
         $this->abortIf(!$eveLoginId, 'Error: EVE login ' . EveLogin::NAME_TRACKING . ' not found.');
@@ -41,7 +41,7 @@ final class Version20220828184413 extends AbstractMigration
             LEFT JOIN characters c on e.character_id = c.id
             LEFT JOIN corporations c2 on c.corporation_id = c2.id
             WHERE eve_login_id = ?',
-            [$eveLoginId]
+            [$eveLoginId],
         )->fetchAllAssociative();
 
         foreach ($directorTokens as $idx => $tokenData) {
@@ -57,8 +57,8 @@ final class Version20220828184413 extends AbstractMigration
                         'corporation_name' => $tokenData['corp_name'],
                         'corporation_ticker' => $tokenData['ticker'],
                     ]),
-                    'scope' => 'settings'
-                ]
+                    'scope' => 'settings',
+                ],
             );
             $this->addSql(
                 'INSERT INTO system_variables (name, variable_value, scope) VALUES (:name, :value, :scope)',
@@ -71,13 +71,13 @@ final class Version20220828184413 extends AbstractMigration
                         'scopes' => [
                             'esi-characters.read_corporation_roles.v1',
                             'esi-corporations.track_members.v1',
-                            'esi-universe.read_structures.v1'
+                            'esi-universe.read_structures.v1',
                         ],
                         'characterId' => null,
                         'systemVariableName' => null,
                     ]),
-                    'scope' => 'backend'
-                ]
+                    'scope' => 'backend',
+                ],
             );
         }
     }

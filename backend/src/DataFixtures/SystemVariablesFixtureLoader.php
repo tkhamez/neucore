@@ -41,35 +41,35 @@ class SystemVariablesFixtureLoader
             SystemVariable::MAIL_TOKEN                          => ['',   SystemVariable::SCOPE_BACKEND],
             SystemVariable::CUSTOMIZATION_DOCUMENT_TITLE        => [
                 'Neucore - Alliance Core Services',
-                SystemVariable::SCOPE_PUBLIC
+                SystemVariable::SCOPE_PUBLIC,
             ],
             SystemVariable::CUSTOMIZATION_WEBSITE               => [
                 'https://github.com/tkhamez/neucore',
-                SystemVariable::SCOPE_PUBLIC
+                SystemVariable::SCOPE_PUBLIC,
             ],
             SystemVariable::CUSTOMIZATION_NAV_TITLE             => ['Neucore', SystemVariable::SCOPE_PUBLIC],
             SystemVariable::CUSTOMIZATION_NAV_LOGO              => [
                 $logoPrefix . base64_encode((string) file_get_contents($pathToLogos . '/logo-small.svg')),
-                SystemVariable::SCOPE_PUBLIC
+                SystemVariable::SCOPE_PUBLIC,
             ],
             SystemVariable::CUSTOMIZATION_HOME_HEADLINE         => [
                 'Neucore - Alliance Core Services',
-                SystemVariable::SCOPE_PUBLIC
+                SystemVariable::SCOPE_PUBLIC,
             ],
             SystemVariable::CUSTOMIZATION_HOME_DESCRIPTION      => [
                 'An application for EVE Online communities to organise their members into groups, monitor them and ' .
                     'provide access to external services.',
-                SystemVariable::SCOPE_PUBLIC
+                SystemVariable::SCOPE_PUBLIC,
             ],
             SystemVariable::CUSTOMIZATION_HOME_LOGO             => [
                 $logoPrefix . base64_encode((string) file_get_contents($pathToLogos . '/logo.svg')),
-                SystemVariable::SCOPE_PUBLIC
+                SystemVariable::SCOPE_PUBLIC,
             ],
             SystemVariable::CUSTOMIZATION_LOGIN_TEXT            => ['', SystemVariable::SCOPE_PUBLIC],
             SystemVariable::CUSTOMIZATION_HOME_MARKDOWN         => ['', SystemVariable::SCOPE_PUBLIC],
             SystemVariable::CUSTOMIZATION_FOOTER_TEXT           => [
                 'Documentation is available on GitHub.',
-                SystemVariable::SCOPE_PUBLIC
+                SystemVariable::SCOPE_PUBLIC,
             ],
             SystemVariable::RATE_LIMIT_APP_MAX_REQUESTS         => ['', SystemVariable::SCOPE_SETTINGS],
             SystemVariable::RATE_LIMIT_APP_RESET_TIME           => ['', SystemVariable::SCOPE_SETTINGS],

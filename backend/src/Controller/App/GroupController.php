@@ -24,15 +24,15 @@ use Psr\Http\Message\ServerRequestInterface;
         new OA\Property(
             property: 'groups',
             type: 'array',
-            items: new OA\Items(ref: '#/components/schemas/Group')
+            items: new OA\Items(ref: '#/components/schemas/Group'),
         ),
         new OA\Property(
             property: 'deactivated',
             description: 'Groups deactivation status.',
             type: 'string',
-            enum: ['no', 'soon', 'yes']
-        )
-    ]
+            enum: ['no', 'soon', 'yes'],
+        ),
+    ],
 )]
 class GroupController extends BaseController
 {
@@ -53,7 +53,7 @@ class GroupController extends BaseController
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         AppAuth $appAuthService,
-        AccountGroup $accountGroupService
+        AccountGroup $accountGroupService,
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
 
@@ -74,7 +74,7 @@ class GroupController extends BaseController
                 description: 'EVE character ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -83,19 +83,19 @@ class GroupController extends BaseController
                 description: 'List of groups.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Group')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Group'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Character not found. (default reason phrase)'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
         deprecated: true,
     )]
     public function groupsV1(string $cid, ServerRequestInterface $request): ResponseInterface
     {
         $appGroups = $this->getAppGroups($request);
-        $result = $this->getGroupsForPlayer((int)$cid, $appGroups);
+        $result = $this->getGroupsForPlayer((int) $cid, $appGroups);
 
         if ($result === null) {
             return $this->response->withStatus(404);
@@ -117,7 +117,7 @@ class GroupController extends BaseController
                 description: 'EVE character ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -126,12 +126,12 @@ class GroupController extends BaseController
                 description: 'List of groups.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Group')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Group'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Reason phrase: Character not found.'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function groupsV2(string $cid, ServerRequestInterface $request): ResponseInterface
@@ -157,8 +157,8 @@ class GroupController extends BaseController
             required: true,
             content: new OA\MediaType(
                 mediaType: 'application/json',
-                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'))
-            )
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer')),
+            ),
         ),
         tags: ['Application - Groups'],
         responses: [
@@ -167,12 +167,12 @@ class GroupController extends BaseController
                 description: 'List of characters (id, name and corporation properties only) with groups.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/CharacterGroups')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/CharacterGroups'),
+                ),
             ),
             new OA\Response(response: '400', description: 'Invalid body.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function groupsBulkV1(ServerRequestInterface $request): ResponseInterface
@@ -193,7 +193,7 @@ class GroupController extends BaseController
                 description: 'EVE corporation ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -202,12 +202,12 @@ class GroupController extends BaseController
                 description: 'List of groups.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Group')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Group'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Corporation not found. (default reason phrase)'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
         deprecated: true,
     )]
@@ -229,7 +229,7 @@ class GroupController extends BaseController
                 description: 'EVE corporation ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -238,12 +238,12 @@ class GroupController extends BaseController
                 description: 'List of groups.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Group')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Group'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Reason phrase: Corporation not found.'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function corpGroupsV2(string $cid, ServerRequestInterface $request): ResponseInterface
@@ -269,8 +269,8 @@ class GroupController extends BaseController
             required: true,
             content: new OA\MediaType(
                 mediaType: 'application/json',
-                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'))
-            )
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer')),
+            ),
         ),
         tags: ['Application - Groups'],
         responses: [
@@ -279,12 +279,12 @@ class GroupController extends BaseController
                 description: 'List of corporations with groups but without alliance.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Corporation')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Corporation'),
+                ),
             ),
             new OA\Response(response: '400', description: 'Invalid body.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function corpGroupsBulkV1(ServerRequestInterface $request): ResponseInterface
@@ -305,7 +305,7 @@ class GroupController extends BaseController
                 description: 'EVE alliance ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -314,12 +314,12 @@ class GroupController extends BaseController
                 description: 'List of groups.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Group')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Group'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Alliance not found. (default reason phrase)'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
         deprecated: true,
     )]
@@ -341,7 +341,7 @@ class GroupController extends BaseController
                 description: 'EVE alliance ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -350,12 +350,12 @@ class GroupController extends BaseController
                 description: 'List of groups.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Group')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Group'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Reason phrase: Alliance not found.'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function allianceGroupsV2(string $aid, ServerRequestInterface $request): ResponseInterface
@@ -381,8 +381,8 @@ class GroupController extends BaseController
             required: true,
             content: new OA\MediaType(
                 mediaType: 'application/json',
-                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'))
-            )
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer')),
+            ),
         ),
         tags: ['Application - Groups'],
         responses: [
@@ -391,12 +391,12 @@ class GroupController extends BaseController
                 description: 'List of alliances with groups.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Alliance')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Alliance'),
+                ),
             ),
             new OA\Response(response: '400', description: 'Invalid body.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function allianceGroupsBulkV1(ServerRequestInterface $request): ResponseInterface
@@ -418,20 +418,20 @@ class GroupController extends BaseController
                 description: 'EVE character ID.',
                 in: 'query',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'corporation',
                 description: 'EVE corporation ID.',
                 in: 'query',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'alliance',
                 description: 'EVE alliance ID.',
                 in: 'query',
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -440,18 +440,18 @@ class GroupController extends BaseController
                 description: 'List of groups.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Group')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Group'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function groupsWithFallbackV1(ServerRequestInterface $request): ResponseInterface
     {
-        $characterId = (int)$this->getQueryParam($request, 'character');
-        $corporationId = (int)$this->getQueryParam($request, 'corporation');
-        $allianceId = (int)$this->getQueryParam($request, 'alliance');
+        $characterId = (int) $this->getQueryParam($request, 'character');
+        $corporationId = (int) $this->getQueryParam($request, 'corporation');
+        $allianceId = (int) $this->getQueryParam($request, 'alliance');
 
         $appGroups = $this->getAppGroups($request);
 
@@ -500,36 +500,36 @@ class GroupController extends BaseController
                 description: 'Group ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'corporation',
                 description: 'Limit to characters that are a member of this corporation.',
                 in: 'query',
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'List of character IDs.',
-                content: new OA\JsonContent(type: 'array', items: new OA\Items(type: 'integer'))
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(type: 'integer')),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Group was not found or app may not see it.'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function members(string $groupId, ServerRequestInterface $request): ResponseInterface
     {
-        $group = $this->getGroup((int)$groupId, $request);
+        $group = $this->getGroup((int) $groupId, $request);
         if ($group === null) {
             return $this->response->withStatus(404, 'Group not found.');
         }
 
         $corporationId = $this->getQueryParam($request, 'corporation');
         if ($corporationId !== null) {
-            $corporationId = (int)$corporationId;
+            $corporationId = (int) $corporationId;
         }
 
         $members = $this->repositoryFactory
@@ -542,7 +542,7 @@ class GroupController extends BaseController
     private function corpOrAllianceGroups(string $id, string $type, ServerRequestInterface $request): ResponseInterface
     {
         $appGroups = $this->getAppGroups($request);
-        $result = $this->getGroupsFor($type, (int)$id, $appGroups);
+        $result = $this->getGroupsFor($type, (int) $id, $appGroups);
 
         if ($result === null) {
             return $this->response->withStatus(404);

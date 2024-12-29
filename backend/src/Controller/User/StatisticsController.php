@@ -24,13 +24,13 @@ class StatisticsController extends BaseController
                 name: 'until',
                 description: 'Date: YYYY-MM',
                 in: 'query',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'periods',
                 description: 'Number of periods (months)',
                 in: 'query',
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -39,10 +39,10 @@ class StatisticsController extends BaseController
                 description: 'Player logins.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/PlayerLoginStatistics')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/PlayerLoginStatistics'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function playerLogins(ServerRequestInterface $request): ResponseInterface
@@ -54,7 +54,7 @@ class StatisticsController extends BaseController
             // do nothing
         }
         $time = isset($date) ? $date->getTimestamp() : time();
-        $periods = abs((int)$this->getQueryParam($request, 'periods', 12));
+        $periods = abs((int) $this->getQueryParam($request, 'periods', 12));
         return $this->withJson($this->repositoryFactory->getPlayerLoginsRepository()->monthlySummary($time, $periods));
     }
 
@@ -70,13 +70,13 @@ class StatisticsController extends BaseController
                 name: 'until',
                 description: 'Date: YYYY-MM',
                 in: 'query',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'periods',
                 description: 'Number of periods (months)',
                 in: 'query',
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -85,10 +85,10 @@ class StatisticsController extends BaseController
                 description: 'App requests.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/TotalMonthlyAppRequests')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/TotalMonthlyAppRequests'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function totalMonthlyAppRequests(ServerRequestInterface $request): ResponseInterface
@@ -100,7 +100,7 @@ class StatisticsController extends BaseController
             // do nothing
         }
         $time = isset($date) ? $date->getTimestamp() : time();
-        $periods = abs((int)$this->getQueryParam($request, 'periods', 12));
+        $periods = abs((int) $this->getQueryParam($request, 'periods', 12));
         return $this->withJson($this->repositoryFactory->getAppRequestsRepository()->monthlySummary($time, $periods));
     }
 
@@ -116,13 +116,13 @@ class StatisticsController extends BaseController
                 name: 'until',
                 description: 'Date: YYYY-MM',
                 in: 'query',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'periods',
                 description: 'Number of periods (months)',
                 in: 'query',
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -131,10 +131,10 @@ class StatisticsController extends BaseController
                 description: 'App requests.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/MonthlyAppRequests')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/MonthlyAppRequests'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function monthlyAppRequests(ServerRequestInterface $request): ResponseInterface
@@ -146,7 +146,7 @@ class StatisticsController extends BaseController
             // do nothing
         }
         $time = isset($date) ? $date->getTimestamp() : time();
-        $periods = abs((int)$this->getQueryParam($request, 'periods', 12));
+        $periods = abs((int) $this->getQueryParam($request, 'periods', 12));
         return $this->withJson($this->repositoryFactory->getAppRequestsRepository()
             ->monthlySummaryByApp($time, $periods));
     }
@@ -163,13 +163,13 @@ class StatisticsController extends BaseController
                 name: 'until',
                 description: 'Date: YYYY-MM-DD',
                 in: 'query',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'periods',
                 description: 'Number of periods (weeks)',
                 in: 'query',
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -178,10 +178,10 @@ class StatisticsController extends BaseController
                 description: 'App requests.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/TotalDailyAppRequests')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/TotalDailyAppRequests'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function totalDailyAppRequests(ServerRequestInterface $request): ResponseInterface
@@ -193,7 +193,7 @@ class StatisticsController extends BaseController
             // do nothing
         }
         $time = isset($date) ? $date->getTimestamp() : time();
-        $periods = abs((int)$this->getQueryParam($request, 'periods', 4));
+        $periods = abs((int) $this->getQueryParam($request, 'periods', 4));
         return $this->withJson($this->repositoryFactory->getAppRequestsRepository()->dailySummary($time, $periods));
     }
 
@@ -209,13 +209,13 @@ class StatisticsController extends BaseController
                 name: 'until',
                 description: 'Date: YYYY-MM-DD HH',
                 in: 'query',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'periods',
                 description: 'Number of periods (days)',
                 in: 'query',
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -224,10 +224,10 @@ class StatisticsController extends BaseController
                 description: 'App requests.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/HourlyAppRequests')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/HourlyAppRequests'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function hourlyAppRequests(ServerRequestInterface $request): ResponseInterface
@@ -239,7 +239,7 @@ class StatisticsController extends BaseController
             // do nothing
         }
         $time = isset($date) ? $date->getTimestamp() : time();
-        $periods = abs((int)$this->getQueryParam($request, 'periods', 7));
+        $periods = abs((int) $this->getQueryParam($request, 'periods', 7));
         return $this->withJson($this->repositoryFactory->getAppRequestsRepository()->hourlySummary($time, $periods));
     }
 }

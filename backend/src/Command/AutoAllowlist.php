@@ -55,7 +55,7 @@ class AutoAllowlist extends Command
         EsiData $esiData,
         ObjectManager $objectManager,
         OAuthToken $tokenService,
-        StorageInterface $storage
+        StorageInterface $storage,
     ) {
         parent::__construct();
         $this->logOutput($logger);
@@ -78,7 +78,7 @@ class AutoAllowlist extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each player and check',
-                $this->sleep
+                $this->sleep,
             );
         $this->configureLogOutput($this);
     }
@@ -129,7 +129,7 @@ class AutoAllowlist extends Command
         $this->writeLine(
             "    Corporations to check: $this->numCorporations, checked: $this->numCorporationsChecked, " .
             "allowlist: $this->numCorporationsAllowed",
-            false
+            false,
         );
 
         $watchlist = $this->repositoryFactory->getWatchlistRepository()->find($id); // entity manager was cleared
@@ -233,7 +233,7 @@ class AutoAllowlist extends Command
                 $members = $this->esiData->fetchCorporationMembers($corporationId, $token->getToken());
                 if (empty($members)) { // ESI error
                     $this->writeLine(
-                        "    Invalid token for $corporationId from " . $esiToken->getCharacter()?->getId()
+                        "    Invalid token for $corporationId from " . $esiToken->getCharacter()?->getId(),
                     );
                 } else {
                     $this->numCorporationsChecked++;

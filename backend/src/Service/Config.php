@@ -57,7 +57,7 @@ class Config implements \ArrayAccess
             return $value;
         }
 
-        if (preg_match('/\${([A-Z\d_]+)}/', (string)$value, $matches)) {
+        if (preg_match('/\${([A-Z\d_]+)}/', (string) $value, $matches)) {
             $value = str_replace('${' . $matches[1] . '}', $this->getEnv($matches[1]), $value);
         }
 
@@ -72,10 +72,10 @@ class Config implements \ArrayAccess
             $value = $_ENV[$legacyName] ?? null;
         }
 
-        if ((string)$value === '' && isset($this->config['env_var_defaults'][$name])) {
+        if ((string) $value === '' && isset($this->config['env_var_defaults'][$name])) {
             $value = $this->config['env_var_defaults'][$name];
         }
 
-        return (string)$value;
+        return (string) $value;
     }
 }

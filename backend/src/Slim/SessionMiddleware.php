@@ -56,9 +56,8 @@ class SessionMiddleware implements MiddlewareInterface
     public function __construct(
         private readonly SessionData           $sessionData,
         private readonly SessionHandlerFactory $sessionHandlerFactory,
-        private readonly array $options = []
-    ) {
-    }
+        private readonly array $options = [],
+    ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -151,7 +150,7 @@ class SessionMiddleware implements MiddlewareInterface
             $_SESSION['_started'] = $_SESSION['_started'] ?? time();
         } else {
             // allow unit tests to inject values in the session
-            $_SESSION = $_SESSION ?? array();
+            $_SESSION = $_SESSION ?? [];
         }
     }
 

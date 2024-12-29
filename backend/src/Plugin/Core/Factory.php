@@ -16,8 +16,7 @@ class Factory implements FactoryInterface
         private EsiClient $esiClient,
         private Account $account,
         private Data $data,
-    ) {
-    }
+    ) {}
 
     public function createHttpClient(string $userAgent = ''): ClientInterface
     {
@@ -38,7 +37,7 @@ class Factory implements FactoryInterface
         string $method,
         string $url,
         array $headers = [],
-        ?string $body = null
+        ?string $body = null,
     ): RequestInterface {
         return new Request($method, $url, $headers, $body);
     }

@@ -100,7 +100,7 @@ class Corporation implements \JsonSerializable
     public function jsonSerialize(
         bool $includeTrackingDate = false,
         bool $includeAutoAllowlist = false,
-        bool $includeAlliance = true
+        bool $includeAlliance = true,
     ): array {
         $data = [
             'id' => $this->getId(),
@@ -147,7 +147,7 @@ class Corporation implements \JsonSerializable
     public function getId(): int
     {
         // cast to int because Doctrine creates string for type bigint, also make sure it's no null
-        return (int)$this->id;
+        return (int) $this->id;
     }
 
     public function setName(string $name): self

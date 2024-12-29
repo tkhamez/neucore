@@ -35,7 +35,7 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
         StorageInterface $storage,
         Config $config,
         ResponseFactoryInterface $responseFactory,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->storage = $storage;
         $this->config = $config;
@@ -55,8 +55,8 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        $maxRequests = (int)$this->config['rate_limit']['max'];
-        $resetTime = (int)$this->config['rate_limit']['time'];
+        $maxRequests = (int) $this->config['rate_limit']['max'];
+        $resetTime = (int) $this->config['rate_limit']['time'];
         if ($maxRequests === 0 || $resetTime === 0) {
             return $handler->handle($request);
         }
@@ -71,11 +71,11 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
             $appIdLog = empty($appId) ? '' : ", App-ID $appId";
             $this->logger->info(
                 "IP Rate Limit: $ip$appIdLog, " .
-                "limit exceeded with $numRequests request in $elapsedTime seconds."
+                "limit exceeded with $numRequests request in $elapsedTime seconds.",
             );
             $response = $this->responseFactory->createResponse(429); // Too Many Requests
             $response->getBody()->write(
-                "IP rate limit exceeded with $numRequests requests in $elapsedTime seconds."
+                "IP rate limit exceeded with $numRequests requests in $elapsedTime seconds.",
             );
         } else {
             $response = $handler->handle($request);

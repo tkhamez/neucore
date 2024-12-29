@@ -29,7 +29,7 @@ use Psr\Http\Message\ServerRequestInterface;
     type: 'apiKey',
     description: 'The CSRF token for POST, PUT and DELETE requests.',
     name: 'X-CSRF-Token',
-    in: 'header'
+    in: 'header',
 )]
 #[OA\Tag(name: 'Auth', description: 'User authentication.')]
 #[OA\Schema(
@@ -37,8 +37,8 @@ use Psr\Http\Message\ServerRequestInterface;
     required: ['success', 'message'],
     properties: [
         new OA\Property(property: 'success', type: 'boolean'),
-        new OA\Property(property: 'message', type: 'string')
-    ]
+        new OA\Property(property: 'message', type: 'string'),
+    ],
 )]
 class AuthController extends BaseController
 {
@@ -71,7 +71,7 @@ class AuthController extends BaseController
         RepositoryFactory $repositoryFactory,
         SessionData $session,
         AuthenticationProvider $authProvider,
-        Config $config
+        Config $config,
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
 
@@ -119,9 +119,9 @@ class AuthController extends BaseController
         ServerRequestInterface $request,
         UserAuth $userAuth,
         EveMail $mailService,
-        EsiData $esiData
+        EsiData $esiData,
     ): ResponseInterface {
-        $state = (string)$this->session->get(self::SESS_AUTH_STATE);
+        $state = (string) $this->session->get(self::SESS_AUTH_STATE);
         $loginName = $this->getLoginNameFromState($state);
         $redirectUrl = $this->getRedirectUrl($loginName);
 
@@ -138,9 +138,9 @@ class AuthController extends BaseController
 
         try {
             $eveAuth = $this->authProvider->validateAuthenticationV2(
-                (string)$this->getQueryParam($request, 'state'),
+                (string) $this->getQueryParam($request, 'state'),
                 $state,
-                (string)$this->getQueryParam($request, 'code')
+                (string) $this->getQueryParam($request, 'code'),
             );
         } catch (Exception $e) {
             $this->session->set(self::SESS_AUTH_RESULT, [
@@ -199,7 +199,7 @@ class AuthController extends BaseController
                 } elseif (!$esiData->verifyRoles(
                     $eveLogin->getEveRoles(),
                     $eveAuth->getCharacterId(),
-                    $eveAuth->getToken()->getToken()
+                    $eveAuth->getToken()->getToken(),
                 )) {
                     $errorMessage = 'Error, ESI token not added: Character does not have required role(s).';
                 } else {
@@ -213,7 +213,7 @@ class AuthController extends BaseController
 
         $this->session->set(self::SESS_AUTH_RESULT, [
             self::KEY_RESULT_SUCCESS => $success,
-            self::KEY_RESULT_MESSAGE => $success ? $successMessage : $errorMessage
+            self::KEY_RESULT_MESSAGE => $success ? $successMessage : $errorMessage,
         ]);
 
         if ($redirectAfterLogin = $this->session->get(self::SESS_AUTH_REDIRECT)) {
@@ -233,8 +233,8 @@ class AuthController extends BaseController
             new OA\Response(
                 response: '200',
                 description: 'The result.',
-                content: new OA\JsonContent(ref: '#/components/schemas/LoginResult')
-            )
+                content: new OA\JsonContent(ref: '#/components/schemas/LoginResult'),
+            ),
         ],
     )]
     public function result(): ResponseInterface
@@ -258,7 +258,7 @@ class AuthController extends BaseController
         tags: ['Auth'],
         responses: [
             new OA\Response(response: '204', description: 'User was logged out.'),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function logout(): ResponseInterface
@@ -278,8 +278,8 @@ class AuthController extends BaseController
             new OA\Response(
                 response: '200',
                 description: 'The CSRF token.',
-                content: new OA\JsonContent(type: 'string')
-            )
+                content: new OA\JsonContent(type: 'string'),
+            ),
         ],
     )]
     public function csrfToken(SessionData $sessionData): ResponseInterface
@@ -359,7 +359,7 @@ class AuthController extends BaseController
         if (!str_contains($state, self::STATE_PREFIX_SEPARATOR)) {
             return '';
         }
-        return substr($state, 0, (int)strpos($state, self::STATE_PREFIX_SEPARATOR));
+        return substr($state, 0, (int) strpos($state, self::STATE_PREFIX_SEPARATOR));
     }
 
     private function redirect(string $path): ResponseInterface

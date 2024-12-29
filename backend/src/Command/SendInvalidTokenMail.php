@@ -36,7 +36,7 @@ class SendInvalidTokenMail extends Command
         RepositoryFactory $repositoryFactory,
         EntityManagerInterface $entityManager,
         LoggerInterface $logger,
-        StorageInterface $storage
+        StorageInterface $storage,
     ) {
         parent::__construct();
         $this->logOutput($logger);
@@ -56,7 +56,7 @@ class SendInvalidTokenMail extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in seconds after each mail sent (ESI rate limit is 4/min)',
-                $this->sleep
+                $this->sleep,
             );
         $this->configureLogOutput($this);
     }
@@ -91,7 +91,7 @@ class SendInvalidTokenMail extends Command
                 ['status' => Player::STATUS_STANDARD],
                 ['lastUpdate' => 'ASC'],
                 $dbResultLimit,
-                $offset
+                $offset,
             ));
             $this->entityManager->clear(); // detaches all objects from Doctrine
 
@@ -126,7 +126,7 @@ class SendInvalidTokenMail extends Command
                         $this->writeLine(
                             "  Invalid token mail could not be sent to $characterId " .
                                 "because of CSPA charge or blocked sender",
-                            false
+                            false,
                         );
                     }
                     usleep($this->sleep * 1000 * 1000);

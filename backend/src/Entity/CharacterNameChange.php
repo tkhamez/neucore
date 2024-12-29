@@ -14,7 +14,7 @@ use OpenApi\Attributes as OA;
 #[ORM\Entity]
 #[ORM\Table(
     name: "character_name_changes",
-    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"]
+    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"],
 )]
 #[OA\Schema(required: ['oldName', 'changeDate'])]
 class CharacterNameChange implements \JsonSerializable
@@ -46,7 +46,7 @@ class CharacterNameChange implements \JsonSerializable
 
     public function getId(): int
     {
-        return (int)$this->id;
+        return (int) $this->id;
     }
 
     public function setCharacter(Character $character): self

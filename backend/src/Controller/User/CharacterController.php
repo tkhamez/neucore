@@ -37,7 +37,7 @@ class CharacterController extends BaseController
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         UserAuth $userAuth,
-        EsiData $esiData
+        EsiData $esiData,
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
 
@@ -56,9 +56,9 @@ class CharacterController extends BaseController
             new OA\Response(
                 response: '200',
                 description: 'The logged-in EVE character.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Character')
+                content: new OA\JsonContent(ref: '#/components/schemas/Character'),
             ),
-            new OA\Response(response: '403', description: 'Not authorized')
+            new OA\Response(response: '403', description: 'Not authorized'),
         ],
     )]
     public function show(): ResponseInterface
@@ -80,19 +80,19 @@ class CharacterController extends BaseController
                 description: 'Name of the character (min. 3 characters).',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string', minLength: 3)
+                schema: new OA\Schema(type: 'string', minLength: 3),
             ),
             new OA\Parameter(
                 name: 'currentOnly',
                 description: 'Do not include old character names or moved characters. Defaults to false.',
                 in: 'query',
-                schema: new OA\Schema(type: 'string', enum: ['true', 'false'])
+                schema: new OA\Schema(type: 'string', enum: ['true', 'false']),
             ),
             new OA\Parameter(
                 name: 'plugin',
                 description: 'Include results from active service plugins. Defaults to false',
                 in: 'query',
-                schema: new OA\Schema(type: 'string', enum: ['true', 'false'])
+                schema: new OA\Schema(type: 'string', enum: ['true', 'false']),
             ),
         ],
         responses: [
@@ -101,10 +101,10 @@ class CharacterController extends BaseController
                 description: 'List of characters.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/SearchResult')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/SearchResult'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized')
+            new OA\Response(response: '403', description: 'Not authorized'),
         ],
     )]
     public function findCharacter(
@@ -140,7 +140,7 @@ class CharacterController extends BaseController
                 description: 'Name of the main character (min. 3 characters).',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string', minLength: 3)
+                schema: new OA\Schema(type: 'string', minLength: 3),
             ),
         ],
         responses: [
@@ -149,10 +149,10 @@ class CharacterController extends BaseController
                 description: 'List of main characters.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/SearchResult')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/SearchResult'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized')
+            new OA\Response(response: '403', description: 'Not authorized'),
         ],
     )]
     public function findPlayer(string $name): ResponseInterface
@@ -191,23 +191,22 @@ class CharacterController extends BaseController
                 description: 'EVE character ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'The character was updated.',
-                content: new OA\JsonContent(type: 'integer')
+                content: new OA\JsonContent(type: 'integer'),
             ),
             new OA\Response(
                 response: '204',
-                description:
-                'The character was deleted because the owner hash changed.'
+                description: 'The character was deleted because the owner hash changed.',
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Character not found on this account.'),
-            new OA\Response(response: '503', description: 'ESI request failed.')
+            new OA\Response(response: '503', description: 'ESI request failed.'),
         ],
     )]
     public function update(string $id, Account $accountService): ResponseInterface
@@ -231,10 +230,10 @@ class CharacterController extends BaseController
             $player->hasRole(Role::TRACKING) ||
             $player->hasRole(Role::WATCHLIST)
         ) {
-            $char = $this->repositoryFactory->getCharacterRepository()->find((int)$id);
+            $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
         } else {
             foreach ($player->getCharacters() as $c) {
-                if ($c->getId() === (int)$id) {
+                if ($c->getId() === (int) $id) {
                     $char = $c;
                     break;
                 }
@@ -287,7 +286,7 @@ class CharacterController extends BaseController
                 description: 'EVE character ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -295,7 +294,7 @@ class CharacterController extends BaseController
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Character not found.'),
             new OA\Response(response: '409', description: 'Character already exists in local database.'),
-            new OA\Response(response: '500', description: 'Role not found or ESI error.')
+            new OA\Response(response: '500', description: 'Role not found or ESI error.'),
         ],
     )]
     public function add(
@@ -303,9 +302,9 @@ class CharacterController extends BaseController
         Account $accountService,
         EsiApiFactory $esiApiFactory,
         Config $config,
-        LoggerInterface $log
+        LoggerInterface $log,
     ): ResponseInterface {
-        $charId = (int)$id;
+        $charId = (int) $id;
 
         $userRole = $this->repositoryFactory->getRoleRepository()->findBy(['name' => Role::USER]);
         if (count($userRole) !== 1) {

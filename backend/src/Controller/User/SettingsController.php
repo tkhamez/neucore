@@ -45,9 +45,9 @@ class SettingsController extends BaseController
                 description: 'List of settings.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/SystemVariable')
-                )
-            )
+                    items: new OA\Items(ref: '#/components/schemas/SystemVariable'),
+                ),
+            ),
         ],
     )]
     public function systemList(
@@ -82,23 +82,23 @@ class SettingsController extends BaseController
         $result = array_merge($result, [
             [
                 self::COLUMN_NAME => 'esiDataSource',
-                self::COLUMN_VALUE => $config['eve']['datasource']
+                self::COLUMN_VALUE => $config['eve']['datasource'],
             ], [
                 self::COLUMN_NAME => 'esiHost',
-                self::COLUMN_VALUE => $config['eve']['esi_host']
+                self::COLUMN_VALUE => $config['eve']['esi_host'],
             ], [
                 self::COLUMN_NAME => 'navigationShowGroups',
                 self::COLUMN_VALUE => $groupRepository->count(['visibility' => Group::VISIBILITY_PUBLIC]) > 0 ?
-                    '1' : '0'
+                    '1' : '0',
             ], [
                 self::COLUMN_NAME => 'navigationServices',
-                self::COLUMN_VALUE => \json_encode($services)
+                self::COLUMN_VALUE => \json_encode($services),
             ], [
                 self::COLUMN_NAME => 'navigationGeneralPlugins',
-                self::COLUMN_VALUE => \json_encode($navigationItems)
+                self::COLUMN_VALUE => \json_encode($navigationItems),
             ], [
                 self::COLUMN_NAME => 'repository',
-                self::COLUMN_VALUE => $config['repository']
+                self::COLUMN_VALUE => $config['repository'],
             ],
         ]);
 
@@ -123,12 +123,12 @@ class SettingsController extends BaseController
                         new OA\Property(
                             property: 'value',
                             description: 'New value for the variable.',
-                            type: 'string'
-                        )
+                            type: 'string',
+                        ),
                     ],
                     type: 'object',
-                )
-            )
+                ),
+            ),
         ),
         tags: ['Settings'],
         parameters: [
@@ -137,17 +137,17 @@ class SettingsController extends BaseController
                 description: 'Name of the variable.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'Variable value changed.',
-                content: new OA\JsonContent(ref: '#/components/schemas/SystemVariable')
+                content: new OA\JsonContent(ref: '#/components/schemas/SystemVariable'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Variable not found.')
+            new OA\Response(response: '404', description: 'Variable not found.'),
         ],
     )]
     public function systemChange(string $name, ServerRequestInterface $request, EveMail $eveMail): ResponseInterface
@@ -163,7 +163,7 @@ class SettingsController extends BaseController
             $variable->setValue(''); // only removal is allowed here
             $eveMail->deleteToken();
         } else {
-            $variable->setValue((string)$this->getBodyParam($request, self::COLUMN_VALUE));
+            $variable->setValue((string) $this->getBodyParam($request, self::COLUMN_VALUE));
         }
 
         if (!$this->objectManager->flush()) {
@@ -184,9 +184,9 @@ class SettingsController extends BaseController
             new OA\Response(
                 response: '200',
                 description: 'Error message, if available.',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function sendInvalidTokenMail(EveMail $eveMail, UserAuth $userAuth): ResponseInterface
@@ -215,9 +215,9 @@ class SettingsController extends BaseController
             new OA\Response(
                 response: '200',
                 description: 'Error message, if available.',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function sendMissingCharacterMail(EveMail $eveMail, UserAuth $userAuth): ResponseInterface

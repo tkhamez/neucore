@@ -41,7 +41,7 @@ class UpdateCharacters extends Command
         CharacterService $characterService,
         EntityManager $entityManager,
         LoggerInterface $logger,
-        StorageInterface $storage
+        StorageInterface $storage,
     ) {
         parent::__construct();
         $this->logOutput($logger);
@@ -63,7 +63,7 @@ class UpdateCharacters extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each update',
-                $this->sleep
+                $this->sleep,
             );
         $this->configureLogOutput($this);
     }
@@ -108,14 +108,14 @@ class UpdateCharacters extends Command
             $names = [];
             foreach ($this->esiData->fetchUniverseNames($charIds) as $name) {
                 /** @noinspection PhpCastIsUnnecessaryInspection */
-                $names[$name->getId()] = (string)$name->getName();
+                $names[$name->getId()] = (string) $name->getName();
             }
 
             $affiliations = [];
             foreach ($this->esiData->fetchCharactersAffiliation($charIds) as $affiliation) {
                 $affiliations[$affiliation->getCharacterId()] = [
                     'corporation' => $affiliation->getCorporationId(),
-                    'alliance' => $affiliation->getAllianceId()
+                    'alliance' => $affiliation->getAllianceId(),
                 ];
             }
 
@@ -127,7 +127,7 @@ class UpdateCharacters extends Command
                 }
 
                 if (! isset($affiliations[$char->getId()])) {
-                    $this->writeLine('  Character ' . $char->getId().': update NOK');
+                    $this->writeLine('  Character ' . $char->getId() . ': update NOK');
                     continue;
                 }
 
@@ -152,7 +152,7 @@ class UpdateCharacters extends Command
                 usleep($this->sleep * 1000); // reduce CPU usage
             }
             if (! empty($updateOk) && $this->entityManager->flush()) {
-                $this->writeLine('  Characters ' . implode(',', $updateOk).': update OK');
+                $this->writeLine('  Characters ' . implode(',', $updateOk) . ': update OK');
             }
 
             $this->entityManager->clear(); // detaches all objects from Doctrine

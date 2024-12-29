@@ -31,7 +31,7 @@ class Version20221225185723 extends AbstractMigration
         /** @noinspection SqlResolve */
         $serviceConfigurations = $this->connection->executeQuery('SELECT id, configuration FROM services');
         foreach ($serviceConfigurations->fetchAllAssociative() as $data) {
-            $configuration = json_decode((string)$data['configuration'], true);
+            $configuration = json_decode((string) $data['configuration'], true);
             if (!is_array($configuration)) {
                 continue;
             }
@@ -47,7 +47,7 @@ class Version20221225185723 extends AbstractMigration
             /** @noinspection SqlResolve */
             $this->connection->executeQuery(
                 'UPDATE services SET configuration = ? WHERE id = ?',
-                [json_encode($configData), $data['id']]
+                [json_encode($configData), $data['id']],
             );
         }
     }

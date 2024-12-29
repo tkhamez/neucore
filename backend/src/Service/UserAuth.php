@@ -147,7 +147,7 @@ class UserAuth implements RoleProviderInterface
     {
         $esiToken = $this->repositoryFactory->getEsiTokenRepository()->findOneBy([
             'character' => $character,
-            'eveLogin' => $eveLogin
+            'eveLogin' => $eveLogin,
         ]);
         if (!$esiToken) {
             $esiToken = new EsiToken();
@@ -158,9 +158,9 @@ class UserAuth implements RoleProviderInterface
 
         $token = $eveAuth->getToken();
         $esiToken->setAccessToken($token->getToken());
-        $esiToken->setRefreshToken((string)$token->getRefreshToken());
+        $esiToken->setRefreshToken((string) $token->getRefreshToken());
         $esiToken->setLastChecked(new \DateTime());
-        $esiToken->setExpires((int)$token->getExpires());
+        $esiToken->setExpires((int) $token->getExpires());
         $esiToken->setValidToken(true);
         if (!empty($eveLogin->getEveRoles())) {
             $esiToken->setHasRoles(true);
@@ -193,7 +193,7 @@ class UserAuth implements RoleProviderInterface
 
         $hasOneGroup = empty($requiredGroups);
         foreach ($requiredGroups as $group) {
-            $group = (int)$group;
+            $group = (int) $group;
             if ($group > 0 && $character->getPlayer()->hasGroup($group)) {
                 $hasOneGroup = true;
             }
@@ -220,7 +220,7 @@ class UserAuth implements RoleProviderInterface
             // First login or changed owner, create account.
             $userRole = $this->repositoryFactory->getRoleRepository()->findBy(['name' => Role::USER]);
             if (count($userRole) !== 1) {
-                $this->log->critical('UserAuth::authenticate(): Role "'.Role::USER.'" not found.');
+                $this->log->critical('UserAuth::authenticate(): Role "' . Role::USER . '" not found.');
                 return 1;
             }
             $updateAutoGroups = true;

@@ -16,6 +16,4 @@ use Doctrine\ORM\EntityRepository;
  *
  * @psalm-suppress MissingTemplateParam
  */
-class GroupApplicationRepository extends EntityRepository
-{
-}
+class GroupApplicationRepository extends EntityRepository {}

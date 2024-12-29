@@ -14,6 +14,4 @@ use Neucore\Entity\EsiLocation;
  *
  * @psalm-suppress MissingTemplateParam
  */
-class EsiLocationRepository extends EntityRepository
-{
-}
+class EsiLocationRepository extends EntityRepository {}

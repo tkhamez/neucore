@@ -43,7 +43,7 @@ class PluginService
         AccountGroup $accountGroup,
         Config $config,
         Parser $parser,
-        Factory $pluginFactory
+        Factory $pluginFactory,
     ) {
         $this->log = $log;
         $this->accountGroup = $accountGroup;
@@ -173,7 +173,7 @@ class PluginService
                 $plugin->getName(),
                 $pluginConfigDb->active,
                 array_map('intval', $pluginConfigDb->requiredGroups),
-                $pluginConfigDb->configurationData
+                $pluginConfigDb->configurationData,
             ),
             $this->pluginFactory,
         );
@@ -240,7 +240,7 @@ class PluginService
     public function getAccounts(
         ServiceInterface $service,
         array $characters,
-        bool $logErrorOnCharacterMismatch = true
+        bool $logErrorOnCharacterMismatch = true,
     ): array {
         if (empty($characters)) {
             return [];
@@ -315,7 +315,7 @@ class PluginService
                 if ($error === null) {
                     $updated[] = [
                         'serviceName' => $plugin->getName(),
-                        'characterId' => $account->getCharacterId()
+                        'characterId' => $account->getCharacterId(),
                     ];
                 } else {
                     $serviceName = $plugin->getName();
@@ -346,7 +346,7 @@ class PluginService
             $serviceImplementation->updateAccount(
                 $character->toCoreCharacter(),
                 $this->accountGroup->getCoreGroups($character->getPlayer()),
-                $main
+                $main,
             );
         } catch (Exception $e) {
             return $e->getMessage();

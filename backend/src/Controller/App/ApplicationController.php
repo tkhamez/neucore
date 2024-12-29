@@ -15,7 +15,7 @@ use Psr\Http\Message\ServerRequestInterface;
     securityScheme: 'BearerAuth',
     type: 'http',
     description: 'The API key is a base64-encoded string containing the app ID and secret separated by a colon',
-    scheme: 'bearer'
+    scheme: 'bearer',
 )]
 class ApplicationController extends BaseController
 {
@@ -30,14 +30,14 @@ class ApplicationController extends BaseController
             new OA\Response(
                 response: '200',
                 description: 'The app information',
-                content: new OA\JsonContent(ref: '#/components/schemas/App')
+                content: new OA\JsonContent(ref: '#/components/schemas/App'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(
                 response: '500',
                 description: '',
-                content: new OA\JsonContent(type: 'string')
-            )
+                content: new OA\JsonContent(type: 'string'),
+            ),
         ],
     )]
     public function showV1(ServerRequestInterface $request, AppAuth $appAuthService): ResponseInterface

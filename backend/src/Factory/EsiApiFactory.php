@@ -54,7 +54,7 @@ class EsiApiFactory
 
     private function getInstance(string $class, string $token = ''): mixed
     {
-        $key = $class.hash('sha256', $token);
+        $key = $class . hash('sha256', $token);
 
         if (! isset($this->instances[$key])) {
             $configuration = new Configuration();

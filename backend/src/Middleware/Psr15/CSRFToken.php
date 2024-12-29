@@ -27,7 +27,7 @@ class CSRFToken implements MiddlewareInterface
     public function __construct(
         ResponseFactoryInterface $responseFactory,
         SessionData $sessionData,
-        string $includeRoute
+        string $includeRoute,
     ) {
         $this->responseFactory = $responseFactory;
         $this->sessionData = $sessionData;

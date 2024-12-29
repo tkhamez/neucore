@@ -23,24 +23,24 @@ use OpenApi\Attributes as OA;
             property: 'serviceAccounts',
             description: 'External service accounts (API: not included by default)',
             type: 'array',
-            items: new OA\Items(ref: '#/components/schemas/ServiceAccount')
+            items: new OA\Items(ref: '#/components/schemas/ServiceAccount'),
         ),
         new OA\Property(
             property: 'characterId',
             description: 'ID of main character (API: not included by default)',
-            type: 'integer'
+            type: 'integer',
         ),
         new OA\Property(
             property: 'corporationName',
             description: 'Corporation of main character (API: not included by default)',
-            type: 'string'
+            type: 'string',
         ),
         new OA\Property(
             property: 'allianceName',
             description: 'Alliance of main character (API: not included by default)',
-            type: 'string'
-        )
-    ]
+            type: 'string',
+        ),
+    ],
 )]
 class Player implements \JsonSerializable
 {
@@ -169,7 +169,7 @@ class Player implements \JsonSerializable
     public function jsonSerialize(
         bool $minimum = false,
         bool $withNameChanges = false,
-        bool $withEsiTokens = false
+        bool $withEsiTokens = false,
     ): array {
         if ($minimum) {
             return [
@@ -221,7 +221,7 @@ class Player implements \JsonSerializable
 
     public function getId(): int
     {
-        return (int)$this->id;
+        return (int) $this->id;
     }
 
     public function setName(string $name): self
@@ -243,7 +243,7 @@ class Player implements \JsonSerializable
 
     public function getPassword(): string
     {
-        return (string)$this->password;
+        return (string) $this->password;
     }
 
     public function setLastUpdate(\DateTime $lastUpdate): self

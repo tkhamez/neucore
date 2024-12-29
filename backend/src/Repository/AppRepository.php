@@ -19,6 +19,4 @@ use Neucore\Entity\App;
  *
  * @psalm-suppress MissingTemplateParam
  */
-class AppRepository extends EntityRepository
-{
-}
+class AppRepository extends EntityRepository {}

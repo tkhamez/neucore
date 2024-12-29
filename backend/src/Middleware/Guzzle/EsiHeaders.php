@@ -32,7 +32,7 @@ class EsiHeaders
                 function (ResponseInterface $response) use ($requestUri) {
                     $this->handleResponseHeaders($requestUri, $response);
                     return $response;
-                }
+                },
             );
         };
     }
@@ -41,10 +41,10 @@ class EsiHeaders
     {
         // Update ESI error limit
         if ($response->hasHeader('X-Esi-Error-Limit-Remain') && $response->hasHeader('X-Esi-Error-Limit-Reset')) {
-            $remain = (int)$response->getHeader('X-Esi-Error-Limit-Remain')[0];
-            $reset = (int)$response->getHeader('X-Esi-Error-Limit-Reset')[0];
-            $this->storage->set(Variables::ESI_ERROR_LIMIT, (string)\json_encode(
-                new EsiErrorLimit(time(), $remain, $reset)
+            $remain = (int) $response->getHeader('X-Esi-Error-Limit-Remain')[0];
+            $reset = (int) $response->getHeader('X-Esi-Error-Limit-Reset')[0];
+            $this->storage->set(Variables::ESI_ERROR_LIMIT, (string) \json_encode(
+                new EsiErrorLimit(time(), $remain, $reset),
             ));
         }
 

@@ -20,7 +20,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 #[OA\Tag(
     name: 'Corporation',
-    description: 'Corporation management (for automatic group assignment) and tracking.'
+    description: 'Corporation management (for automatic group assignment) and tracking.',
 )]
 #[OA\Schema(
     schema: 'TrackingDirector',
@@ -28,8 +28,8 @@ use Psr\Http\Message\ServerRequestInterface;
     properties: [
         new OA\Property(property: 'id', type: 'integer', format: 'int64'),
         new OA\Property(property: 'name', type: 'string'),
-        new OA\Property(property: 'playerId', type: 'integer')
-    ]
+        new OA\Property(property: 'playerId', type: 'integer'),
+    ],
 )]
 class CorporationController extends BaseController
 {
@@ -46,7 +46,7 @@ class CorporationController extends BaseController
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         UserAuth $userAuth,
-        Account $account
+        Account $account,
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
 
@@ -67,7 +67,7 @@ class CorporationController extends BaseController
                 description: 'Name or ticker of the corporation (min. 3 characters).',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string', minLength: 3)
+                schema: new OA\Schema(type: 'string', minLength: 3),
             ),
         ],
         responses: [
@@ -76,10 +76,10 @@ class CorporationController extends BaseController
                 description: 'List of corporations.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Corporation')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Corporation'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized')
+            new OA\Response(response: '403', description: 'Not authorized'),
         ],
     )]
     public function find(string $query): ResponseInterface
@@ -105,8 +105,8 @@ class CorporationController extends BaseController
             required: true,
             content: new OA\MediaType(
                 mediaType: 'application/json',
-                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'))
-            )
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer')),
+            ),
         ),
         tags: ['Corporation'],
         responses: [
@@ -115,11 +115,11 @@ class CorporationController extends BaseController
                 description: 'List of corporations.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Corporation')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Corporation'),
+                ),
             ),
             new OA\Response(response: '400', description: 'Invalid body.'),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function corporations(ServerRequestInterface $request): ResponseInterface
@@ -151,10 +151,10 @@ class CorporationController extends BaseController
                 description: 'List of corporations (this one includes the groups property).',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Corporation')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Corporation'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function withGroups(): ResponseInterface
@@ -185,25 +185,25 @@ class CorporationController extends BaseController
                 description: 'EVE corporation ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '201',
                 description: 'The new corporation.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Corporation')
+                content: new OA\JsonContent(ref: '#/components/schemas/Corporation'),
             ),
             new OA\Response(response: '400', description: 'Invalid corporation ID.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Corporation not found.'),
             new OA\Response(response: '409', description: 'The corporation already exists.'),
-            new OA\Response(response: '503', description: 'ESI request failed.')
+            new OA\Response(response: '503', description: 'ESI request failed.'),
         ],
     )]
     public function add(string $id, EsiData $esiData): ResponseInterface
     {
-        $corpId = (int)$id;
+        $corpId = (int) $id;
 
         if ($this->repositoryFactory->getCorporationRepository()->find($corpId)) {
             return $this->response->withStatus(409);
@@ -241,20 +241,20 @@ class CorporationController extends BaseController
                 description: 'ID of the corporation.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'gid',
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group added.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Corporation and/or group not found.')
+            new OA\Response(response: '404', description: 'Corporation and/or group not found.'),
         ],
     )]
     public function addGroup(string $id, string $gid): ResponseInterface
@@ -283,20 +283,20 @@ class CorporationController extends BaseController
                 description: 'ID of the corporation.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'gid',
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group removed.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Corporation and/or group not found.')
+            new OA\Response(response: '404', description: 'Corporation and/or group not found.'),
         ],
     )]
     public function removeGroup(string $id, string $gid): ResponseInterface
@@ -323,7 +323,7 @@ class CorporationController extends BaseController
                 description: 'ID of the corporation.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -332,10 +332,10 @@ class CorporationController extends BaseController
                 description: 'List of directors.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/TrackingDirector')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/TrackingDirector'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function trackingDirector(string $id): ResponseInterface
@@ -343,7 +343,7 @@ class CorporationController extends BaseController
         $repository = $this->repositoryFactory->getEsiTokenRepository();
 
         $directors = [];
-        foreach ($repository->findByLoginAndCorporation(EveLogin::NAME_TRACKING, (int)$id) as $esiToken) {
+        foreach ($repository->findByLoginAndCorporation(EveLogin::NAME_TRACKING, (int) $id) as $esiToken) {
             if ($esiToken->getValidToken() && $esiToken->getHasRoles() !== false && $esiToken->getCharacter()) {
                 $directors[] = [
                     'id' => $esiToken->getCharacter()->getId(),
@@ -369,7 +369,7 @@ class CorporationController extends BaseController
                 description: 'ID of the corporation.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -378,16 +378,16 @@ class CorporationController extends BaseController
                 description: 'List of groups.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Group')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Group'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Corporation not found.')
+            new OA\Response(response: '404', description: 'Corporation not found.'),
         ],
     )]
     public function getGroupsTracking(string $id): ResponseInterface
     {
-        $corporation = $this->repositoryFactory->getCorporationRepository()->find((int)$id);
+        $corporation = $this->repositoryFactory->getCorporationRepository()->find((int) $id);
 
         if ($corporation === null) {
             return $this->response->withStatus(404);
@@ -409,20 +409,20 @@ class CorporationController extends BaseController
                 description: 'ID of the corporation.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'groupId',
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group added.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Corporation and/or group not found.')
+            new OA\Response(response: '404', description: 'Corporation and/or group not found.'),
         ],
     )]
     public function addGroupTracking(string $id, string $groupId): ResponseInterface
@@ -452,20 +452,20 @@ class CorporationController extends BaseController
                 description: 'ID of the corporation.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'groupId',
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group removed.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Corporation and/or group not found.')
+            new OA\Response(response: '404', description: 'Corporation and/or group not found.'),
         ],
     )]
     public function removeGroupTracking(string $id, string $groupId): ResponseInterface
@@ -493,10 +493,10 @@ class CorporationController extends BaseController
                 description: 'List of corporations.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Corporation')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Corporation'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function trackedCorporations(): ResponseInterface
@@ -526,10 +526,10 @@ class CorporationController extends BaseController
                 description: 'List of corporations.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Corporation')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Corporation'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function allTrackedCorporations(): ResponseInterface
@@ -554,43 +554,43 @@ class CorporationController extends BaseController
                 description: 'ID of the corporation.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'inactive',
                 description: 'Limit to members who have been inactive for x days or longer.',
                 in: 'query',
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'active',
                 description: 'Limit to members who were active in the last x days.',
                 in: 'query',
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'account',
                 description: 'Limit to members with (true) or without (false) an account.',
                 in: 'query',
-                schema: new OA\Schema(type: 'string', enum: ['true', 'false'])
+                schema: new OA\Schema(type: 'string', enum: ['true', 'false']),
             ),
             new OA\Parameter(
                 name: 'token-status',
                 description: 'Limit to characters with a valid, invalid or no token.',
                 in: 'query',
-                schema: new OA\Schema(type: 'string', enum: ['valid', 'invalid', 'none'])
+                schema: new OA\Schema(type: 'string', enum: ['valid', 'invalid', 'none']),
             ),
             new OA\Parameter(
                 name: 'token-status-changed',
                 description: 'Limit to characters whose ESI token status has not changed for x days.',
                 in: 'query',
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'mail-count',
                 description: "Limit to characters whose 'missing player' mail count is greater than or equal to x.",
                 in: 'query',
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -599,15 +599,15 @@ class CorporationController extends BaseController
                 description: 'List of corporation members.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/CorporationMember')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/CorporationMember'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function members(string $id, ServerRequestInterface $request): ResponseInterface
     {
-        $corporation = $this->repositoryFactory->getCorporationRepository()->find((int)$id);
+        $corporation = $this->repositoryFactory->getCorporationRepository()->find((int) $id);
         if (!$corporation || !$this->checkPermission($corporation)) {
             return $this->response->withStatus(403);
         }
@@ -635,21 +635,21 @@ class CorporationController extends BaseController
 
         $members = $this->repositoryFactory
             ->getCorporationMemberRepository()
-            ->setInactive($inactive !== null ? (int)$inactive : null)
-            ->setActive($active !== null ? (int)$active : null)
+            ->setInactive($inactive !== null ? (int) $inactive : null)
+            ->setActive($active !== null ? (int) $active : null)
             ->setAccount($account)
             ->setTokenStatus($tokenStatus)
-            ->setTokenChanged($tokenStatusChanged !== null ? (int)$tokenStatusChanged : null)
-            ->setMailCount((int)$mailCount)
-            ->findMatching((int)$id);
+            ->setTokenChanged($tokenStatusChanged !== null ? (int) $tokenStatusChanged : null)
+            ->setMailCount((int) $mailCount)
+            ->findMatching((int) $id);
 
         return $this->withJson($members);
     }
 
     private function findCorpAndGroup(string $corpId, string $groupId): bool
     {
-        $corpEntity = $this->repositoryFactory->getCorporationRepository()->find((int)$corpId);
-        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
+        $corpEntity = $this->repositoryFactory->getCorporationRepository()->find((int) $corpId);
+        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
 
         if ($corpEntity === null || $groupEntity === null) {
             return false;

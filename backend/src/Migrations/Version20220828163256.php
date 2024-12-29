@@ -28,8 +28,8 @@ final class Version20220828163256 extends AbstractMigration
                 'name' => EveLogin::NAME_TRACKING,
                 'description' => 'Token to get the member tracking data from ESI.',
                 'scopes' => EveLogin::SCOPE_ROLES . ' ' . EveLogin::SCOPE_TRACKING . ' ' . EveLogin::SCOPE_STRUCTURES,
-                'roles' => EveLogin::ROLE_DIRECTOR
-            ]
+                'roles' => EveLogin::ROLE_DIRECTOR,
+            ],
         );
     }
 

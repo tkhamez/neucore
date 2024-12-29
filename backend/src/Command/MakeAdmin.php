@@ -35,8 +35,8 @@ class MakeAdmin extends Command
     {
         $this->setName('make-admin')
             ->setDescription(
-                'Adds all available roles to the player account to which '.
-                'the character with the ID from the argument belongs.'
+                'Adds all available roles to the player account to which ' .
+                'the character with the ID from the argument belongs.',
             )
             ->addArgument('id', InputArgument::REQUIRED, 'Player ID.');
     }
@@ -47,7 +47,7 @@ class MakeAdmin extends Command
 
         $player = $this->playerRepository->find($playerId);
         if ($player === null) {
-            $output->writeln('Player with ID "' . $playerId .'" not found');
+            $output->writeln('Player with ID "' . $playerId . '" not found');
             return 0;
         }
 
@@ -74,7 +74,7 @@ class MakeAdmin extends Command
             return 0;
         }
 
-        $output->writeln('Added all applicable roles to the player account "' .$player->getName() . '"');
+        $output->writeln('Added all applicable roles to the player account "' . $player->getName() . '"');
 
         return 0;
     }

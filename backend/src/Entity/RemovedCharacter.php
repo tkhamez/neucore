@@ -15,14 +15,14 @@ use OpenApi\Attributes as OA;
 #[ORM\Entity]
 #[ORM\Table(
     name: "removed_characters",
-    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"]
+    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"],
 )]
 #[OA\Schema(
     required: ['characterId', 'characterName', 'removedDate', 'reason'],
     properties: [
         new OA\Property(property: 'newPlayerId', type: 'integer'),
-        new OA\Property(property: 'newPlayerName', type: 'string')
-    ]
+        new OA\Property(property: 'newPlayerName', type: 'string'),
+    ],
 )]
 class RemovedCharacter implements \JsonSerializable
 {
@@ -181,7 +181,7 @@ class RemovedCharacter implements \JsonSerializable
     public function getCharacterId(): ?int
     {
         // cast to int because Doctrine creates string for type bigint
-        return $this->characterId !== null ? (int)$this->characterId : null;
+        return $this->characterId !== null ? (int) $this->characterId : null;
     }
 
     public function setCharacterName(string $characterName): self
@@ -217,7 +217,7 @@ class RemovedCharacter implements \JsonSerializable
 
     public function getReason(): string
     {
-        return (string)$this->reason;
+        return (string) $this->reason;
     }
 
     public function setDeletedBy(?Player $deletedBy): self

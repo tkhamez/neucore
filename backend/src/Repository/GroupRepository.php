@@ -46,9 +46,9 @@ class GroupRepository extends EntityRepository
         ;
 
         return array_map(function ($item) {
-            $item['character_id'] = $item['character_id'] !== null ? (int)$item['character_id'] : null;
-            $item['corporation_id'] = $item['corporation_id'] !== null ? (int)$item['corporation_id'] : null;
-            $item['alliance_id'] = $item['alliance_id'] !== null ? (int)$item['alliance_id'] : null;
+            $item['character_id'] = $item['character_id'] !== null ? (int) $item['character_id'] : null;
+            $item['corporation_id'] = $item['corporation_id'] !== null ? (int) $item['corporation_id'] : null;
+            $item['alliance_id'] = $item['alliance_id'] !== null ? (int) $item['alliance_id'] : null;
             return $item;
         }, $query->getQuery()->getResult());
     }

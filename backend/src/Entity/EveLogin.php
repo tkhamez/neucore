@@ -68,7 +68,7 @@ class EveLogin implements \JsonSerializable
         description: "Names starting with 'core.' are reserved for internal use.",
         maxLength: 20,
         pattern: '^[-._a-zA-Z0-9]+$',
-        nullable: false
+        nullable: false,
     )]
     private string $name = '';
 
@@ -84,7 +84,7 @@ class EveLogin implements \JsonSerializable
     #[OA\Property(
         description: 'Maximum length of all roles separated by comma: 1024.',
         type: 'array',
-        items: new OA\Items(type: 'string')
+        items: new OA\Items(type: 'string'),
     )]
     private string $eveRoles = '';
 
@@ -125,7 +125,7 @@ class EveLogin implements \JsonSerializable
 
     public function getId(): int
     {
-        return (int)$this->id;
+        return (int) $this->id;
     }
 
     public function setName(string $name): self

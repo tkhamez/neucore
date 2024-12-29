@@ -24,7 +24,7 @@ class AppRequestCount implements MiddlewareInterface
     public function __construct(
         AppAuth $appAuth,
         RepositoryFactory $repositoryFactory,
-        ObjectManager $objectManager
+        ObjectManager $objectManager,
     ) {
         $this->appAuth = $appAuth;
         $this->repositoryFactory = $repositoryFactory;
@@ -39,10 +39,10 @@ class AppRequestCount implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        $year = (int)date('Y');
-        $month = (int)date('m');
-        $day = (int)date('d');
-        $hour = (int)date('G');
+        $year = (int) date('Y');
+        $month = (int) date('m');
+        $day = (int) date('d');
+        $hour = (int) date('G');
 
         $requests = $this->repositoryFactory->getAppRequestsRepository()->findOneBy([
             'app' => $app,

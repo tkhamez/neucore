@@ -35,7 +35,7 @@ class Plugin extends Command
             ->setDescription('Executes GeneralInterface::command() from plugins.')
             ->setHelp(
                 'In addition to any number of arguments this command accepts any number of long options ' .
-                'with any name, but not several with the same name.'
+                'with any name, but not several with the same name.',
             )
             ->addArgument('id', InputArgument::REQUIRED, 'The plugin ID.')
             ->addArgument('args', InputArgument::IS_ARRAY, 'Optional additional arguments.');

@@ -23,7 +23,7 @@ class AssureMain extends Command
     public function __construct(
         RepositoryFactory $repositoryFactory,
         EntityManagerInterface $entityManager,
-        Account $account
+        Account $account,
     ) {
         parent::__construct();
 

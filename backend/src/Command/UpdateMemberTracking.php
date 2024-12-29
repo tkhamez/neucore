@@ -45,7 +45,7 @@ class UpdateMemberTracking extends Command
         OAuthToken $oauthToken,
         LoggerInterface $logger,
         EntityManagerInterface $entityManager,
-        StorageInterface $storage
+        StorageInterface $storage,
     ) {
         parent::__construct();
         $this->logOutput($logger);
@@ -61,7 +61,7 @@ class UpdateMemberTracking extends Command
     {
         $this->setName('update-member-tracking')
             ->setDescription(
-                'Updates member tracking data from all available characters with director role from settings.'
+                'Updates member tracking data from all available characters with director role from settings.',
             )
             ->addArgument('corporation', InputArgument::OPTIONAL, 'Update only one corporation.')
             ->addOption(
@@ -69,7 +69,7 @@ class UpdateMemberTracking extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each update',
-                $this->sleep
+                $this->sleep,
             );
         $this->configureLogOutput($this);
     }
@@ -121,7 +121,7 @@ class UpdateMemberTracking extends Command
             if (!is_array($trackingData)) {
                 $this->writeLine(
                     '  Error getting member tracking data from ESI for ' . $character->getName(),
-                    false
+                    false,
                 );
                 continue;
             }
@@ -145,7 +145,7 @@ class UpdateMemberTracking extends Command
 
             $this->writeLine(
                 '  Updated tracking data for ' . count($trackingData) .
-                ' members of corporation ' . $corporation->getId()
+                ' members of corporation ' . $corporation->getId(),
             );
 
             $processedCorporations[] = $corporation->getId();
@@ -175,7 +175,7 @@ class UpdateMemberTracking extends Command
         ]);
 
         return array_map(function (EsiToken $token) {
-            return (int)$token->getId();
+            return (int) $token->getId();
         }, $tokens);
     }
 
@@ -198,11 +198,11 @@ class UpdateMemberTracking extends Command
         $structures = [];
         foreach ($trackingData as $item) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
-            $charIds[] = (int)$item->getCharacterId();
-            $typeIds[] = (int)$item->getShipTypeId();
+            $charIds[] = (int) $item->getCharacterId();
+            $typeIds[] = (int) $item->getShipTypeId();
 
             // see also https://github.com/esi/esi-docs/blob/master/docs/asset_location_id.md
-            $locationId = (int)$item->getLocationId();
+            $locationId = (int) $item->getLocationId();
             if ($locationId >= 30000000 && $locationId <= 33000000) {
                 $systemIds[] = $locationId;
             } elseif ($locationId >= 60000000 && $locationId <= 64000000) {

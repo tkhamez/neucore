@@ -44,7 +44,7 @@ class Container
             // Doctrine
             EntityManagerInterface::class => function (
                 ?ContainerInterface $c = null, // this is also used in unit tests where the container does not exist
-                ?Config $config = null
+                ?Config $config = null,
             ) {
                 if ($c) {
                     $conf = $c->get(Config::class)['doctrine'];
@@ -52,8 +52,8 @@ class Container
                     $conf = $config['doctrine'] ?? []; // it should always be set
                 }
                 $options = $conf['driver_options'];
-                $caFile = (string)$options['mysql_ssl_ca'];
-                $verify = (bool)$options['mysql_verify_server_cert'];
+                $caFile = (string) $options['mysql_ssl_ca'];
+                $verify = (bool) $options['mysql_verify_server_cert'];
                 if ($caFile !== '' && (!$verify || is_file($caFile))) {
                     $conf['connection']['driverOptions'] = [
                         \PDO::MYSQL_ATTR_SSL_CA => $caFile,
@@ -63,7 +63,7 @@ class Container
                 $metaConfig = ORMSetup::createAttributeMetadataConfiguration(
                     $conf['meta']['entity_paths'],
                     $conf['meta']['dev_mode'],
-                    $conf['meta']['proxy_dir']
+                    $conf['meta']['proxy_dir'],
                 );
                 #$metaConfig->setMiddlewares([new \Doctrine\DBAL\Logging\Middleware($c->get(LoggerInterface::class))]);
                 $dsnParser = new DsnParser([
@@ -183,7 +183,7 @@ class Container
                 } else {
                     $storage = new SystemVariableStorage(
                         $c->get(RepositoryFactory::class),
-                        $c->get(Service\ObjectManager::class)
+                        $c->get(Service\ObjectManager::class),
                     );
                 }
                 return $storage;

@@ -56,7 +56,7 @@ class CharacterRepository extends EntityRepository
         }
 
         return array_map(function (array $char) {
-            return (int)$char['id'];
+            return (int) $char['id'];
         }, $query->getQuery()->getResult());
     }
 
@@ -68,15 +68,15 @@ class CharacterRepository extends EntityRepository
         $qb = $this->createQueryBuilder('c');
         $qb->select([
             'c.id',
-            'IDENTITY(c.player) AS playerId'
+            'IDENTITY(c.player) AS playerId',
         ])
             ->where($qb->expr()->in('c.player', ':ids'))
             ->setParameter('ids', $playerIds);
 
         return array_map(function (array $row) {
             return [
-                'id' => (int)$row['id'],
-                'playerId' => (int)$row['playerId'],
+                'id' => (int) $row['id'],
+                'playerId' => (int) $row['playerId'],
             ];
         }, $qb->getQuery()->getResult());
     }
@@ -96,7 +96,7 @@ class CharacterRepository extends EntityRepository
             ->setFirstResult($offset);
 
         return array_map(function (array $row) {
-            return (int)$row['id'];
+            return (int) $row['id'];
         }, $qb->getQuery()->getResult());
     }
 
@@ -111,7 +111,7 @@ class CharacterRepository extends EntityRepository
             ->setFirstResult($offset);
 
         return array_map(function (array $row) {
-            return (int)$row['id'];
+            return (int) $row['id'];
         }, $qb->getQuery()->getResult());
     }
 
@@ -129,7 +129,7 @@ class CharacterRepository extends EntityRepository
             return [
                 'id' => $character['id'],
                 'name' => $character['name'],
-                'characterId' => (int)$character['characterId'],
+                'characterId' => (int) $character['characterId'],
             ];
         }, $qb->getQuery()->getResult());
     }

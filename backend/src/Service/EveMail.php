@@ -42,7 +42,7 @@ class EveMail
         AuthenticationProvider $authenticationProvider,
         LoggerInterface $log,
         EsiApiFactory $esiApiFactory,
-        Config $config
+        Config $config,
     ) {
         $this->repositoryFactory = $repositoryFactory;
         $this->objectManager = $objectManager;
@@ -238,7 +238,7 @@ class EveMail
         $result = [];
         $corpRepo = $this->repositoryFactory->getCorporationRepository();
         foreach (explode(',', $corporations->getValue()) as $corporationId) {
-            $corporation = $corpRepo->find((int)$corporationId);
+            $corporation = $corpRepo->find((int) $corporationId);
             if (
                 $corporation &&
                 $corporation->getTrackingLastUpdate() > $yesterday &&
@@ -265,7 +265,7 @@ class EveMail
     {
         $daysVar = $this->sysVarRepo->find(SystemVariable::MAIL_MISSING_CHARACTER_RESEND);
 
-        if (!$daysVar || (int)$daysVar->getValue() <= 0) {
+        if (!$daysVar || (int) $daysVar->getValue() <= 0) {
             return 'Invalid config.';
         }
 
@@ -279,7 +279,7 @@ class EveMail
             return 'Member not found.';
         }
 
-        $minDateSent = date_create('now -' . (int)$daysVar->getValue() . ' days');
+        $minDateSent = date_create('now -' . (int) $daysVar->getValue() . ' days');
         if ($member->getMissingCharacterMailSentDate() && $member->getMissingCharacterMailSentDate() > $minDateSent) {
             return 'Already sent.';
         }
@@ -330,7 +330,7 @@ class EveMail
         $existingToken = new AccessToken([
             OAuthToken::OPTION_ACCESS_TOKEN => $tokenValues[SystemVariable::TOKEN_ACCESS],
             OAuthToken::OPTION_REFRESH_TOKEN => $tokenValues[SystemVariable::TOKEN_REFRESH],
-            OAuthToken::OPTION_EXPIRES => (int)$tokenValues[SystemVariable::TOKEN_EXPIRES],
+            OAuthToken::OPTION_EXPIRES => (int) $tokenValues[SystemVariable::TOKEN_EXPIRES],
         ]);
         try {
             $accessToken = $this->authenticationProvider->refreshAccessToken($existingToken);
@@ -344,7 +344,7 @@ class EveMail
         }
 
         if ($tokenValues[SystemVariable::TOKEN_REFRESH] !== $accessToken->getExpires()) {
-            $this->updateToken($accessToken, (int)$tokenValues[SystemVariable::TOKEN_ID]);
+            $this->updateToken($accessToken, (int) $tokenValues[SystemVariable::TOKEN_ID]);
         }
 
         return $this->sendMail(
@@ -352,7 +352,7 @@ class EveMail
             $accessToken->getToken(),
             $subject->getValue(),
             $body->getValue(),
-            [$recipient]
+            [$recipient],
         );
     }
 
@@ -369,7 +369,7 @@ class EveMail
         string $token,
         string $subject,
         string $body,
-        array $characterRecipients
+        array $characterRecipients,
     ): string {
         $recipients = [];
         foreach ($characterRecipients as $characterRecipient) {

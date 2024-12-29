@@ -25,7 +25,7 @@ final class Version20210123141218 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('DROP INDEX day_idx ON app_requests');
         $this->addSql(
-            'ALTER TABLE app_requests ADD year INT NOT NULL, ADD month INT NOT NULL, ADD day_of_month INT NOT NULL'
+            'ALTER TABLE app_requests ADD year INT NOT NULL, ADD month INT NOT NULL, ADD day_of_month INT NOT NULL',
         );
 
         /** @noinspection SqlWithoutWhere */
@@ -46,12 +46,12 @@ final class Version20210123141218 extends AbstractMigration
         $this->addSql('DROP INDEX ar_year_idx ON app_requests');
         $this->addSql('DROP INDEX ar_month_idx ON app_requests');
         $this->addSql(
-            'ALTER TABLE app_requests ADD day VARCHAR(10) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_520_ci`'
+            'ALTER TABLE app_requests ADD day VARCHAR(10) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_520_ci`',
         );
 
         /** @noinspection SqlWithoutWhere */
         $this->addSql(
-            'UPDATE app_requests SET day = CONCAT(year, "-", LPAD(month, 2, 0), "-", LPAD(day_of_month, 2, 0))'
+            'UPDATE app_requests SET day = CONCAT(year, "-", LPAD(month, 2, 0), "-", LPAD(day_of_month, 2, 0))',
         );
 
         $this->addSql('ALTER TABLE app_requests DROP year, DROP month, DROP day_of_month');

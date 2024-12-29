@@ -12,9 +12,7 @@ use Neucore\Plugin\Data\CoreCharacter;
 
 class Data implements DataInterface
 {
-    public function __construct(private RepositoryFactory $repositoryFactory)
-    {
-    }
+    public function __construct(private RepositoryFactory $repositoryFactory) {}
 
     public function getCharacterIdsByCorporation(int $corporationId): ?array
     {

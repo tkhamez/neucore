@@ -25,7 +25,7 @@ class RevokeToken extends Command
     public function __construct(
         RepositoryFactory $repositoryFactory,
         OAuthToken $tokenService,
-        AuthenticationProvider $authenticationProvider
+        AuthenticationProvider $authenticationProvider,
     ) {
         parent::__construct();
 

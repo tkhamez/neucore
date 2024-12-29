@@ -22,7 +22,7 @@ use OpenApi\Attributes as OA;
     enum: ['app', 'app-groups', 'app-chars', 'app-tracking', 'app-esi-login', 'app-esi-proxy',
         'app-esi-token', 'user', 'user-admin', 'user-manager', 'user-chars', 'group-admin',
         'group-manager', 'app-admin', 'app-manager', 'plugin-admin', 'statistics', 'esi',
-        'settings', 'tracking', 'tracking-admin', 'watchlist', 'watchlist-manager', 'watchlist-admin']
+        'settings', 'tracking', 'tracking-admin', 'watchlist', 'watchlist-manager', 'watchlist-admin'],
 )]
 class Role implements \JsonSerializable
 {

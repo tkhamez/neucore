@@ -24,23 +24,23 @@ use OpenApi\Attributes as OA;
             description: "Shows if character's default refresh token is valid or not. This is null if " .
                 "there is no refresh token (EVE SSOv1 only) or a valid token but without scopes (SSOv2).",
             type: 'boolean',
-            nullable: true
+            nullable: true,
         ),
         new OA\Property(
             property: 'validTokenTime',
             description: 'Date and time when the valid token property of the default token was last changed.',
             type: 'string',
             format: 'date-time',
-            nullable: true
+            nullable: true,
         ),
         new OA\Property(
             property: 'tokenLastChecked',
             description: 'Date and time when the default token was last checked.',
             type: 'string',
             format: 'date-time',
-            nullable: true
-        )
-    ]
+            nullable: true,
+        ),
+    ],
 )]
 class Character implements \JsonSerializable
 {
@@ -113,7 +113,7 @@ class Character implements \JsonSerializable
         bool $minimum = false,
         bool $withCorporation = true,
         bool $withNameChanges = false,
-        bool $withEsiTokens = false
+        bool $withEsiTokens = false,
     ): array {
         if ($minimum) {
             $result = [
@@ -167,7 +167,7 @@ class Character implements \JsonSerializable
     public function getId(): int
     {
         // cast to int because Doctrine creates string for type bigint, also make sure it's not null
-        return (int)$this->id;
+        return (int) $this->id;
     }
 
     public function setName(string $name): self
@@ -347,7 +347,7 @@ class Character implements \JsonSerializable
             $this->getCorporation()?->getTicker(),
             $this->getCorporation()?->getAlliance()?->getId(),
             $this->getCorporation()?->getAlliance()?->getName(),
-            $this->getCorporation()?->getAlliance()?->getTicker()
+            $this->getCorporation()?->getAlliance()?->getTicker(),
         );
     }
 

@@ -23,7 +23,7 @@ class AuthPasswordController extends BaseController
             new OA\Response(
                 response: '200',
                 description: 'The new password.',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '500', description: 'Failed to created new password.'),
@@ -61,8 +61,8 @@ class AuthPasswordController extends BaseController
                         new OA\Property(property: 'playerId', type: 'string'),
                         new OA\Property(property: 'password', type: 'string'),
                     ],
-                )
-            )
+                ),
+            ),
         ),
         tags: ['Auth'],
         responses: [
@@ -76,7 +76,7 @@ class AuthPasswordController extends BaseController
         $playerId = $this->getBodyParam($request, 'playerId');
         $password = $this->getBodyParam($request, 'password');
 
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int)$playerId);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
         if (!$player) {
             return $this->response->withStatus(400);
         }

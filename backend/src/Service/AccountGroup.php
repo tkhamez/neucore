@@ -34,7 +34,7 @@ class AccountGroup
 
         // enabled?
         $requireToken = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
-            ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN]
+            ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN],
         );
         if (!$requireToken || $requireToken->getValue() === '0') {
             return false;
@@ -61,9 +61,9 @@ class AccountGroup
             $hours = 0;
         } else {
             $delay = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
-                ['name' => SystemVariable::ACCOUNT_DEACTIVATION_DELAY]
+                ['name' => SystemVariable::ACCOUNT_DEACTIVATION_DELAY],
             );
-            $hours = (int)$delay?->getValue();
+            $hours = (int) $delay?->getValue();
         }
 
         if ($player->hasCharacterWithInvalidTokenOlderThan($hours)) {
@@ -95,7 +95,7 @@ class AccountGroup
         // Remove application if one exists.
         $groupApplication = $this->repositoryFactory->getGroupApplicationRepository()->findOneBy([
             'player' => $player->getId(),
-            'group' => $group->getId()
+            'group' => $group->getId(),
         ]);
         if ($groupApplication) {
             $this->objectManager->remove($groupApplication);

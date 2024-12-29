@@ -61,7 +61,7 @@ class Watchlist
             $allowlistCorporationIds = $this->getCorporationIds(
                 $id,
                 self::ALLOWLIST_ALLIANCE,
-                self::ALLOWLIST_CORPORATION
+                self::ALLOWLIST_CORPORATION,
             );
         }
 
@@ -75,13 +75,13 @@ class Watchlist
         // get players in watched corporations
         $playersFromWatchedCorporations = $this->playerRepository->findInCorporationsWithExcludes(
             $corporationIds,
-            $exemptPlayers
+            $exemptPlayers,
         );
 
         // get players not on allowlist
         $playersNotInAllowlistCorporations = $this->playerRepository->findNotInNpcCorporationsWithExcludes(
             array_unique(array_merge($corporationIds, $allowlistCorporationIds)),
-            $exemptPlayers
+            $exemptPlayers,
         );
         $playersNotOnAllowList = array_map(function (Player $player) {
             return $player->getId();
@@ -92,7 +92,7 @@ class Watchlist
         if (!$includeKicklist) {
             $playersFromKicklistCorporations = $this->playerRepository->findInCorporationsWithExcludes(
                 $this->getCorporationIds($id, self::KICKLIST_ALLIANCE, self::KICKLIST_CORPORATION),
-                $exemptPlayers
+                $exemptPlayers,
             );
             $playersOnKicklist = array_map(function (Player $player) {
                 return $player->getId();
@@ -121,7 +121,7 @@ class Watchlist
     {
         $playersFromKicklistCorporations = $this->playerRepository->findInCorporationsWithExcludes(
             $this->getCorporationIds($id, self::KICKLIST_ALLIANCE, self::KICKLIST_CORPORATION),
-            $this->getExemptionList($id)
+            $this->getExemptionList($id),
         );
 
         $playersRedListIds = array_map(function (Player $player) {

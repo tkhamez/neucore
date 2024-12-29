@@ -15,8 +15,7 @@ class Account implements AccountInterface
     public function __construct(
         private RepositoryFactory $repositoryFactory,
         private AccountGroup $accountGroup,
-    ) {
-    }
+    ) {}
 
     public function getAccountsByGroup(int $groupId): ?array
     {

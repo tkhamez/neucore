@@ -18,7 +18,7 @@ class FluentdFormatter extends \Monolog\Formatter\FluentdFormatter
                     'class' => get_class($value),
                     'message' => $value->getMessage(),
                     'code' => $value->getCode(),
-                    'file' => $value->getFile().':'.$value->getLine(),
+                    'file' => $value->getFile() . ':' . $value->getLine(),
                     'trace' => $value->getTrace(),
                 ];
             }

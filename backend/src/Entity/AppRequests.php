@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
         new ORM\Index(columns: ["request_year"], name: "ar_year_idx"),
         new ORM\Index(columns: ["request_month"], name: "ar_month_idx"),
         new ORM\Index(columns: ["request_day_of_month"], name: "ar_day_of_month_idx"),
-        new ORM\Index(columns: ["request_hour"], name: "ar_hour_idx")
+        new ORM\Index(columns: ["request_hour"], name: "ar_hour_idx"),
     ],
     options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"],
 )]

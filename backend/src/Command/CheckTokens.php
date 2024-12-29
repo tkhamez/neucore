@@ -50,7 +50,7 @@ class CheckTokens extends Command
         Account $charService,
         EntityManagerInterface $entityManager,
         LoggerInterface $logger,
-        StorageInterface $storage
+        StorageInterface $storage,
     ) {
         parent::__construct();
         $this->logOutput($logger);
@@ -68,7 +68,7 @@ class CheckTokens extends Command
         $this->setName('check-tokens')
             ->setDescription(
                 'Checks refresh token. ' .
-                'If the character owner hash has changed or the character has been biomassed, it will be deleted.'
+                'If the character owner hash has changed or the character has been biomassed, it will be deleted.',
             )
             ->addArgument('character', InputArgument::OPTIONAL, 'Check only one char.')
             ->addOption(
@@ -80,14 +80,14 @@ class CheckTokens extends Command
                     '"Groups Deactivation" configuration) or from player accounts where at ' .
                     'least one character is a member of one of the alliances or corporations configured for ' .
                     'the "Groups Deactivation" feature.',
-                'all'
+                'all',
             )
             ->addOption(
                 'sleep',
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each check',
-                $this->sleep
+                $this->sleep,
             );
         $this->configureLogOutput($this);
     }
@@ -127,23 +127,23 @@ class CheckTokens extends Command
 
                 $char = $this->charRepo->find($charId);
                 if ($char === null) {
-                    $this->writeLine('Character ' . $charId.': not found.');
+                    $this->writeLine('Character ' . $charId . ': not found.');
                 } else {
                     // Check token, corporation Doomheim and character owner hash - this may delete the character!
                     // This does not update the "lastUpdate" property from the character.
                     $result = $this->charService->checkCharacter($char);
                     if ($result === Account::CHECK_TOKEN_NA) {
-                        $this->writeLine(self::CHARACTER . $charId.': token N/A');
+                        $this->writeLine(self::CHARACTER . $charId . ': token N/A');
                     } elseif ($result === Account::CHECK_TOKEN_OK) {
-                        $this->writeLine(self::CHARACTER . $charId.': token OK');
+                        $this->writeLine(self::CHARACTER . $charId . ': token OK');
                     } elseif ($result === Account::CHECK_TOKEN_NOK) {
-                        $this->writeLine(self::CHARACTER . $charId.': token NOK');
+                        $this->writeLine(self::CHARACTER . $charId . ': token NOK');
                     } elseif ($result === Account::CHECK_CHAR_DELETED) {
-                        $this->writeLine(self::CHARACTER . $charId.': character deleted');
+                        $this->writeLine(self::CHARACTER . $charId . ': character deleted');
                     } elseif ($result === Account::CHECK_TOKEN_PARSE_ERROR) {
-                        $this->writeLine(self::CHARACTER . $charId.': token parse error');
+                        $this->writeLine(self::CHARACTER . $charId . ': token parse error');
                     } else {
-                        $this->writeLine(self::CHARACTER . $charId.': unknown result');
+                        $this->writeLine(self::CHARACTER . $charId . ': unknown result');
                     }
                 }
 
@@ -168,7 +168,7 @@ class CheckTokens extends Command
                 $days = 0;
                 $daysVar = $this->sysVarRepo->find(SystemVariable::ACCOUNT_DEACTIVATION_ACTIVE_DAYS);
                 if ($daysVar !== null && !empty($daysVar->getValue())) {
-                    $days = (int)$daysVar->getValue();
+                    $days = (int) $daysVar->getValue();
                 }
 
                 $allianceIds = [];
@@ -192,13 +192,13 @@ class CheckTokens extends Command
                 $characterIds = $this->charRepo->getCharacterIdsFromPlayers(
                     $this->activePlayerIds,
                     $dbResultLimit,
-                    $offset
+                    $offset,
                 );
             } elseif ($this->characters === 'other') {
                 $characterIds = $this->charRepo->getCharacterIdsNotFromPlayers(
                     $this->activePlayerIds,
                     $dbResultLimit,
-                    $offset
+                    $offset,
                 );
             }
         }

@@ -31,7 +31,7 @@ class UpdatePlayerGroups extends Command
         RepositoryFactory $repositoryFactory,
         EntityManagerInterface $entityManager,
         LoggerInterface $logger,
-        Account $account
+        Account $account,
     ) {
         parent::__construct();
         $this->logOutput($logger);
@@ -51,7 +51,7 @@ class UpdatePlayerGroups extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each update',
-                '20'
+                '20',
             );
         $this->configureLogOutput($this);
     }
@@ -76,7 +76,7 @@ class UpdatePlayerGroups extends Command
                     ['status' => Player::STATUS_STANDARD],
                     ['lastUpdate' => 'ASC'],
                     $dbResultLimit,
-                    $offset
+                    $offset,
                 ));
             } else {
                 if (($player = $this->playerRepo->find($player)) !== null) {

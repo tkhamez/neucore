@@ -8,8 +8,7 @@ class EsiErrorLimit
         public ?int $updated,
         public ?int $remain,
         public ?int $reset,
-    ) {
-    }
+    ) {}
 
     public static function fromJson(string $json): self
     {

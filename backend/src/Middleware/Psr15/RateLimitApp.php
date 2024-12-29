@@ -39,7 +39,7 @@ class RateLimitApp extends RateLimit implements MiddlewareInterface
         StorageInterface $storage,
         ResponseFactoryInterface $responseFactory,
         LoggerInterface $logger,
-        RepositoryFactory $repositoryFactory
+        RepositoryFactory $repositoryFactory,
     ) {
         $this->appAuth = $appAuth;
         $this->storage = $storage;
@@ -71,12 +71,12 @@ class RateLimitApp extends RateLimit implements MiddlewareInterface
         if ($remaining < 0) {
             $this->logger->info(
                 "API Rate Limit: App {$app->getId()} '{$app->getName()}', " .
-                "limit exceeded with $numRequests request in $elapsedTime seconds."
+                "limit exceeded with $numRequests request in $elapsedTime seconds.",
             );
             if ($this->active) {
                 $response = $this->responseFactory->createResponse(429); // Too Many Requests
                 $response->getBody()->write(
-                    "Application rate limit exceeded with $numRequests requests in $elapsedTime seconds."
+                    "Application rate limit exceeded with $numRequests requests in $elapsedTime seconds.",
                 );
             }
         }
@@ -103,8 +103,8 @@ class RateLimitApp extends RateLimit implements MiddlewareInterface
         $resetTimeVar = $sysRepo->find(SystemVariable::RATE_LIMIT_APP_RESET_TIME);
         $activeVar = $sysRepo->find(SystemVariable::RATE_LIMIT_APP_ACTIVE);
 
-        $this->maxRequests = $maxRequestsVar ? abs((int)$maxRequestsVar->getValue()) : 0;
-        $this->resetTime = $resetTimeVar ? abs((int)$resetTimeVar->getValue()) : 0;
+        $this->maxRequests = $maxRequestsVar ? abs((int) $maxRequestsVar->getValue()) : 0;
+        $this->resetTime = $resetTimeVar ? abs((int) $resetTimeVar->getValue()) : 0;
         $this->active = $activeVar && $activeVar->getValue();
     }
 }

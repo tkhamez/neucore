@@ -35,7 +35,7 @@ class WatchlistController extends BaseController
         ResponseInterface $response,
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
-        Watchlist $watchlist
+        Watchlist $watchlist,
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
 
@@ -59,22 +59,22 @@ class WatchlistController extends BaseController
                             property: 'name',
                             description: 'Name of the watchlist.',
                             type: 'string',
-                            maxLength: 32
-                        )
+                            maxLength: 32,
+                        ),
                     ],
                     type: 'object',
-                )
-            )
+                ),
+            ),
         ),
         tags: ['Watchlist'],
         responses: [
             new OA\Response(
                 response: '201',
                 description: 'The new watchlist.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Watchlist')
+                content: new OA\JsonContent(ref: '#/components/schemas/Watchlist'),
             ),
             new OA\Response(response: '400', description: 'Watchlist name is missing.'),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function create(ServerRequestInterface $request): ResponseInterface
@@ -107,12 +107,12 @@ class WatchlistController extends BaseController
                             property: 'name',
                             description: 'New name for the watchlist.',
                             type: 'string',
-                            maxLength: 32
-                        )
+                            maxLength: 32,
+                        ),
                     ],
                     type: 'object',
-                )
-            )
+                ),
+            ),
         ),
         tags: ['Watchlist'],
         parameters: [
@@ -121,18 +121,18 @@ class WatchlistController extends BaseController
                 description: 'ID of the watchlist.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'Watchlist was renamed.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Watchlist')
+                content: new OA\JsonContent(ref: '#/components/schemas/Watchlist'),
             ),
             new OA\Response(response: '400', description: 'Watchlist name is missing.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Watchlist not found.')
+            new OA\Response(response: '404', description: 'Watchlist not found.'),
         ],
     )]
     public function rename(string $id, ServerRequestInterface $request): ResponseInterface
@@ -165,13 +165,13 @@ class WatchlistController extends BaseController
                 description: 'ID of the watchlist.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Watchlist was deleted.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Watchlist not found.')
+            new OA\Response(response: '404', description: 'Watchlist not found.'),
         ],
     )]
     public function delete(string $id): ResponseInterface
@@ -199,23 +199,23 @@ class WatchlistController extends BaseController
                 description: 'ID of the watchlist.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'lock',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string', enum: ['0', '1'])
+                schema: new OA\Schema(type: 'string', enum: ['0', '1']),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'Setting was set.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Watchlist')
+                content: new OA\JsonContent(ref: '#/components/schemas/Watchlist'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Watchlist not found.')
+            new OA\Response(response: '404', description: 'Watchlist not found.'),
         ],
     )]
     public function lockWatchlistSettings(string $id, string $lock): ResponseInterface
@@ -243,10 +243,10 @@ class WatchlistController extends BaseController
                 description: 'List of watchlists.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Watchlist')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Watchlist'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function listAll(): ResponseInterface
@@ -267,10 +267,10 @@ class WatchlistController extends BaseController
                 description: 'List of watchlists.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Watchlist')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Watchlist'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function listAvailable(UserAuth $userAuth): ResponseInterface
@@ -297,10 +297,10 @@ class WatchlistController extends BaseController
                 description: 'List of watchlists.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Watchlist')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Watchlist'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function listAvailableManage(UserAuth $userAuth): ResponseInterface
@@ -329,7 +329,7 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -338,21 +338,21 @@ class WatchlistController extends BaseController
                 description: 'List of players.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Player')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Player'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function players(string $id, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, Role::WATCHLIST)) {
+        if (!$this->checkPermission((int) $id, $userAuth, Role::WATCHLIST)) {
             return $this->response->withStatus(403);
         }
 
         $players = array_map(function (Player $player) {
             return $player->jsonSerialize(true);
-        }, $this->watchlistService->getWarningList((int)$id));
+        }, $this->watchlistService->getWarningList((int) $id));
 
         return $this->withJson($players);
     }
@@ -371,7 +371,7 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -380,19 +380,19 @@ class WatchlistController extends BaseController
                 description: 'List of players.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Player')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Player'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function playersKicklist(string $id, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, Role::WATCHLIST)) {
+        if (!$this->checkPermission((int) $id, $userAuth, Role::WATCHLIST)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlistService->getKicklist((int)$id));
+        return $this->withJson($this->watchlistService->getKicklist((int) $id));
     }
 
     #[OA\Get(
@@ -408,7 +408,7 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -417,21 +417,21 @@ class WatchlistController extends BaseController
                 description: 'List of players, only ID and name properties are included.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Player')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Player'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function exemptionList(string $id, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth)) {
+        if (!$this->checkPermission((int) $id, $userAuth)) {
             return $this->response->withStatus(403);
         }
 
         $data = array_map(function (Player $player) {
             return $player->jsonSerialize(true);
-        }, $this->watchlistService->getList((int)$id, 'exemption'));
+        }, $this->watchlistService->getList((int) $id, 'exemption'));
 
         return $this->withJson($data);
     }
@@ -449,29 +449,29 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'player',
                 description: 'Player ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Player added.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'List or Player not found.')
+            new OA\Response(response: '404', description: 'List or Player not found.'),
         ],
     )]
     public function exemptionAdd(string $id, string $player, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
+        if (!$this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int)$id, self::ACTION_ADD, Watchlist::EXEMPTION, (int)$player);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::EXEMPTION, (int) $player);
     }
 
     #[OA\Put(
@@ -487,29 +487,29 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'player',
                 description: 'Player ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Player removed.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'List or Player not found.')
+            new OA\Response(response: '404', description: 'List or Player not found.'),
         ],
     )]
     public function exemptionRemove(string $id, string $player, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
+        if (!$this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int)$id, self::ACTION_REMOVE, Watchlist::EXEMPTION, (int)$player);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_REMOVE, Watchlist::EXEMPTION, (int) $player);
     }
 
     #[OA\Get(
@@ -525,7 +525,7 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -534,19 +534,19 @@ class WatchlistController extends BaseController
                 description: 'List of corporation.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Corporation')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Corporation'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function corporationList(string $id, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, null, true)) {
+        if (!$this->checkPermission((int) $id, $userAuth, null, true)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlistService->getList((int)$id, Watchlist::CORPORATION));
+        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::CORPORATION));
     }
 
     #[OA\Put(
@@ -562,29 +562,29 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'corporation',
                 description: 'Corporation ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Corporation added.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'List or Corporation not found.')
+            new OA\Response(response: '404', description: 'List or Corporation not found.'),
         ],
     )]
     public function corporationAdd(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER, true, true)) {
+        if (!$this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER, true, true)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int)$id, self::ACTION_ADD, Watchlist::CORPORATION, (int)$corporation);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::CORPORATION, (int) $corporation);
     }
 
     #[OA\Put(
@@ -600,29 +600,29 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'corporation',
                 description: 'Corporation ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Corporation removed.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'List or Corporation not found.')
+            new OA\Response(response: '404', description: 'List or Corporation not found.'),
         ],
     )]
     public function corporationRemove(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER, true, true)) {
+        if (!$this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER, true, true)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int)$id, self::ACTION_REMOVE, Watchlist::CORPORATION, (int)$corporation);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_REMOVE, Watchlist::CORPORATION, (int) $corporation);
     }
 
     #[OA\Get(
@@ -638,7 +638,7 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -647,19 +647,19 @@ class WatchlistController extends BaseController
                 description: 'List of alliances.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Alliance')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Alliance'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function allianceList(string $id, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, null, true)) {
+        if (!$this->checkPermission((int) $id, $userAuth, null, true)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlistService->getList((int)$id, Watchlist::ALLIANCE));
+        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::ALLIANCE));
     }
 
     #[OA\Put(
@@ -675,29 +675,29 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'alliance',
                 description: 'Alliance ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Alliance added.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'List or Alliance not found.')
+            new OA\Response(response: '404', description: 'List or Alliance not found.'),
         ],
     )]
     public function allianceAdd(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER, true, true)) {
+        if (!$this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER, true, true)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int)$id, self::ACTION_ADD, Watchlist::ALLIANCE, (int)$alliance);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::ALLIANCE, (int) $alliance);
     }
 
     #[OA\Put(
@@ -713,29 +713,29 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'alliance',
                 description: 'Alliance ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Alliance removed.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'List or Alliance not found.')
+            new OA\Response(response: '404', description: 'List or Alliance not found.'),
         ],
     )]
     public function allianceRemove(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER, true, true)) {
+        if (!$this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER, true, true)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int)$id, self::ACTION_REMOVE, Watchlist::ALLIANCE, (int)$alliance);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_REMOVE, Watchlist::ALLIANCE, (int) $alliance);
     }
 
     #[OA\Get(
@@ -751,7 +751,7 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -760,15 +760,15 @@ class WatchlistController extends BaseController
                 description: 'List of groups.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Group')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Group'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function groupList(string $id): ResponseInterface
     {
-        return $this->withJson($this->watchlistService->getList((int)$id, Watchlist::GROUP));
+        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::GROUP));
     }
 
     #[OA\Put(
@@ -784,24 +784,24 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'group',
                 description: 'Group ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group added.'),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function groupAdd(string $id, string $group, Account $account): ResponseInterface
     {
-        $response = $this->addOrRemoveEntity((int)$id, self::ACTION_ADD, Watchlist::GROUP, (int)$group);
+        $response = $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::GROUP, (int) $group);
 
         if ($response->getStatusCode() === 204) {
             $account->syncWatchlistRole();
@@ -824,24 +824,24 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'group',
                 description: 'Group ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group removed.'),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function groupRemove(string $id, string $group, Account $account): ResponseInterface
     {
-        $response = $this->addOrRemoveEntity((int)$id, self::ACTION_REMOVE, Watchlist::GROUP, (int)$group);
+        $response = $this->addOrRemoveEntity((int) $id, self::ACTION_REMOVE, Watchlist::GROUP, (int) $group);
 
         if ($response->getStatusCode() === 204) {
             $account->syncWatchlistRole();
@@ -864,7 +864,7 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -873,15 +873,15 @@ class WatchlistController extends BaseController
                 description: 'List of groups.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Group')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Group'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function managerGroupList(string $id): ResponseInterface
     {
-        return $this->withJson($this->watchlistService->getList((int)$id, Watchlist::MANAGER_GROUP));
+        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::MANAGER_GROUP));
     }
 
     #[OA\Put(
@@ -897,24 +897,24 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'group',
                 description: 'Group ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group added.'),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function managerGroupAdd(string $id, string $group, Account $account): ResponseInterface
     {
-        $response = $this->addOrRemoveEntity((int)$id, self::ACTION_ADD, Watchlist::MANAGER_GROUP, (int)$group);
+        $response = $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::MANAGER_GROUP, (int) $group);
 
         if ($response->getStatusCode() === 204) {
             $account->syncWatchlistManagerRole();
@@ -937,24 +937,24 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'group',
                 description: 'Group ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group removed.'),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function managerGroupRemove(string $id, string $group, Account $account): ResponseInterface
     {
-        $response = $this->addOrRemoveEntity((int)$id, self::ACTION_REMOVE, Watchlist::MANAGER_GROUP, (int)$group);
+        $response = $this->addOrRemoveEntity((int) $id, self::ACTION_REMOVE, Watchlist::MANAGER_GROUP, (int) $group);
 
         if ($response->getStatusCode() === 204) {
             $account->syncWatchlistManagerRole();
@@ -977,7 +977,7 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -986,19 +986,19 @@ class WatchlistController extends BaseController
                 description: 'List of corporation.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Corporation')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Corporation'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function kicklistCorporationList(string $id, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth)) {
+        if (!$this->checkPermission((int) $id, $userAuth)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlistService->getList((int)$id, Watchlist::KICKLIST_CORPORATION));
+        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::KICKLIST_CORPORATION));
     }
 
     #[OA\Put(
@@ -1014,25 +1014,25 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'corporation',
                 description: 'Corporation ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Corporation added.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'List or Corporation not found.')
+            new OA\Response(response: '404', description: 'List or Corporation not found.'),
         ],
     )]
     public function kicklistCorporationAdd(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
+        if (!$this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
         }
 
@@ -1041,7 +1041,7 @@ class WatchlistController extends BaseController
             $id,
             self::ACTION_ADD,
             Watchlist::KICKLIST_CORPORATION,
-            (int)$corporation
+            (int) $corporation,
         );
     }
 
@@ -1058,33 +1058,33 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'corporation',
                 description: 'Corporation ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Corporation removed.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'List or Corporation not found.')
+            new OA\Response(response: '404', description: 'List or Corporation not found.'),
         ],
     )]
     public function kicklistCorporationRemove(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
+        if (!$this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
         }
 
         return $this->addOrRemoveEntity(
-            (int)$id,
+            (int) $id,
             self::ACTION_REMOVE,
             Watchlist::KICKLIST_CORPORATION,
-            (int)$corporation
+            (int) $corporation,
         );
     }
 
@@ -1101,7 +1101,7 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -1110,19 +1110,19 @@ class WatchlistController extends BaseController
                 description: 'List of alliances.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Alliance')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Alliance'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function kicklistAllianceList(string $id, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth)) {
+        if (!$this->checkPermission((int) $id, $userAuth)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlistService->getList((int)$id, Watchlist::KICKLIST_ALLIANCE));
+        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::KICKLIST_ALLIANCE));
     }
 
     #[OA\Put(
@@ -1138,29 +1138,29 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'alliance',
                 description: 'Alliance ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Alliance added.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'List or Alliance not found.')
+            new OA\Response(response: '404', description: 'List or Alliance not found.'),
         ],
     )]
     public function kicklistAllianceAdd(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
+        if (!$this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int)$id, self::ACTION_ADD, Watchlist::KICKLIST_ALLIANCE, (int)$alliance);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::KICKLIST_ALLIANCE, (int) $alliance);
     }
 
     #[OA\Put(
@@ -1176,33 +1176,33 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'alliance',
                 description: 'Alliance ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Alliance removed.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'List or Alliance not found.')
+            new OA\Response(response: '404', description: 'List or Alliance not found.'),
         ],
     )]
     public function kicklistAllianceRemove(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
+        if (!$this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
         }
 
         return $this->addOrRemoveEntity(
-            (int)$id,
+            (int) $id,
             self::ACTION_REMOVE,
             Watchlist::KICKLIST_ALLIANCE,
-            (int)$alliance
+            (int) $alliance,
         );
     }
 
@@ -1219,7 +1219,7 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -1228,21 +1228,21 @@ class WatchlistController extends BaseController
                 description: 'List of corporation.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Corporation')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Corporation'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function allowlistCorporationList(string $id, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth)) {
+        if (!$this->checkPermission((int) $id, $userAuth)) {
             return $this->response->withStatus(403);
         }
 
         $data = array_map(function (Corporation $corporation) {
             return $corporation->jsonSerialize(false, true);
-        }, $this->watchlistService->getList((int)$id, Watchlist::ALLOWLIST_CORPORATION));
+        }, $this->watchlistService->getList((int) $id, Watchlist::ALLOWLIST_CORPORATION));
 
         return $this->withJson($data);
     }
@@ -1260,33 +1260,33 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'corporation',
                 description: 'Corporation ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Corporation added.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'List or Corporation not found.')
+            new OA\Response(response: '404', description: 'List or Corporation not found.'),
         ],
     )]
     public function allowlistCorporationAdd(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
+        if (!$this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
         }
 
         return $this->addOrRemoveEntity(
-            (int)$id,
+            (int) $id,
             self::ACTION_ADD,
             Watchlist::ALLOWLIST_CORPORATION,
-            (int)$corporation
+            (int) $corporation,
         );
     }
 
@@ -1303,33 +1303,33 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'corporation',
                 description: 'Corporation ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Corporation removed.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'List or Corporation not found.')
+            new OA\Response(response: '404', description: 'List or Corporation not found.'),
         ],
     )]
     public function allowlistCorporationRemove(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
+        if (!$this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
         }
 
         return $this->addOrRemoveEntity(
-            (int)$id,
+            (int) $id,
             self::ACTION_REMOVE,
             Watchlist::ALLOWLIST_CORPORATION,
-            (int)$corporation
+            (int) $corporation,
         );
     }
 
@@ -1346,7 +1346,7 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -1355,19 +1355,19 @@ class WatchlistController extends BaseController
                 description: 'List of alliances.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Alliance')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Alliance'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function allowlistAllianceList(string $id, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth)) {
+        if (!$this->checkPermission((int) $id, $userAuth)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlistService->getList((int)$id, Watchlist::ALLOWLIST_ALLIANCE));
+        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::ALLOWLIST_ALLIANCE));
     }
 
     #[OA\Put(
@@ -1383,29 +1383,29 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'alliance',
                 description: 'Alliance ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Alliance added.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'List or Alliance not found.')
+            new OA\Response(response: '404', description: 'List or Alliance not found.'),
         ],
     )]
     public function allowlistAllianceAdd(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
+        if (!$this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int)$id, self::ACTION_ADD, Watchlist::ALLOWLIST_ALLIANCE, (int)$alliance);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::ALLOWLIST_ALLIANCE, (int) $alliance);
     }
 
     #[OA\Put(
@@ -1421,33 +1421,33 @@ class WatchlistController extends BaseController
                 description: 'Watchlist ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'alliance',
                 description: 'Alliance ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Alliance removed.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'List or Alliance not found.')
+            new OA\Response(response: '404', description: 'List or Alliance not found.'),
         ],
     )]
     public function allowlistAllianceRemove(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
     {
-        if (!$this->checkPermission((int)$id, $userAuth, Role::WATCHLIST_MANAGER)) {
+        if (!$this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
         }
 
         return $this->addOrRemoveEntity(
-            (int)$id,
+            (int) $id,
             self::ACTION_REMOVE,
             Watchlist::ALLOWLIST_ALLIANCE,
-            (int)$alliance
+            (int) $alliance,
         );
     }
 
@@ -1467,7 +1467,7 @@ class WatchlistController extends BaseController
         UserAuth $userAuth,
         ?string $roleName = null,
         bool $admin = false,
-        bool $checkSettingsLock = false
+        bool $checkSettingsLock = false,
     ): bool {
         $watchlist = $this->repositoryFactory->getWatchlistRepository()->find($id);
         if ($watchlist === null) {
@@ -1515,12 +1515,12 @@ class WatchlistController extends BaseController
             $entity = $this->repositoryFactory->getPlayerRepository()->find($entityId);
         } elseif (in_array(
             $type,
-            [Watchlist::CORPORATION, Watchlist::KICKLIST_CORPORATION, Watchlist::ALLOWLIST_CORPORATION]
+            [Watchlist::CORPORATION, Watchlist::KICKLIST_CORPORATION, Watchlist::ALLOWLIST_CORPORATION],
         )) {
             $entity = $this->repositoryFactory->getCorporationRepository()->find($entityId);
         } elseif (in_array(
             $type,
-            [Watchlist::ALLIANCE, Watchlist::KICKLIST_ALLIANCE, Watchlist::ALLOWLIST_ALLIANCE]
+            [Watchlist::ALLIANCE, Watchlist::KICKLIST_ALLIANCE, Watchlist::ALLOWLIST_ALLIANCE],
         )) {
             $entity = $this->repositoryFactory->getAllianceRepository()->find($entityId);
         } elseif ($type === Watchlist::GROUP || $type === Watchlist::MANAGER_GROUP) {

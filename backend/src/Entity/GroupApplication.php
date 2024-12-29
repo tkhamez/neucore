@@ -12,11 +12,11 @@ use OpenApi\Attributes as OA;
 #[ORM\Table(
     name: "group_applications",
     uniqueConstraints: [new ORM\UniqueConstraint(name: "player_group_idx", columns: ["player_id", "group_id"])],
-    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"]
+    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"],
 )]
 #[OA\Schema(
     description: 'The player property contains only id and name.',
-    required: ['id', 'player', 'group', 'created']
+    required: ['id', 'player', 'group', 'created'],
 )]
 class GroupApplication implements \JsonSerializable
 {

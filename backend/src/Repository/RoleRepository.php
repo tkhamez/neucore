@@ -19,6 +19,4 @@ use Neucore\Entity\Role;
  *
  * @psalm-suppress MissingTemplateParam
  */
-class RoleRepository extends EntityRepository
-{
-}
+class RoleRepository extends EntityRepository {}

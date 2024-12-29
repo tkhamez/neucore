@@ -23,8 +23,7 @@ class EsiClient implements EsiClientInterface
         private EsiClientService           $esiClient,
         private HttpClientFactoryInterface $httpClientFactory,
         private StorageInterface           $storage,
-    ) {
-    }
+    ) {}
 
     public function getErrorLimitRemaining(): int
     {
@@ -63,7 +62,7 @@ class EsiClient implements EsiClientInterface
             $response = $this->httpClientFactory->createResponse(
                 500, // status
                 [], // header
-                $e->getMessage() // body
+                $e->getMessage(), // body
             );
         }
 

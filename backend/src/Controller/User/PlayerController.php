@@ -35,8 +35,8 @@ use Psr\Log\LoggerInterface;
         new OA\Property(
             property: 'characters',
             type: 'array',
-            items: new OA\Items(ref: '#/components/schemas/Character')
-        )
+            items: new OA\Items(ref: '#/components/schemas/Character'),
+        ),
     ],
 )]
 #[OA\Schema(
@@ -44,7 +44,7 @@ use Psr\Log\LoggerInterface;
     required: ['withDelay', 'withoutDelay'],
     properties: [
         new OA\Property(property: 'withDelay', type: 'boolean'),
-        new OA\Property(property: 'withoutDelay', type: 'boolean')
+        new OA\Property(property: 'withoutDelay', type: 'boolean'),
     ],
 )]
 class PlayerController extends BaseController
@@ -84,7 +84,7 @@ class PlayerController extends BaseController
         RepositoryFactory $repositoryFactory,
         LoggerInterface $log,
         UserAuth $userAuth,
-        Account $account
+        Account $account,
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
 
@@ -104,9 +104,9 @@ class PlayerController extends BaseController
             new OA\Response(
                 response: '200',
                 description: 'The player information.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Player')
+                content: new OA\JsonContent(ref: '#/components/schemas/Player'),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function show(): ResponseInterface
@@ -125,9 +125,9 @@ class PlayerController extends BaseController
             new OA\Response(
                 response: '200',
                 description: 'True if groups are disabled, otherwise false.',
-                content: new OA\JsonContent(ref: '#/components/schemas/GroupsDisabled')
+                content: new OA\JsonContent(ref: '#/components/schemas/GroupsDisabled'),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function groupsDisabled(AccountGroup $accountGroupService): ResponseInterface
@@ -153,25 +153,25 @@ class PlayerController extends BaseController
                 description: 'ID of the player.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'True if groups are disabled, otherwise false.',
-                content: new OA\JsonContent(ref: '#/components/schemas/GroupsDisabled')
+                content: new OA\JsonContent(ref: '#/components/schemas/GroupsDisabled'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Player not found.')
+            new OA\Response(response: '404', description: 'Player not found.'),
         ],
     )]
     public function groupsDisabledById(
         string $id,
         UserAuth $userAuth,
-        AccountGroup $accountGroupService
+        AccountGroup $accountGroupService,
     ): ResponseInterface {
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int)$id);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
         if ($player === null) {
             return $this->response->withStatus(404);
@@ -204,20 +204,20 @@ class PlayerController extends BaseController
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Application submitted.'),
             new OA\Response(response: '400', description: 'This player is not allowed to be a member of the group.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group not found.')
+            new OA\Response(response: '404', description: 'Group not found.'),
         ],
     )]
     public function addApplication(string $gid): ResponseInterface
     {
         // players can only apply to public groups
-        $criteria = ['id' => (int)$gid, 'visibility' => Group::VISIBILITY_PUBLIC];
+        $criteria = ['id' => (int) $gid, 'visibility' => Group::VISIBILITY_PUBLIC];
         $group = $this->repositoryFactory->getGroupRepository()->findOneBy($criteria);
         if ($group === null) {
             return $this->response->withStatus(404);
@@ -232,7 +232,7 @@ class PlayerController extends BaseController
         // update existing or create new application
         $groupApplication = $this->repositoryFactory->getGroupApplicationRepository()->findOneBy([
             self::COLUMN_PLAYER => $player->getId(),
-            self::COLUMN_GROUP => $group->getId()
+            self::COLUMN_GROUP => $group->getId(),
         ]);
         if (!$groupApplication) {
             $groupApplication = new GroupApplication();
@@ -267,20 +267,20 @@ class PlayerController extends BaseController
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Application canceled.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Application not found.')
+            new OA\Response(response: '404', description: 'Application not found.'),
         ],
     )]
     public function removeApplication(string $gid): ResponseInterface
     {
         $groupApplications = $this->repositoryFactory->getGroupApplicationRepository()->findBy([
             self::COLUMN_PLAYER => $this->getUser($this->userAuth)->getPlayer()->getId(),
-            self::COLUMN_GROUP => (int)$gid
+            self::COLUMN_GROUP => (int) $gid,
         ]);
 
         if (empty($groupApplications)) {
@@ -307,16 +307,16 @@ class PlayerController extends BaseController
                 description: 'The group applications.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/GroupApplication')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/GroupApplication'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function showApplications(): ResponseInterface
     {
         $groupApplications = $this->repositoryFactory->getGroupApplicationRepository()->findBy([
-            self::COLUMN_PLAYER => $this->getUser($this->userAuth)->getPlayer()->getId()
+            self::COLUMN_PLAYER => $this->getUser($this->userAuth)->getPlayer()->getId(),
         ]);
 
         return $this->withJson($groupApplications);
@@ -335,18 +335,18 @@ class PlayerController extends BaseController
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group left.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group not found.')
+            new OA\Response(response: '404', description: 'Group not found.'),
         ],
     )]
     public function leaveGroup(string $gid, AccountGroup $accountGroup): ResponseInterface
     {
-        $group = $this->repositoryFactory->getGroupRepository()->findOneBy(['id' => (int)$gid]);
+        $group = $this->repositoryFactory->getGroupRepository()->findOneBy(['id' => (int) $gid]);
         if ($group === null) {
             return $this->response->withStatus(404);
         }
@@ -371,17 +371,17 @@ class PlayerController extends BaseController
                 description: 'Character ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'The main character.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Character')
+                content: new OA\JsonContent(ref: '#/components/schemas/Character'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Character not found on this account.')
+            new OA\Response(response: '404', description: 'Character not found on this account.'),
         ],
     )]
     public function setMain(string $cid): ResponseInterface
@@ -389,7 +389,7 @@ class PlayerController extends BaseController
         $main = null;
         $player = $this->getUser($this->userAuth)->getPlayer();
         foreach ($player->getCharacters() as $char) {
-            if ($char->getId() === (int)$cid) {
+            if ($char->getId() === (int) $cid) {
                 $char->setMain(true);
                 $main = $char;
                 $player->setName($main->getName());
@@ -418,33 +418,33 @@ class PlayerController extends BaseController
                 description: 'ID of the player.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'status',
                 description: 'The new status.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string', enum: ['standard', 'managed'])
+                schema: new OA\Schema(type: 'string', enum: ['standard', 'managed']),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Status changed.'),
             new OA\Response(response: '400', description: 'Invalid player or status.'),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function setStatus(
         string $id,
         string $status,
         Account $account,
-        AccountGroup $accountGroup
+        AccountGroup $accountGroup,
     ): ResponseInterface {
         $validStatus = [
             Player::STATUS_STANDARD,
             Player::STATUS_MANAGED,
         ];
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int)$id);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
         if (! in_array($status, $validStatus) || !$player) {
             return $this->response->withStatus(400);
         }
@@ -475,9 +475,9 @@ class PlayerController extends BaseController
             new OA\Response(
                 response: '200',
                 description: 'List of players ordered by name. Only id and name properties are returned.',
-                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player'))
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player')),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function withCharacters(): ResponseInterface
@@ -496,9 +496,9 @@ class PlayerController extends BaseController
             new OA\Response(
                 response: '200',
                 description: 'List of players ordered by name. Only id and name properties are returned.',
-                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player'))
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player')),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function withoutCharacters(): ResponseInterface
@@ -517,9 +517,9 @@ class PlayerController extends BaseController
             new OA\Response(
                 response: '200',
                 description: 'List of players ordered by name. Only id and name properties are returned.',
-                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player'))
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player')),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function appManagers(): ResponseInterface
@@ -538,9 +538,9 @@ class PlayerController extends BaseController
             new OA\Response(
                 response: '200',
                 description: 'List of players ordered by name. Only id and name properties are returned.',
-                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player'))
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player')),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function groupManagers(): ResponseInterface
@@ -565,18 +565,18 @@ class PlayerController extends BaseController
                     type: 'string',
                     enum: ['user', 'user-admin', 'user-manager', 'user-chars', 'group-admin', 'group-manager',
                         'plugin-admin', 'app-admin', 'app-manager', 'esi', 'settings', 'tracking', 'tracking-admin',
-                        'watchlist', 'watchlist-manager', 'watchlist-admin']
-                )
+                        'watchlist', 'watchlist-manager', 'watchlist-admin'],
+                ),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'List of players ordered by name. Only id and name properties are returned.',
-                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player'))
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player')),
             ),
             new OA\Response(response: '400', description: 'Invalid role name.'),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function withRole(string $name): ResponseInterface
@@ -618,17 +618,17 @@ class PlayerController extends BaseController
                 description: 'Status name.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string', enum: ['standard', 'managed'])
+                schema: new OA\Schema(type: 'string', enum: ['standard', 'managed']),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'List of players ordered by name. Only id and name properties are returned.',
-                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player'))
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Player')),
             ),
             new OA\Response(response: '400', description: 'Invalid status name.'),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function withStatus(string $name): ResponseInterface
@@ -653,7 +653,7 @@ class PlayerController extends BaseController
                 description: 'ID of the player.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'name',
@@ -663,19 +663,19 @@ class PlayerController extends BaseController
                 schema: new OA\Schema(
                     type: 'string',
                     enum: ['app-admin', 'user-manager', 'user-chars', 'group-admin', 'plugin-admin',
-                        'user-admin', 'app-admin', 'esi', 'settings', 'tracking-admin', 'watchlist-admin']
-                )
+                        'user-admin', 'app-admin', 'esi', 'settings', 'tracking-admin', 'watchlist-admin'],
+                ),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Role added.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Player and/or role not found or invalid.')
+            new OA\Response(response: '404', description: 'Player and/or role not found or invalid.'),
         ],
     )]
     public function addRole(string $id, string $name): ResponseInterface
     {
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int)$id);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
 
         if (!$player || !$role || !in_array($role->getName(), $this->assignableRoles)) {
@@ -706,7 +706,7 @@ class PlayerController extends BaseController
                 description: 'ID of the player.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'name',
@@ -716,19 +716,19 @@ class PlayerController extends BaseController
                 schema: new OA\Schema(
                     type: 'string',
                     enum: ['app-admin', 'user-manager', 'user-chars', 'group-admin', 'plugin-admin',
-                        'user-admin', 'app-admin', 'esi', 'settings', 'tracking-admin', 'watchlist-admin']
-                )
+                        'user-admin', 'app-admin', 'esi', 'settings', 'tracking-admin', 'watchlist-admin'],
+                ),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Role removed.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Player and/or role not found or invalid.')
+            new OA\Response(response: '404', description: 'Player and/or role not found or invalid.'),
         ],
     )]
     public function removeRole(string $id, string $name): ResponseInterface
     {
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int)$id);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
 
         if (!$player || !$role || ! in_array($role->getName(), $this->assignableRoles)) {
@@ -753,7 +753,7 @@ class PlayerController extends BaseController
                 description: 'ID of the player.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -761,15 +761,15 @@ class PlayerController extends BaseController
                 response: '200',
                 description: 'The player (this includes the removedCharacters, incomingCharacters and ' .
                     'serviceAccounts properties).',
-                content: new OA\JsonContent(ref: '#/components/schemas/Player')
+                content: new OA\JsonContent(ref: '#/components/schemas/Player'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Player not found.')
+            new OA\Response(response: '404', description: 'Player not found.'),
         ],
     )]
     public function showById(string $id, PluginService $pluginService): ResponseInterface
     {
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int)$id);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
         if ($player === null) {
             return $this->response->withStatus(404);
@@ -799,25 +799,25 @@ class PlayerController extends BaseController
                 description: 'ID of the player.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'The player.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Player')
+                content: new OA\JsonContent(ref: '#/components/schemas/Player'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Player not found.')
+            new OA\Response(response: '404', description: 'Player not found.'),
         ],
     )]
     public function characters(
         string $id,
         UserAuth $userAuth,
-        PluginService $pluginService
+        PluginService $pluginService,
     ): ResponseInterface {
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int)$id);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
         if ($player === null) {
             return $this->response->withStatus(404);
@@ -852,7 +852,7 @@ class PlayerController extends BaseController
         requestBody: new OA\RequestBody(
             description: 'List of character names, one per line.',
             required: true,
-            content: new OA\MediaType(mediaType: 'text/plain', schema: new OA\Schema(type: 'string'))
+            content: new OA\MediaType(mediaType: 'text/plain', schema: new OA\Schema(type: 'string')),
         ),
         tags: ['Player'],
         responses: [
@@ -861,10 +861,10 @@ class PlayerController extends BaseController
                 description: 'List of character groups, only the id and name properties will be included.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/CharacterGroup')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/CharacterGroup'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function groupCharactersByAccount(ServerRequestInterface $request): ResponseInterface
@@ -925,7 +925,7 @@ class PlayerController extends BaseController
                 description: 'ID of the character.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'admin-reason',
@@ -934,21 +934,21 @@ class PlayerController extends BaseController
                 in: 'query',
                 schema: new OA\Schema(
                     type: 'string',
-                    enum: ['deleted-owner-changed', 'deleted-lost-access', 'deleted-manually', 'deleted-by-admin']
-                )
+                    enum: ['deleted-owner-changed', 'deleted-lost-access', 'deleted-manually', 'deleted-by-admin'],
+                ),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Character was deleted.'),
             new OA\Response(response: '403', description: 'Not authorized or feature disabled.'),
             new OA\Response(response: '404', description: 'Character not found.'),
-            new OA\Response(response: '409', description: 'Trying to delete logged-in character.')
+            new OA\Response(response: '409', description: 'Trying to delete logged-in character.'),
         ],
     )]
     public function deleteCharacter(
         string $id,
         ServerRequestInterface $request,
-        Account $accountService
+        Account $accountService,
     ): ResponseInterface {
         $reason = $this->getQueryParam($request, 'admin-reason', '');
         $authPlayer = $this->getUser($this->userAuth)->getPlayer();
@@ -957,7 +957,7 @@ class PlayerController extends BaseController
         // check "allow deletion" settings
         if (!$admin) {
             $allowDeletion = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
-                ['name' => SystemVariable::ALLOW_CHARACTER_DELETION]
+                ['name' => SystemVariable::ALLOW_CHARACTER_DELETION],
             );
             if ($allowDeletion && $allowDeletion->getValue() === '0') {
                 return $this->response->withStatus(403);
@@ -965,12 +965,12 @@ class PlayerController extends BaseController
         }
 
         // check if character to delete is logged in
-        if ((int)$id === $this->getUser($this->userAuth)->getId()) {
+        if ((int) $id === $this->getUser($this->userAuth)->getId()) {
             return $this->response->withStatus(409);
         }
 
         // get character to delete
-        $char = $this->repositoryFactory->getCharacterRepository()->find((int)$id);
+        $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
         $player = $char?->getPlayer();
         if ($char === null || $player === null) {
             return $this->response->withStatus(404);
@@ -1006,7 +1006,7 @@ class PlayerController extends BaseController
     {
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $roleName]);
         if ($role === null) {
-            $this->log->critical('PlayerController->getManagers(): role "'.$roleName.'" not found.');
+            $this->log->critical('PlayerController->getManagers(): role "' . $roleName . '" not found.');
             return $this->withJson([]);
         }
 
@@ -1044,7 +1044,7 @@ class PlayerController extends BaseController
         $roles = $this->getUser($userAuth)->getPlayer()->getRoleNames();
         $neededRolesExceptTrackingAndWatchlist = array_intersect(
             $roles,
-            [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER_MANAGER, Role::USER_CHARS]
+            [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER_MANAGER, Role::USER_CHARS],
         );
         if (
             (in_array(Role::TRACKING, $roles) || in_array(Role::WATCHLIST, $roles)) &&

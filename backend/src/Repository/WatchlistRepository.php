@@ -14,6 +14,4 @@ use Neucore\Entity\Watchlist;
  *
  * @psalm-suppress MissingTemplateParam
  */
-class WatchlistRepository extends EntityRepository
-{
-}
+class WatchlistRepository extends EntityRepository {}

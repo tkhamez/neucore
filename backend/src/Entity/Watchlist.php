@@ -136,7 +136,7 @@ class Watchlist implements \JsonSerializable
 
     public function getId(): int
     {
-        return (int)$this->id;
+        return (int) $this->id;
     }
 
     public function setName(string $name): Watchlist

@@ -29,18 +29,18 @@ class SettingsEveLoginController extends BaseController
                 description: 'The new login name.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$')
+                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '201',
                 description: 'The new login.',
-                content: new OA\JsonContent(ref: '#/components/schemas/EveLogin')
+                content: new OA\JsonContent(ref: '#/components/schemas/EveLogin'),
             ),
             new OA\Response(response: '400', description: 'Login name is invalid.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '409', description: 'A login with this ID already exists.')
+            new OA\Response(response: '409', description: 'A login with this ID already exists.'),
         ],
     )]
     public function create(string $name): ResponseInterface
@@ -73,19 +73,19 @@ class SettingsEveLoginController extends BaseController
                 description: 'The login ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$')
+                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Login was deleted.'),
             new OA\Response(response: '400', description: 'Protected login.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Login not found.')
+            new OA\Response(response: '404', description: 'Login not found.'),
         ],
     )]
     public function delete(string $id): ResponseInterface
     {
-        $login = $this->repositoryFactory->getEveLoginRepository()->find((int)$id);
+        $login = $this->repositoryFactory->getEveLoginRepository()->find((int) $id);
         if (!$login) {
             return $this->response->withStatus(404);
         }
@@ -112,7 +112,7 @@ class SettingsEveLoginController extends BaseController
                 description: 'The login ID. The default login is not allowed.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$')
+                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$'),
             ),
         ],
         responses: [
@@ -121,16 +121,16 @@ class SettingsEveLoginController extends BaseController
                 description: 'List of tokens.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/EsiToken')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/EsiToken'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Login not found.')
+            new OA\Response(response: '404', description: 'Login not found.'),
         ],
     )]
     public function tokens(string $id): ResponseInterface
     {
-        $login = $this->repositoryFactory->getEveLoginRepository()->find((int)$id);
+        $login = $this->repositoryFactory->getEveLoginRepository()->find((int) $id);
         if (!$login) {
             return $this->response->withStatus(404);
         }
@@ -160,10 +160,10 @@ class SettingsEveLoginController extends BaseController
                 description: 'List of logins.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/EveLogin')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/EveLogin'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function list(): ResponseInterface
@@ -183,19 +183,19 @@ class SettingsEveLoginController extends BaseController
             required: true,
             content: new OA\MediaType(
                 mediaType: 'application/json',
-                schema: new OA\Schema(ref: '#/components/schemas/EveLogin')
-            )
+                schema: new OA\Schema(ref: '#/components/schemas/EveLogin'),
+            ),
         ),
         tags: ['Settings'],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'The updated login.',
-                content: new OA\JsonContent(ref: '#/components/schemas/EveLogin')
+                content: new OA\JsonContent(ref: '#/components/schemas/EveLogin'),
             ),
             new OA\Response(response: '400', description: 'Invalid body or invalid login name.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Login not found.')
+            new OA\Response(response: '404', description: 'Login not found.'),
         ],
     )]
     public function update(ServerRequestInterface $request): ResponseInterface
@@ -205,7 +205,7 @@ class SettingsEveLoginController extends BaseController
             return $this->response->withStatus(400);
         }
 
-        $login = $this->repositoryFactory->getEveLoginRepository()->find((int)$data->id);
+        $login = $this->repositoryFactory->getEveLoginRepository()->find((int) $data->id);
         if (!$login) {
             return $this->response->withStatus(404);
         }
@@ -236,8 +236,8 @@ class SettingsEveLoginController extends BaseController
             new OA\Response(
                 response: '200',
                 description: 'List of roles.',
-                content: new OA\JsonContent(type: 'array', items: new OA\Items(type: 'string'))
-            )
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(type: 'string')),
+            ),
         ],
     )]
     public function roles(): ResponseInterface

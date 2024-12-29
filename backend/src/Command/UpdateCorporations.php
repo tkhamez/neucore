@@ -47,7 +47,7 @@ class UpdateCorporations extends Command
         EsiData $esiData,
         EntityManager $entityManager,
         LoggerInterface $logger,
-        StorageInterface $storage
+        StorageInterface $storage,
     ) {
         parent::__construct();
         $this->logOutput($logger);
@@ -69,7 +69,7 @@ class UpdateCorporations extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each update',
-                $this->sleep
+                $this->sleep,
             );
         $this->configureLogOutput($this);
     }
@@ -115,9 +115,9 @@ class UpdateCorporations extends Command
 
                 $updatedCorp = $this->esiData->fetchCorporation($corpId);
                 if ($updatedCorp === null) {
-                    $this->writeLine('  Corporation ' . $corpId.': ' . self::UPDATE_NOK);
+                    $this->writeLine('  Corporation ' . $corpId . ': ' . self::UPDATE_NOK);
                 } else {
-                    $this->writeLine('  Corporation ' . $corpId.': ' . self::UPDATE_OK);
+                    $this->writeLine('  Corporation ' . $corpId . ': ' . self::UPDATE_OK);
                 }
 
                 usleep($this->sleep * 1000);
@@ -141,9 +141,9 @@ class UpdateCorporations extends Command
 
             $updatedAlli = $this->esiData->fetchAlliance($alliId);
             if ($updatedAlli === null) {
-                $this->writeLine('  Alliance ' . $alliId.': ' . self::UPDATE_NOK);
+                $this->writeLine('  Alliance ' . $alliId . ': ' . self::UPDATE_NOK);
             } else {
-                $this->writeLine('  Alliance ' . $alliId.': ' . self::UPDATE_OK);
+                $this->writeLine('  Alliance ' . $alliId . ': ' . self::UPDATE_OK);
             }
 
             usleep($this->sleep * 1000);

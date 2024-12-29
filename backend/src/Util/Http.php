@@ -43,10 +43,10 @@ abstract class Http
         }
 
         $parts = explode(':', $decoded);
-        if (!is_numeric($parts[0]) || (string)(int)$parts[0] !== $parts[0]) {
+        if (!is_numeric($parts[0]) || (string) (int) $parts[0] !== $parts[0]) {
             return null;
         }
 
-        return (int)$parts[0];
+        return (int) $parts[0];
     }
 }

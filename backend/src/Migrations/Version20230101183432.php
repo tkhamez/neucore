@@ -15,7 +15,7 @@ class Version20230101183432 extends AbstractMigration
     {
         $this->connection->executeQuery(
             "UPDATE system_variables SET name = ? WHERE name = ?",
-            ['allow_login_no_scopes', 'allow_login_managed']
+            ['allow_login_no_scopes', 'allow_login_managed'],
         );
     }
 
@@ -23,7 +23,7 @@ class Version20230101183432 extends AbstractMigration
     {
         $this->connection->executeQuery(
             "UPDATE system_variables SET name = ? WHERE name = ?",
-            ['allow_login_managed', 'allow_login_no_scopes']
+            ['allow_login_managed', 'allow_login_no_scopes'],
         );
     }
 }

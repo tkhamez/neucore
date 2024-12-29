@@ -9,10 +9,10 @@ trait DateHelper
      */
     private function getDateNumber(int $time, int $mode = 1): int
     {
-        $year = (int)date('Y', $time);
-        $month = (int)date('m', $time);
-        $day = (int)date('j', $time);
-        $hour = (int)date('G', $time);
+        $year = (int) date('Y', $time);
+        $month = (int) date('m', $time);
+        $day = (int) date('j', $time);
+        $hour = (int) date('G', $time);
 
         if ($mode === 3) {
             // e.g. 2022081817 (2022-08-18 17:00:00)

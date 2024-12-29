@@ -14,6 +14,4 @@ use Neucore\Entity\EveLogin;
  *
  * @psalm-suppress MissingTemplateParam
  */
-class EveLoginRepository extends EntityRepository
-{
-}
+class EveLoginRepository extends EntityRepository {}

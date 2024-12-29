@@ -161,17 +161,17 @@ class CorporationMemberRepository extends EntityRepository
                 'e.validTokenTime',
                 'e.lastChecked',
                 'p.id AS playerId',
-                'p.name AS playerName'
+                'p.name AS playerName',
             ])
             ->where('m.corporation = :corporation_id')
             ->orderBy('m.logonDate', 'DESC')
             ->setParameter('loginName', EveLogin::NAME_DEFAULT)
             ->setParameter('corporation_id', $corporationId);
 
-        if ($this->active > 0 && ($activeDate = date_create(self::NOW.' -'.$this->active.' '.self::DAYS))) {
+        if ($this->active > 0 && ($activeDate = date_create(self::NOW . ' -' . $this->active . ' ' . self::DAYS))) {
             $qb->andWhere('m.logonDate >= :active')->setParameter('active', $activeDate->format(self::DATE_FORMAT));
         }
-        if ($this->inactive > 0 && ($inactiveDate = date_create(self::NOW.' -'.$this->inactive.' '.self::DAYS))) {
+        if ($this->inactive > 0 && ($inactiveDate = date_create(self::NOW . ' -' . $this->inactive . ' ' . self::DAYS))) {
             $qb->andWhere('m.logonDate < :inactive')
                 ->setParameter('inactive', $inactiveDate->format(self::DATE_FORMAT));
         }
@@ -192,7 +192,7 @@ class CorporationMemberRepository extends EntityRepository
         }
         if (
             $this->tokenChanged > 0 &&
-            ($tokenChangedDate = date_create(self::NOW.' -'.$this->tokenChanged.' '.self::DAYS))
+            ($tokenChangedDate = date_create(self::NOW . ' -' . $this->tokenChanged . ' ' . self::DAYS))
         ) {
             $qb->andWhere('e.validTokenTime < :tokenChanged')
                 ->setParameter('tokenChanged', $tokenChangedDate->format(self::DATE_FORMAT));
@@ -205,7 +205,7 @@ class CorporationMemberRepository extends EntityRepository
 
         return array_map(function ($r) {
             $member = (new CorporationMember())
-                ->setId((int)$r['id'])
+                ->setId((int) $r['id'])
                 ->setName($r['name'])
             ;
             if ($r['logoffDate']) {
@@ -225,16 +225,16 @@ class CorporationMemberRepository extends EntityRepository
 
             if ($r['locationId']) {
                 $location = (new EsiLocation())
-                    ->setId((int)$r['locationId'])
-                    ->setName((string)$r['locationName'])
+                    ->setId((int) $r['locationId'])
+                    ->setName((string) $r['locationName'])
                     ->setCategory($r['locationCategory']);
                 $member->setLocation($location);
             }
 
             if ($r['shipId']) {
                 $ship = (new EsiType())
-                    ->setId((int)$r['shipId'])
-                    ->setName((string)$r['shipName']);
+                    ->setId((int) $r['shipId'])
+                    ->setName((string) $r['shipName']);
                 $member->setShipType($ship);
             }
 
@@ -243,7 +243,7 @@ class CorporationMemberRepository extends EntityRepository
                 $defaultToken = (new EsiToken())->setEveLogin($eveLogin);
                 $defaultToken->setValidToken($r['validToken'] !== null ? (bool) $r['validToken'] : null);
                 $character = (new Character())
-                    ->setId((int)$r['characterId'])
+                    ->setId((int) $r['characterId'])
                     ->setName($r['characterName'])
                     ->setMain((bool) $r['main'])
                     ->addEsiToken($defaultToken);
@@ -263,7 +263,7 @@ class CorporationMemberRepository extends EntityRepository
 
                 if ($r['playerId']) {
                     $player = (new Player())
-                        ->setId((int)$r['playerId'])
+                        ->setId((int) $r['playerId'])
                         ->setName($r['playerName']);
                     $character->setPlayer($player);
                 }
@@ -295,7 +295,7 @@ class CorporationMemberRepository extends EntityRepository
         array $corporationIds,
         int $loginDays,
         ?int $dbResultLimit = null,
-        int $offset = 0
+        int $offset = 0,
     ): array {
         if (empty($corporationIds)) {
             return [];
@@ -304,7 +304,7 @@ class CorporationMemberRepository extends EntityRepository
             return [];
         }
 
-        $minLoginDate = date_create(self::NOW.' -'.$loginDays.' '.self::DAYS);
+        $minLoginDate = date_create(self::NOW . ' -' . $loginDays . ' ' . self::DAYS);
         if (!$minLoginDate) {
             return [];
         }
@@ -336,7 +336,7 @@ class CorporationMemberRepository extends EntityRepository
             ->getResult();
 
         return array_map(function ($corporation) {
-            return (int)$corporation['id'];
+            return (int) $corporation['id'];
         }, $corporations);
     }
 }

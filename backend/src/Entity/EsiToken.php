@@ -15,9 +15,9 @@ use OpenApi\Attributes as OA;
 #[ORM\Table(
     name: "esi_tokens",
     uniqueConstraints: [
-        new ORM\UniqueConstraint(name: "character_eve_login_idx", columns: ["character_id", "eve_login_id"])
+        new ORM\UniqueConstraint(name: "character_eve_login_idx", columns: ["character_id", "eve_login_id"]),
     ],
-    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"]
+    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"],
 )]
 #[OA\Schema(
     required: ['eveLoginId', 'characterId', 'playerId', 'validToken', 'validTokenTime', 'hasRoles'],
@@ -25,8 +25,8 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'eveLoginId', description: 'ID of EveLogin', type: 'integer'),
         new OA\Property(property: 'characterId', description: 'ID of Character', type: 'integer'),
         new OA\Property(property: 'playerId', description: 'ID of Player', type: 'integer'),
-        new OA\Property(property: 'playerName', description: 'Name of Player', type: 'string')
-    ]
+        new OA\Property(property: 'playerName', description: 'Name of Player', type: 'string'),
+    ],
 )]
 class EsiToken implements \JsonSerializable
 {
@@ -156,7 +156,7 @@ class EsiToken implements \JsonSerializable
 
     public function getRefreshToken(): string
     {
-        return (string)$this->refreshToken;
+        return (string) $this->refreshToken;
     }
 
     public function setAccessToken(string $accessToken): self
@@ -167,7 +167,7 @@ class EsiToken implements \JsonSerializable
 
     public function getAccessToken(): string
     {
-        return (string)$this->accessToken;
+        return (string) $this->accessToken;
     }
 
     public function setExpires(int $expires): self

@@ -20,8 +20,8 @@ class Version20180218160551 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('UPDATE roles SET name = "'.Role::USER.'" WHERE id = 1');
-        $this->addSql('UPDATE roles SET name = "'.Role::APP.'" WHERE id = 2');
+        $this->addSql('UPDATE roles SET name = "' . Role::USER . '" WHERE id = 1');
+        $this->addSql('UPDATE roles SET name = "' . Role::APP . '" WHERE id = 2');
     }
 
     /**

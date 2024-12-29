@@ -33,9 +33,9 @@ use Psr\Log\LoggerInterface;
             property: 'status',
             type: 'string',
             enum: ['Pending', 'Active', 'Deactivated', 'Unknown'],
-            nullable: true
+            nullable: true,
         ),
-        new OA\Property(property: 'name', type: 'string', nullable: true)
+        new OA\Property(property: 'name', type: 'string', nullable: true),
     ],
 )]
 class ServiceController extends BaseController
@@ -57,7 +57,7 @@ class ServiceController extends BaseController
         LoggerInterface   $log,
         PluginService     $pluginService,
         UserAuth          $userAuth,
-        AccountGroup      $accountGroup
+        AccountGroup      $accountGroup,
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
         $this->log = $log;
@@ -79,22 +79,22 @@ class ServiceController extends BaseController
                 description: 'ID of the service.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'The service.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Plugin')
+                content: new OA\JsonContent(ref: '#/components/schemas/Plugin'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Service not found.')
+            new OA\Response(response: '404', description: 'Service not found.'),
         ],
     )]
     public function get(string $id): ResponseInterface
     {
-        $plugin = $this->getPlugin((int)$id);
+        $plugin = $this->getPlugin((int) $id);
         if (!$plugin) {
             return $this->response->withStatus($this->responseErrorCode);
         }
@@ -115,7 +115,7 @@ class ServiceController extends BaseController
                 description: 'Service ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -124,17 +124,17 @@ class ServiceController extends BaseController
                 description: 'The player property contains only the id and name.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/ServiceAccountData')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/ServiceAccountData'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Service not found.'),
-            new OA\Response(response: '500', description: 'In the event of an error when retrieving accounts.')
+            new OA\Response(response: '500', description: 'In the event of an error when retrieving accounts.'),
         ],
     )]
     public function accounts(string $id, UserAuth $userAuth): ResponseInterface
     {
-        $serviceImplementation = $this->getPluginAndServiceImplementation((int)$id);
+        $serviceImplementation = $this->getPluginAndServiceImplementation((int) $id);
         if (!$serviceImplementation) {
             return $this->response->withStatus($this->responseErrorCode);
         }
@@ -142,7 +142,7 @@ class ServiceController extends BaseController
         try {
             $accountData = $this->pluginService->getAccounts(
                 $serviceImplementation,
-                $this->getUser($userAuth)->getPlayer()->getCharacters()
+                $this->getUser($userAuth)->getPlayer()->getCharacters(),
             );
         } catch (Exception) {
             return $this->response->withStatus(500);
@@ -166,12 +166,12 @@ class ServiceController extends BaseController
                             property: 'email',
                             description: 'E-mail address.',
                             type: 'string',
-                            maxLength: 255
-                        )
+                            maxLength: 255,
+                        ),
                     ],
                     type: 'object',
-                )
-            )
+                ),
+            ),
         ),
         tags: ['Service'],
         parameters: [
@@ -180,23 +180,23 @@ class ServiceController extends BaseController
                 description: 'Service ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'Registered successfully.',
-                content: new OA\JsonContent(ref: '#/components/schemas/ServiceAccountData')
+                content: new OA\JsonContent(ref: '#/components/schemas/ServiceAccountData'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Service not found.'),
             new OA\Response(
                 response: '409',
                 description: 'Different errors, see body text.',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
-            new OA\Response(response: '500', description: 'Registration failed.')
+            new OA\Response(response: '500', description: 'Registration failed.'),
         ],
     )]
     public function register(string $id, ServerRequestInterface $request, UserAuth $userAuth): ResponseInterface
@@ -210,7 +210,7 @@ class ServiceController extends BaseController
             return $this->withJson('no_main', 409);
         }
 
-        $plugin = $this->getPlugin((int)$id);
+        $plugin = $this->getPlugin((int) $id);
         if (!$plugin) {
             return $this->response->withStatus($this->responseErrorCode);
         }
@@ -240,7 +240,7 @@ class ServiceController extends BaseController
                 // for example for services that do not support account updates.
                 !in_array(
                     $accounts[0]->getStatus(),
-                    [ServiceAccountData::STATUS_DEACTIVATED, ServiceAccountData::STATUS_UNKNOWN]
+                    [ServiceAccountData::STATUS_DEACTIVATED, ServiceAccountData::STATUS_UNKNOWN],
                 )
             )
         ) {
@@ -252,7 +252,7 @@ class ServiceController extends BaseController
                 $main->toCoreCharacter(),
                 $this->accountGroup->getCoreGroups($player),
                 $emailAddress,
-                $player->getCharactersId()
+                $player->getCharactersId(),
             );
         } catch (Exception $e) {
             if ($e->getMessage() !== '') {
@@ -277,14 +277,14 @@ class ServiceController extends BaseController
                 description: 'Service ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'characterId',
                 description: "A character ID from the player's account.",
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -292,20 +292,20 @@ class ServiceController extends BaseController
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(
                 response: '404',
-                description: "Service, character or character's service account not found."
+                description: "Service, character or character's service account not found.",
             ),
             new OA\Response(
                 response: '409',
                 description: 'Different errors, see body text.',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
-            new OA\Response(response: '500', description: 'Error during update.')
+            new OA\Response(response: '500', description: 'Error during update.'),
         ],
     )]
     public function updateAccount(string $id, string $characterId, UserAuth $userAuth): ResponseInterface
     {
-        $serviceImplementation = $this->getPluginAndServiceImplementation((int)$id);
-        $validCharacter = $this->validateCharacter((int)$characterId, $userAuth);
+        $serviceImplementation = $this->getPluginAndServiceImplementation((int) $id);
+        $validCharacter = $this->validateCharacter((int) $characterId, $userAuth);
         if (!$serviceImplementation || !$validCharacter) {
             return $this->response->withStatus($this->responseErrorCode);
         }
@@ -340,17 +340,17 @@ class ServiceController extends BaseController
                 description: 'The player ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'Account(s) updated.',
-                content: new OA\JsonContent(type: 'integer')
+                content: new OA\JsonContent(type: 'integer'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Player not found.')
+            new OA\Response(response: '404', description: 'Player not found.'),
         ],
     )]
     public function updateAllAccounts(string $playerId): ResponseInterface
@@ -360,7 +360,7 @@ class ServiceController extends BaseController
         // this does not return any data, otherwise this would need to check permissions like it's done
         // for /user/player/{id}/characters.
 
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int)$playerId);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
         if (!$player) {
             return $this->response->withStatus(404);
         }
@@ -384,37 +384,37 @@ class ServiceController extends BaseController
                 description: 'Service ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'characterId',
                 description: "A character ID from the player's account.",
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'Password changed, returns the new password.',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(
                 response: '404',
-                description: "Service, character or character's service account not found."
+                description: "Service, character or character's service account not found.",
             ),
-            new OA\Response(response: '500', description: 'Password change failed.')
+            new OA\Response(response: '500', description: 'Password change failed.'),
         ],
     )]
     public function resetPassword(string $id, string $characterId, UserAuth $userAuth): ResponseInterface
     {
-        $serviceImplementation = $this->getPluginAndServiceImplementation((int)$id);
+        $serviceImplementation = $this->getPluginAndServiceImplementation((int) $id);
         if (!$serviceImplementation) {
             return $this->response->withStatus($this->responseErrorCode);
         }
-        $account = $this->validateCharacterAndGetAccount($serviceImplementation, (int)$characterId, $userAuth);
+        $account = $this->validateCharacterAndGetAccount($serviceImplementation, (int) $characterId, $userAuth);
         if (!$account) {
             return $this->response->withStatus($this->responseErrorCode);
         }
@@ -460,7 +460,7 @@ class ServiceController extends BaseController
         if (!$serviceImplementation instanceof ServiceInterface) {
             $this->log->error(
                 "ServiceController: The configured service class does not exist or does not implement " .
-                "Neucore\Plugin\ServiceInterface."
+                "Neucore\Plugin\ServiceInterface.",
             );
             $this->responseErrorCode = 500;
             return null;
@@ -493,13 +493,13 @@ class ServiceController extends BaseController
 
     private function getAccountOfCharacter(
         ServiceInterface $serviceImplementation,
-        Character $validCharacter
+        Character $validCharacter,
     ): ?ServiceAccountData {
         try {
             $account = $this->pluginService->getAccounts(
                 $serviceImplementation,
                 [$validCharacter],
-                false
+                false,
             );
         } catch (Exception) {
             $this->responseErrorCode = 500;
@@ -515,7 +515,7 @@ class ServiceController extends BaseController
     private function validateCharacterAndGetAccount(
         ServiceInterface $serviceImplementation,
         int $characterId,
-        UserAuth $userAuth
+        UserAuth $userAuth,
     ): ?ServiceAccountData {
         $validCharacter = $this->validateCharacter($characterId, $userAuth);
         if (!$validCharacter) {

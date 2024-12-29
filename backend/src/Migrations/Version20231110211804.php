@@ -29,15 +29,15 @@ final class Version20231110211804 extends AbstractMigration
         foreach ($esiApps as $esiApp) {
             $this->connection->executeQuery(
                 "INSERT INTO app_role (app_id, role_id) VALUES (?, 23)",
-                [$esiApp['app_id']]
+                [$esiApp['app_id']],
             );
             $this->connection->executeQuery(
                 "INSERT INTO app_role (app_id, role_id) VALUES (?, 24)",
-                [$esiApp['app_id']]
+                [$esiApp['app_id']],
             );
             $this->connection->executeQuery(
                 "INSERT INTO app_role (app_id, role_id) VALUES (?, 25)",
-                [$esiApp['app_id']]
+                [$esiApp['app_id']],
             );
         }
 
@@ -56,7 +56,7 @@ final class Version20231110211804 extends AbstractMigration
         foreach ($esiApps as $esiApp) {
             $this->connection->executeQuery(
                 "INSERT INTO app_role (app_id, role_id) VALUES (?, 12)",
-                [$esiApp['app_id']]
+                [$esiApp['app_id']],
             );
         }
 

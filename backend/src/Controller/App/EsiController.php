@@ -31,8 +31,8 @@ use Psr\Log\LoggerInterface;
         new OA\Property(property: 'characterId', type: 'integer'),
         new OA\Property(property: 'characterName', type: 'string'),
         new OA\Property(property: 'corporationId', type: 'integer', nullable: true),
-        new OA\Property(property: 'allianceId', type: 'integer', nullable: true)
-    ]
+        new OA\Property(property: 'allianceId', type: 'integer', nullable: true),
+    ],
 )]
 #[OA\Schema(
     schema: 'EsiAccessToken',
@@ -40,8 +40,8 @@ use Psr\Log\LoggerInterface;
     properties: [
         new OA\Property(property: 'token', type: 'string'),
         new OA\Property(property: 'scopes', type: 'array', items: new OA\Items(type: 'string')),
-        new OA\Property(property: 'expires', type: 'integer')
-    ]
+        new OA\Property(property: 'expires', type: 'integer'),
+    ],
 )]
 class EsiController extends BaseController
 {
@@ -101,26 +101,26 @@ class EsiController extends BaseController
                 description: 'EVE login name.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$')
+                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: '',
-                content: new OA\JsonContent(type: 'array', items: new OA\Items(type: 'integer'))
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(type: 'integer')),
             ),
             new OA\Response(
                 response: '403',
                 description: 'Forbidden',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(
                 response: '404',
                 description: 'EVE login not found.',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function eveLoginCharacters(string $name, ServerRequestInterface $request): ResponseInterface
@@ -132,7 +132,7 @@ class EsiController extends BaseController
 
         $charIds = $this->repositoryFactory->getEsiTokenRepository()
             // Note: $this->eveLogin always exists at this point
-            ->findCharacterIdsByLoginId((int)$this->eveLogin?->getId());
+            ->findCharacterIdsByLoginId((int) $this->eveLogin?->getId());
 
         return $this->withJson($charIds);
     }
@@ -150,7 +150,7 @@ class EsiController extends BaseController
                 description: "EVE login name, 'core.default' is not allowed.",
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$')
+                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$'),
             ),
         ],
         responses: [
@@ -159,21 +159,20 @@ class EsiController extends BaseController
                 description: '',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items:
-                    new OA\Items(ref: '#/components/schemas/EsiTokenData')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/EsiTokenData'),
+                ),
             ),
             new OA\Response(
                 response: '403',
                 description: 'Forbidden',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(
                 response: '404',
                 description: 'EVE login not found.',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function eveLoginTokenData(string $name, ServerRequestInterface $request): ResponseInterface
@@ -189,7 +188,7 @@ class EsiController extends BaseController
 
         $tokenData = $this->repositoryFactory->getEsiTokenRepository()
             // Note: $this->eveLogin always exists at this point
-            ->findValidTokens((int)$this->eveLogin?->getId());
+            ->findValidTokens((int) $this->eveLogin?->getId());
 
         return $this->withJson($tokenData);
     }
@@ -207,36 +206,36 @@ class EsiController extends BaseController
                 description: 'The EVE character ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'eveLoginName',
                 description: "Optional EVE login name, defaults to 'core.default'.",
                 in: 'query',
-                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$')
+                schema: new OA\Schema(type: 'string', maxLength: 20, pattern: '^[-._a-zA-Z0-9]+$'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'Success',
-                content: new OA\JsonContent(ref: '#/components/schemas/EsiAccessToken')
+                content: new OA\JsonContent(ref: '#/components/schemas/EsiAccessToken'),
             ),
             new OA\Response(
                 response: '204',
                 description: 'Invalid token.',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(
                 response: '403',
                 description: 'Forbidden',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(
                 response: '404',
                 description: 'ESI token not found.',
-                content: new OA\JsonContent(type: 'string')
-            )
+                content: new OA\JsonContent(type: 'string'),
+            ),
         ],
     )]
     public function accessToken(
@@ -283,25 +282,25 @@ class EsiController extends BaseController
                 description: "The EVE character ID those token should be used. Has priority over the query " .
                     "parameter 'datasource'",
                 in: 'header',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'Neucore-EveLogin',
                 description: 'The EVE login name from which the token should be used, defaults to core.default.',
                 in: 'header',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'esi-path-query',
                 in: 'query',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'datasource',
                 in: 'query',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
         ],
         responses: [
@@ -309,7 +308,7 @@ class EsiController extends BaseController
                 response: '200',
                 description: '',
                 headers: [
-                    new OA\Header(header: 'Expires', schema: new OA\Schema(type: 'string'))
+                    new OA\Header(header: 'Expires', schema: new OA\Schema(type: 'string')),
                 ],
                 content: new OA\JsonContent(type: 'string'),
             ),
@@ -317,7 +316,7 @@ class EsiController extends BaseController
                 response: '304',
                 description: '',
                 headers: [
-                    new OA\Header(header: 'Expires', schema: new OA\Schema(type: 'string'))
+                    new OA\Header(header: 'Expires', schema: new OA\Schema(type: 'string')),
                 ],
             ),
             new OA\Response(response: '400', description: '', content: new OA\JsonContent(type: 'string')),
@@ -327,11 +326,11 @@ class EsiController extends BaseController
             new OA\Response(
                 response: '429',
                 description: 'Too many errors, see reason phrase for more.',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
             new OA\Response(response: '503', description: '', content: new OA\JsonContent(type: 'string')),
-            new OA\Response(response: '504', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '504', description: '', content: new OA\JsonContent(type: 'string')),
         ],
         deprecated: true,
     )]
@@ -362,20 +361,20 @@ class EsiController extends BaseController
                 description: "The EVE character ID those token should be used. Has priority over the query " .
                     "parameter 'datasource'",
                 in: 'header',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'Neucore-EveLogin',
                 description: 'The EVE login name from which the token should be used, defaults to core.default.',
                 in: 'header',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'esi-path-query',
                 description: 'The ESI path and query string (without the datasource parameter).',
                 in: 'query',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'datasource',
@@ -383,7 +382,7 @@ class EsiController extends BaseController
                     'make the ESI request. Optionally followed by a colon and the name of an EVE login to ' .
                     'use an alternative ESI token.',
                 in: 'query',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
         ],
         responses: [
@@ -395,8 +394,8 @@ class EsiController extends BaseController
                     new OA\Header(
                         header: 'Expires',
                         description: 'RFC7231 formatted datetime string',
-                        schema: new OA\Schema(type: 'string')
-                    )
+                        schema: new OA\Schema(type: 'string'),
+                    ),
                 ],
                 content: new OA\JsonContent(type: 'string'),
             ),
@@ -407,29 +406,29 @@ class EsiController extends BaseController
                     new OA\Header(
                         header: 'Expires',
                         description: 'RFC7231 formatted datetime string',
-                        schema: new OA\Schema(type: 'string')
-                    )
+                        schema: new OA\Schema(type: 'string'),
+                    ),
                 ],
             ),
             new OA\Response(
                 response: '400',
                 description: 'Bad request, see reason phrase and/or body for more.',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(
                 response: '401',
                 description: 'Unauthorized',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(
                 response: '403',
                 description: 'Forbidden',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(
                 response: '420',
                 description: 'Error limited',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(
                 response: '429',
@@ -438,26 +437,26 @@ class EsiController extends BaseController
                     new OA\Header(
                         header: 'Retry-After',
                         description: 'Delay in seconds.',
-                        schema: new OA\Schema(type: 'string')
-                    )
+                        schema: new OA\Schema(type: 'string'),
+                    ),
                 ],
                 content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(
                 response: '500',
                 description: 'Internal server error',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(
                 response: '503',
                 description: 'Service unavailable',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(
                 response: '504',
                 description: 'Gateway timeout',
-                content: new OA\JsonContent(type: 'string')
-            )
+                content: new OA\JsonContent(type: 'string'),
+            ),
         ],
     )]
     public function esiV2(ServerRequestInterface $request, ?string $path = null): ResponseInterface
@@ -473,7 +472,7 @@ class EsiController extends BaseController
         requestBody: new OA\RequestBody(
             description: '',
             required: true,
-            content: new OA\MediaType(mediaType: 'text/plain', schema: new OA\Schema(type: 'string'))
+            content: new OA\MediaType(mediaType: 'text/plain', schema: new OA\Schema(type: 'string')),
         ),
         tags: ['Application - ESI'],
         parameters: [
@@ -482,25 +481,25 @@ class EsiController extends BaseController
                 description: "The EVE character ID those token should be used. Has priority over the query " .
                     "parameter 'datasource'",
                 in: 'header',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'Neucore-EveLogin',
                 description: 'The EVE login name from which the token should be used, defaults to core.default.',
                 in: 'header',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'esi-path-query',
                 in: 'query',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'datasource',
                 in: 'query',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
         ],
         responses: [
@@ -508,15 +507,15 @@ class EsiController extends BaseController
                 response: '200',
                 description: '',
                 headers: [
-                    new OA\Header(header: 'Expires', schema: new OA\Schema(type: 'string'))
+                    new OA\Header(header: 'Expires', schema: new OA\Schema(type: 'string')),
                 ],
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(
                 response: '304',
                 description: '',
                 headers: [
-                    new OA\Header(header: 'Expires', schema: new OA\Schema(type: 'string'))
+                    new OA\Header(header: 'Expires', schema: new OA\Schema(type: 'string')),
                 ],
             ),
             new OA\Response(response: '400', description: '', content: new OA\JsonContent(type: 'string')),
@@ -526,11 +525,11 @@ class EsiController extends BaseController
             new OA\Response(
                 response: '429',
                 description: 'Too many errors, see reason phrase for more.',
-                content: new OA\JsonContent(type: 'string')
+                content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
             new OA\Response(response: '503', description: '', content: new OA\JsonContent(type: 'string')),
-            new OA\Response(response: '504', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '504', description: '', content: new OA\JsonContent(type: 'string')),
         ],
         deprecated: true,
     )]
@@ -547,7 +546,7 @@ class EsiController extends BaseController
         requestBody: new OA\RequestBody(
             description: 'JSON encoded data.',
             required: true,
-            content: new OA\MediaType(mediaType: 'text/plain', schema: new OA\Schema(type: 'string'))
+            content: new OA\MediaType(mediaType: 'text/plain', schema: new OA\Schema(type: 'string')),
         ),
         tags: ['Application - ESI'],
         parameters: [
@@ -556,25 +555,25 @@ class EsiController extends BaseController
                 description: "The EVE character ID those token should be used. Has priority over the query " .
                     "parameter 'datasource'",
                 in: 'header',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'Neucore-EveLogin',
                 description: 'The EVE login name from which the token should be used, defaults to core.default.',
                 in: 'header',
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'esi-path-query',
                 in: 'query',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'datasource',
                 in: 'query',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
         ],
         responses: [
@@ -582,7 +581,7 @@ class EsiController extends BaseController
                 response: '200',
                 description: '',
                 headers: [
-                    new OA\Header(header: 'Expires', schema: new OA\Schema(type: 'string'))
+                    new OA\Header(header: 'Expires', schema: new OA\Schema(type: 'string')),
                 ],
                 content: new OA\JsonContent(type: 'string'),
             ),
@@ -590,7 +589,7 @@ class EsiController extends BaseController
                 response: '304',
                 description: '',
                 headers: [
-                    new OA\Header(header: 'Expires', schema: new OA\Schema(type: 'string'))
+                    new OA\Header(header: 'Expires', schema: new OA\Schema(type: 'string')),
                 ],
             ),
             new OA\Response(response: '400', description: '', content: new OA\JsonContent(type: 'string')),
@@ -604,14 +603,14 @@ class EsiController extends BaseController
                     new OA\Header(
                         header: 'Retry-After',
                         description: 'Delay in seconds.',
-                        schema: new OA\Schema(type: 'string')
-                    )
+                        schema: new OA\Schema(type: 'string'),
+                    ),
                 ],
                 content: new OA\JsonContent(type: 'string'),
             ),
             new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
             new OA\Response(response: '503', description: '', content: new OA\JsonContent(type: 'string')),
-            new OA\Response(response: '504', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '504', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function esiPostV2(ServerRequestInterface $request, ?string $path = null): ResponseInterface
@@ -623,7 +622,7 @@ class EsiController extends BaseController
         ServerRequestInterface $request,
         string $method,
         ?string $path,
-        int $version
+        int $version,
     ): ResponseInterface {
         $this->app = $this->appAuth->getApp($request);
 
@@ -666,7 +665,7 @@ class EsiController extends BaseController
 
         // Send request and handle errors.
         try {
-            $esiResponse = $this->esiClient->request($esiPath, $method, $body, (int)$characterId, $eveLoginName);
+            $esiResponse = $this->esiClient->request($esiPath, $method, $body, (int) $characterId, $eveLoginName);
         } catch (RuntimeException $e) {
             if ($e->getCode() === 568420) {
                 $errorMessage = 'Character not found.';
@@ -689,7 +688,7 @@ class EsiController extends BaseController
             $esiResponse = $this->httpClientFactory->createResponse(
                 500, // status
                 [], // header
-                $e->getMessage() // body
+                $e->getMessage(), // body
             );
         }
 
@@ -710,7 +709,7 @@ class EsiController extends BaseController
                 "$errorMessage (X-Esi-Error-Limit-Remain <= $this->errorLimitRemain).",
                 $retryAt1,
                 $version,
-                "$errorMessage."
+                "$errorMessage.",
             );
             return true;
         }
@@ -726,7 +725,7 @@ class EsiController extends BaseController
             $this->build429Response(
                 'Undefined 429 response. You have been temporarily throttled.',
                 $retryAt3,
-                $version
+                $version,
             );
             return true;
         }
@@ -736,11 +735,11 @@ class EsiController extends BaseController
 
     private function build429Response(string $message, int $retryAfter, int $version, ?string $messageV1 = null): void
     {
-        $this->log->warning(self::ERROR_MESSAGE_PREFIX . $this->appString(). ": $message");
+        $this->log->warning(self::ERROR_MESSAGE_PREFIX . $this->appString() . ": $message");
         if ($version === 1) {
             $this->response = $this->response->withStatus(429, $messageV1 ?: $message);
         } else {
-            $this->response = $this->response->withHeader('Retry-After', (string)max(1, $retryAfter - time()));
+            $this->response = $this->response->withHeader('Retry-After', (string) max(1, $retryAfter - time()));
             $this->response = $this->withJson($message, 429);
         }
     }
@@ -760,7 +759,7 @@ class EsiController extends BaseController
                 }
             }
             if (!empty($esiParams)) {
-                $esiPath .= '?' .  implode('&', $esiParams);
+                $esiPath .= '?' . implode('&', $esiParams);
             }
         }
 
@@ -780,7 +779,7 @@ class EsiController extends BaseController
 
     private function isPublicPath(string $esiPath): bool
     {
-        $path = substr($esiPath, (int)strpos($esiPath, '/', 1));
+        $path = substr($esiPath, (int) strpos($esiPath, '/', 1));
 
         $publicPaths = Application::loadFile('esi-paths-public.php');
 

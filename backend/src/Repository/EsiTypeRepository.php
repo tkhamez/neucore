@@ -14,6 +14,4 @@ use Neucore\Entity\EsiType;
  *
  * @psalm-suppress MissingTemplateParam
  */
-class EsiTypeRepository extends EntityRepository
-{
-}
+class EsiTypeRepository extends EntityRepository {}

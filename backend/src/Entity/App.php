@@ -90,7 +90,7 @@ class App implements \JsonSerializable
 
     public function getId(): int
     {
-        return (int)$this->id;
+        return (int) $this->id;
     }
 
     public function setName(string $name): self
@@ -117,7 +117,7 @@ class App implements \JsonSerializable
 
     public function getSecret(): string
     {
-        return (string)$this->secret;
+        return (string) $this->secret;
     }
 
     public function addRole(Role $role): self

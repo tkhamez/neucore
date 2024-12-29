@@ -161,9 +161,9 @@ class Application
         }
         if ($appEnv === false) {
             throw new RuntimeException(
-                'NEUCORE_APP_ENV environment variable is not defined. '.
-                'You need to define environment variables for configuration '.
-                'or load variables from a .env file (see .env.dist file).'
+                'NEUCORE_APP_ENV environment variable is not defined. ' .
+                'You need to define environment variables for configuration ' .
+                'or load variables from a .env file (see .env.dist file).',
             );
         }
 
@@ -285,18 +285,18 @@ class Application
         $app->add(new CSRFToken(
             $this->container->get(ResponseFactoryInterface::class),
             $this->container->get(SessionData::class),
-            '/api/user'
+            '/api/user',
         ));
 
         $app->add(new SecureRouteMiddleware(
             $this->container->get(ResponseFactoryInterface::class),
-            self::loadFile('security.php')
+            self::loadFile('security.php'),
         ));
 
         $app->add(new RoleMiddleware($this->container->get(AppAuth::class), ['route_pattern' => ['/api/app']]));
         $app->add(new RoleMiddleware(
             $this->container->get(UserAuth::class),
-            ['route_pattern' => ['/api/user', '/plugin']]
+            ['route_pattern' => ['/api/user', '/plugin']],
         ));
 
         $app->add(new SessionMiddleware(
@@ -307,7 +307,7 @@ class Application
                 SessionMiddleware::OPTION_SECURE                 => $config['session']['secure'],
                 SessionMiddleware::OPTION_ROUTE_INCLUDE_PATTERN  => ['/api/user', '/login', '/plugin'],
                 SessionMiddleware::OPTION_ROUTE_BLOCKING_PATTERN => ['/api/user/auth', '/login', '/plugin'],
-            ]
+            ],
         ));
 
         // Add routing middleware after SecureRouteMiddleware, RoleMiddleware and NonBlockingSession,
@@ -323,14 +323,14 @@ class Application
         $errorMiddleware->setDefaultErrorHandler(new Slim\ErrorHandler(
             $app->getCallableResolver(),
             $app->getResponseFactory(),
-            $this->container->get(LoggerInterface::class)
+            $this->container->get(LoggerInterface::class),
         ));
 
         // add CORS last, so it is executed first, especially before the error handler.
         if ($config['CORS']['allow_origin']) { // not false or empty string
             $app->add(new Cors(
                 $this->container->get(ResponseFactoryInterface::class),
-                explode(',', $config['CORS']['allow_origin'])
+                explode(',', $config['CORS']['allow_origin']),
             ));
         }
     }
@@ -380,7 +380,7 @@ class Application
         ini_set('display_errors', '0');
         ini_set('log_errors', '0'); // all errors are logged with Monolog
         if ($this->config) {
-            error_reporting((int)$this->config['error_reporting']);
+            error_reporting((int) $this->config['error_reporting']);
         }
 
         // Logs errors that are not handled by Slim and for CLI
@@ -451,7 +451,7 @@ class Application
         if ($log) {
             $log->error($e->getMessage(), [Context::EXCEPTION => $e]);
         } else {
-            error_log((string)$e);
+            error_log((string) $e);
         }
 
         if ($this->runEnv === self::RUN_CONSOLE) {

@@ -18,8 +18,8 @@ use Psr\Http\Message\ServerRequestInterface;
     properties: [
         new OA\Property(property: 'id', type: 'int'),
         new OA\Property(property: 'name', type: 'string'),
-        new OA\Property(property: 'characterId', type: 'int')
-    ]
+        new OA\Property(property: 'characterId', type: 'int'),
+    ],
 )]
 class CharController extends BaseController
 {
@@ -38,14 +38,14 @@ class CharController extends BaseController
                 description: 'EVE character ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'The main character',
-                content: new OA\JsonContent(ref: '#/components/schemas/Character')
+                content: new OA\JsonContent(ref: '#/components/schemas/Character'),
             ),
             new OA\Response(response: '204', description: 'No main character found.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
@@ -53,14 +53,14 @@ class CharController extends BaseController
             new OA\Response(
                 response: '500',
                 description: '',
-                content: new OA\JsonContent(type: 'string')
-            )
+                content: new OA\JsonContent(type: 'string'),
+            ),
         ],
         deprecated: true,
     )]
     public function mainV1(string $cid): ResponseInterface
     {
-        $char = $this->repositoryFactory->getCharacterRepository()->find((int)$cid);
+        $char = $this->repositoryFactory->getCharacterRepository()->find((int) $cid);
         if ($char === null) {
             return $this->response->withStatus(404);
         }
@@ -86,14 +86,14 @@ class CharController extends BaseController
                 description: 'EVE character ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'The main character',
-                content: new OA\JsonContent(ref: '#/components/schemas/Character')
+                content: new OA\JsonContent(ref: '#/components/schemas/Character'),
             ),
             new OA\Response(response: '204', description: 'No main character found.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
@@ -101,8 +101,8 @@ class CharController extends BaseController
             new OA\Response(
                 response: '500',
                 description: '',
-                content: new OA\JsonContent(type: 'string')
-            )
+                content: new OA\JsonContent(type: 'string'),
+            ),
         ],
     )]
     public function mainV2(string $cid): ResponseInterface
@@ -129,27 +129,27 @@ class CharController extends BaseController
                 description: 'EVE character ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'The player, only id and name properties are returned.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Player')
+                content: new OA\JsonContent(ref: '#/components/schemas/Player'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Character not found.'),
             new OA\Response(
                 response: '500',
                 description: '',
-                content: new OA\JsonContent(type: 'string')
-            )
+                content: new OA\JsonContent(type: 'string'),
+            ),
         ],
     )]
     public function playerV1(string $characterId): ResponseInterface
     {
-        $character = $this->repositoryFactory->getCharacterRepository()->find((int)$characterId);
+        $character = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
         if ($character === null) {
             return $this->response->withStatus(404, self::ERROR_CHARACTER_NOT_FOUND);
         }
@@ -168,8 +168,8 @@ class CharController extends BaseController
             required: true,
             content: new OA\MediaType(
                 mediaType: 'application/json',
-                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'))
-            )
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer')),
+            ),
         ),
         tags: ['Application - Characters'],
         responses: [
@@ -178,16 +178,16 @@ class CharController extends BaseController
                 description: 'One entry for each character ID that was provided and found.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/PlayerWithCharcterId')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/PlayerWithCharcterId'),
+                ),
             ),
             new OA\Response(response: '400', description: 'Invalid body.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(
                 response: '500',
                 description: '',
-                content: new OA\JsonContent(type: 'string')
-            )
+                content: new OA\JsonContent(type: 'string'),
+            ),
         ],
     )]
     public function playersV1(ServerRequestInterface $request): ResponseInterface
@@ -215,7 +215,7 @@ class CharController extends BaseController
                 description: 'EVE character ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -224,21 +224,21 @@ class CharController extends BaseController
                 description: 'All characters from the player account.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Character')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Character'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Character not found.'),
             new OA\Response(
                 response: '500',
                 description: '',
-                content: new OA\JsonContent(type: 'string')
-            )
+                content: new OA\JsonContent(type: 'string'),
+            ),
         ],
     )]
     public function charactersV1(string $characterId): ResponseInterface
     {
-        $char = $this->repositoryFactory->getCharacterRepository()->find((int)$characterId);
+        $char = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
         if ($char === null) {
             return $this->response->withStatus(404, self::ERROR_CHARACTER_NOT_FOUND);
         }
@@ -257,8 +257,8 @@ class CharController extends BaseController
             required: true,
             content: new OA\MediaType(
                 mediaType: 'application/json',
-                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'))
-            )
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer')),
+            ),
         ),
         tags: ['Application - Characters'],
         responses: [
@@ -268,15 +268,15 @@ class CharController extends BaseController
                 description: 'All characters from the player account.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(type: 'array', items: new OA\Items(type: 'integer'))
-                )
+                    items: new OA\Items(type: 'array', items: new OA\Items(type: 'integer')),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(
                 response: '500',
                 description: '',
-                content: new OA\JsonContent(type: 'string')
-            )
+                content: new OA\JsonContent(type: 'string'),
+            ),
         ],
     )]
     public function charactersBulk(ServerRequestInterface $request): ResponseInterface
@@ -291,7 +291,7 @@ class CharController extends BaseController
 
         $result = [];
         foreach ($characters as $character) {
-            $result[$character['playerId']][] = (int)$character['id'];
+            $result[$character['playerId']][] = (int) $character['id'];
         }
 
         return $this->withJson(array_values($result));
@@ -308,8 +308,8 @@ class CharController extends BaseController
             required: true,
             content: new OA\MediaType(
                 mediaType: 'application/json',
-                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'))
-            )
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer')),
+            ),
         ),
         tags: ['Application - Characters'],
         responses: [
@@ -318,16 +318,16 @@ class CharController extends BaseController
                 description: 'A list of characters (does not include the corporation property).',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Character')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Character'),
+                ),
             ),
             new OA\Response(response: '400', description: 'Invalid body.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(
                 response: '500',
                 description: '',
-                content: new OA\JsonContent(type: 'string')
-            )
+                content: new OA\JsonContent(type: 'string'),
+            ),
         ],
     )]
     public function characterListV1(ServerRequestInterface $request): ResponseInterface
@@ -361,7 +361,7 @@ class CharController extends BaseController
                 description: 'Player ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -370,17 +370,17 @@ class CharController extends BaseController
                 description: 'All characters from the player account.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Character')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Character'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Player not found.'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function playerCharactersV1(string $playerId): ResponseInterface
     {
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int)$playerId);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
         if ($player === null) {
             return $this->response->withStatus(404, 'Player not found.');
         }
@@ -401,23 +401,23 @@ class CharController extends BaseController
                 description: 'EVE character ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'The player, only id, name and characters properties are returned.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Player')
+                content: new OA\JsonContent(ref: '#/components/schemas/Player'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Character not found.'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function playerWithCharactersV1(string $characterId): ResponseInterface
     {
-        $character = $this->repositoryFactory->getCharacterRepository()->find((int)$characterId);
+        $character = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
         if ($character === null) {
             return $this->response->withStatus(404, CharController::ERROR_CHARACTER_NOT_FOUND);
         }
@@ -444,7 +444,7 @@ class CharController extends BaseController
                 description: 'EVE character ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -453,17 +453,17 @@ class CharController extends BaseController
                 description: 'All removed characters from the player account.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/RemovedCharacter')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/RemovedCharacter'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Character not found.'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function removedCharactersV1(string $characterId): ResponseInterface
     {
-        $char = $this->repositoryFactory->getCharacterRepository()->find((int)$characterId);
+        $char = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
         if ($char === null) {
             return $this->response->withStatus(404, self::ERROR_CHARACTER_NOT_FOUND);
         }
@@ -490,7 +490,7 @@ class CharController extends BaseController
                 description: 'EVE character ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -499,17 +499,17 @@ class CharController extends BaseController
                 description: 'All incoming characters from the player account.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/RemovedCharacter')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/RemovedCharacter'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Character not found.'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function incomingCharactersV1(string $characterId): ResponseInterface
     {
-        $char = $this->repositoryFactory->getCharacterRepository()->find((int)$characterId);
+        $char = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
         if ($char === null) {
             return $this->response->withStatus(404, self::ERROR_CHARACTER_NOT_FOUND);
         }
@@ -535,7 +535,7 @@ class CharController extends BaseController
                 description: 'EVE corporation ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -544,16 +544,16 @@ class CharController extends BaseController
                 description: 'List of players, only id and name properties are returned.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Player')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Player'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function corporationPlayersV1(string $corporationId): ResponseInterface
     {
-        $players = $this->repositoryFactory->getPlayerRepository()->findInCorporation((int)$corporationId);
+        $players = $this->repositoryFactory->getPlayerRepository()->findInCorporation((int) $corporationId);
 
         return $this->withJson(array_map(function (Player $player) {
             return $player->jsonSerialize(true);
@@ -573,7 +573,7 @@ class CharController extends BaseController
                 description: 'EVE corporation ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -582,16 +582,16 @@ class CharController extends BaseController
                 description: 'List of characters (does not include the corporation property).',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Character')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Character'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function corporationCharactersV1(string $corporationId): ResponseInterface
     {
-        $corporation = $this->repositoryFactory->getCorporationRepository()->find((int)$corporationId);
+        $corporation = $this->repositoryFactory->getCorporationRepository()->find((int) $corporationId);
         if ($corporation === null) {
             return $this->withJson([]);
         }

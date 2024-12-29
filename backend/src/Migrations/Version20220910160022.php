@@ -16,13 +16,13 @@ class Version20220910160022 extends AbstractMigration
     {
         $eveLogin = $this->connection->executeQuery(
             'SELECT id FROM eve_logins WHERE name = ?',
-            [EveLogin::NAME_DEFAULT]
+            [EveLogin::NAME_DEFAULT],
         )->fetchAssociative();
-        $eveLoginId = $eveLogin ? (int)($eveLogin['id'] ?? 0) : 0;
+        $eveLoginId = $eveLogin ? (int) ($eveLogin['id'] ?? 0) : 0;
         $this->abortIf(!$eveLoginId, 'Error: EVE login ' . EveLogin::NAME_DEFAULT . ' not found.');
 
         $this->connection->executeQuery(
-            "INSERT INTO app_eve_login (app_id, evelogin_id) SELECT id, $eveLoginId FROM apps"
+            "INSERT INTO app_eve_login (app_id, evelogin_id) SELECT id, $eveLoginId FROM apps",
         );
     }
 
@@ -30,9 +30,9 @@ class Version20220910160022 extends AbstractMigration
     {
         $eveLogin = $this->connection->executeQuery(
             'SELECT id FROM eve_logins WHERE name = ?',
-            [EveLogin::NAME_DEFAULT]
+            [EveLogin::NAME_DEFAULT],
         )->fetchAssociative();
-        $eveLoginId = $eveLogin ? (int)($eveLogin['id'] ?? 0) : 0;
+        $eveLoginId = $eveLogin ? (int) ($eveLogin['id'] ?? 0) : 0;
         $this->abortIf(!$eveLoginId, 'Error: EVE login ' . EveLogin::NAME_DEFAULT . ' not found.');
 
         $this->connection->executeQuery("DELETE FROM app_eve_login WHERE evelogin_id = $eveLoginId");

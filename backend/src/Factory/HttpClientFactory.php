@@ -35,7 +35,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
         Config $config,
         EsiHeaders $esiHeaders,
         Esi429Response $esi429Response,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->config = $config;
         $this->esiHeaders = $esiHeaders;
@@ -62,7 +62,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
         string $method,
         string $url,
         array $headers = [],
-        ?string $body = null
+        ?string $body = null,
     ): RequestInterface {
         return new Request($method, $url, $headers, $body);
     }
@@ -71,7 +71,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
         int $status = 200,
         array $headers = [],
         ?string $body = null,
-        ?string $reason = null
+        ?string $reason = null,
     ): ResponseInterface {
         return new Response($status, $headers, $body, '1.1', $reason);
     }
@@ -106,7 +106,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
             if ($dirExists && is_writable($dir)) {
                 $cache = new CacheMiddleware(new PrivateCacheStrategy(new Psr6CacheStorage(
                     // 86400 = one day lifetime
-                    new FilesystemAdapter('', 86400, $dir)
+                    new FilesystemAdapter('', 86400, $dir),
                 )));
                 $stack->push($cache, 'cache');
             } else {

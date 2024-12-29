@@ -43,7 +43,7 @@ class CleanHttpCache extends Command
         foreach (new \DirectoryIterator($this->config['guzzle']['cache']['dir']) as $fileInfo) {
             /* @var $fileInfo \DirectoryIterator */
             if ($fileInfo->isDir() && !$fileInfo->isDot()) {
-                $cache = new FilesystemAdapter('', 0, (string)$fileInfo->getRealPath());
+                $cache = new FilesystemAdapter('', 0, (string) $fileInfo->getRealPath());
                 $cache->prune();
             }
         }

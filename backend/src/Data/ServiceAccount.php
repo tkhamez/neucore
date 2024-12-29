@@ -33,7 +33,7 @@ class ServiceAccount implements \JsonSerializable
         int $characterId,
         ?string $username,
         ?string $status,
-        ?string $name
+        ?string $name,
     ) {
         $this->serviceId = $serviceId;
         $this->serviceName = $serviceName;

@@ -27,8 +27,8 @@ class PlayerLoginsRepository extends EntityRepository
             new OA\Property(property: 'unique_logins', type: 'integer'),
             new OA\Property(property: 'total_logins', type: 'integer'),
             new OA\Property(property: 'year', type: 'integer'),
-            new OA\Property(property: 'month', type: 'integer')
-        ]
+            new OA\Property(property: 'month', type: 'integer'),
+        ],
     )]
     public function monthlySummary(int $endDate, int $months): array
     {
@@ -38,11 +38,11 @@ class PlayerLoginsRepository extends EntityRepository
 
         $qb = $this->createQueryBuilder('pl');
         $qb->select([
-                'COUNT(pl.player) AS unique_logins',
-                'SUM(pl.count) AS total_logins',
-                'pl.year',
-                'pl.month',
-            ])
+            'COUNT(pl.player) AS unique_logins',
+            'SUM(pl.count) AS total_logins',
+            'pl.year',
+            'pl.month',
+        ])
             ->where($qb->expr()->gt('(pl.year * 100) + pl.month', ':start'))
             ->setParameter('start', $start)
             ->andWhere($qb->expr()->lte('(pl.year * 100) + pl.month', ':end'))
@@ -52,7 +52,7 @@ class PlayerLoginsRepository extends EntityRepository
         ;
 
         return array_map(function (array $r) {
-            $r['total_logins'] = (int)$r['total_logins']; // it's a string for some reason
+            $r['total_logins'] = (int) $r['total_logins']; // it's a string for some reason
             return $r;
         }, $qb->getQuery()->getResult());
     }

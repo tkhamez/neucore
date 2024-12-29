@@ -323,7 +323,7 @@ class SystemVariable implements \JsonSerializable
 
     public function getValue(): string
     {
-        return (string)$this->value;
+        return (string) $this->value;
     }
 
     public function setValue(string $value): SystemVariable
@@ -342,15 +342,15 @@ class SystemVariable implements \JsonSerializable
             case self::MAIL_MISSING_CHARACTER_RESEND:
             case self::RATE_LIMIT_APP_RESET_TIME:
             case self::RATE_LIMIT_APP_MAX_REQUESTS:
-                $this->value = (string) abs((int)$value);
+                $this->value = (string) abs((int) $value);
                 break;
             case self::MAIL_INVALID_TOKEN_ALLIANCES:
             case self::MAIL_INVALID_TOKEN_CORPORATIONS:
             case self::MAIL_MISSING_CHARACTER_CORPORATIONS:
                 $allianceIds = [];
                 foreach (explode(',', $value) as $allianceId) {
-                    if ((int)$allianceId > 0) {
-                        $allianceIds[] = (int)$allianceId;
+                    if ((int) $allianceId > 0) {
+                        $allianceIds[] = (int) $allianceId;
                     }
                 }
                 $this->value = implode(',', $allianceIds);

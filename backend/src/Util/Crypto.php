@@ -25,7 +25,7 @@ abstract class Crypto
      */
     public static function chars(
         int $length,
-        string $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        string $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
     ): string {
         $max = mb_strlen($characters) - 1;
         if ($length < 1 || $max < 1) {
@@ -53,7 +53,7 @@ abstract class Crypto
             return '';
         }
         return bin2hex(
-            random_bytes($length)
+            random_bytes($length),
         );
     }
 }

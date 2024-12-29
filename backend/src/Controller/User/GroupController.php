@@ -43,7 +43,7 @@ class GroupController extends BaseController
         RepositoryFactory $repositoryFactory,
         UserAuth $userAuth,
         Account $account,
-        AccountGroup $accountGroup
+        AccountGroup $accountGroup,
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
 
@@ -65,10 +65,10 @@ class GroupController extends BaseController
                 description: 'List of groups.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Group')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Group'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function all(): ResponseInterface
@@ -89,17 +89,17 @@ class GroupController extends BaseController
                 description: 'List of groups.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Group')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Group'),
+                ),
             ),
-            new OA\Response(response: '403', description: 'Not authorized.')
+            new OA\Response(response: '403', description: 'Not authorized.'),
         ],
     )]
     public function public(): ResponseInterface
     {
         $publicGroups = $this->repositoryFactory->getGroupRepository()->findBy(
             ['visibility' => Group::VISIBILITY_PUBLIC],
-            ['name' => 'ASC']
+            ['name' => 'ASC'],
         );
 
         // check required groups
@@ -131,23 +131,23 @@ class GroupController extends BaseController
                             description: 'Name of the group.',
                             type: 'string',
                             maxLength: 64,
-                            pattern: '^[-._a-zA-Z0-9]+$'
-                        )
+                            pattern: '^[-._a-zA-Z0-9]+$',
+                        ),
                     ],
-                    type: 'object'
-                )
-            )
+                    type: 'object',
+                ),
+            ),
         ),
         tags: ['Group'],
         responses: [
             new OA\Response(
                 response: '201',
                 description: 'The new group.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Group')
+                content: new OA\JsonContent(ref: '#/components/schemas/Group'),
             ),
             new OA\Response(response: '400', description: 'Group name is invalid.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '409', description: 'A group with this name already exists.')
+            new OA\Response(response: '409', description: 'A group with this name already exists.'),
         ],
     )]
     public function create(ServerRequestInterface $request): ResponseInterface
@@ -186,12 +186,12 @@ class GroupController extends BaseController
                             description: 'New name for the group.',
                             type: 'string',
                             maxLength: 64,
-                            pattern: '^[-._a-zA-Z0-9]+$'
-                        )
+                            pattern: '^[-._a-zA-Z0-9]+$',
+                        ),
                     ],
                     type: 'object',
-                )
-            )
+                ),
+            ),
         ),
         tags: ['Group'],
         parameters: [
@@ -200,19 +200,19 @@ class GroupController extends BaseController
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'Group was renamed.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Group')
+                content: new OA\JsonContent(ref: '#/components/schemas/Group'),
             ),
             new OA\Response(response: '400', description: 'Group name is invalid.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Group not found.'),
-            new OA\Response(response: '409', description: 'A group with this name already exists.')
+            new OA\Response(response: '409', description: 'A group with this name already exists.'),
         ],
     )]
     public function rename(string $id, ServerRequestInterface $request): ResponseInterface
@@ -252,12 +252,12 @@ class GroupController extends BaseController
                             property: 'description',
                             description: 'The description for the group.',
                             type: 'string',
-                            maxLength: 1024
-                        )
+                            maxLength: 1024,
+                        ),
                     ],
-                    type: 'object'
-                )
-            )
+                    type: 'object',
+                ),
+            ),
         ),
         tags: ['Group'],
         parameters: [
@@ -266,17 +266,17 @@ class GroupController extends BaseController
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'Description was updated.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Group')
+                content: new OA\JsonContent(ref: '#/components/schemas/Group'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group not found.')
+            new OA\Response(response: '404', description: 'Group not found.'),
         ],
     )]
     public function updateDescription(string $id, ServerRequestInterface $request): ResponseInterface
@@ -305,24 +305,24 @@ class GroupController extends BaseController
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'choice',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string', enum: ['private', 'public'])
+                schema: new OA\Schema(type: 'string', enum: ['private', 'public']),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'Visibility changed.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Group')
+                content: new OA\JsonContent(ref: '#/components/schemas/Group'),
             ),
             new OA\Response(response: '400', description: "Invalid 'choice' parameter."),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group not found.')
+            new OA\Response(response: '404', description: 'Group not found.'),
         ],
     )]
     public function setVisibility(string $id, string $choice): ResponseInterface
@@ -354,24 +354,24 @@ class GroupController extends BaseController
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'choice',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string', enum: ['on', 'off'])
+                schema: new OA\Schema(type: 'string', enum: ['on', 'off']),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'Auto-accept changed.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Group')
+                content: new OA\JsonContent(ref: '#/components/schemas/Group'),
             ),
             new OA\Response(response: '400', description: "Invalid 'choice' parameter."),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group not found.')
+            new OA\Response(response: '404', description: 'Group not found.'),
         ],
     )]
     public function setAutoAccept(string $id, string $choice): ResponseInterface
@@ -403,24 +403,24 @@ class GroupController extends BaseController
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'choice',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string', enum: ['on', 'off'])
+                schema: new OA\Schema(type: 'string', enum: ['on', 'off']),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'Is-default changed.',
-                content: new OA\JsonContent(ref: '#/components/schemas/Group')
+                content: new OA\JsonContent(ref: '#/components/schemas/Group'),
             ),
             new OA\Response(response: '400', description: "Invalid 'choice' parameter."),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group not found.')
+            new OA\Response(response: '404', description: 'Group not found.'),
         ],
     )]
     public function setIsDefault(string $id, string $choice): ResponseInterface
@@ -452,13 +452,13 @@ class GroupController extends BaseController
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group was deleted.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group not found.')
+            new OA\Response(response: '404', description: 'Group not found.'),
         ],
     )]
     public function delete(string $id): ResponseInterface
@@ -486,7 +486,7 @@ class GroupController extends BaseController
                 description: 'Group ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -496,11 +496,11 @@ class GroupController extends BaseController
                     ' group-admin role, properties are returned.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Player')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Player'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group not found.')
+            new OA\Response(response: '404', description: 'Group not found.'),
         ],
     )]
     public function managers(string $id): ResponseInterface
@@ -524,7 +524,7 @@ class GroupController extends BaseController
                 description: 'Group ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -533,11 +533,11 @@ class GroupController extends BaseController
                 description: 'List of corporations ordered by name.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Corporation')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Corporation'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group not found.')
+            new OA\Response(response: '404', description: 'Group not found.'),
         ],
     )]
     public function corporations(string $id): ResponseInterface
@@ -563,7 +563,7 @@ class GroupController extends BaseController
                 description: 'Group ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -572,11 +572,11 @@ class GroupController extends BaseController
                 description: 'List of alliances ordered by name.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Alliance')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Alliance'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group not found.')
+            new OA\Response(response: '404', description: 'Group not found.'),
         ],
     )]
     public function alliances(string $id): ResponseInterface
@@ -602,7 +602,7 @@ class GroupController extends BaseController
                 description: 'Group ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -611,11 +611,11 @@ class GroupController extends BaseController
                 description: 'List of groups ordered by name.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Group')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Group'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group not found.')
+            new OA\Response(response: '404', description: 'Group not found.'),
         ],
     )]
     public function requiredGroups(string $id): ResponseInterface
@@ -641,25 +641,25 @@ class GroupController extends BaseController
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'groupId',
                 description: 'ID of the group to add.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group added.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group(s) not found.')
+            new OA\Response(response: '404', description: 'Group(s) not found.'),
         ],
     )]
     public function addRequiredGroup(string $id, string $groupId): ResponseInterface
     {
-        $requiredGroup = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
+        $requiredGroup = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
         $this->findGroup($id);
         if (!$this->group || !$requiredGroup) {
             return $this->response->withStatus(404);
@@ -683,25 +683,25 @@ class GroupController extends BaseController
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'groupId',
                 description: 'ID of the group to remove.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group removed.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group(s) not found.')
+            new OA\Response(response: '404', description: 'Group(s) not found.'),
         ],
     )]
     public function removeRequiredGroup(string $id, string $groupId): ResponseInterface
     {
-        $requiredGroup = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
+        $requiredGroup = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
         $this->findGroup($id);
         if (!$this->group || !$requiredGroup) {
             return $this->response->withStatus(404);
@@ -725,7 +725,7 @@ class GroupController extends BaseController
                 description: 'Group ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -734,11 +734,11 @@ class GroupController extends BaseController
                 description: 'List of groups ordered by name.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Group')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Group'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group not found.')
+            new OA\Response(response: '404', description: 'Group not found.'),
         ],
     )]
     public function forbiddenGroups(string $id): ResponseInterface
@@ -764,25 +764,25 @@ class GroupController extends BaseController
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'groupId',
                 description: 'ID of the group to add.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group added.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group(s) not found.')
+            new OA\Response(response: '404', description: 'Group(s) not found.'),
         ],
     )]
     public function addForbiddenGroup(string $id, string $groupId): ResponseInterface
     {
-        $forbiddenGroup = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
+        $forbiddenGroup = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
         $this->findGroup($id);
         if (!$this->group || !$forbiddenGroup) {
             return $this->response->withStatus(404);
@@ -806,25 +806,25 @@ class GroupController extends BaseController
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'groupId',
                 description: 'ID of the group to remove.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group removed.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group(s) not found.')
+            new OA\Response(response: '404', description: 'Group(s) not found.'),
         ],
     )]
     public function removeForbiddenGroup(string $id, string $groupId): ResponseInterface
     {
-        $forbiddenGroup = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
+        $forbiddenGroup = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
         $this->findGroup($id);
         if (!$this->group || !$forbiddenGroup) {
             return $this->response->withStatus(404);
@@ -848,20 +848,20 @@ class GroupController extends BaseController
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'pid',
                 description: 'ID of the player.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Player added as manager.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Player and/or group not found.')
+            new OA\Response(response: '404', description: 'Player and/or group not found.'),
         ],
     )]
     public function addManager(string $id, string $pid): ResponseInterface
@@ -882,20 +882,20 @@ class GroupController extends BaseController
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'pid',
                 description: 'ID of the player.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Player removed from managers.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Player and/or group not found.')
+            new OA\Response(response: '404', description: 'Player and/or group not found.'),
         ],
     )]
     public function removeManager(string $id, string $pid): ResponseInterface
@@ -916,7 +916,7 @@ class GroupController extends BaseController
                 description: 'Group ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -925,11 +925,11 @@ class GroupController extends BaseController
                 description: 'List of group applications ordered by created date.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/GroupApplication')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/GroupApplication'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group not found.')
+            new OA\Response(response: '404', description: 'Group not found.'),
         ],
     )]
     public function applications(string $id): ResponseInterface
@@ -961,14 +961,14 @@ class GroupController extends BaseController
                 description: 'ID of the application.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Application accepted.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Application not found.'),
-            new OA\Response(response: '400', description: 'Player is not allowed to be a member of the group.')
+            new OA\Response(response: '400', description: 'Player is not allowed to be a member of the group.'),
         ],
     )]
     public function acceptApplication(string $id): ResponseInterface
@@ -989,13 +989,13 @@ class GroupController extends BaseController
                 description: 'ID of the application.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Application denied.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Application not found.')
+            new OA\Response(response: '404', description: 'Application not found.'),
         ],
     )]
     public function denyApplication(string $id): ResponseInterface
@@ -1016,24 +1016,24 @@ class GroupController extends BaseController
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'pid',
                 description: 'ID of the player.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Player added.'),
             new OA\Response(
                 response: '400',
-                description: 'This player is not a member of one of the required groups.'
+                description: 'This player is not a member of one of the required groups.',
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Player and/or group not found.')
+            new OA\Response(response: '404', description: 'Player and/or group not found.'),
         ],
     )]
     public function addMember(string $id, string $pid): ResponseInterface
@@ -1054,20 +1054,20 @@ class GroupController extends BaseController
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'pid',
                 description: 'ID of the player.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Player removed.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Player and/or group not found.')
+            new OA\Response(response: '404', description: 'Player and/or group not found.'),
         ],
     )]
     public function removeMember(string $id, string $pid): ResponseInterface
@@ -1088,7 +1088,7 @@ class GroupController extends BaseController
                 description: 'Group ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
@@ -1097,11 +1097,11 @@ class GroupController extends BaseController
                 description: 'List of players ordered by name.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Player')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/Player'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Group not found.')
+            new OA\Response(response: '404', description: 'Group not found.'),
         ],
     )]
     public function members(string $id): ResponseInterface
@@ -1138,7 +1138,7 @@ class GroupController extends BaseController
         string $groupId,
         string $type,
         bool $onlyIfManager,
-        bool $withRoles
+        bool $withRoles,
     ): ResponseInterface {
         $this->findGroup($groupId);
         if (!$this->group) {
@@ -1183,7 +1183,7 @@ class GroupController extends BaseController
         string $groupId,
         string $playerId,
         string $type,
-        bool $onlyIfManager
+        bool $onlyIfManager,
     ): ResponseInterface {
         $this->findGroupAndPlayer($groupId, $playerId);
         if (!$this->group || !$this->player) {
@@ -1216,7 +1216,7 @@ class GroupController extends BaseController
         string $groupId,
         string $playerId,
         string $type,
-        bool $onlyIfManager
+        bool $onlyIfManager,
     ): ResponseInterface {
         $this->findGroupAndPlayer($groupId, $playerId);
         if (!$this->group || !$this->player) {
@@ -1277,7 +1277,7 @@ class GroupController extends BaseController
 
     private function findGroup(string $id): bool
     {
-        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int)$id);
+        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int) $id);
         if ($groupEntity === null) {
             return false;
         }
@@ -1288,7 +1288,7 @@ class GroupController extends BaseController
 
     private function findGroupAndPlayer(string $groupId, string $playerId): void
     {
-        $playerEntity = $this->repositoryFactory->getPlayerRepository()->find((int)$playerId);
+        $playerEntity = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
         if (!$this->findGroup($groupId) || $playerEntity === null) {
             return;
         }

@@ -25,25 +25,25 @@ class TrackingController extends BaseController
                 description: 'EVE corporation ID.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'inactive',
                 description: 'Limit to members who have been inactive for x days or longer.',
                 in: 'query',
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'active',
                 description: 'Limit to members who were active in the last x days.',
                 in: 'query',
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'account',
                 description: 'Limit to members with (true) or without (false) an account.',
                 in: 'query',
-                schema: new OA\Schema(type: 'string', enum: ['true', 'false'])
+                schema: new OA\Schema(type: 'string', enum: ['true', 'false']),
             ),
         ],
         responses: [
@@ -52,11 +52,11 @@ class TrackingController extends BaseController
                 description: 'Members ordered by logonDate descending (character and player properties excluded).',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/CorporationMember')
-                )
+                    items: new OA\Items(ref: '#/components/schemas/CorporationMember'),
+                ),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string'))
+            new OA\Response(response: '500', description: '', content: new OA\JsonContent(type: 'string')),
         ],
     )]
     public function memberTrackingV1(string $id, ServerRequestInterface $request): ResponseInterface
@@ -72,10 +72,10 @@ class TrackingController extends BaseController
 
         $members = $this->repositoryFactory
             ->getCorporationMemberRepository()
-            ->setInactive($inactive !== null ? (int)$inactive : null)
-            ->setActive($active !== null ? (int)$active : null)
+            ->setInactive($inactive !== null ? (int) $inactive : null)
+            ->setActive($active !== null ? (int) $active : null)
             ->setAccount($account)
-            ->findMatching((int)$id);
+            ->findMatching((int) $id);
 
         $result = [];
         foreach ($members as $member) {

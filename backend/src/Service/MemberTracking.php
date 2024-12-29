@@ -39,7 +39,7 @@ class MemberTracking
         EntityManager $entityManager,
         EsiData $esiData,
         OAuthToken $oauthToken,
-        Config $config
+        Config $config,
     ) {
         $this->log = $log;
         $this->esiApiFactory = $esiApiFactory;
@@ -48,7 +48,7 @@ class MemberTracking
         $this->esiData = $esiData;
         $this->oauthToken = $oauthToken;
 
-        $this->datasource = (string)$config['eve']['datasource'];
+        $this->datasource = (string) $config['eve']['datasource'];
     }
 
     /**
@@ -72,7 +72,7 @@ class MemberTracking
         $charNames = [];
         foreach ($this->esiData->fetchUniverseNames($charIds) as $name) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
-            $charNames[(int)$name->getId()] = $name->getName();
+            $charNames[(int) $name->getId()] = $name->getName();
         }
         return $charNames;
     }
@@ -96,7 +96,7 @@ class MemberTracking
             if (! in_array($name->getCategory(), [
                 PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE,
                 PostUniverseNames200Ok::CATEGORY_SOLAR_SYSTEM,
-                PostUniverseNames200Ok::CATEGORY_STATION
+                PostUniverseNames200Ok::CATEGORY_STATION,
             ])) {
                 continue;
             }
@@ -107,7 +107,7 @@ class MemberTracking
         $allIds = [
             PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE => $typeIds,
             EsiLocation::CATEGORY_SYSTEM => $systemIds,
-            EsiLocation::CATEGORY_STATION => $stationIds
+            EsiLocation::CATEGORY_STATION => $stationIds,
         ];
         $num = 0;
         foreach ($allIds as $category => $ids) {
@@ -165,9 +165,9 @@ class MemberTracking
      */
     public function updateStructure(
         GetCorporationsCorporationIdMembertracking200Ok $memberData,
-        ?EsiToken $esiToken
+        ?EsiToken $esiToken,
     ): void {
-        $structureId = (int)$memberData->getLocationId();
+        $structureId = (int) $memberData->getLocationId();
 
         // fetch ESI data, try director token first, then character's token if available
         $location = null;
@@ -178,7 +178,7 @@ class MemberTracking
                     $structureId,
                     $directorAccessToken->getToken(),
                     false,
-                    false
+                    false,
                 );
             }
         }
@@ -218,7 +218,7 @@ class MemberTracking
             }
 
             /** @noinspection PhpCastIsUnnecessaryInspection */
-            $id = (int)$data->getCharacterId();
+            $id = (int) $data->getCharacterId();
             $corpMember = $this->repositoryFactory->getCorporationMemberRepository()->find($id);
             $character = $this->repositoryFactory->getCharacterRepository()->find($id);
             if ($corpMember === null) {

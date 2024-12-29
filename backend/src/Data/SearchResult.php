@@ -18,8 +18,7 @@ class SearchResult implements \JsonSerializable
         public int $playerId,
         #[OA\Property]
         public string $playerName,
-    ) {
-    }
+    ) {}
 
     public function jsonSerialize(): array
     {

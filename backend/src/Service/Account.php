@@ -65,7 +65,7 @@ class Account
         EsiData $esiData,
         AutoGroupAssignment $autoGroupAssignment,
         OAuthToken $tokenService,
-        PluginService $pluginService
+        PluginService $pluginService,
     ) {
         $this->log = $log;
         $this->objectManager = $objectManager;
@@ -149,7 +149,7 @@ class Account
                 ->findOneBy(['name' => EveLogin::NAME_DEFAULT]);
             if ($eveLogin === null) {
                 $this->log->error(
-                    'Account::updateAndStoreCharacterWithPlayer: Could not find default EveLogin entity.'
+                    'Account::updateAndStoreCharacterWithPlayer: Could not find default EveLogin entity.',
                 );
                 return false;
             }
@@ -264,7 +264,7 @@ class Account
             } elseif ($this->esiData->verifyRoles(
                 $eveLogin->getEveRoles(),
                 $char->getId(),
-                $esiToken->getAccessToken()
+                $esiToken->getAccessToken(),
             )) {
                 $esiToken->setHasRoles(true);
             } else {
@@ -364,7 +364,7 @@ class Account
             $this->log->info(
                 'An admin (player ID: ' . ($deletedBy ? $deletedBy->getId() : 'unknown') . ') ' .
                 'deleted character "' . $character->getName() . '" [' . $character->getId() . '] ' .
-                'from player "' . $oldPlayer->getName() . '" [' . $oldPlayer->getId() . ']'
+                'from player "' . $oldPlayer->getName() . '" [' . $oldPlayer->getId() . ']',
             );
         } else {
             $this->createRemovedCharacter($character, $reason, null, $deletedBy);
@@ -671,7 +671,7 @@ class Account
         Character $character,
         string $reason,
         ?Player $newPlayer = null,
-        ?Player $deletedBy = null
+        ?Player $deletedBy = null,
     ): void {
         if ($character->getId() === 0) { // should never be true, but that's not obvious here
             $this->log->error('Account::createRemovedCharacter(): Missing character ID.');

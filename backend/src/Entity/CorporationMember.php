@@ -14,14 +14,14 @@ use OpenApi\Attributes as OA;
 #[ORM\Entity]
 #[ORM\Table(
     name: "corporation_members",
-    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"]
+    options: ["charset" => "utf8mb4", "collate" => "utf8mb4_unicode_520_ci"],
 )]
 #[OA\Schema(
     description: 'The player property contains only id and name, character does not contain corporation.',
     required: ['id', 'name'],
     properties: [
-        new OA\Property(property: 'player', ref: '#/components/schemas/Player', nullable: false)
-    ]
+        new OA\Property(property: 'player', ref: '#/components/schemas/Player', nullable: false),
+    ],
 )]
 class CorporationMember implements \JsonSerializable
 {
@@ -131,7 +131,7 @@ class CorporationMember implements \JsonSerializable
     public function getId(): int
     {
         // cast to int because Doctrine creates string for type bigint, also make sure it's no null
-        return (int)$this->id;
+        return (int) $this->id;
     }
 
     public function setName(?string $name = null): static
@@ -305,11 +305,11 @@ class CorporationMember implements \JsonSerializable
             $coreToken,
             $this->logonDate,
             $this->logoffDate,
-            (int)$this->location->getId(),
+            (int) $this->location->getId(),
             $this->location->getName(),
             $this->location->getCategory(),
-            (int)$this->shipType->getId(),
-            (string)$this->shipType->getName(),
+            (int) $this->shipType->getId(),
+            (string) $this->shipType->getName(),
             $this->startDate,
         );
     }

@@ -30,17 +30,17 @@ class RoleController extends BaseController
                 description: 'Role name.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: '200',
                 description: 'List of required groups.',
-                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Group'))
+                content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Group')),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Role not found.')
+            new OA\Response(response: '404', description: 'Role not found.'),
         ],
     )]
     public function getRequiredGroups(string $roleName): ResponseInterface
@@ -67,25 +67,25 @@ class RoleController extends BaseController
                 description: 'Name of the role.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'groupId',
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group added.'),
             new OA\Response(response: '403', description: 'Not authorized or role not allowed.'),
-            new OA\Response(response: '404', description: 'Role and/or group not found.')
+            new OA\Response(response: '404', description: 'Role and/or group not found.'),
         ],
     )]
     public function addRequiredGroups(string $roleName, string $groupId): ResponseInterface
     {
-        $response = $this->fetchEntitiesAndValidate($roleName, (int)$groupId);
+        $response = $this->fetchEntitiesAndValidate($roleName, (int) $groupId);
         if ($response) {
             return $response;
         }
@@ -110,25 +110,25 @@ class RoleController extends BaseController
                 description: 'Name of the role.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'groupId',
                 description: 'ID of the group.',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(type: 'integer'),
             ),
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group removed.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
-            new OA\Response(response: '404', description: 'Role and/or group not found.')
+            new OA\Response(response: '404', description: 'Role and/or group not found.'),
         ],
     )]
     public function removeRequiredGroups(string $roleName, string $groupId): ResponseInterface
     {
-        $response = $this->fetchEntitiesAndValidate($roleName, (int)$groupId);
+        $response = $this->fetchEntitiesAndValidate($roleName, (int) $groupId);
         if ($response) {
             return $response;
         }

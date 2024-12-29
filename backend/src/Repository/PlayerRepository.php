@@ -79,7 +79,7 @@ class PlayerRepository extends EntityRepository
             ->setParameter('ids', $allianceIds);
 
         return array_map(function (array $player) {
-            return (int)$player['id'];
+            return (int) $player['id'];
         }, $qb->getQuery()->getResult());
     }
 
@@ -97,7 +97,7 @@ class PlayerRepository extends EntityRepository
             ->setParameter('ids', $corporationIds);
 
         return array_map(function (array $player) {
-            return (int)$player['id'];
+            return (int) $player['id'];
         }, $qb->getQuery()->getResult());
     }
 
@@ -278,13 +278,13 @@ class PlayerRepository extends EntityRepository
         $finalResult = [];
         $idents = [];
         foreach ($result as $item) {
-            $charId = (int)$item['character_id'];
-            $charName = (string)$item['character_name'];
-            $playerId = (int)$item['player_id'];
+            $charId = (int) $item['character_id'];
+            $charName = (string) $item['character_name'];
+            $playerId = (int) $item['player_id'];
             $compare = "$charId|$playerId|$charName";
             if (!in_array($compare, $idents)) {
                 $idents[] = $compare;
-                $finalResult[] = new SearchResult($charId, $charName, $playerId, (string)$item['player_name']);
+                $finalResult[] = new SearchResult($charId, $charName, $playerId, (string) $item['player_name']);
             }
         }
 
@@ -323,7 +323,7 @@ class PlayerRepository extends EntityRepository
             ->setParameter('ids', $characterIds);
 
         return array_map(function (array $player) {
-            return (int)$player['id'];
+            return (int) $player['id'];
         }, $qb->getQuery()->getResult());
     }
 
@@ -339,7 +339,7 @@ class PlayerRepository extends EntityRepository
             ->setParameter('days', (new \DateTime("now -$createdWithinDays days"))->format('Y-m-d H:i:s'));
 
         return array_map(function (array $player) {
-            return (int)$player['id'];
+            return (int) $player['id'];
         }, $qb->getQuery()->getResult());
     }
 }
