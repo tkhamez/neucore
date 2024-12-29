@@ -1,4 +1,6 @@
-<?php /** @noinspection DuplicatedCode */
+<?php
+
+/** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
 
@@ -106,7 +108,7 @@ class PluginConfigurationFileTest extends TestCase
                 'textPending' => 'text p',
                 'configurationData' => 'other: data',
             ],
-            $obj->jsonSerialize()
+            $obj->jsonSerialize(),
         );
 
         $this->assertSame(
@@ -125,7 +127,7 @@ class PluginConfigurationFileTest extends TestCase
                 'textPending' => 'text p',
                 'configurationData' => 'other: data',
             ],
-            $obj->jsonSerialize(false)
+            $obj->jsonSerialize(false),
         );
 
         $this->assertSame(
@@ -145,7 +147,7 @@ class PluginConfigurationFileTest extends TestCase
                 'textPending' => 'text p',
                 'configurationData' => 'other: data',
             ],
-            $obj->jsonSerialize(true, false)
+            $obj->jsonSerialize(true, false),
         );
 
         $this->assertSame(
@@ -164,7 +166,7 @@ class PluginConfigurationFileTest extends TestCase
                 'textPending' => 'text p',
                 'configurationData' => 'other: data',
             ],
-            $obj->jsonSerialize(false, false)
+            $obj->jsonSerialize(false, false),
         );
     }
 }

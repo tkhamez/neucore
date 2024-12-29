@@ -35,7 +35,7 @@ class UpdateServiceAccountsTest extends ConsoleTestCase
         $this->assertStringEndsWith('  updatePlayerAccount exception', $actual[3]);
         $this->assertStringEndsWith(
             '  Updated S1: 2 accounts updated, 2 updates failed, 2 characters or players not found.',
-            $actual[4]
+            $actual[4],
         );
         $this->assertStringEndsWith('Finished "update-service-accounts"', $actual[5]);
         $this->assertSame('', $actual[6]);

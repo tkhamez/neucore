@@ -91,7 +91,7 @@ class RevokeTokenTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('revoke-token', ['id' => 3], [
             ClientInterface::class => $this->client,
-            LoggerInterface::class => new Logger()
+            LoggerInterface::class => new Logger(),
         ]);
 
         $actual = explode("\n", $output);

@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -47,13 +48,13 @@ class EsiClientTest extends TestCase
 
         $this->assertSame(0, EsiClient::getErrorLimitWaitTime($this->storage, 15));
 
-        $this->storage->set(Variables::ESI_ERROR_LIMIT, (string)json_encode(new EsiErrorLimit($time-100, 16, 50)));
+        $this->storage->set(Variables::ESI_ERROR_LIMIT, (string) json_encode(new EsiErrorLimit($time - 100, 16, 50)));
         $this->assertSame(0, EsiClient::getErrorLimitWaitTime($this->storage, 15));
 
-        $this->storage->set(Variables::ESI_ERROR_LIMIT, (string)json_encode(new EsiErrorLimit($time, 15, 50)));
-        $this->assertSame($time+50, EsiClient::getErrorLimitWaitTime($this->storage, 15));
+        $this->storage->set(Variables::ESI_ERROR_LIMIT, (string) json_encode(new EsiErrorLimit($time, 15, 50)));
+        $this->assertSame($time + 50, EsiClient::getErrorLimitWaitTime($this->storage, 15));
 
-        $this->storage->set(Variables::ESI_ERROR_LIMIT, (string)json_encode(new EsiErrorLimit($time, 16, 50)));
+        $this->storage->set(Variables::ESI_ERROR_LIMIT, (string) json_encode(new EsiErrorLimit($time, 16, 50)));
         $this->assertSame(0, EsiClient::getErrorLimitWaitTime($this->storage, 15));
     }
 
@@ -63,7 +64,7 @@ class EsiClientTest extends TestCase
 
         $this->assertSame(0, EsiClient::getRateLimitWaitTime($this->storage));
 
-        $this->storage->set(Variables::ESI_RATE_LIMIT, (string)($time + 50));
+        $this->storage->set(Variables::ESI_RATE_LIMIT, (string) ($time + 50));
         $this->assertSame($time + 50, EsiClient::getRateLimitWaitTime($this->storage));
     }
 
@@ -73,7 +74,7 @@ class EsiClientTest extends TestCase
 
         $this->assertSame(0, EsiClient::getThrottledWaitTime($this->storage));
 
-        $this->storage->set(Variables::ESI_THROTTLED, (string)($time + 60));
+        $this->storage->set(Variables::ESI_THROTTLED, (string) ($time + 60));
         $this->assertSame($time + 60, EsiClient::getThrottledWaitTime($this->storage));
     }
 
@@ -118,7 +119,7 @@ class EsiClientTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame(
             ['name' => 'char name', 'corporation_id' => 20],
-            json_decode($response->getBody()->__toString(), true)
+            json_decode($response->getBody()->__toString(), true),
         );
     }
 }

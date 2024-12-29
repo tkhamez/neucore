@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnused */
 /** @noinspection PhpIllegalPsrClassPathInspection */
 
@@ -23,12 +24,9 @@ class TestService implements ServiceInterface
         LoggerInterface $logger,
         PluginConfiguration $pluginConfiguration,
         FactoryInterface $factory,
-    ) {
-    }
+    ) {}
 
-    public function onConfigurationChange(): void
-    {
-    }
+    public function onConfigurationChange(): void {}
 
     public function request(
         string $name,
@@ -50,7 +48,7 @@ class TestService implements ServiceInterface
         CoreCharacter $character,
         array $groups,
         string $emailAddress,
-        array $allCharacterIds
+        array $allCharacterIds,
     ): ServiceAccountData {
         throw new Exception();
     }

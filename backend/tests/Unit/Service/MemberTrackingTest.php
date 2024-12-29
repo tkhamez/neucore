@@ -60,10 +60,10 @@ class MemberTrackingTest extends TestCase
                 $objectManager,
                 $this->repositoryFactory,
                 new \Neucore\Service\Character($objectManager, $this->repositoryFactory),
-                $config
+                $config,
             ),
             new OAuthToken($authProvider, $objectManager, $logger),
-            $config
+            $config,
         );
     }
 
@@ -77,7 +77,7 @@ class MemberTrackingTest extends TestCase
     {
         $this->client->setResponse(new Response(200, [], '[{"character_id": 100}, {"character_id": 101}]'));
 
-        $actual = (array)$this->memberTracking->fetchData('access-token', 10);
+        $actual = (array) $this->memberTracking->fetchData('access-token', 10);
 
         $this->assertSame(2, count($actual));
         $this->assertSame(100, $actual[0]->getCharacterId());
@@ -91,7 +91,7 @@ class MemberTrackingTest extends TestCase
                 {"category": "station", "id": 60008494, "name": "Amarr VIII (Oris) - Emperor Family Academy"},
                 {"category": "solar_system", "id": 30000142, "name": "Jita"},
                 {"category": "inventory_type", "id": 670, "name": "Capsule"}
-            ]') // postUniverseNames for types, system, stations
+            ]'), // postUniverseNames for types, system, stations
         );
 
         $this->memberTracking->updateNames([670], [30000142], [60008494]);
@@ -125,7 +125,7 @@ class MemberTrackingTest extends TestCase
                 "name": "the structure name",
                 "owner_id": 123,
                 "solar_system_id": 456
-            }') // structure
+            }'), // structure
         );
 
         $esiToken = new EsiToken();
@@ -159,7 +159,7 @@ class MemberTrackingTest extends TestCase
         ]);
 
         $this->client->setResponse(
-            new Response(403) // structure
+            new Response(403), // structure
         );
 
         $this->memberTracking->updateStructure($data, null);
@@ -183,7 +183,7 @@ class MemberTrackingTest extends TestCase
                 {"category": "character", "id": "101", "name": "char 1"},
                 {"category": "character", "id": "102", "name": "char 2"},
                 {"category": "character", "id": "103", "name": "char 3"}
-            ]') // postUniverseNames for char names
+            ]'), // postUniverseNames for char names
         );
 
         $names = $this->memberTracking->fetchCharacterNames([101, 102, 103]);

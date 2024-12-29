@@ -29,13 +29,13 @@ class ApcuStorageTest extends TestCase
     public function testSetException1()
     {
         $this->expectException(RuntimeException::class);
-        $this->storage->set('key'.str_repeat('1', 110), 'value');
+        $this->storage->set('key' . str_repeat('1', 110), 'value');
     }
 
     public function testSetException2()
     {
         $this->expectException(RuntimeException::class);
-        $this->storage->set('key', 'value'.str_repeat('1', 251));
+        $this->storage->set('key', 'value' . str_repeat('1', 251));
     }
 
     public function testSet()

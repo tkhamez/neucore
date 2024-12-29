@@ -232,15 +232,17 @@ class CharacterTest extends TestCase
             ->setMain(true)
             ->setCharacterOwnerHash('hash')
             ->setPlayer((new Player())->setId(1)->setName('player name'))
-            ->setCorporation((new Corporation())
+            ->setCorporation(
+                (new Corporation())
                 ->setId(10)
                 ->setName('corp name')
                 ->setTicker('-C-')
-                ->setAlliance((new Alliance())
+                ->setAlliance(
+                    (new Alliance())
                     ->setId(1)
                     ->setName('alli name')
-                    ->setTicker('-A-')
-                )
+                    ->setTicker('-A-'),
+                ),
             );
 
         $minCoreCharacter = $character->toCoreCharacter(false);

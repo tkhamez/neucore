@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnused */
 /** @noinspection PhpIllegalPsrClassPathInspection */
 
@@ -22,12 +23,9 @@ class TestService3 implements GeneralInterface
         LoggerInterface $logger,
         PluginConfiguration $pluginConfiguration,
         FactoryInterface $factory,
-    ) {
-    }
+    ) {}
 
-    public function onConfigurationChange(): void
-    {
-    }
+    public function onConfigurationChange(): void {}
 
     public function request(
         string $name,
@@ -43,7 +41,5 @@ class TestService3 implements GeneralInterface
         return [];
     }
 
-    public function command(array $arguments, array $options, OutputInterface $output): void
-    {
-    }
+    public function command(array $arguments, array $options, OutputInterface $output): void {}
 }

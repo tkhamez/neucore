@@ -55,7 +55,7 @@ class Client extends \GuzzleHttp\Client
     private function callMiddleware(RequestInterface $request, ResponseInterface $response): void
     {
         foreach ($this->middleware as $callable) {
-            $promise = new class($response) {
+            $promise = new class ($response) {
                 private ResponseInterface $response;
                 public function __construct(ResponseInterface $response)
                 {

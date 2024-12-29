@@ -40,7 +40,7 @@ class CleanHttpCacheTest extends ConsoleTestCase
         $this->files = $this->getFiles($dir);
 
         // change lifetime of file1
-        $file2Content = explode("\n", (string)file_get_contents($this->files[1]));
+        $file2Content = explode("\n", (string) file_get_contents($this->files[1]));
         $file2Content[0] = time() - 10;
         file_put_contents($this->files[1], implode("\n", $file2Content));
 

@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -43,7 +44,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->helper->emptyDb();
         $a0id = $this->helper->addApp('A0', 's0', [Role::APP])->getId();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($a0id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($a0id . ':s0')];
         $response2 = $this->runApp('GET', '/api/app/v1/groups/123', null, $headers);
         $this->assertEquals(403, $response2->getStatusCode());
     }
@@ -53,7 +54,7 @@ class GroupControllerTest extends WebTestCase
         $this->helper->emptyDb();
         $aid = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_GROUPS])->getId();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($aid . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/groups/123', null, $headers);
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertEquals('Not Found', $response->getReasonPhrase());
@@ -66,7 +67,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->helper->emptyDb();
         $a0id = $this->helper->addApp('A0', 's0', [Role::APP])->getId();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($a0id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($a0id . ':s0')];
         $response2 = $this->runApp('GET', '/api/app/v2/groups/123', null, $headers);
         $this->assertEquals(403, $response2->getStatusCode());
     }
@@ -76,7 +77,7 @@ class GroupControllerTest extends WebTestCase
         $this->helper->emptyDb();
         $aid = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_GROUPS])->getId();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($aid . ':s1')];
         $response = $this->runApp('GET', '/api/app/v2/groups/123', null, $headers);
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertEquals('Character not found.', $response->getReasonPhrase());
@@ -86,7 +87,7 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response1 = $this->runApp('GET', '/api/app/v1/groups/123', null, $headers);
         $response2 = $this->runApp('GET', '/api/app/v1/groups/456', null, $headers);
 
@@ -100,7 +101,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertSame([
             ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
         ], $body1);
     }
 
@@ -117,7 +118,7 @@ class GroupControllerTest extends WebTestCase
         $this->helper->getObjectManager()->persist($setting3);
         $this->helper->getObjectManager()->flush();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/groups/789', null, $headers);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -133,7 +134,7 @@ class GroupControllerTest extends WebTestCase
         $this->helper->getObjectManager()->persist($setting1);
         $this->helper->getObjectManager()->flush();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/groups/780', null, $headers);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -150,7 +151,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->helper->emptyDb();
         $a0id = $this->helper->addApp('A0', 's0', [Role::APP])->getId();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($a0id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($a0id . ':s0')];
         $response2 = $this->runApp('POST', '/api/app/v1/groups', null, $headers);
         $this->assertEquals(403, $response2->getStatusCode());
     }
@@ -159,7 +160,7 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('POST', '/api/app/v1/groups', new \stdClass(), $headers);
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -170,8 +171,8 @@ class GroupControllerTest extends WebTestCase
         $this->setUpDb();
 
         $headers = [
-            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
-            'Content-Type' => 'application/json'
+            'Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1'),
+            'Content-Type' => 'application/json',
         ];
         $response = $this->runApp('POST', '/api/app/v1/groups', [123, 789, 789, 12], $headers);
 
@@ -183,14 +184,14 @@ class GroupControllerTest extends WebTestCase
             'character' => ['id' => 123, 'name' => 'C1', 'corporation' => null],
             'groups' => [
                 ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             ],
             'deactivated' => 'no',
         ], [
             'character' => ['id' => 789, 'name' => 'C3', 'corporation' => [
                 'id' => 500, 'name' => 'five', 'ticker' => '-5-', 'alliance' => [
-                    'id' => 100, 'name' => 'one', 'ticker' => '-1-'
-                ]
+                    'id' => 100, 'name' => 'one', 'ticker' => '-1-',
+                ],
             ]],
             'groups' => [
                 ['id' => $this->group0Id, 'name' => 'g0', 'description' => null,
@@ -217,8 +218,8 @@ class GroupControllerTest extends WebTestCase
         $this->helper->getObjectManager()->flush();
 
         $headers = [
-            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
-            'Content-Type' => 'application/json'
+            'Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1'),
+            'Content-Type' => 'application/json',
         ];
         $response = $this->runApp('POST', '/api/app/v1/groups', [123, 789], $headers);
 
@@ -230,14 +231,14 @@ class GroupControllerTest extends WebTestCase
             'character' => ['id' => 123, 'name' => 'C1', 'corporation' => null],
             'groups' => [
                 ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             ],
             'deactivated' => 'no',
         ], [
             'character' => ['id' => 789, 'name' => 'C3', 'corporation' => [
                 'id' => 500, 'name' => 'five', 'ticker' => '-5-', 'alliance' => [
-                    'id' => 100, 'name' => 'one', 'ticker' => '-1-'
-                ]
+                    'id' => 100, 'name' => 'one', 'ticker' => '-1-',
+                ],
             ]],
             'groups' => [],
             'deactivated' => 'yes',
@@ -255,7 +256,7 @@ class GroupControllerTest extends WebTestCase
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('100');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('500');
         $setting4 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_DELAY))
-            ->setValue((string)($invalidHours + 1));
+            ->setValue((string) ($invalidHours + 1));
         $this->helper->getObjectManager()->persist($setting1);
         $this->helper->getObjectManager()->persist($setting2);
         $this->helper->getObjectManager()->persist($setting3);
@@ -263,8 +264,8 @@ class GroupControllerTest extends WebTestCase
         $this->helper->getObjectManager()->flush();
 
         $headers = [
-            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
-            'Content-Type' => 'application/json'
+            'Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1'),
+            'Content-Type' => 'application/json',
         ];
         $response = $this->runApp('POST', '/api/app/v1/groups', [123, 789], $headers);
 
@@ -276,14 +277,14 @@ class GroupControllerTest extends WebTestCase
             'character' => ['id' => 123, 'name' => 'C1', 'corporation' => null],
             'groups' => [
                 ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             ],
             'deactivated' => 'no',
         ], [
             'character' => ['id' => 789, 'name' => 'C3', 'corporation' => [
                 'id' => 500, 'name' => 'five', 'ticker' => '-5-', 'alliance' => [
-                    'id' => 100, 'name' => 'one', 'ticker' => '-1-'
-                ]
+                    'id' => 100, 'name' => 'one', 'ticker' => '-1-',
+                ],
             ]],
             'groups' => [
                 ['id' => $this->group0Id, 'name' => 'g0', 'description' => null,
@@ -303,7 +304,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->helper->emptyDb();
         $a0id = $this->helper->addApp('A0', 's0', [Role::APP])->getId();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($a0id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($a0id . ':s0')];
         $response = $this->runApp('GET', '/api/app/v1/corp-groups/123', null, $headers);
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -313,7 +314,7 @@ class GroupControllerTest extends WebTestCase
         $this->helper->emptyDb();
         $aid = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_GROUPS])->getId();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($aid . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/corp-groups/123', null, $headers);
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertEquals('Not Found', $response->getReasonPhrase());
@@ -326,7 +327,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->helper->emptyDb();
         $a0id = $this->helper->addApp('A0', 's0', [Role::APP])->getId();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($a0id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($a0id . ':s0')];
         $response = $this->runApp('GET', '/api/app/v2/corp-groups/123', null, $headers);
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -336,7 +337,7 @@ class GroupControllerTest extends WebTestCase
         $this->helper->emptyDb();
         $aid = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_GROUPS])->getId();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($aid . ':s1')];
         $response = $this->runApp('GET', '/api/app/v2/corp-groups/123', null, $headers);
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertEquals('Corporation not found.', $response->getReasonPhrase());
@@ -346,7 +347,7 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/corp-groups/500', null, $headers);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -366,7 +367,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->helper->emptyDb();
         $a0id = $this->helper->addApp('A0', 's0', [Role::APP])->getId();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($a0id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($a0id . ':s0')];
         $response = $this->runApp('POST', '/api/app/v1/corp-groups', null, $headers);
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -375,7 +376,7 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('POST', '/api/app/v1/corp-groups', new \stdClass(), $headers);
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -386,8 +387,8 @@ class GroupControllerTest extends WebTestCase
         $this->setUpDb();
 
         $headers = [
-            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
-            'Content-Type' => 'application/json'
+            'Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1'),
+            'Content-Type' => 'application/json',
         ];
         $response = $this->runApp('POST', '/api/app/v1/corp-groups', [500, 500, 789, 501], $headers);
 
@@ -401,14 +402,14 @@ class GroupControllerTest extends WebTestCase
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                 ['id' => $this->group4Id, 'name' => 'g4', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
-            ]
+            ],
         ], [
             'id' => 501, 'name' => 'f1', 'ticker' => '-51-', 'groups' => [
                 ['id' => $this->group0Id, 'name' => 'g0', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                 ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
-            ]
+            ],
         ]];
         $this->assertSame($expected, $body);
     }
@@ -420,7 +421,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->helper->emptyDb();
         $a0id = $this->helper->addApp('A0', 's0', [Role::APP])->getId();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($a0id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($a0id . ':s0')];
         $response = $this->runApp('GET', '/api/app/v1/alliance-groups/123', null, $headers);
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -430,7 +431,7 @@ class GroupControllerTest extends WebTestCase
         $this->helper->emptyDb();
         $aid = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_GROUPS])->getId();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($aid . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/alliance-groups/123', null, $headers);
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertEquals('Not Found', $response->getReasonPhrase());
@@ -443,7 +444,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->helper->emptyDb();
         $a0id = $this->helper->addApp('A0', 's0', [Role::APP])->getId();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($a0id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($a0id . ':s0')];
         $response = $this->runApp('GET', '/api/app/v2/alliance-groups/123', null, $headers);
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -453,7 +454,7 @@ class GroupControllerTest extends WebTestCase
         $this->helper->emptyDb();
         $aid = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_GROUPS])->getId();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($aid . ':s1')];
         $response = $this->runApp('GET', '/api/app/v2/alliance-groups/123', null, $headers);
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertEquals('Alliance not found.', $response->getReasonPhrase());
@@ -463,7 +464,7 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/alliance-groups/100', null, $headers);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -483,7 +484,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->helper->emptyDb();
         $a0id = $this->helper->addApp('A0', 's0', [Role::APP])->getId();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($a0id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($a0id . ':s0')];
         $response = $this->runApp('POST', '/api/app/v1/alliance-groups', null, $headers);
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -492,7 +493,7 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('POST', '/api/app/v1/alliance-groups', new \stdClass(), $headers);
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -503,8 +504,8 @@ class GroupControllerTest extends WebTestCase
         $this->setUpDb();
 
         $headers = [
-            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
-            'Content-Type' => 'application/json'
+            'Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1'),
+            'Content-Type' => 'application/json',
         ];
         $response = $this->runApp('POST', '/api/app/v1/alliance-groups', [100, 100, 789, 101], $headers);
 
@@ -518,14 +519,14 @@ class GroupControllerTest extends WebTestCase
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                 ['id' => $this->group5Id, 'name' => 'g5', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
-            ]
+            ],
         ], [
             'id' => 101, 'name' => 'o1', 'ticker' => '-11-', 'groups' => [
                 ['id' => $this->group0Id, 'name' => 'g0', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                 ['id' => $this->group4Id, 'name' => 'g4', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
-            ]
+            ],
         ]];
         $this->assertSame($expected, $body);
     }
@@ -537,7 +538,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->helper->emptyDb();
         $a0id = $this->helper->addApp('A0', 's0', [Role::APP])->getId();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($a0id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($a0id . ':s0')];
         $response = $this->runApp('GET', '/api/app/v1/groups-with-fallback', null, $headers);
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -546,12 +547,12 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp(
             'GET',
             '/api/app/v1/groups-with-fallback?character=123&corporation=500&alliance=100',
             null,
-            $headers
+            $headers,
         );
 
         # app: g0, g1, g4
@@ -570,12 +571,12 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp(
             'GET',
             '/api/app/v1/groups-with-fallback?character=987&corporation=500&alliance=100',
             null,
-            $headers
+            $headers,
         );
 
         # app: g0, g1, g4, g5
@@ -599,12 +600,12 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp(
             'GET',
             '/api/app/v1/groups-with-fallback?character=1010&corporation=500&alliance=100',
             null,
-            $headers
+            $headers,
         );
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -617,7 +618,7 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $response = $this->runApp('GET', '/api/app/v1/group-members/'.$this->group1Id);
+        $response = $this->runApp('GET', '/api/app/v1/group-members/' . $this->group1Id);
 
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -626,13 +627,13 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
 
-        $response1 = $this->runApp('GET', '/api/app/v1/group-members/'.($this->group1Id+100), null, $headers);
+        $response1 = $this->runApp('GET', '/api/app/v1/group-members/' . ($this->group1Id + 100), null, $headers);
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals('Group not found.', $response1->getReasonPhrase());
 
-        $response2 = $this->runApp('GET', '/api/app/v1/group-members/'.$this->group2Id, null, $headers);
+        $response2 = $this->runApp('GET', '/api/app/v1/group-members/' . $this->group2Id, null, $headers);
         $this->assertEquals(404, $response2->getStatusCode());
     }
 
@@ -640,7 +641,7 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', "/api/app/v1/group-members/$this->group1Id?corporation=500", null, $headers);
 
         $this->assertEquals(200, $response->getStatusCode());

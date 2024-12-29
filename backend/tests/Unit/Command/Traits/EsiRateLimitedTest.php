@@ -31,7 +31,7 @@ class EsiRateLimitedTest extends TestCase
         $this->testLogger = new Logger();
         $this->testStorage = new SystemVariableStorage(
             new RepositoryFactory($om),
-            new ObjectManager($om, $this->testLogger)
+            new ObjectManager($om, $this->testLogger),
         );
         #apcu_clear_cache();
         #self::$testStorage = new \Neucore\Storage\ApcuStorage();
@@ -52,7 +52,7 @@ class EsiRateLimitedTest extends TestCase
         $this->assertSame(1, count($this->testLogger->getHandler()->getRecords()));
         $this->assertMatchesRegularExpression(
             '/sleeping \d+ second/',
-            $this->testLogger->getMessages()[0]
+            $this->testLogger->getMessages()[0],
         );
     }
 
@@ -60,24 +60,24 @@ class EsiRateLimitedTest extends TestCase
     {
         $this->esiRateLimited($this->testStorage, $this->testLogger, true);
 
-        $this->testStorage->set(Variables::ESI_THROTTLED, (string)(time() - 5));
+        $this->testStorage->set(Variables::ESI_THROTTLED, (string) (time() - 5));
         $this->checkForErrors();
         $this->assertNull($this->getSleepInSeconds());
         $this->assertSame(0, count($this->testLogger->getHandler()->getRecords()));
 
-        $this->testStorage->set(Variables::ESI_THROTTLED, (string)(time() + 5));
+        $this->testStorage->set(Variables::ESI_THROTTLED, (string) (time() + 5));
         $this->checkForErrors();
         $this->assertGreaterThanOrEqual(4, $this->getSleepInSeconds()); // very rarely this is 4
         $this->assertLessThanOrEqual(5, $this->getSleepInSeconds());
         $this->assertMatchesRegularExpression(
             "/EsiRateLimited: hit 'throttled', sleeping \d+ seconds/",
-            $this->testLogger->getMessages()[0]
+            $this->testLogger->getMessages()[0],
         );
     }
 
     public function testCheckForErrors_ErrorLimit()
     {
-        $this->testStorage->set(Variables::ESI_ERROR_LIMIT, (string)json_encode(new EsiErrorLimit(time(), 9, 20)));
+        $this->testStorage->set(Variables::ESI_ERROR_LIMIT, (string) json_encode(new EsiErrorLimit(time(), 9, 20)));
 
         $this->esiRateLimited($this->testStorage, $this->testLogger, true);
 
@@ -86,7 +86,7 @@ class EsiRateLimitedTest extends TestCase
         $this->assertLessThanOrEqual(20, $this->getSleepInSeconds());
         $this->assertStringStartsWith(
             'EsiRateLimited: hit error limit, sleeping ',
-            $this->testLogger->getMessages()[0]
+            $this->testLogger->getMessages()[0],
         );
         $this->assertStringEndsWith(' seconds', $this->testLogger->getMessages()[0]);
     }

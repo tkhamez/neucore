@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -25,7 +26,7 @@ class PlayerRepositoryTest extends TestCase
     private static EntityManagerInterface $em;
 
     private static Group $group1;
-    
+
     private static Group $group2;
 
     private static Player$player1;
@@ -207,7 +208,7 @@ class PlayerRepositoryTest extends TestCase
     public function testFindWithGroups()
     {
         $actual = $this->repo->findWithGroups([self::$group1->getId(), self::$group2->getId()]);
-        
+
         $this->assertSame(2, count($actual));
         $this->assertSame('c2', $actual[0]->getName());
         $this->assertSame('p3', $actual[1]->getName());
@@ -216,7 +217,7 @@ class PlayerRepositoryTest extends TestCase
     public function testFindWithRole()
     {
         $actual = $this->repo->findWithRole(10);
-        
+
         $this->assertSame(2, count($actual));
         $this->assertSame('c2', $actual[0]->getName());
         $this->assertSame('c4', $actual[1]->getName());
@@ -232,7 +233,7 @@ class PlayerRepositoryTest extends TestCase
 
         $actual = $this->repo->findInCorporationsWithExcludes(
             [98000101, 98000102, 98000103, 1000500],
-            [self::$player4, self::$player6]
+            [self::$player4, self::$player6],
         );
 
         $this->assertSame(2, count($actual));
@@ -250,7 +251,7 @@ class PlayerRepositoryTest extends TestCase
 
         $actual = $this->repo->findNotInNpcCorporationsWithExcludes(
             [98000102],
-            [self::$player4]
+            [self::$player4],
         );
 
         $this->assertSame(1, count($actual));
@@ -373,7 +374,7 @@ class PlayerRepositoryTest extends TestCase
     {
         $this->assertSame(
             [self::$player1->getId(), self::$player4->getId()],
-            $this->repo->findPlayersOfCharacters([1, 12, 3])
+            $this->repo->findPlayersOfCharacters([1, 12, 3]),
         );
     }
 

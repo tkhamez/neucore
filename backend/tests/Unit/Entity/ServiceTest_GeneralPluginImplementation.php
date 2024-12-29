@@ -18,12 +18,9 @@ class ServiceTest_GeneralPluginImplementation implements GeneralInterface
         LoggerInterface $logger,
         PluginConfiguration $pluginConfiguration,
         FactoryInterface $factory,
-    ) {
-    }
+    ) {}
 
-    public function onConfigurationChange(): void
-    {
-    }
+    public function onConfigurationChange(): void {}
 
     public function request(
         string $name,
@@ -39,7 +36,5 @@ class ServiceTest_GeneralPluginImplementation implements GeneralInterface
         return [];
     }
 
-    public function command(array $arguments, array $options, OutputInterface $output): void
-    {
-    }
+    public function command(array $arguments, array $options, OutputInterface $output): void {}
 }

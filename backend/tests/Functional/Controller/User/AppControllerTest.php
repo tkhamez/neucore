@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -94,7 +95,7 @@ class AppControllerTest extends WebTestCase
 
         $this->assertSame(
             [['id' => $this->aid, 'name' => 'app one']],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 
@@ -130,14 +131,14 @@ class AppControllerTest extends WebTestCase
         $log = new Logger();
 
         $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new\n app"], [
-            'Content-Type' => 'application/x-www-form-urlencoded'
+            'Content-Type' => 'application/x-www-form-urlencoded',
         ], [
-            LoggerInterface::class => $log
+            LoggerInterface::class => $log,
         ]);
         $this->assertEquals(500, $response->getStatusCode());
         $this->assertSame(
-            'AppController->create(): Role "'.Role::APP.'" not found.',
-            $log->getHandler()->getRecords()[0]['message']
+            'AppController->create(): Role "' . Role::APP . '" not found.',
+            $log->getHandler()->getRecords()[0]['message'],
         );
     }
 
@@ -148,7 +149,7 @@ class AppControllerTest extends WebTestCase
         $this->loginUser(8);
 
         $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new \napp"], [
-            'Content-Type' => 'application/x-www-form-urlencoded'
+            'Content-Type' => 'application/x-www-form-urlencoded',
         ]);
         $this->assertEquals(201, $response->getStatusCode());
 
@@ -157,7 +158,7 @@ class AppControllerTest extends WebTestCase
 
         $this->assertSame(
             ['id' => $na->getId(), 'name' => 'new app', 'groups' => [], 'roles' => [Role::APP], 'eveLogins' => []],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
 
         $this->assertSame(60, strlen($na->getSecret())); // the hash (blowfish) is 60 chars atm, may change.
@@ -182,7 +183,7 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/rename', ['name' => "n\n a n"]);
+        $response = $this->runApp('PUT', '/api/user/app/' . ($this->aid + 1) . '/rename', ['name' => "n\n a n"]);
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -191,7 +192,7 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/rename', ['name' => '']);
+        $response = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/rename', ['name' => '']);
         $this->assertEquals(400, $response->getStatusCode());
     }
 
@@ -200,11 +201,11 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/rename', ['name' => "n\n a n"], [
-            'Content-Type' => 'application/x-www-form-urlencoded'
+        $response1 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/rename', ['name' => "n\n a n"], [
+            'Content-Type' => 'application/x-www-form-urlencoded',
         ]);
-        $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/rename', ['name' => 'new name'], [
-            'Content-Type' => 'application/x-www-form-urlencoded'
+        $response2 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/rename', ['name' => 'new name'], [
+            'Content-Type' => 'application/x-www-form-urlencoded',
         ]);
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertEquals(200, $response2->getStatusCode());
@@ -222,10 +223,10 @@ class AppControllerTest extends WebTestCase
                     'name' => 'test1',
                     'description' => '',
                     'esiScopes' => '',
-                    'eveRoles' => []
-                ]]
+                    'eveRoles' => [],
+                ]],
             ],
-            $this->parseJsonBody($response1)
+            $this->parseJsonBody($response1),
         );
         $this->assertSame(
             [
@@ -238,10 +239,10 @@ class AppControllerTest extends WebTestCase
                     'name' => 'test1',
                     'description' => '',
                     'esiScopes' => '',
-                    'eveRoles' => []
-                ]]
+                    'eveRoles' => [],
+                ]],
             ],
-            $this->parseJsonBody($response2)
+            $this->parseJsonBody($response2),
         );
 
         $renamed = $this->appRepo->findOneBy(['name' => 'new name']);
@@ -265,7 +266,7 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('DELETE', '/api/user/app/'.($this->aid + 1).'/delete');
+        $response = $this->runApp('DELETE', '/api/user/app/' . ($this->aid + 1) . '/delete');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -274,7 +275,7 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('DELETE', '/api/user/app/'.$this->aid.'/delete');
+        $response = $this->runApp('DELETE', '/api/user/app/' . $this->aid . '/delete');
         $this->assertEquals(204, $response->getStatusCode());
 
         $this->em->clear();
@@ -300,7 +301,7 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('GET', '/api/user/app/'.($this->aid + 1).'/managers');
+        $response = $this->runApp('GET', '/api/user/app/' . ($this->aid + 1) . '/managers');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -309,12 +310,12 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('GET', '/api/user/app/'.$this->aid.'/managers');
+        $response = $this->runApp('GET', '/api/user/app/' . $this->aid . '/managers');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
             [['id' => $this->pid3, 'name' => 'Manager', 'roles' => [Role::APP_MANAGER, Role::USER]]],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 
@@ -335,8 +336,8 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-manager/'.($this->pid3 + 1));
-        $response2 = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/add-manager/'.$this->pid3);
+        $response1 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-manager/' . ($this->pid3 + 1));
+        $response2 = $this->runApp('PUT', '/api/user/app/' . ($this->aid + 1) . '/add-manager/' . $this->pid3);
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -352,8 +353,8 @@ class AppControllerTest extends WebTestCase
         $this->em->persist($player);
         $this->em->flush();
 
-        $response1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-manager/'.$this->pid3);
-        $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-manager/'.$player->getId());
+        $response1 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-manager/' . $this->pid3);
+        $response2 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-manager/' . $player->getId());
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
@@ -385,8 +386,8 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/remove-manager/'.$this->pid3);
-        $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-manager/'.($this->pid3 + 1));
+        $response1 = $this->runApp('PUT', '/api/user/app/' . ($this->aid + 1) . '/remove-manager/' . $this->pid3);
+        $response2 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/remove-manager/' . ($this->pid3 + 1));
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
     }
@@ -396,7 +397,7 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-manager/'.$this->pid3);
+        $response = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/remove-manager/' . $this->pid3);
         $this->assertEquals(204, $response->getStatusCode());
 
         $player = $this->playerRepo->find($this->pid3);
@@ -416,7 +417,7 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(9); // not app-admin and not manager of tested app
 
-        $response = $this->runApp('GET', '/api/user/app/'.($this->aid).'/show');
+        $response = $this->runApp('GET', '/api/user/app/' . ($this->aid) . '/show');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -425,7 +426,7 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('GET', '/api/user/app/'.($this->aid + 1).'/show');
+        $response = $this->runApp('GET', '/api/user/app/' . ($this->aid + 1) . '/show');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -434,7 +435,7 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('GET', '/api/user/app/'.$this->aid.'/show');
+        $response = $this->runApp('GET', '/api/user/app/' . $this->aid . '/show');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
@@ -449,10 +450,10 @@ class AppControllerTest extends WebTestCase
                     'name' => 'test1',
                     'description' => '',
                     'esiScopes' => '',
-                    'eveRoles' => []
+                    'eveRoles' => [],
                 ]],
             ],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 
@@ -461,7 +462,7 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(10); // manager of tested group, not an admin
 
-        $response = $this->runApp('GET', '/api/user/app/'.$this->aid.'/show');
+        $response = $this->runApp('GET', '/api/user/app/' . $this->aid . '/show');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
@@ -476,10 +477,10 @@ class AppControllerTest extends WebTestCase
                     'name' => 'test1',
                     'description' => '',
                     'esiScopes' => '',
-                    'eveRoles' => []
+                    'eveRoles' => [],
                 ]],
             ],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 
@@ -500,8 +501,8 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-group/'.($this->gid + 1));
-        $response2 = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/add-group/'.$this->gid);
+        $response1 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-group/' . ($this->gid + 1));
+        $response2 = $this->runApp('PUT', '/api/user/app/' . ($this->aid + 1) . '/add-group/' . $this->gid);
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -517,8 +518,8 @@ class AppControllerTest extends WebTestCase
         $this->em->persist($group);
         $this->em->flush();
 
-        $response1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-group/'.$this->gid);
-        $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-group/'.$group->getId());
+        $response1 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-group/' . $this->gid);
+        $response2 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-group/' . $group->getId());
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
@@ -549,8 +550,8 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/remove-group/'.$this->gid);
-        $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-group/'.($this->gid + 1));
+        $response1 = $this->runApp('PUT', '/api/user/app/' . ($this->aid + 1) . '/remove-group/' . $this->gid);
+        $response2 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/remove-group/' . ($this->gid + 1));
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
     }
@@ -565,9 +566,9 @@ class AppControllerTest extends WebTestCase
         $log = new Logger();
         $log->pushHandler(new TestHandler());
 
-        $res = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-group/'.$this->gid, null, null, [
+        $res = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/remove-group/' . $this->gid, null, null, [
             ObjectManager::class => $this->em,
-            LoggerInterface::class => $log
+            LoggerInterface::class => $log,
         ]);
         $this->assertEquals(500, $res->getStatusCode());
     }
@@ -577,7 +578,7 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-group/'.$this->gid);
+        $response = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/remove-group/' . $this->gid);
         $this->assertEquals(204, $response->getStatusCode());
 
         $group = $this->groupRepo->find($this->gid);
@@ -606,11 +607,11 @@ class AppControllerTest extends WebTestCase
         $this->loginUser(8);
 
         $response1 = $this->runApp('PUT', '/api/user/app/101/add-role/r');
-        $response2 = $this->runApp('PUT', '/api/user/app/101/add-role/'.Role::APP_TRACKING);
-        $response3 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-role/role');
+        $response2 = $this->runApp('PUT', '/api/user/app/101/add-role/' . Role::APP_TRACKING);
+        $response3 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-role/role');
 
         // user is a valid role, but not for apps
-        $response4 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-role/'.Role::USER);
+        $response4 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-role/' . Role::USER);
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -623,8 +624,8 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $r1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-role/'.Role::APP_TRACKING);
-        $r2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-role/'.Role::APP_TRACKING);
+        $r1 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-role/' . Role::APP_TRACKING);
+        $r2 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-role/' . Role::APP_TRACKING);
         $this->assertEquals(204, $r1->getStatusCode());
         $this->assertEquals(204, $r2->getStatusCode());
 
@@ -633,7 +634,7 @@ class AppControllerTest extends WebTestCase
         $app = $this->appRepo->find($this->aid);
         $this->assertSame(
             [Role::APP, Role::APP_TRACKING],
-            $app->getRoleNames()
+            $app->getRoleNames(),
         );
     }
 
@@ -655,11 +656,11 @@ class AppControllerTest extends WebTestCase
         $this->loginUser(8);
 
         $response1 = $this->runApp('PUT', '/api/user/app/101/remove-role/a');
-        $response2 = $this->runApp('PUT', '/api/user/app/101/remove-role/'.Role::APP_TRACKING);
-        $response3 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-role/a');
+        $response2 = $this->runApp('PUT', '/api/user/app/101/remove-role/' . Role::APP_TRACKING);
+        $response3 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/remove-role/a');
 
         // app is a valid role, but may not be removed
-        $response4 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-role/'.Role::APP);
+        $response4 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/remove-role/' . Role::APP);
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -672,8 +673,8 @@ class AppControllerTest extends WebTestCase
         $this->setupDb(['app', 'tracking']); // also add role APP_TRACKING to app
         $this->loginUser(8);
 
-        $r1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-role/'.Role::APP_TRACKING);
-        $r2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-role/'.Role::APP_TRACKING);
+        $r1 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/remove-role/' . Role::APP_TRACKING);
+        $r2 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/remove-role/' . Role::APP_TRACKING);
         $this->assertEquals(204, $r1->getStatusCode());
         $this->assertEquals(204, $r2->getStatusCode());
 
@@ -682,7 +683,7 @@ class AppControllerTest extends WebTestCase
         $app = $this->appRepo->find($this->aid);
         $this->assertSame(
             [Role::APP],
-            $app->getRoleNames()
+            $app->getRoleNames(),
         );
     }
 
@@ -703,9 +704,9 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('PUT', '/api/user/app/'.($this->aid+10).'/add-eve-login/'.$this->eveLoginId2);
-        $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-eve-login/'.($this->eveLoginId2+10));
-        $response3 = $this->runApp('PUT', '/api/user/app/'.($this->aid+10).'/add-eve-login/'.($this->eveLoginId2+10));
+        $response1 = $this->runApp('PUT', '/api/user/app/' . ($this->aid + 10) . '/add-eve-login/' . $this->eveLoginId2);
+        $response2 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-eve-login/' . ($this->eveLoginId2 + 10));
+        $response3 = $this->runApp('PUT', '/api/user/app/' . ($this->aid + 10) . '/add-eve-login/' . ($this->eveLoginId2 + 10));
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -746,11 +747,11 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('PUT', '/api/user/app/'.($this->aid+10).'/remove-eve-login/'.$this->eveLoginId2);
-        $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-eve-login/'.($this->eveLoginId2+10));
+        $response1 = $this->runApp('PUT', '/api/user/app/' . ($this->aid + 10) . '/remove-eve-login/' . $this->eveLoginId2);
+        $response2 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/remove-eve-login/' . ($this->eveLoginId2 + 10));
         $response3 = $this->runApp(
             'PUT',
-            '/api/user/app/'.($this->aid+10).'/remove-eve-login/'.($this->eveLoginId2+10)
+            '/api/user/app/' . ($this->aid + 10) . '/remove-eve-login/' . ($this->eveLoginId2 + 10),
         );
 
         $this->assertEquals(404, $response1->getStatusCode());
@@ -782,11 +783,11 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
 
         $this->loginUser(8); // no manager
-        $response = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/change-secret');
+        $response = $this->runApp('PUT', '/api/user/app/' . ($this->aid + 1) . '/change-secret');
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->loginUser(9); // manager, but not of this app
-        $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/change-secret');
+        $response = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/change-secret');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -795,7 +796,7 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(10);
 
-        $response = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/change-secret');
+        $response = $this->runApp('PUT', '/api/user/app/' . ($this->aid + 1) . '/change-secret');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -804,7 +805,7 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(10);
 
-        $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/change-secret');
+        $response = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/change-secret');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(64, strlen($this->parseJsonBody($response)));

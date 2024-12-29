@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -28,7 +29,7 @@ use Tests\Logger;
 class ServiceControllerTest extends WebTestCase
 {
     private const ERROR_NO_SERVICE_OBJECT =
-        'ServiceController: The configured service class does not exist or does not implement '.
+        'ServiceController: The configured service class does not exist or does not implement ' .
         'Neucore\Plugin\ServiceInterface.';
 
     private Helper $helper;
@@ -106,7 +107,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', '/api/user/service/'.($this->s1 + 100).'/get');
+        $response = $this->runApp('GET', '/api/user/service/' . ($this->s1 + 100) . '/get');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -187,9 +188,9 @@ class ServiceControllerTest extends WebTestCase
                     'textRegister' => '',
                     'textPending' => '',
                     'configurationData' => '',
-                ]
+                ],
             ],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 
@@ -237,7 +238,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', '/api/user/service/'.($this->s1 + 100).'/accounts');
+        $response = $this->runApp('GET', '/api/user/service/' . ($this->s1 + 100) . '/accounts');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -359,7 +360,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('POST', '/api/user/service/'.($this->s1+99).'/register');
+        $response = $this->runApp('POST', '/api/user/service/' . ($this->s1 + 99) . '/register');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -608,7 +609,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', '/api/user/service/'.($this->s1+99).'/update-account/1');
+        $response = $this->runApp('PUT', '/api/user/service/' . ($this->s1 + 99) . '/update-account/1');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -734,11 +735,11 @@ class ServiceControllerTest extends WebTestCase
     {
         $this->setupDb();
 
-        $response1 = $this->runApp('PUT', '/api/user/service/update-all-accounts/'.$this->player->getId());
+        $response1 = $this->runApp('PUT', '/api/user/service/update-all-accounts/' . $this->player->getId());
         $this->assertEquals(403, $response1->getStatusCode());
 
         $this->loginUser(1);
-        $response2 = $this->runApp('PUT', '/api/user/service/update-all-accounts/'.$this->player->getId());
+        $response2 = $this->runApp('PUT', '/api/user/service/update-all-accounts/' . $this->player->getId());
         $this->assertEquals(403, $response2->getStatusCode());
     }
 
@@ -747,7 +748,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(4);
 
-        $response = $this->runApp('PUT', '/api/user/service/update-all-accounts/'.($this->player->getId() + 10));
+        $response = $this->runApp('PUT', '/api/user/service/update-all-accounts/' . ($this->player->getId() + 10));
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -758,7 +759,7 @@ class ServiceControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'PUT',
-            '/api/user/service/update-all-accounts/'.$this->player->getId(),
+            '/api/user/service/update-all-accounts/' . $this->player->getId(),
             null,
             null,
             [LoggerInterface::class => $this->log],
@@ -769,7 +770,7 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(1, $this->parseJsonBody($response));
         $this->assertSame(
             ['PluginService::updatePlayerAccounts: S3: '],
-            $this->log->getMessages()
+            $this->log->getMessages(),
         );
     }
 
@@ -817,7 +818,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', '/api/user/service/'.($this->s1+99).'/reset-password/1');
+        $response = $this->runApp('PUT', '/api/user/service/' . ($this->s1 + 99) . '/reset-password/1');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -916,7 +917,7 @@ class ServiceControllerTest extends WebTestCase
             null,
             null,
             [],
-            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']]
+            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/ServiceController']],
         );
         $this->assertEquals(500, $response->getStatusCode());
     }

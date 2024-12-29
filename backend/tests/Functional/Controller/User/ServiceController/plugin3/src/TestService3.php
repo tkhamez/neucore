@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 /** @noinspection PhpUnused */
 /** @noinspection PhpIllegalPsrClassPathInspection */
@@ -24,12 +25,9 @@ class TestService3 implements ServiceInterface
         LoggerInterface $logger,
         PluginConfiguration $pluginConfiguration,
         FactoryInterface $factory,
-    ) {
-    }
+    ) {}
 
-    public function onConfigurationChange(): void
-    {
-    }
+    public function onConfigurationChange(): void {}
 
     public function request(
         string $name,
@@ -52,7 +50,7 @@ class TestService3 implements ServiceInterface
         CoreCharacter $character,
         array $groups,
         string $emailAddress,
-        array $allCharacterIds
+        array $allCharacterIds,
     ): ServiceAccountData {
         throw new Exception();
     }
@@ -64,9 +62,7 @@ class TestService3 implements ServiceInterface
         }
     }
 
-    public function updatePlayerAccount(CoreCharacter $mainCharacter, array $groups): void
-    {
-    }
+    public function updatePlayerAccount(CoreCharacter $mainCharacter, array $groups): void {}
 
     public function moveServiceAccount(int $toPlayerId, int $fromPlayerId): bool
     {

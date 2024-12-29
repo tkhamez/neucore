@@ -40,7 +40,7 @@ class AppAuthTest extends TestCase
         $h->emptyDb();
         $appId = $h->addApp('Test App', 'my-test-secret', ['app'])->getId();
 
-        $header = 'Bearer '.base64_encode($appId.':my-test-secret');
+        $header = 'Bearer ' . base64_encode($appId . ':my-test-secret');
         $roles = $this->service->getRoles($this->getRequest($header));
 
         $this->assertSame(['app'], $roles);
@@ -62,13 +62,13 @@ class AppAuthTest extends TestCase
 
     public function testGetAppBrokenAuth2()
     {
-        $header = 'Bearer '.base64_encode('no-id');
+        $header = 'Bearer ' . base64_encode('no-id');
         $this->assertNull($this->service->getApp($this->getRequest($header)));
     }
 
     public function testGetAppInvalidPass()
     {
-        $header = 'Bearer '.base64_encode('1:invalid-secret');
+        $header = 'Bearer ' . base64_encode('1:invalid-secret');
         $this->assertNull($this->service->getApp($this->getRequest($header)));
     }
 
@@ -78,7 +78,7 @@ class AppAuthTest extends TestCase
         $h->emptyDb();
         $appId = $h->addApp('Test App', 'my-test-secret', ['app'])->getId();
 
-        $header = 'Bearer '.base64_encode($appId.':my-test-secret');
+        $header = 'Bearer ' . base64_encode($appId . ':my-test-secret');
         $app = $this->service->getApp($this->getRequest($header));
 
         $this->assertSame($appId, $app->getId());
@@ -91,7 +91,7 @@ class AppAuthTest extends TestCase
         $h->emptyDb();
         $appId = $h->addApp('Test App', 'my-test-secret', ['app'])->getId();
 
-        $header = 'Bearer '.base64_encode("$appId:my-test-secret\n");
+        $header = 'Bearer ' . base64_encode("$appId:my-test-secret\n");
         $app = $this->service->getApp($this->getRequest($header));
 
         $this->assertSame($appId, $app->getId());
@@ -108,7 +108,7 @@ class AppAuthTest extends TestCase
         $oldHash = $this->repo->find($appId)->getSecret();
         $this->assertStringStartsWith('$1$', $oldHash);
 
-        $header = 'Bearer '.base64_encode($appId.':my-test-secret');
+        $header = 'Bearer ' . base64_encode($appId . ':my-test-secret');
         $this->service->getApp($this->getRequest($header));
         $h->getObjectManager()->clear();
 

@@ -9,7 +9,7 @@ use Monolog\LogRecord;
 
 class Logger extends \Monolog\Logger
 {
-    public function __construct($handlers = array(), $processors = array())
+    public function __construct($handlers = [], $processors = [])
     {
         parent::__construct('Test', $handlers, $processors);
 

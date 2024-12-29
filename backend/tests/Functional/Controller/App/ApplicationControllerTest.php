@@ -32,7 +32,7 @@ class ApplicationControllerTest extends WebTestCase
         $app = $this->helper->addApp('Test App', 'boring-test-secret', [Role::APP])->addGroup($group);
         $this->helper->getObjectManager()->flush();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':boring-test-secret')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($app->getId() . ':boring-test-secret')];
         $response = $this->runApp('GET', '/api/app/v1/show', null, $headers);
         $this->assertEquals(200, $response->getStatusCode());
 

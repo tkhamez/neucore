@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -53,7 +54,7 @@ class CheckTokensTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
             ClientInterface::class => $this->client,
-            LoggerInterface::class => $this->log
+            LoggerInterface::class => $this->log,
         ]);
 
         $actual = explode("\n", $output);
@@ -106,7 +107,7 @@ class CheckTokensTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
             ClientInterface::class => $this->client,
-            LoggerInterface::class => $this->log
+            LoggerInterface::class => $this->log,
         ]);
 
         $actual = explode("\n", $output);
@@ -127,12 +128,12 @@ class CheckTokensTest extends ConsoleTestCase
         $this->helper->createOrUpdateEsiToken($c, time() - 1000);
 
         $this->client->setResponse(
-            new Response(400, [], '{"error": "invalid_grant"}') // for getAccessToken()
+            new Response(400, [], '{"error": "invalid_grant"}'), // for getAccessToken()
         );
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
             ClientInterface::class => $this->client,
-            LoggerInterface::class => $this->log
+            LoggerInterface::class => $this->log,
         ]);
 
         $actual = explode("\n", $output);
@@ -154,15 +155,15 @@ class CheckTokensTest extends ConsoleTestCase
         $player = (new Player())->setName('p');
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')->setPlayer($player);
         $this->om->persist($player);
-        $this->helper->createOrUpdateEsiToken($c, time() - 60*60, 'at', true);
+        $this->helper->createOrUpdateEsiToken($c, time() - 60 * 60, 'at', true);
 
         list($token) = Helper::generateToken();
         $this->client->setResponse(
             new Response(200, [], '{
                 "access_token": ' . json_encode($token) . ', 
                 "refresh_token": "rt", 
-                "expires": '.(time()+60*60).'
-            }') // for getAccessToken()
+                "expires": ' . (time() + 60 * 60) . '
+            }'), // for getAccessToken()
         );
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
@@ -192,14 +193,14 @@ class CheckTokensTest extends ConsoleTestCase
     {
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
-        $this->helper->createOrUpdateEsiToken($c, time() - 60*60, 'at', true);
+        $this->helper->createOrUpdateEsiToken($c, time() - 60 * 60, 'at', true);
 
         list($token) = Helper::generateToken(['scope1', 'scope2'], 'Name', 'coh3');
         $this->client->setResponse(
             new Response( // for getAccessToken()
                 200,
                 [],
-                '{"access_token": '.json_encode($token).', "refresh_token": "rt", "expires": '.(time()+60*60).'}'
+                '{"access_token": ' . json_encode($token) . ', "refresh_token": "rt", "expires": ' . (time() + 60 * 60) . '}',
             ),
         );
 
@@ -252,7 +253,7 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertSame('', $actual[3]);
         $this->assertSame(
             'Unexpected JWT data, missing character owner hash.',
-            $this->log->getHandler()->getRecords()[0]['message']
+            $this->log->getHandler()->getRecords()[0]['message'],
         );
     }
 

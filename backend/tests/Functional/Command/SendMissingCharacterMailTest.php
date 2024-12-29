@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -94,7 +95,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('send-missing-character-mail', ['--sleep' => 0], [
             ClientInterface::class => $client,
-            LoggerInterface::class => $log
+            LoggerInterface::class => $log,
         ]);
 
         $actual = explode("\n", $output);
@@ -102,7 +103,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "send-missing-character-mail"', $actual[0]);
         $this->assertStringEndsWith(
             '  Missing character mail could not be sent to 104 because of CSPA charge or blocked sender',
-            $actual[1]
+            $actual[1],
         );
         $this->assertStringEndsWith('Finished "send-missing-character-mail"', $actual[2]);
         $this->assertSame('', $actual[3]);
@@ -121,7 +122,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $this->client->setResponse(new Response(200, [], '373515628'));
 
         $output = $this->runConsoleApp('send-missing-character-mail', ['--sleep' => 0], [
-            ClientInterface::class => $this->client
+            ClientInterface::class => $this->client,
         ]);
 
         $actual = explode("\n", $output);

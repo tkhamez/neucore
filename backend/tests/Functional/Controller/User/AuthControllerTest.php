@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -83,7 +84,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testLogin_DefaultOrAlt()
     {
-        $response = $this->runApp('GET', '/login/'.EveLogin::NAME_DEFAULT);
+        $response = $this->runApp('GET', '/login/' . EveLogin::NAME_DEFAULT);
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
@@ -94,7 +95,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testLogin_NoScopesForbidden()
     {
-        $response = $this->runApp('GET', '/login/'.EveLogin::NAME_NO_SCOPES);
+        $response = $this->runApp('GET', '/login/' . EveLogin::NAME_NO_SCOPES);
 
         $this->assertSame(403, $response->getStatusCode());
         $this->assertSame('Forbidden.', $response->getBody()->__toString());
@@ -108,7 +109,7 @@ class AuthControllerTest extends WebTestCase
         $this->helper->getObjectManager()->persist($setting);
         $this->helper->getObjectManager()->flush();
 
-        $response = $this->runApp('GET', '/login/'.EveLogin::NAME_NO_SCOPES);
+        $response = $this->runApp('GET', '/login/' . EveLogin::NAME_NO_SCOPES);
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
@@ -119,7 +120,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testLogin_Mail()
     {
-        $response = $this->runApp('GET', '/login/'.EveLogin::NAME_MAIL);
+        $response = $this->runApp('GET', '/login/' . EveLogin::NAME_MAIL);
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
@@ -138,7 +139,7 @@ class AuthControllerTest extends WebTestCase
 
         $this->assertSame(
             ['success' => false, 'message' => 'OAuth state missing.'],
-            $_SESSION['auth_result']
+            $_SESSION['auth_result'],
         );
     }
 
@@ -153,7 +154,7 @@ class AuthControllerTest extends WebTestCase
         $this->assertfalse(isset($_SESSION['auth_state'])); // test that it was deleted
         $this->assertSame(
             ['success' => false, 'message' => 'OAuth state mismatch.'],
-            $_SESSION['auth_result']
+            $_SESSION['auth_result'],
         );
     }
 
@@ -175,22 +176,22 @@ class AuthControllerTest extends WebTestCase
             new Response(200, [], // for getAccessToken()
                 '{"access_token": ' . json_encode($token) . ',
                 "expires_in": 1200,
-                "refresh_token": "gEy...fM0"}'),
-            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
+                "refresh_token": "gEy...fM0"}', ),
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
         );
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state='.$state,
+            '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client]
+            [ClientInterface::class => $this->client],
         );
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(
             ['success' => false, 'message' => 'Error, ESI token not added: Invalid login link.'],
-            $_SESSION['auth_result']
+            $_SESSION['auth_result'],
         );
     }
 
@@ -214,22 +215,22 @@ class AuthControllerTest extends WebTestCase
             new Response(200, [], // for getAccessToken()
                 '{"access_token": ' . json_encode($token) . ',
                 "expires_in": 1200,
-                "refresh_token": "gEy...fM0"}'),
-            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
+                "refresh_token": "gEy...fM0"}', ),
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
         );
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state='.$state,
+            '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client]
+            [ClientInterface::class => $this->client],
         );
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(
             ['success' => false, 'message' => 'Error, ESI token not added: Not logged in, login first.'],
-            $_SESSION['auth_result']
+            $_SESSION['auth_result'],
         );
     }
 
@@ -253,25 +254,25 @@ class AuthControllerTest extends WebTestCase
             new Response(200, [], // for getAccessToken()
                 '{"access_token": ' . json_encode($token) . ',
                 "expires_in": 1200,
-                "refresh_token": "gEy...fM0"}'),
-            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
+                "refresh_token": "gEy...fM0"}', ),
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
         );
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state='.$state,
+            '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client]
+            [ClientInterface::class => $this->client],
         );
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(
             [
                 'success' => false,
-                'message' => 'Error, ESI token not added: Character not found on this account, please add it first.'
+                'message' => 'Error, ESI token not added: Character not found on this account, please add it first.',
             ],
-            $_SESSION['auth_result']
+            $_SESSION['auth_result'],
         );
     }
 
@@ -284,7 +285,7 @@ class AuthControllerTest extends WebTestCase
         $loginId = 'custom1';
         $charId = 123; // the ID used in Helper::generateToken
         $this->helper->getEm()->persist(
-            (new EveLogin())->setName($loginId)->setEsiScopes('scope1')->setEveRoles(['Auditor'])
+            (new EveLogin())->setName($loginId)->setEsiScopes('scope1')->setEveRoles(['Auditor']),
         );
         $this->helper->addCharacterMain('Test User', $charId, [Role::USER], [], false); // without ESI token
         $this->loginUser($charId);
@@ -297,23 +298,23 @@ class AuthControllerTest extends WebTestCase
             new Response(200, [], // for getAccessToken()
                 '{"access_token": ' . json_encode($token) . ',
                 "expires_in": 1200,
-                "refresh_token": "gEy...fM0"}'),
+                "refresh_token": "gEy...fM0"}', ),
             new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
-            new Response(200, [], '{"roles": []}') // getCharactersCharacterIdRoles
+            new Response(200, [], '{"roles": []}'), // getCharactersCharacterIdRoles
         );
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state='.$state,
+            '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client]
+            [ClientInterface::class => $this->client],
         );
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(
             ['success' => false, 'message' => 'Error, ESI token not added: Character does not have required role(s).'],
-            $_SESSION['auth_result']
+            $_SESSION['auth_result'],
         );
     }
 
@@ -326,7 +327,7 @@ class AuthControllerTest extends WebTestCase
         $loginId = 'custom1';
         $charId = 123; // the ID used in Helper::generateToken
         $this->helper->getEm()->persist(
-            (new EveLogin())->setName($loginId)->setEsiScopes('scope1')->setEveRoles(['Auditor'])
+            (new EveLogin())->setName($loginId)->setEsiScopes('scope1')->setEveRoles(['Auditor']),
         );
         $this->helper->addCharacterMain('Test User', $charId, [Role::USER], [], false); // without ESI token
         $this->loginUser($charId);
@@ -339,17 +340,17 @@ class AuthControllerTest extends WebTestCase
             new Response(200, [], // for getAccessToken()
                 '{"access_token": ' . json_encode($token) . ',
                 "expires_in": 1200,
-                "refresh_token": "gEy...fM0"}'),
+                "refresh_token": "gEy...fM0"}', ),
             new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
-            new Response(200, [], '{"roles": ["Auditor"]}') // getCharactersCharacterIdRoles
+            new Response(200, [], '{"roles": ["Auditor"]}'), // getCharactersCharacterIdRoles
         );
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state='.$state,
+            '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client]
+            [ClientInterface::class => $this->client],
         );
 
         $this->assertSame(302, $response->getStatusCode());
@@ -379,17 +380,17 @@ class AuthControllerTest extends WebTestCase
         list($token, $keySet) = Helper::generateToken(['read-this']);
 
         $this->client->setResponse(
-            new Response(200, [], '{"access_token": ' . json_encode($token). '}'), // for getAccessToken
-            new Response(200, [], '{"keys": ' . json_encode($keySet). '}') // for JTW key set
+            new Response(200, [], '{"access_token": ' . json_encode($token) . '}'), // for getAccessToken
+            new Response(200, [], '{"keys": ' . json_encode($keySet) . '}'), // for JTW key set
         );
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state='.$state,
+            '/login-callback?state=' . $state,
             null,
             null,
             [ClientInterface::class => $this->client, LoggerInterface::class => $this->log],
-            [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']]
+            [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']],
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -397,7 +398,7 @@ class AuthControllerTest extends WebTestCase
 
         $this->assertSame(
             ['success' => false, 'message' => 'Failed to authenticate user.'],
-            $_SESSION['auth_result']
+            $_SESSION['auth_result'],
         );
     }
 
@@ -408,7 +409,7 @@ class AuthControllerTest extends WebTestCase
     {
         $this->helper->getEm()->persist((new EveLogin())->setName(EveLogin::NAME_DEFAULT));
         $this->helper->addRoles(
-            [Role::USER, Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER, Role::GROUP_MANAGER]
+            [Role::USER, Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER, Role::GROUP_MANAGER],
         );
 
         list($token, $keySet) = Helper::generateToken(['read-this', 'and-this']);
@@ -422,16 +423,16 @@ class AuthControllerTest extends WebTestCase
             new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
             new Response(200, [], '{"name": "char name", "corporation_id": 102}'), // getCharactersCharacterId()
             new Response(200, [], '[]'), // postCharactersAffiliation())
-            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}') // getCorporationsCorporationId()
+            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}'), // getCorporationsCorporationId()
         );
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state='.$state,
+            '/login-callback?state=' . $state,
             null,
             null,
             [ClientInterface::class => $this->client],
-            [['NEUCORE_EVE_SCOPES', 'read-this   and-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']]
+            [['NEUCORE_EVE_SCOPES', 'read-this   and-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']],
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -454,17 +455,17 @@ class AuthControllerTest extends WebTestCase
 
         $this->client->setResponse(
             new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'), // for getAccessToken()
-            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
         );
 
         self::$em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
         $response = $this->runApp(
             'GET',
-            '/login-callback?state='.$state,
+            '/login-callback?state=' . $state,
             null,
             null,
             [ClientInterface::class => $this->client, LoggerInterface::class => $this->log],
-            [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']]
+            [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']],
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -472,7 +473,7 @@ class AuthControllerTest extends WebTestCase
 
         $this->assertSame(
             ['success' => false, 'message' => 'Failed to add character to account.'],
-            $_SESSION['auth_result']
+            $_SESSION['auth_result'],
         );
     }
 
@@ -495,22 +496,22 @@ class AuthControllerTest extends WebTestCase
             new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
             new Response(200, [], '{"name": "char name", "corporation_id": 102}'), // getCharactersCharacterId()
             new Response(200, [], '[]'), // postCharactersAffiliation())
-            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}') // getCorporationsCorporationId()
+            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}'), // getCorporationsCorporationId()
         );
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state='.$state,
+            '/login-callback?state=' . $state,
             null,
             null,
             [ClientInterface::class => $this->client],
-            [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']]
+            [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']],
         );
         $this->assertSame(302, $response->getStatusCode());
 
         $this->assertSame(
             ['success' => true, 'message' => 'Character added to player account.'],
-            $_SESSION['auth_result']
+            $_SESSION['auth_result'],
         );
     }
 
@@ -529,8 +530,8 @@ class AuthControllerTest extends WebTestCase
         list($token, $keySet) = Helper::generateToken(
             ['read-this'],
             'Alt1',
-            (string)$alt->getCharacterOwnerHash(),
-            987
+            (string) $alt->getCharacterOwnerHash(),
+            987,
         );
         $state = $this->getStatePrefix(EveLogin::NAME_DEFAULT) . self::$state;
         $_SESSION['auth_state'] = $state;
@@ -540,22 +541,22 @@ class AuthControllerTest extends WebTestCase
             new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
             new Response(200, [], '{"name": "char name", "corporation_id": 102}'), // getCharactersCharacterId()
             new Response(200, [], '[]'), // postCharactersAffiliation())
-            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}') // getCorporationsCorporationId()
+            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}'), // getCorporationsCorporationId()
         );
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state='.$state,
+            '/login-callback?state=' . $state,
             null,
             null,
             [ClientInterface::class => $this->client, LoggerInterface::class => $this->log],
-            [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']]
+            [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']],
         );
         $this->assertSame(302, $response->getStatusCode());
 
         $this->assertSame(
             ['success' => false, 'message' => 'Login failed. Please use your main character to login.'],
-            $_SESSION['auth_result']
+            $_SESSION['auth_result'],
         );
     }
 
@@ -581,23 +582,23 @@ class AuthControllerTest extends WebTestCase
             new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
             new Response(200, [], '{"name": "char name", "corporation_id": 102}'), // getCharactersCharacterId()
             new Response(200, [], '[]'), // postCharactersAffiliation())
-            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}') // getCorporationsCorporationId()
+            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}'), // getCorporationsCorporationId()
         );
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state='.$state,
+            '/login-callback?state=' . $state,
             null,
             null,
             [ClientInterface::class => $this->client, LoggerInterface::class => $this->log],
-            [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']]
+            [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']],
         );
         $this->assertSame(302, $response->getStatusCode());
 
         $this->assertSame([], $this->log->getMessages());
         $this->assertSame(
             ['success' => true, 'message' => 'Accounts successfully merged.'],
-            $_SESSION['auth_result']
+            $_SESSION['auth_result'],
         );
     }
 
@@ -621,22 +622,22 @@ class AuthControllerTest extends WebTestCase
 
         $this->client->setResponse(
             new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'), // for getAccessToken()
-            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
         );
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state='.$state,
+            '/login-callback?state=' . $state,
             null,
             null,
             [ClientInterface::class => $this->client],
-            [['NEUCORE_EVE_DATASOURCE', 'tranquility']]
+            [['NEUCORE_EVE_DATASOURCE', 'tranquility']],
         );
         $this->assertSame(302, $response->getStatusCode());
 
         $this->assertSame(
             ['success' => false, 'message' => 'Failed to store character.'],
-            $_SESSION['auth_result']
+            $_SESSION['auth_result'],
         );
     }
 
@@ -660,22 +661,22 @@ class AuthControllerTest extends WebTestCase
 
         $this->client->setResponse(
             new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'), // for getAccessToken()
-            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
         );
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state='.$state,
+            '/login-callback?state=' . $state,
             null,
             null,
             [ClientInterface::class => $this->client],
-            [['NEUCORE_EVE_DATASOURCE', 'tranquility']]
+            [['NEUCORE_EVE_DATASOURCE', 'tranquility']],
         );
         $this->assertSame(302, $response->getStatusCode());
 
         $this->assertSame(
             ['success' => true, 'message' => 'Mail character authenticated.'],
-            $_SESSION['auth_result']
+            $_SESSION['auth_result'],
         );
     }
 
@@ -686,7 +687,7 @@ class AuthControllerTest extends WebTestCase
 
         $this->assertSame(
             ['success' => false, 'message' => 'No login attempt recorded.'],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 

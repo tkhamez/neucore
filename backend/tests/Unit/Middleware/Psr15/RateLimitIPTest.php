@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -29,7 +30,7 @@ class RateLimitIPTest extends TestCase
         RateLimitIP::$active = true;
 
         $_SERVER['REMOTE_ADDR'] = self::$ip;
-        $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer ' . base64_encode(self::$appIdp.':abc');
+        $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer ' . base64_encode(self::$appIdp . ':abc');
         self::$key = Variables::RATE_LIMIT_IP . '_' . str_replace('.', '', self::$ip);
     }
 
@@ -43,7 +44,7 @@ class RateLimitIPTest extends TestCase
     public function testProcess_Inactive()
     {
         $storage = new ApcuStorage();
-        $storage->set(self::$key, (string)\json_encode((object)['remaining' => 0, 'created' => time() - 5]));
+        $storage->set(self::$key, (string) \json_encode((object) ['remaining' => 0, 'created' => time() - 5]));
 
         $logger = new Logger();
         $request = RequestFactory::createRequest();
@@ -67,7 +68,7 @@ class RateLimitIPTest extends TestCase
     public function testProcess_Active()
     {
         $storage = new ApcuStorage();
-        $storage->set(self::$key, (string)\json_encode((object)['remaining' => 0, 'created' => time() - 5]));
+        $storage->set(self::$key, (string) \json_encode((object) ['remaining' => 0, 'created' => time() - 5]));
 
         $logger = new Logger();
         $request = RequestFactory::createRequest();
@@ -81,15 +82,15 @@ class RateLimitIPTest extends TestCase
         $this->assertEqualsWithDelta(4.5, $response->getHeader(RateLimit::HEADER_RESET)[0], 1.0);
         $this->assertStringStartsWith(
             'IP rate limit exceeded with 51 requests in ', // ... ~5.5 seconds
-            $response->getBody()->__toString()
+            $response->getBody()->__toString(),
         );
 
         $logs = $logger->getMessages();
         $this->assertSame(1, count($logs));
         $this->assertStringStartsWith(
-            'IP Rate Limit: '.self::$ip.', App-ID '.self::$appIdp.', '.
+            'IP Rate Limit: ' . self::$ip . ', App-ID ' . self::$appIdp . ', ' .
                 'limit exceeded with 51 request in ', // ... ~5.5 seconds.
-            $logs[0]
+            $logs[0],
         );
     }
 }

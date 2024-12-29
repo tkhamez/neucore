@@ -26,7 +26,7 @@ class FactoryTest extends TestCase
         $factory = Helper::getPluginFactory();
         $this->assertInstanceOf(
             RequestInterface::class,
-            $factory->createHttpRequest('GET', 'https://test.com', [], 'body')
+            $factory->createHttpRequest('GET', 'https://test.com', [], 'body'),
         );
     }
 

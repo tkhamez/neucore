@@ -65,7 +65,7 @@ class SettingsEveLoginControllerTest extends WebTestCase
         $response = $this->runApp('POST', '/api/user/settings/eve-login/custom,2');
         $this->assertEquals(400, $response->getStatusCode());
 
-        $response = $this->runApp('POST', '/api/user/settings/eve-login/'.EveLogin::INTERNAL_LOGIN_PREFIX.'test');
+        $response = $this->runApp('POST', '/api/user/settings/eve-login/' . EveLogin::INTERNAL_LOGIN_PREFIX . 'test');
         $this->assertEquals(400, $response->getStatusCode());
     }
 
@@ -95,7 +95,7 @@ class SettingsEveLoginControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('DELETE', '/api/user/settings/eve-login/'.($this->defaultLoginId - 1));
+        $response = $this->runApp('DELETE', '/api/user/settings/eve-login/' . ($this->defaultLoginId - 1));
         $this->assertEquals(204, $response->getStatusCode());
 
         $login = $this->eveLoginRepo->find('custom1');
@@ -107,7 +107,7 @@ class SettingsEveLoginControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('DELETE', '/api/user/settings/eve-login/'.$this->defaultLoginId);
+        $response = $this->runApp('DELETE', '/api/user/settings/eve-login/' . $this->defaultLoginId);
         $this->assertEquals(400, $response->getStatusCode());
     }
 
@@ -186,7 +186,7 @@ class SettingsEveLoginControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', '/api/user/settings/eve-login/'.($this->custom1LoginId + 10).'/tokens');
+        $response = $this->runApp('GET', '/api/user/settings/eve-login/' . ($this->custom1LoginId + 10) . '/tokens');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -235,7 +235,7 @@ class SettingsEveLoginControllerTest extends WebTestCase
                 'esiScopes' => 'scope3',
                 'eveRoles' => ['Role3'],
             ],
-            ['Content-Type' => 'application/json']
+            ['Content-Type' => 'application/json'],
         );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
@@ -262,7 +262,7 @@ class SettingsEveLoginControllerTest extends WebTestCase
             'PUT',
             '/api/user/settings/eve-login',
             ['id' => 'custom1'],
-            ['Content-Type' => 'application/json']
+            ['Content-Type' => 'application/json'],
         );
         $this->assertEquals(400, $response->getStatusCode());
     }
@@ -282,7 +282,7 @@ class SettingsEveLoginControllerTest extends WebTestCase
                 'esiScopes' => 'scope3',
                 'eveRoles' => ['Role3'],
             ],
-            ['Content-Type' => 'application/json']
+            ['Content-Type' => 'application/json'],
         );
         $this->assertEquals(400, $response->getStatusCode());
     }
@@ -308,7 +308,7 @@ class SettingsEveLoginControllerTest extends WebTestCase
             'PUT',
             '/api/user/settings/eve-login',
             (new EveLogin())->setId($this->defaultLoginId + 1)->setName('custom2'),
-            ['Content-Type' => 'application/json']
+            ['Content-Type' => 'application/json'],
         );
         $this->assertEquals(404, $response->getStatusCode());
     }

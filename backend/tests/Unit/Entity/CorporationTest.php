@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -27,7 +28,7 @@ class CorporationTest extends TestCase
             'id' => 123,
             'name' => 'test corp',
             'ticker' => 'ABC',
-            'alliance' => null
+            'alliance' => null,
         ], json_decode((string) json_encode($corp), true));
 
         $this->assertSame([
@@ -163,7 +164,7 @@ class CorporationTest extends TestCase
 
         $this->assertSame([1, 2], $corp->getGroupsTrackingIds());
     }
-    
+
     public function testHasGroupTracking()
     {
         $group1 = new Group();

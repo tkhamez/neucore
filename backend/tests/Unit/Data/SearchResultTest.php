@@ -20,7 +20,7 @@ class SearchResultTest extends TestCase
                 'playerId' => 1,
                 'playerName' => 'player name',
             ],
-            $obj->jsonSerialize()
+            $obj->jsonSerialize(),
         );
     }
 }

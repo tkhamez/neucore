@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpIllegalPsrClassPathInspection */
 /** @noinspection PhpUnused */
 /* @phan-file-suppress PhanTypeMismatchReturn */
@@ -28,12 +29,9 @@ class TestService1 implements ServiceInterface
         LoggerInterface $logger,
         PluginConfiguration $pluginConfiguration,
         FactoryInterface $factory,
-    ) {
-    }
+    ) {}
 
-    public function onConfigurationChange(): void
-    {
-    }
+    public function onConfigurationChange(): void {}
 
     public function request(
         string $name,
@@ -67,7 +65,7 @@ class TestService1 implements ServiceInterface
         CoreCharacter $character,
         array $groups,
         string $emailAddress,
-        array $allCharacterIds
+        array $allCharacterIds,
     ): ServiceAccountData {
         throw new Exception();
     }
@@ -79,9 +77,7 @@ class TestService1 implements ServiceInterface
         }
     }
 
-    public function updatePlayerAccount(CoreCharacter $mainCharacter, array $groups): void
-    {
-    }
+    public function updatePlayerAccount(CoreCharacter $mainCharacter, array $groups): void {}
 
     public function moveServiceAccount(int $toPlayerId, int $fromPlayerId): bool
     {

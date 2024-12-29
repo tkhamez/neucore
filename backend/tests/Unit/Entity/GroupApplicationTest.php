@@ -14,8 +14,8 @@ class GroupApplicationTest extends TestCase
     public function testJsonSerialize()
     {
         $groupApp = new GroupApplication();
-        $groupApp->setPlayer((new Player)->setName('p'));
-        $groupApp->setGroup((new Group)->setName('g'));
+        $groupApp->setPlayer((new Player())->setName('p'));
+        $groupApp->setGroup((new Group())->setName('g'));
         $groupApp->setCreated(new \DateTime('2019-04-06 16:09:24'));
 
         $this->assertSame([
@@ -24,13 +24,13 @@ class GroupApplicationTest extends TestCase
             'group' => ['id' => null, 'name' => 'g', 'description' => null,
                 'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             'status' => GroupApplication::STATUS_PENDING,
-            'created' => '2019-04-06T16:09:24Z'
+            'created' => '2019-04-06T16:09:24Z',
         ], json_decode((string) json_encode($groupApp), true));
     }
 
     public function testGetId()
     {
-        $this->assertNull((new GroupApplication)->getId());
+        $this->assertNull((new GroupApplication())->getId());
     }
 
     public function testSetGetPlayer()

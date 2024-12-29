@@ -47,7 +47,7 @@ class CorporationMemberTest extends TestCase
         $member->setShipType((new EsiType())->setId(345));
         $member->setStartDate(new \DateTime('2018-12-25 19:14:58'));
         $member->setCharacter(
-            (new Character())->setId(123)->setName('test char')->setPlayer((new Player())->setName('ply'))
+            (new Character())->setId(123)->setName('test char')->setPlayer((new Player())->setName('ply')),
         );
 
         $this->assertSame([
@@ -222,9 +222,9 @@ class CorporationMemberTest extends TestCase
                             ->setEveLogin((new EveLogin())->setName(EveLogin::NAME_DEFAULT))
                             ->setValidToken(true)
                             ->setValidTokenTime(new \DateTime())
-                            ->setLastChecked(new \DateTime())
+                            ->setLastChecked(new \DateTime()),
                     )
-                    ->setPlayer((new Player)->setId(1)->setName('player'))
+                    ->setPlayer((new Player())->setId(1)->setName('player')),
             )
             ->setLogonDate(new \DateTime())
             ->setLogoffDate(new \DateTime())
@@ -257,7 +257,7 @@ class CorporationMemberTest extends TestCase
                     ->setId(1020)
                     ->setName('char')
                     ->setMain(true)
-                    ->setPlayer((new Player)->setId(1)->setName('player'))
+                    ->setPlayer((new Player())->setId(1)->setName('player')),
             )
             ->setLogonDate(new \DateTime())
             ->setLogoffDate(new \DateTime())

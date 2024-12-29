@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -74,7 +75,7 @@ class CharacterControllerTest extends WebTestCase
                 'tokenLastChecked' => null,
                 'corporation' => null,
             ],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 
@@ -152,7 +153,7 @@ class CharacterControllerTest extends WebTestCase
             'characterId' => 456,
             'characterName' => 'Another USER',
             'playerId' => $this->playerId,
-            'playerName' => 'User'
+            'playerName' => 'User',
         ]], $this->parseJsonBody($response));
     }
 
@@ -180,7 +181,7 @@ class CharacterControllerTest extends WebTestCase
             'characterId' => 96061222,
             'characterName' => 'User',
             'playerId' => $this->playerId,
-            'playerName' => 'User'
+            'playerName' => 'User',
         ]], $this->parseJsonBody($response));
     }
 
@@ -217,7 +218,7 @@ class CharacterControllerTest extends WebTestCase
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             ClientInterface::class => $this->client,
-            LoggerInterface::class => $this->log
+            LoggerInterface::class => $this->log,
         ]);
 
         $this->assertEquals(503, $response->getStatusCode());
@@ -237,11 +238,11 @@ class CharacterControllerTest extends WebTestCase
         $this->client->setResponse(
             new Response(200, [], '{
                 "name": "Char 96061222",
-                "corporation_id": '.$this->corpId.'
+                "corporation_id": ' . $this->corpId . '
             }'),
             new Response(200, [], '[{
                 "character_id": 96061222,
-                "corporation_id": '.$this->corpId.'
+                "corporation_id": ' . $this->corpId . '
             }]'), // affiliation
             new Response(200, [], '{
                 "name": "The Corp updated.",
@@ -253,7 +254,7 @@ class CharacterControllerTest extends WebTestCase
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             ClientInterface::class => $this->client,
-            LoggerInterface::class => $this->log
+            LoggerInterface::class => $this->log,
         ]);
 
         $this->assertEquals(204, $response->getStatusCode());
@@ -281,11 +282,11 @@ class CharacterControllerTest extends WebTestCase
         $this->client->setResponse(
             new Response(200, [], /* creates a new CharacterNameChange */ '{
                 "name": "Char 96061222",
-                "corporation_id": '.$this->corpId.'
+                "corporation_id": ' . $this->corpId . '
             }'),
             new Response(200, [], '[{
                 "character_id": 96061222,
-                "corporation_id": '.$this->corpId.'
+                "corporation_id": ' . $this->corpId . '
             }]'), // affiliation
             new Response(200, [], '{
                 "name": "The Corp updated.",
@@ -296,7 +297,7 @@ class CharacterControllerTest extends WebTestCase
         );
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            ClientInterface::class => $this->client
+            ClientInterface::class => $this->client,
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -333,18 +334,18 @@ class CharacterControllerTest extends WebTestCase
             }'),
             new Response(200, [], '[{
                 "character_id": 96061222,
-                "corporation_id": '.$this->corpId.'
+                "corporation_id": ' . $this->corpId . '
             }]'), // affiliation
             new Response(200, [], '{
                 "name": "The Corp.",
                 "ticker": "-TTT-",
                 "alliance_id": null
             }'),
-            new Response(200, [], '{}') // for OAuthTestProvider->getResourceOwner()
+            new Response(200, [], '{}'), // for OAuthTestProvider->getResourceOwner()
         );
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            ClientInterface::class => $this->client
+            ClientInterface::class => $this->client,
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -393,7 +394,7 @@ class CharacterControllerTest extends WebTestCase
         $this->client->setResponse(new Response(404, [], '{"error": "Character not found"}'));
 
         $response = $this->runApp('POST', '/api/user/character/add/456789', [], [], [
-            ClientInterface::class => $this->client
+            ClientInterface::class => $this->client,
         ]);
 
         $this->assertSame(404, $response->getStatusCode());
@@ -409,7 +410,7 @@ class CharacterControllerTest extends WebTestCase
 
         $response = $this->runApp('POST', '/api/user/character/add/456789', [], [], [
             ClientInterface::class => $this->client,
-            LoggerInterface::class => $this->log
+            LoggerInterface::class => $this->log,
         ]);
 
         $this->assertSame(500, $response->getStatusCode());
@@ -423,7 +424,7 @@ class CharacterControllerTest extends WebTestCase
         $this->loginUser(9);
 
         $response = $this->runApp('POST', '/api/user/character/add/0', [], [], [
-            LoggerInterface::class => $this->log
+            LoggerInterface::class => $this->log,
         ]);
 
         $this->assertSame(500, $response->getStatusCode());
@@ -439,7 +440,7 @@ class CharacterControllerTest extends WebTestCase
         $this->client->setResponse(new Response(200, [], '{"name": "Char 456789"}'));
 
         $response = $this->runApp('POST', '/api/user/character/add/456789', [], [], [
-            ClientInterface::class => $this->client
+            ClientInterface::class => $this->client,
         ]);
 
         $this->assertSame(201, $response->getStatusCode());

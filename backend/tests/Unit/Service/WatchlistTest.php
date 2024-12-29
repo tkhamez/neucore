@@ -152,38 +152,39 @@ class WatchlistTest extends TestCase
 
         $this->assertInstanceOf(
             Group::class,
-            self::$watchlistService->getList(self::$watchlistId, Watchlist::GROUP)[0]
+            self::$watchlistService->getList(self::$watchlistId, Watchlist::GROUP)[0],
         );
         $this->assertInstanceOf(
             Group::class,
-            self::$watchlistService->getList(self::$watchlistId, Watchlist::MANAGER_GROUP)[0]);
+            self::$watchlistService->getList(self::$watchlistId, Watchlist::MANAGER_GROUP)[0],
+        );
         $this->assertInstanceOf(
             Alliance::class,
-            self::$watchlistService->getList(self::$watchlistId, Watchlist::ALLIANCE)[0]
+            self::$watchlistService->getList(self::$watchlistId, Watchlist::ALLIANCE)[0],
         );
         $this->assertInstanceOf(
             Corporation::class,
-            self::$watchlistService->getList(self::$watchlistId, Watchlist::CORPORATION)[0]
+            self::$watchlistService->getList(self::$watchlistId, Watchlist::CORPORATION)[0],
         );
         $this->assertInstanceOf(
             Player::class,
-            self::$watchlistService->getList(self::$watchlistId, Watchlist::EXEMPTION)[0]
+            self::$watchlistService->getList(self::$watchlistId, Watchlist::EXEMPTION)[0],
         );
         $this->assertInstanceOf(
             Corporation::class,
-            self::$watchlistService->getList(self::$watchlistId, Watchlist::KICKLIST_CORPORATION)[0]
+            self::$watchlistService->getList(self::$watchlistId, Watchlist::KICKLIST_CORPORATION)[0],
         );
         $this->assertInstanceOf(
             Alliance::class,
-            self::$watchlistService->getList(self::$watchlistId, Watchlist::KICKLIST_ALLIANCE)[0]
+            self::$watchlistService->getList(self::$watchlistId, Watchlist::KICKLIST_ALLIANCE)[0],
         );
         $this->assertInstanceOf(
             Corporation::class,
-            self::$watchlistService->getList(self::$watchlistId, Watchlist::ALLOWLIST_CORPORATION)[0]
+            self::$watchlistService->getList(self::$watchlistId, Watchlist::ALLOWLIST_CORPORATION)[0],
         );
         $this->assertInstanceOf(
             Alliance::class,
-            self::$watchlistService->getList(self::$watchlistId, Watchlist::ALLOWLIST_ALLIANCE)[0]
+            self::$watchlistService->getList(self::$watchlistId, Watchlist::ALLOWLIST_ALLIANCE)[0],
         );
     }
 

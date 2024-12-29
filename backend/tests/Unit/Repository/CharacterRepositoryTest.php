@@ -88,7 +88,7 @@ class CharacterRepositoryTest extends TestCase
     {
         $this->assertSame(
             [10, 20, 101],
-            self::$repository->getCharacterIdsFromPlayers([self::$player1->getId(), self::$player2->getId()])
+            self::$repository->getCharacterIdsFromPlayers([self::$player1->getId(), self::$player2->getId()]),
         );
     }
 
@@ -100,7 +100,7 @@ class CharacterRepositoryTest extends TestCase
                 ['id' => self::$player1->getId(), 'name' => 'Player 1', 'characterId' => 101],
                 ['id' => self::$player2->getId(), 'name' => 'Player 2', 'characterId' => 20],
             ],
-            self::$repository->findPlayersByCharacters([10, 20, 101])
+            self::$repository->findPlayersByCharacters([10, 20, 101]),
         );
     }
 }

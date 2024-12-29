@@ -40,8 +40,8 @@ class Esi429ResponseTest extends TestCase
 
     public function testInvoke_500()
     {
-        $response1 = new Response(500, [], (string)\json_encode([
-            'error' => 'Undefined 429 response. Original message: Too many errors.You have been temporarily throttled.'
+        $response1 = new Response(500, [], (string) \json_encode([
+            'error' => 'Undefined 429 response. Original message: Too many errors.You have been temporarily throttled.',
         ]));
         $function1 = $this->obj->__invoke($this->helper->getGuzzleHandler($response1));
         $function1(new Request('GET', 'https://local.host/esi/path'), []);

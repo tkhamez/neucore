@@ -21,9 +21,9 @@ class ServiceAccountTest extends TestCase
                 'characterId' => 100,
                 'username' => 'username',
                 'status' => ServiceAccountData::STATUS_PENDING,
-                'name' => 'name'
+                'name' => 'name',
             ],
-            $obj->jsonSerialize()
+            $obj->jsonSerialize(),
         );
     }
 }

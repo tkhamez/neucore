@@ -49,7 +49,7 @@ class EsiControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/api/user/esi/request?character=123&route=/characters/{character_id}'
+            '/api/user/esi/request?character=123&route=/characters/{character_id}',
         );
         $this->assertSame(400, $response->getStatusCode());
         $this->assertSame('Character not found.', $this->parseJsonBody($response));
@@ -62,7 +62,7 @@ class EsiControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/api/user/esi/request?character=6&route=/characters/{character_id}&login=test-1'
+            '/api/user/esi/request?character=6&route=/characters/{character_id}&login=test-1',
         );
         $this->assertSame(400, $response->getStatusCode());
         $this->assertSame('"Character has no valid token."', $response->getBody()->__toString());
@@ -81,7 +81,7 @@ class EsiControllerTest extends WebTestCase
                 'X-Esi-Error-Limit-Reset' => ['60'],
                 'Expires' => ['Sat, 02 Mar 2019 12:26:53 GMT'],
             ],
-            '{"key": "value"}'
+            '{"key": "value"}',
         ));
 
         $response = $this->runApp(
@@ -89,7 +89,7 @@ class EsiControllerTest extends WebTestCase
             '/api/user/esi/request?character=6&route=/characters/{character_id}',
             null,
             null,
-            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)],
         );
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame([
@@ -98,7 +98,7 @@ class EsiControllerTest extends WebTestCase
                 ['X-Esi-Error-Limit-Remain', '100'],
                 ['X-Esi-Error-Limit-Reset', '60'],
             ],
-            'body' => ['key' => 'value']
+            'body' => ['key' => 'value'],
         ], $this->parseJsonBody($response));
     }
 
@@ -119,7 +119,7 @@ class EsiControllerTest extends WebTestCase
             '/api/user/esi/request?character=6&route=/latest/characters/affiliation/',
             ['body' => [96061222]],
             null,
-            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)],
         );
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame([
@@ -127,8 +127,8 @@ class EsiControllerTest extends WebTestCase
             'body' => [
                 "alliance_id" => 99003214,
                 "character_id" => 96061222,
-                "corporation_id" => 98522659
-          ]
+                "corporation_id" => 98522659,
+            ],
         ], $this->parseJsonBody($response));
     }
 

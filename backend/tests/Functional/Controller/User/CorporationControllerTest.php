@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -103,7 +104,7 @@ class CorporationControllerTest extends WebTestCase
         $this->assertSame([[
             'id' => 222,
             'name' => '1 corp 2',
-            'ticker' => 't200'
+            'ticker' => 't200',
         ]], $this->parseJsonBody($response2));
 
         $response3 = $this->runApp('GET', '/api/user/corporation/find/300');
@@ -111,7 +112,7 @@ class CorporationControllerTest extends WebTestCase
         $this->assertSame([[
             'id' => 333,
             'name' => 'corp 3',
-            'ticker' => 't300'
+            'ticker' => 't300',
         ]], $this->parseJsonBody($response3));
     }
 
@@ -133,9 +134,10 @@ class CorporationControllerTest extends WebTestCase
         $this->loginUser(7);
 
         $response = $this->runApp(
-            'POST', '/api/user/corporation/corporations',
+            'POST',
+            '/api/user/corporation/corporations',
             null,
-            ['Content-Type' => 'application/json']
+            ['Content-Type' => 'application/json'],
         );
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -147,16 +149,17 @@ class CorporationControllerTest extends WebTestCase
         $this->loginUser(7);
 
         $response = $this->runApp(
-            'POST', '/api/user/corporation/corporations',
+            'POST',
+            '/api/user/corporation/corporations',
             [222, 111],
-            ['Content-Type' => 'application/json']
+            ['Content-Type' => 'application/json'],
         );
 
         $this->assertEquals(200, $response->getStatusCode());
         $body = $this->parseJsonBody($response);
         $expected = [
             ['id' => 222, 'name' => '1 corp 2', 'ticker' => 't200'],
-            ['id' => 111, 'name' => '2 corp 1', 'ticker' => 't100']
+            ['id' => 111, 'name' => '2 corp 1', 'ticker' => 't100'],
         ];
         $this->assertSame($expected, $body);
     }
@@ -187,14 +190,14 @@ class CorporationControllerTest extends WebTestCase
                     ['id' => $this->group1->getId(), 'name' => 'group 1', 'description' => null,
                         'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                     ['id' => $this->gid2, 'name' => 'group 2', 'description' => null,
-                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
+                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                 ]],
                 ['id' => 111, 'name' => '2 corp 1', 'ticker' => 't100', 'alliance' => null, 'groups' => [
                     ['id' => $this->group1->getId(), 'name' => 'group 1', 'description' => null,
-                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
+                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                 ]],
             ],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 
@@ -225,8 +228,8 @@ class CorporationControllerTest extends WebTestCase
             null,
             [
                 ClientInterface::class => $this->client,
-                LoggerInterface::class => $this->log
-            ]
+                LoggerInterface::class => $this->log,
+            ],
         );
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -246,8 +249,8 @@ class CorporationControllerTest extends WebTestCase
             null,
             [
                 ClientInterface::class => $this->client,
-                LoggerInterface::class => $this->log
-            ]
+                LoggerInterface::class => $this->log,
+            ],
         );
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -276,8 +279,8 @@ class CorporationControllerTest extends WebTestCase
             null,
             [
                 ClientInterface::class => $this->client,
-                LoggerInterface::class => $this->log
-            ]
+                LoggerInterface::class => $this->log,
+            ],
         );
 
         $this->assertEquals(503, $response->getStatusCode());
@@ -299,13 +302,13 @@ class CorporationControllerTest extends WebTestCase
             '/api/user/corporation/add/456123',
             null,
             null,
-            [ClientInterface::class => $this->client]
+            [ClientInterface::class => $this->client],
         );
 
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertSame(
             ['id' => 456123, 'name' => 'The Corp.', 'ticker' => '-CT-', 'alliance' => null],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
 
         $this->em->clear();
@@ -332,7 +335,7 @@ class CorporationControllerTest extends WebTestCase
             new Response(200, [], '{
                 "name": "The Alliance.",
                 "ticker": "-AT-"
-            }')
+            }'),
         );
 
         $response = $this->runApp(
@@ -340,15 +343,15 @@ class CorporationControllerTest extends WebTestCase
             '/api/user/corporation/add/456123',
             null,
             null,
-            [ClientInterface::class => $this->client]
+            [ClientInterface::class => $this->client],
         );
 
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertSame(
             ['id' => 456123, 'name' => 'The Corp.', 'ticker' => '-CT-', 'alliance' => [
-                'id' => 123456, 'name' => 'The Alliance.', 'ticker' => '-AT-'
+                'id' => 123456, 'name' => 'The Alliance.', 'ticker' => '-AT-',
             ]],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
 
         $this->em->clear();
@@ -387,7 +390,7 @@ class CorporationControllerTest extends WebTestCase
         $this->loginUser(7);
 
         $response1 = $this->runApp('PUT', '/api/user/corporation/111/add-group/5');
-        $response2 = $this->runApp('PUT', '/api/user/corporation/123/add-group/'.$this->gid2);
+        $response2 = $this->runApp('PUT', '/api/user/corporation/123/add-group/' . $this->gid2);
         $response3 = $this->runApp('PUT', '/api/user/corporation/123/add-group/5');
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -401,11 +404,11 @@ class CorporationControllerTest extends WebTestCase
 
         $response1 = $this->runApp(
             'PUT',
-            '/api/user/corporation/111/add-group/'.$this->gid2
+            '/api/user/corporation/111/add-group/' . $this->gid2,
         );
         $response2 = $this->runApp(
             'PUT',
-            '/api/user/corporation/111/add-group/'.$this->gid2
+            '/api/user/corporation/111/add-group/' . $this->gid2,
         );
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
@@ -431,11 +434,11 @@ class CorporationControllerTest extends WebTestCase
 
         $response1 = $this->runApp(
             'PUT',
-            '/api/user/corporation/111/remove-group/5'
+            '/api/user/corporation/111/remove-group/5',
         );
         $response2 = $this->runApp(
             'PUT',
-            '/api/user/corporation/123/remove-group/'.$this->group1->getId()
+            '/api/user/corporation/123/remove-group/' . $this->group1->getId(),
         );
         $response3 = $this->runApp('PUT', '/api/user/corporation/123/remove-group/5');
         $this->assertEquals(404, $response1->getStatusCode());
@@ -452,10 +455,10 @@ class CorporationControllerTest extends WebTestCase
 
         $res = $this->runApp(
             'PUT',
-            '/api/user/corporation/111/remove-group/'.$this->group1->getId(),
+            '/api/user/corporation/111/remove-group/' . $this->group1->getId(),
             null,
             null,
-            [ObjectManager::class => $this->em, LoggerInterface::class => $this->log]
+            [ObjectManager::class => $this->em, LoggerInterface::class => $this->log],
         );
         $this->assertEquals(500, $res->getStatusCode());
     }
@@ -467,11 +470,11 @@ class CorporationControllerTest extends WebTestCase
 
         $response1 = $this->runApp(
             'PUT',
-            '/api/user/corporation/111/remove-group/'.$this->group1->getId()
+            '/api/user/corporation/111/remove-group/' . $this->group1->getId(),
         );
         $response2 = $this->runApp(
             'PUT',
-            '/api/user/corporation/111/remove-group/'.$this->group1->getId()
+            '/api/user/corporation/111/remove-group/' . $this->group1->getId(),
         );
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
@@ -524,7 +527,7 @@ class CorporationControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [['id' => 1020301, 'name' => 'Dir 1', 'playerId' => $player->getId()]],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 
@@ -560,7 +563,7 @@ class CorporationControllerTest extends WebTestCase
         $this->assertSame(
             [['id' => $this->group1->getId(), 'name' => 'group 1', 'description' => null,
                 'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 
@@ -583,7 +586,7 @@ class CorporationControllerTest extends WebTestCase
         $this->loginUser(8);
 
         $response1 = $this->runApp('PUT', '/api/user/corporation/222/add-group-tracking/5');
-        $response2 = $this->runApp('PUT', '/api/user/corporation/123/add-group-tracking/'.$this->gid2);
+        $response2 = $this->runApp('PUT', '/api/user/corporation/123/add-group-tracking/' . $this->gid2);
         $response3 = $this->runApp('PUT', '/api/user/corporation/123/add-group-tracking/5');
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -597,11 +600,11 @@ class CorporationControllerTest extends WebTestCase
 
         $response1 = $this->runApp(
             'PUT',
-            '/api/user/corporation/222/add-group-tracking/'.$this->gid2
+            '/api/user/corporation/222/add-group-tracking/' . $this->gid2,
         );
         $response2 = $this->runApp(
             'PUT',
-            '/api/user/corporation/222/add-group-tracking/'.$this->gid2
+            '/api/user/corporation/222/add-group-tracking/' . $this->gid2,
         );
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
@@ -633,11 +636,11 @@ class CorporationControllerTest extends WebTestCase
 
         $response1 = $this->runApp(
             'PUT',
-            '/api/user/corporation/222/remove-group-tracking/5'
+            '/api/user/corporation/222/remove-group-tracking/5',
         );
         $response2 = $this->runApp(
             'PUT',
-            '/api/user/corporation/123/remove-group-tracking/'.$this->group1->getId()
+            '/api/user/corporation/123/remove-group-tracking/' . $this->group1->getId(),
         );
         $response3 = $this->runApp('PUT', '/api/user/corporation/123/remove-group-tracking/5');
         $this->assertEquals(404, $response1->getStatusCode());
@@ -652,11 +655,11 @@ class CorporationControllerTest extends WebTestCase
 
         $response1 = $this->runApp(
             'PUT',
-            '/api/user/corporation/222/remove-group-tracking/'.$this->group1->getId()
+            '/api/user/corporation/222/remove-group-tracking/' . $this->group1->getId(),
         );
         $response2 = $this->runApp(
             'PUT',
-            '/api/user/corporation/222/remove-group-tracking/'.$this->group1->getId()
+            '/api/user/corporation/222/remove-group-tracking/' . $this->group1->getId(),
         );
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());

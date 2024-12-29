@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -57,7 +58,7 @@ class EveMailTest extends TestCase
             Helper::getAuthenticationProvider($this->client),
             $logger,
             $esiFactory,
-            $config
+            $config,
         );
     }
 
@@ -67,7 +68,7 @@ class EveMailTest extends TestCase
             123456,
             'Name',
             'hash',
-            new AccessToken(['access_token' => 'access', 'expires' => 1525456785, 'refresh_token' => 'refresh'])
+            new AccessToken(['access_token' => 'access', 'expires' => 1525456785, 'refresh_token' => 'refresh']),
         );
 
         // fails because variables are missing
@@ -87,7 +88,7 @@ class EveMailTest extends TestCase
             123456,
             'Name',
             'hash',
-            new AccessToken(['access_token' => 'access', 'expires' => 1543480210, 'refresh_token' => 'refresh'])
+            new AccessToken(['access_token' => 'access', 'expires' => 1543480210, 'refresh_token' => 'refresh']),
         );
         $result = $this->eveMail->storeMailCharacter($auth);
         $this->assertTrue($result);
@@ -213,7 +214,7 @@ class EveMailTest extends TestCase
         $result = $this->eveMail->invalidTokenMaySend(100100);
         $this->assertSame(
             'No character found on account that belongs to one of the configured alliances or corporations.',
-            $result
+            $result,
         );
     }
 
@@ -329,7 +330,7 @@ class EveMailTest extends TestCase
 
         $this->client->setResponse(
             // for getAccessToken() (refresh)
-            new Response(400, [], '{ "error": "invalid_grant" }')
+            new Response(400, [], '{ "error": "invalid_grant" }'),
         );
 
         $result = $this->eveMail->invalidTokenSend(123);
@@ -363,11 +364,11 @@ class EveMailTest extends TestCase
                 [],
                 '{"access_token": "new-token",
                 "refresh_token": "new-rf",
-                "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
+                "expires": 1519933900}', // 03/01/2018 @ 7:51pm (UTC)
             ),
 
             // for postCharactersCharacterIdMail()
-            new Response(200, [], '373515628')
+            new Response(200, [], '373515628'),
         );
 
         $result = $this->eveMail->invalidTokenSend(456);
@@ -457,14 +458,14 @@ class EveMailTest extends TestCase
     {
         $this->assertSame(
             'Missing character that can send mails or missing token data.',
-            $this->eveMail->missingCharacterSend(101)
+            $this->eveMail->missingCharacterSend(101),
         );
     }
 
     public function testMissingCharacterSend_MissingSubjectOrBody()
     {
         $varToken = new SystemVariable(SystemVariable::MAIL_TOKEN);
-        $varToken->setValue((string)\json_encode([
+        $varToken->setValue((string) \json_encode([
             'id' => 123,
             'access' => 'access-token',
             'refresh' => 'refresh-token',
@@ -494,7 +495,7 @@ class EveMailTest extends TestCase
 
         $this->client->setResponse(
             // for getAccessToken() (refresh)
-            new Response(400, [], '{ "error": "invalid_grant" }')
+            new Response(400, [], '{ "error": "invalid_grant" }'),
         );
 
         $this->assertSame('Invalid token.', $this->eveMail->missingCharacterSend(101));
@@ -522,9 +523,9 @@ class EveMailTest extends TestCase
                 [],
                 '{"access_token": "new-token",
                 "refresh_token": "",
-                "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
+                "expires": 1519933900}', // 03/01/2018 @ 7:51pm (UTC)
             ),
-            new Response(200, [], '373515628') // for postCharactersCharacterIdMail()
+            new Response(200, [], '373515628'), // for postCharactersCharacterIdMail()
         );
 
         $this->assertSame('', $this->eveMail->missingCharacterSend(101));

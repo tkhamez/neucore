@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -24,13 +25,13 @@ class GroupTest extends TestCase
         $this->assertSame(
             ['id' => null, 'name' => 'g.name', 'description' => null,
                 'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
-            json_decode((string) json_encode($group), true)
+            json_decode((string) json_encode($group), true),
         );
     }
 
     public function testGetId()
     {
-        $this->assertSame(0, (new Group)->getId());
+        $this->assertSame(0, (new Group())->getId());
     }
 
     public function testSetGetName()

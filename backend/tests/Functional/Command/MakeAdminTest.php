@@ -63,7 +63,7 @@ class MakeAdminTest extends ConsoleTestCase
         $output = $this->runConsoleApp('make-admin', ['id' => self::$playerId]);
         self::$em->clear();
 
-        $this->assertSame('Added all applicable roles to the player account "Admin"'."\n", $output);
+        $this->assertSame('Added all applicable roles to the player account "Admin"' . "\n", $output);
 
         $expected = [
             Role::APP_ADMIN,
@@ -88,7 +88,7 @@ class MakeAdminTest extends ConsoleTestCase
     {
         $output = $this->runConsoleApp('make-admin', ['id' => self::$playerId + 9]);
 
-        $this->assertSame('Player with ID "' . (self::$playerId + 9) . '" not found'."\n", $output);
+        $this->assertSame('Player with ID "' . (self::$playerId + 9) . '" not found' . "\n", $output);
     }
 
     public function testExecuteException()
@@ -99,7 +99,7 @@ class MakeAdminTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('make-admin', ['id' => self::$playerId], [
             ObjectManager::class => self::$em,
-            LoggerInterface::class => $log
+            LoggerInterface::class => $log,
         ]);
 
         $this->assertSame('', $output);

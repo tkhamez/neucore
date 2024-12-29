@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -56,7 +57,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $output = $this->runConsoleApp(
             'update-member-tracking',
             ['--sleep' => 0],
-            [ClientInterface::class => $this->client]
+            [ClientInterface::class => $this->client],
         );
 
         $actual = explode("\n", $output);
@@ -75,7 +76,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('update-member-tracking', ['--sleep' => 0], [
             ClientInterface::class => $this->client,
-            LoggerInterface::class => new Logger() // ignore the log entry
+            LoggerInterface::class => new Logger(), // ignore the log entry
         ]);
 
         $actual = explode("\n", $output);
@@ -96,11 +97,11 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
             new Response(200, [], '[{"category": "character", "id": "100", "name": "Paul"}]'), // universe/names/
             new Response(200, [], '[]'), // structure
             new Response(200, [], '[]'), // postUniverseNames for char names
-            new Response(200, [], '[]') // corporations/2/membertracking/
+            new Response(200, [], '[]'), // corporations/2/membertracking/
         );
 
         $output = $this->runConsoleApp('update-member-tracking', ['--sleep' => 0], [
-            ClientInterface::class => $this->client
+            ClientInterface::class => $this->client,
         ]);
 
         $actual = explode("\n", $output);

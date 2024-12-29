@@ -32,7 +32,7 @@ class ConfigTest extends TestCase
         $_ENV['BRAVECORE_TEST_FOUR'] = '4';
         $this->assertSame(
             ['one' => 'One env-value.', 'two' => '', 'three' => 'default', 'four' => '4'],
-            $this->config['envVars']
+            $this->config['envVars'],
         );
     }
 

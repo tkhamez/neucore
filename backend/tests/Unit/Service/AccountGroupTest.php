@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -49,11 +50,12 @@ class AccountGroupTest extends TestCase
         $alliance = (new Alliance())->setId(11);
         $corporation = (new Corporation())->setId(101);
         $corporation->setAlliance($alliance);
-        $player = (new Player())->addCharacter((new Character())
+        $player = (new Player())->addCharacter(
+            (new Character())
             ->setCorporation($corporation)
             ->addEsiToken((new EsiToken())
                 ->setEveLogin((new EveLogin())->setName(EveLogin::NAME_DEFAULT))
-                ->setValidToken(true))
+                ->setValidToken(true)),
         );
 
         $this->assertFalse($this->service->groupsDeactivated($player));
@@ -72,11 +74,12 @@ class AccountGroupTest extends TestCase
         $alliance = (new Alliance())->setId(12);
         $corporation = (new Corporation())->setId(102);
         $corporation->setAlliance($alliance);
-        $player = (new Player())->addCharacter((new Character())
+        $player = (new Player())->addCharacter(
+            (new Character())
             ->setCorporation($corporation)
             ->addEsiToken((new EsiToken())
                 ->setEveLogin((new EveLogin())->setName(EveLogin::NAME_DEFAULT))
-                ->setValidToken(false))
+                ->setValidToken(false)),
         );
 
         $this->assertFalse($this->service->groupsDeactivated($player));
@@ -95,11 +98,12 @@ class AccountGroupTest extends TestCase
         $alliance = (new Alliance())->setId(11);
         $corporation = (new Corporation())->setId(101);
         $corporation->setAlliance($alliance);
-        $player = (new Player())->addCharacter((new Character())
+        $player = (new Player())->addCharacter(
+            (new Character())
             ->setCorporation($corporation)
             ->addEsiToken((new EsiToken())
                 ->setEveLogin((new EveLogin())->setName(EveLogin::NAME_DEFAULT))
-                ->setValidToken(false))
+                ->setValidToken(false)),
         );
 
         $this->assertTrue($this->service->groupsDeactivated($player));
@@ -120,11 +124,12 @@ class AccountGroupTest extends TestCase
         $corporation->setAlliance($alliance);
         $player = (new Player())
             ->setStatus(Player::STATUS_MANAGED)
-            ->addCharacter((new Character())
+            ->addCharacter(
+                (new Character())
                 ->setCorporation($corporation)
                 ->addEsiToken((new EsiToken())
                     ->setEveLogin((new EveLogin())->setName(EveLogin::NAME_DEFAULT))
-                    ->setValidToken(false))
+                    ->setValidToken(false)),
             );
 
         $this->assertFalse($this->service->groupsDeactivated($player));
@@ -145,12 +150,13 @@ class AccountGroupTest extends TestCase
         $alliance = (new Alliance())->setId(11);
         $corporation = (new Corporation())->setId(101);
         $corporation->setAlliance($alliance);
-        $player = (new Player())->addCharacter((new Character())
+        $player = (new Player())->addCharacter(
+            (new Character())
             ->setCorporation($corporation)
             ->addEsiToken((new EsiToken())
                 ->setEveLogin((new EveLogin())->setName(EveLogin::NAME_DEFAULT))
                 ->setValidToken(false)
-                ->setValidTokenTime(new \DateTime("now -12 hours")))
+                ->setValidTokenTime(new \DateTime("now -12 hours"))),
         );
 
         $this->assertFalse($this->service->groupsDeactivated($player));
@@ -171,12 +177,13 @@ class AccountGroupTest extends TestCase
         $alliance = (new Alliance())->setId(11);
         $corporation = (new Corporation())->setId(101);
         $corporation->setAlliance($alliance);
-        $player = (new Player())->addCharacter((new Character())
+        $player = (new Player())->addCharacter(
+            (new Character())
             ->setCorporation($corporation)
             ->addEsiToken((new EsiToken())
                 ->setEveLogin((new EveLogin())->setName(EveLogin::NAME_DEFAULT))
                 ->setValidToken(false)
-                ->setValidTokenTime(new \DateTime("now -12 hours")))
+                ->setValidTokenTime(new \DateTime("now -12 hours"))),
         );
 
         $this->assertTrue($this->service->groupsDeactivated($player, true));
@@ -193,11 +200,12 @@ class AccountGroupTest extends TestCase
         $alliance = (new Alliance())->setId(11);
         $corporation = (new Corporation())->setId(101);
         $corporation->setAlliance($alliance);
-        $player = (new Player())->addCharacter((new Character())
+        $player = (new Player())->addCharacter(
+            (new Character())
             ->setCorporation($corporation)
             ->addEsiToken((new EsiToken())
                 ->setEveLogin((new EveLogin())->setName(EveLogin::NAME_DEFAULT))
-                ->setValidToken(false))
+                ->setValidToken(false)),
         );
 
         // test with missing setting

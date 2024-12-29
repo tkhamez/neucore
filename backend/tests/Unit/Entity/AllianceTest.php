@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -22,7 +23,7 @@ class AllianceTest extends TestCase
         $this->assertSame([
             'id' => 123,
             'name' => 'test alli',
-            'ticker' => 'ABC'
+            'ticker' => 'ABC',
         ], json_decode((string) json_encode($alli), true));
     }
 

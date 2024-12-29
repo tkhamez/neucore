@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnused */
 /** @noinspection PhpIllegalPsrClassPathInspection */
 
@@ -26,12 +27,9 @@ class TestService1 implements GeneralInterface
         LoggerInterface $logger,
         PluginConfiguration $pluginConfiguration,
         FactoryInterface $factory,
-    ) {
-    }
+    ) {}
 
-    public function onConfigurationChange(): void
-    {
-    }
+    public function onConfigurationChange(): void {}
 
     public function request(
         string $name,

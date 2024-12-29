@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -54,7 +55,7 @@ class EsiClientTest extends TestCase
     public function testRequest_ErrorLimit()
     {
         $time = time();
-        $this->storage->set(Variables::ESI_ERROR_LIMIT, (string)json_encode(new EsiErrorLimit($time, 10, 45)));
+        $this->storage->set(Variables::ESI_ERROR_LIMIT, (string) json_encode(new EsiErrorLimit($time, 10, 45)));
 
         $this->expectException(Exception::class);
         $this->expectExceptionCode($time + 45);
@@ -66,7 +67,7 @@ class EsiClientTest extends TestCase
     public function testRequest_RateLimit()
     {
         $time = time();
-        $this->storage->set(Variables::ESI_RATE_LIMIT, (string)($time + 20));
+        $this->storage->set(Variables::ESI_RATE_LIMIT, (string) ($time + 20));
 
         $this->expectException(Exception::class);
         $this->expectExceptionCode($time + 20);
@@ -78,7 +79,7 @@ class EsiClientTest extends TestCase
     public function testRequest_Throttled()
     {
         $time = time();
-        $this->storage->set(Variables::ESI_THROTTLED, (string)($time + 50));
+        $this->storage->set(Variables::ESI_THROTTLED, (string) ($time + 50));
 
         $this->expectException(Exception::class);
         $this->expectExceptionCode($time + 50);
@@ -122,7 +123,7 @@ class EsiClientTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame(
             ['name' => 'char name', 'corporation_id' => 20],
-            json_decode($response->getBody()->__toString(), true)
+            json_decode($response->getBody()->__toString(), true),
         );
     }
 }

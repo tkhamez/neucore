@@ -60,7 +60,7 @@ class AuthPasswordControllerTest extends WebTestCase
             'POST',
             '/api/user/auth/password-login',
             ['playerId' => 8, 'password' => '123456'],
-            ['Content-Type' => 'application/x-www-form-urlencoded']
+            ['Content-Type' => 'application/x-www-form-urlencoded'],
         );
 
         $this->assertSame(400, $response->getStatusCode());
@@ -74,7 +74,7 @@ class AuthPasswordControllerTest extends WebTestCase
             'POST',
             '/api/user/auth/password-login',
             ['playerId' => $player->getId(), 'password' => '123456'],
-            ['Content-Type' => 'application/x-www-form-urlencoded']
+            ['Content-Type' => 'application/x-www-form-urlencoded'],
         );
 
         $this->assertSame(401, $response->getStatusCode());
@@ -97,7 +97,7 @@ class AuthPasswordControllerTest extends WebTestCase
             [
                 'Content-Type' => 'application/x-www-form-urlencoded',
                 CSRFToken::CSRF_HEADER_NAME => $token1,
-            ]
+            ],
         );
         $this->assertSame(204, $response->getStatusCode());
         $this->assertSame('1', $response->getHeaderLine(AuthController::HEADER_LOGIN));

@@ -19,7 +19,7 @@ class CharacterNameChangeTest extends TestCase
 
         $this->assertSame(
             ['oldName' => 'old char name', 'changeDate' => '2031-03-27T16:52:57Z'],
-            $cnc->jsonSerialize()
+            $cnc->jsonSerialize(),
         );
     }
 

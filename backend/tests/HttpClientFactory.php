@@ -34,7 +34,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
         string $method,
         string $url,
         array $headers = [],
-        ?string $body = null
+        ?string $body = null,
     ): RequestInterface {
         return new Request($method, $url, $headers, $body);
     }
@@ -43,7 +43,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
         int $status = 200,
         array $headers = [],
         ?string $body = null,
-        ?string $reason = null
+        ?string $reason = null,
     ): ResponseInterface {
         return new Response($status, $headers, $body, '1.1', $reason);
     }

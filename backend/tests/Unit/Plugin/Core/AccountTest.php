@@ -56,10 +56,10 @@ class AccountTest extends TestCase
         // removed/incoming records
         $player3 = (new Player())->setName('p3');
         $removedChar = (new RemovedCharacter())->setPlayer($player2)
-            ->setCharacterId(708090)->setCharacterName('removed')->setRemovedDate(new \DateTime)->setReason('r1')
+            ->setCharacterId(708090)->setCharacterName('removed')->setRemovedDate(new \DateTime())->setReason('r1')
             ->setDeletedBy($player1);
         $incomingChar = (new RemovedCharacter())->setPlayer($player3)->setNewPlayer($player2)
-            ->setCharacterId(708091)->setCharacterName('incoming')->setRemovedDate(new \DateTime)->setReason('r2');
+            ->setCharacterId(708091)->setCharacterName('incoming')->setRemovedDate(new \DateTime())->setReason('r2');
         $player2->addRemovedCharacter($removedChar);
         $player2->addIncomingCharacter($incomingChar);
         self::$helper->getEm()->persist($player3);
@@ -76,7 +76,7 @@ class AccountTest extends TestCase
         $repositoryFactory = new RepositoryFactory(self::$helper->getEm());
         $this->account = new Account(
             $repositoryFactory,
-            new AccountGroup($repositoryFactory, self::$helper->getEm())
+            new AccountGroup($repositoryFactory, self::$helper->getEm()),
         );
     }
 

@@ -13,15 +13,15 @@ class EveLoginTest extends TestCase
     public function testIsValidObject()
     {
         $this->assertFalse(EveLogin::isValidObject(new \stdClass()));
-        $this->assertFalse(EveLogin::isValidObject((object)['id' => 'custom1']));
-        $this->assertFalse(EveLogin::isValidObject((object)[
+        $this->assertFalse(EveLogin::isValidObject((object) ['id' => 'custom1']));
+        $this->assertFalse(EveLogin::isValidObject((object) [
             'id' => 0,
             'name' => 'custom1',
             'description' => '',
             'esiScopes' => '',
             'eveRoles' => '',
         ]));
-        $this->assertFalse(EveLogin::isValidObject((object)[
+        $this->assertFalse(EveLogin::isValidObject((object) [
             'id' => null,
             'name' => '',
             'description' => '',
@@ -29,21 +29,21 @@ class EveLoginTest extends TestCase
             'eveRoles' => [],
         ]));
 
-        $this->assertTrue(EveLogin::isValidObject((object)[
+        $this->assertTrue(EveLogin::isValidObject((object) [
             'id' => 1,
             'name' => 'custom1',
             'description' => '',
             'esiScopes' => '',
             'eveRoles' => [],
         ]));
-        $this->assertTrue(EveLogin::isValidObject((object)[
+        $this->assertTrue(EveLogin::isValidObject((object) [
             'id' => 0,
             'name' => '',
             'description' => '',
             'esiScopes' => '',
             'eveRoles' => [''],
         ]));
-        $this->assertTrue(EveLogin::isValidObject((object)[
+        $this->assertTrue(EveLogin::isValidObject((object) [
             'id' => 1,
             'name' => 'custom1',
             'description' => 'd',

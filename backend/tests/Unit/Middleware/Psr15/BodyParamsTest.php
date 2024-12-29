@@ -15,26 +15,26 @@ class BodyParamsTest extends TestCase
     {
         $request = RequestFactory::createRequest('POST');
         $request = $request->withHeader('Content-Type', 'application/json;charset=utf8');
-        $request->getBody()->write((string) \json_encode([1, (object)['v' => 2]]));
+        $request->getBody()->write((string) \json_encode([1, (object) ['v' => 2]]));
         $request->getBody()->rewind();
 
         $handler = new RequestHandler();
         (new BodyParams())->process($request, $handler);
 
-        $this->assertEquals([1, (object)['v' => 2]], $handler->getRequest()->getParsedBody());
+        $this->assertEquals([1, (object) ['v' => 2]], $handler->getRequest()->getParsedBody());
     }
 
     public function testJsonObject()
     {
         $request = RequestFactory::createRequest('POST');
         $request = $request->withHeader('Content-Type', 'application/json;charset=utf8');
-        $request->getBody()->write((string) \json_encode((object)['v' => [1, 2]]));
+        $request->getBody()->write((string) \json_encode((object) ['v' => [1, 2]]));
         $request->getBody()->rewind();
 
         $handler = new RequestHandler();
         (new BodyParams())->process($request, $handler);
 
-        $this->assertEquals((object)['v' => [1, 2]], $handler->getRequest()->getParsedBody());
+        $this->assertEquals((object) ['v' => [1, 2]], $handler->getRequest()->getParsedBody());
     }
 
     public function testFormUrlEncodedPOST()

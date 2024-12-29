@@ -37,7 +37,7 @@ class PluginTest extends ConsoleTestCase
         $output = $this->runConsoleApp('plugin', ['id' => 2]);
         $this->assertSame(
             'Plugin 1 implementation not found or does not implement GeneralInterface.',
-            trim($output)
+            trim($output),
         );
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -214,7 +215,7 @@ class CorporationMemberRepositoryTest extends TestCase
                 'id' => self::$values->playerId1,
                 'name' => 'Player 1',
             ],
-        ]], json_decode((string)json_encode($actual), true));
+        ]], json_decode((string) json_encode($actual), true));
     }
 
     public function testFindMatchingWithOutAccount()

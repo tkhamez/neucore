@@ -11,6 +11,6 @@ class RequestFactory
 {
     public static function createRequest(string $method = 'GET', string $uri = '/'): ServerRequestInterface
     {
-        return (new ServerRequestFactory)->createServerRequest($method, $uri);
+        return (new ServerRequestFactory())->createServerRequest($method, $uri);
     }
 }

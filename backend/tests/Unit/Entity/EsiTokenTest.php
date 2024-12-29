@@ -167,13 +167,13 @@ class EsiTokenTest extends TestCase
                     ->setId(102030)
                     ->setName('char')
                     ->setPlayer((new Player())->setId(14)->setName('play'))
-                    ->setCorporation((new Corporation())->setId(131)->setName('corp'))
+                    ->setCorporation((new Corporation())->setId(131)->setName('corp')),
             )
             ->setEveLogin(
                 (new EveLogin())
                     ->setName('login.one')
                     ->setEsiScopes('scope.one scope.two')
-                    ->setEveRoles(['role1', 'role2'])
+                    ->setEveRoles(['role1', 'role2']),
             )
             ->setValidToken(true)
             ->setHasRoles(false)

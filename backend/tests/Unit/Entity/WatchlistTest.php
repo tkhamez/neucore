@@ -17,7 +17,7 @@ class WatchlistTest extends TestCase
     {
         $this->assertSame(
             ['id' => null, 'name' => 'name', 'lockWatchlistSettings' => false],
-            (new Watchlist())->setName('name')->jsonSerialize()
+            (new Watchlist())->setName('name')->jsonSerialize(),
         );
     }
 

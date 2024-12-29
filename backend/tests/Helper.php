@@ -96,7 +96,7 @@ class Helper
         string $charName = 'Name',
         string $ownerHash = 'hash',
         int $charId = 123,
-        string $ownerHashKey = 'owner'
+        string $ownerHashKey = 'owner',
     ): array {
         // create key
         $kid = 'JWT-Signature-Key';
@@ -105,7 +105,7 @@ class Helper
         // create token
         $algorithmManager = new AlgorithmManager([new RS256()]);
         $jwsBuilder = new JWSBuilder($algorithmManager);
-        $payload = (string)json_encode([
+        $payload = (string) json_encode([
             'kid' => $kid,
             'scp' => count($scopes) > 1 ? $scopes : ($scopes[0] ?? null),
             'sub' => "CHARACTER:EVE:$charId",
@@ -127,7 +127,8 @@ class Helper
         return [$token, $keySet];
     }
 
-    public static function getAuthenticationProvider(Client $client): AuthenticationProvider {
+    public static function getAuthenticationProvider(Client $client): AuthenticationProvider
+    {
         return new AuthenticationProvider(
             [
                 'clientId' => '123',
@@ -139,14 +140,14 @@ class Helper
                 'urlRevoke' => 'http',
                 'issuer' => 'localhost',
             ],
-            httpClient: $client
+            httpClient: $client,
         );
     }
 
     public static function getPluginFactory(
         ?Client $client = null,
         ?Logger $logger = null,
-        ?StorageInterface $storage = null
+        ?StorageInterface $storage = null,
     ): Factory {
         if (!$client) {
             $client = new Client();
@@ -158,7 +159,7 @@ class Helper
         if (!$storage) {
             $storage = new SystemVariableStorage(
                 $repositoryFactory,
-                new \Neucore\Service\ObjectManager(self::getOm(), $logger)
+                new \Neucore\Service\ObjectManager(self::getOm(), $logger),
             );
         }
         return new Factory(
@@ -169,7 +170,7 @@ class Helper
             ),
             new \Neucore\Plugin\Core\Account(
                 $repositoryFactory,
-                new AccountGroup($repositoryFactory, self::getOm())
+                new AccountGroup($repositoryFactory, self::getOm()),
             ),
             new Data($repositoryFactory),
         );
@@ -182,7 +183,7 @@ class Helper
             RepositoryFactory::getInstance(self::getOm()),
             self::getConfig(),
             new OAuthToken(self::getAuthenticationProvider($client), $objectManager, $logger),
-            new HttpClientFactory($client)
+            new HttpClientFactory($client),
         );
     }
 
@@ -330,7 +331,7 @@ class Helper
         foreach ($roles as $roleName) {
             $role = $rr->findOneBy(['name' => $roleName]);
             if ($role === null) {
-                self::$roleSequence ++;
+                self::$roleSequence++;
                 $role = new Role(self::$roleSequence);
                 $role->setName($roleName);
                 $om->persist($role);
@@ -374,7 +375,7 @@ class Helper
         bool $withEsiToken = true,
         ?\DateTime $created = null,
         int $tokenExpires = 123456,
-        ?bool $tokenValid = null
+        ?bool $tokenValid = null,
     ): Character {
         $om = $this->getObjectManager();
 
@@ -416,7 +417,7 @@ class Helper
         string $name,
         int $charId,
         Player $player,
-        bool $withEsiToken = false
+        bool $withEsiToken = false,
     ): Character {
         $alt = new Character();
         $alt->setId($charId);
@@ -493,9 +494,8 @@ class Helper
         string $secret,
         array $roles,
         array $eveLoginNames = [],
-        string $hashAlgorithm = Crypto::PASSWORD_HASH
-    ): App
-    {
+        string $hashAlgorithm = Crypto::PASSWORD_HASH,
+    ): App {
         $hash = $hashAlgorithm === 'md5' ? crypt($secret, '$1$12345678$') : password_hash($secret, $hashAlgorithm);
 
         $app = new App();
@@ -520,7 +520,7 @@ class Helper
     public function getGuzzleHandler(Response $response): callable
     {
         return function () use ($response) {
-            return new class($response) {
+            return new class ($response) {
                 private Response $response;
 
                 public function __construct(Response $response)

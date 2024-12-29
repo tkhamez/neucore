@@ -45,13 +45,13 @@ class EsiHeadersTest extends TestCase
     {
         $response = new Response(
             200,
-            ['X-Esi-Error-Limit-Remain' => ['100'], 'X-Esi-Error-Limit-Reset' => ['60']]
+            ['X-Esi-Error-Limit-Remain' => ['100'], 'X-Esi-Error-Limit-Reset' => ['60']],
         );
 
         $function = $this->obj->__invoke($this->helper->getGuzzleHandler($response));
         $function(new Request('GET', 'https://local.host/esi/path'), []);
 
-        $val = EsiErrorLimit::fromJson((string)$this->storage->get(Variables::ESI_ERROR_LIMIT));
+        $val = EsiErrorLimit::fromJson((string) $this->storage->get(Variables::ESI_ERROR_LIMIT));
 
         $this->assertSame(100, $val->remain);
         $this->assertSame(60, $val->reset);
@@ -62,7 +62,7 @@ class EsiHeadersTest extends TestCase
     {
         $response = new Response(
             200,
-            ['warning' => ['299 - This route is deprecated'], 'Warning' => ['299 - This route is deprecated']]
+            ['warning' => ['299 - This route is deprecated'], 'Warning' => ['299 - This route is deprecated']],
         );
 
         $function = $this->obj->__invoke($this->helper->getGuzzleHandler($response));
@@ -71,11 +71,11 @@ class EsiHeadersTest extends TestCase
         $this->assertSame(2, count($this->logger->getHandler()->getRecords()));
         $this->assertSame(
             'https://local.host/esi/path: 299 - This route is deprecated',
-            $this->logger->getHandler()->getRecords()[0]['message']
+            $this->logger->getHandler()->getRecords()[0]['message'],
         );
         $this->assertSame(
             'https://local.host/esi/path: 299 - This route is deprecated',
-            $this->logger->getHandler()->getRecords()[1]['message']
+            $this->logger->getHandler()->getRecords()[1]['message'],
         );
     }
 }

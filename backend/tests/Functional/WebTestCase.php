@@ -33,7 +33,7 @@ class WebTestCase extends TestCase
         object|array|string|null $requestData = null,
         ?array $headers = null,
         array $mocks = [],
-        array $envVars = []
+        array $envVars = [],
     ): ?ResponseInterface {
         // Set up a request object
         $request = RequestFactory::createRequest($requestMethod, $requestUri);
@@ -55,7 +55,7 @@ class WebTestCase extends TestCase
                 $body->write((string) \json_encode($requestData));
                 $body->rewind();
                 $request = $request->withBody($body);
-            } elseif (is_string($requestData))  { // text/plain
+            } elseif (is_string($requestData)) { // text/plain
                 $body = $request->getBody();
                 $body->write($requestData);
                 $body->rewind();
@@ -92,7 +92,7 @@ class WebTestCase extends TestCase
         }
 
         // Add existing db connection
-        $mocks = (new Helper)->addEm($mocks);
+        $mocks = (new Helper())->addEm($mocks);
 
         // Process the application
         try {

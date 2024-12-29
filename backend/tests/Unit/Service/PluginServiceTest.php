@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 /** @noinspection PhpUnhandledExceptionInspection */
 
@@ -84,7 +85,7 @@ class PluginServiceTest extends TestCase
 
     protected function tearDown(): void
     {
-        self::$loader->setPsr4(self::PSR_PREFIX.'\\', []);
+        self::$loader->setPsr4(self::PSR_PREFIX . '\\', []);
     }
 
     public function testGetConfigurationFromConfigFile_Errors()
@@ -105,7 +106,7 @@ class PluginServiceTest extends TestCase
                 "Malformed inline YAML string at line 2.",
                 "Invalid file content in $baseDir/plugin-error-string/plugin.yml",
             ],
-            $this->log->getMessages()
+            $this->log->getMessages(),
         );
     }
 
@@ -119,7 +120,7 @@ class PluginServiceTest extends TestCase
         $this->assertSame('Test', $actual->name);
         $this->assertSame([], $actual->types); // does not load implementation, so this is empty
         $this->assertSame('plugin-name', $actual->directoryName);
-        $this->assertSame(self::PSR_PREFIX.'\TestService', $actual->phpClass);
+        $this->assertSame(self::PSR_PREFIX . '\TestService', $actual->phpClass);
         $this->assertSame(self::PSR_PREFIX, $actual->psr4Prefix);
         $this->assertSame('src', $actual->psr4Path);
         $this->assertSame(true, $actual->oneAccount);
@@ -234,7 +235,7 @@ class PluginServiceTest extends TestCase
     public function testGetPluginImplementation()
     {
         // add same prefix to test, so that the new path is added, not replaced
-        self::$loader->setPsr4(self::PSR_PREFIX.'\\', ['/some/path']);
+        self::$loader->setPsr4(self::PSR_PREFIX . '\\', ['/some/path']);
 
         $service = new Plugin();
         $conf = new PluginConfigurationDatabase();
@@ -260,8 +261,8 @@ class PluginServiceTest extends TestCase
         $this->assertSame('other: data', $configuration->configurationData);
 
         $this->assertSame(
-            ['/some/path', __DIR__ .  '/PluginService/plugin-name/src'],
-            self::$loader->getPrefixesPsr4()[self::PSR_PREFIX.'\\']
+            ['/some/path', __DIR__ . '/PluginService/plugin-name/src'],
+            self::$loader->getPrefixesPsr4()[self::PSR_PREFIX . '\\'],
         );
     }
 
@@ -297,7 +298,7 @@ class PluginServiceTest extends TestCase
 
         $this->assertSame(
             'Tests\Unit\Service\PluginService\plugin\src\TestService',
-            $this->pluginService->loadPluginImplementation($conf)
+            $this->pluginService->loadPluginImplementation($conf),
         );
         $this->assertSame([PluginConfigurationFile::TYPE_SERVICE], $conf->types);
     }
@@ -312,7 +313,7 @@ class PluginServiceTest extends TestCase
 
         $this->assertSame(
             'Tests\Unit\Service\PluginService\plugin\src\TestPlugin',
-            $this->pluginService->loadPluginImplementation($conf)
+            $this->pluginService->loadPluginImplementation($conf),
         );
         $this->assertSame([PluginConfigurationFile::TYPE_GENERAL], $conf->types);
     }
@@ -327,11 +328,11 @@ class PluginServiceTest extends TestCase
 
         $this->assertSame(
             'Tests\Unit\Service\PluginService\plugin\src\TestBoth',
-            $this->pluginService->loadPluginImplementation($conf)
+            $this->pluginService->loadPluginImplementation($conf),
         );
         $this->assertSame(
             [PluginConfigurationFile::TYPE_GENERAL, PluginConfigurationFile::TYPE_SERVICE],
-            $conf->types
+            $conf->types,
         );
     }
 
@@ -361,7 +362,7 @@ class PluginServiceTest extends TestCase
         $pluginIds = $this->setupPlugins();
 
         $actual = $this->pluginService->getActivePluginsWithImplementation(
-            [$pluginIds[0], $pluginIds[1], $pluginIds[3], $pluginIds[4]]
+            [$pluginIds[0], $pluginIds[1], $pluginIds[3], $pluginIds[4]],
         );
 
         $this->assertSame(3, count($actual));
@@ -379,7 +380,7 @@ class PluginServiceTest extends TestCase
         $this->assertSame([PluginConfigurationFile::TYPE_GENERAL], $actual[1]->getConfigurationFile()?->types);
         $this->assertSame(
             [PluginConfigurationFile::TYPE_GENERAL, PluginConfigurationFile::TYPE_SERVICE],
-            $actual[2]->getConfigurationFile()?->types
+            $actual[2]->getConfigurationFile()?->types,
         );
     }
 
@@ -387,7 +388,7 @@ class PluginServiceTest extends TestCase
     {
         $this->assertSame(
             [],
-            $this->pluginService->getAccounts($this->testService1Impl, [])
+            $this->pluginService->getAccounts($this->testService1Impl, []),
         );
     }
 
@@ -396,7 +397,7 @@ class PluginServiceTest extends TestCase
         $player = (new Player())->addGroup(new Group());
         $actual = $this->pluginService->getAccounts(
             $this->testService1Impl,
-            [(new Character())->setId(123)->setPlayer($player)]
+            [(new Character())->setId(123)->setPlayer($player)],
         );
 
         $this->assertSame(1, count($actual));
@@ -406,9 +407,9 @@ class PluginServiceTest extends TestCase
         $this->assertSame(
             [
                 'ServiceInterface::getAccounts must return an array of AccountData objects.',
-                'PluginService::getAccounts: Character ID does not match.'
+                'PluginService::getAccounts: Character ID does not match.',
             ],
-            $this->log->getMessages()
+            $this->log->getMessages(),
         );
     }
 
@@ -420,7 +421,7 @@ class PluginServiceTest extends TestCase
         $player = (new Player())->addGroup(new Group())->addCharacter($character);
         $actual = $this->pluginService->getAccounts(
             $this->testService1Impl,
-            [(new Character())->setId(123)->setPlayer($player)]
+            [(new Character())->setId(123)->setPlayer($player)],
         );
 
         $this->assertSame(1, count($actual));
@@ -431,7 +432,7 @@ class PluginServiceTest extends TestCase
         $this->expectException(Exception::class);
         $this->pluginService->getAccounts(
             $this->testService1Impl,
-            [(new Character())->setId(202)->setPlayer(new Player())]
+            [(new Character())->setId(202)->setPlayer(new Player())],
         );
     }
 
@@ -496,8 +497,8 @@ class PluginServiceTest extends TestCase
 
         $this->assertSame([], $result);
         $this->assertSame(
-            ['Invalid file content in '.__DIR__.'/PluginService/plugin-error-string/plugin.yml'],
-            $this->log->getMessages()
+            ['Invalid file content in ' . __DIR__ . '/PluginService/plugin-error-string/plugin.yml'],
+            $this->log->getMessages(),
         );
     }
 

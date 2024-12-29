@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -111,7 +112,7 @@ class AutoGroupAssignmentTest extends TestCase
             $this->group3->getId(),
             $this->group5Id,
             $this->group6Id,
-            $this->group7Id
+            $this->group7Id,
         ], $groupIds);
         $this->assertGreaterThan('2018-04-28 17:56:54', $playerDb->getLastUpdate()->format('Y-m-d H:i:s'));
     }

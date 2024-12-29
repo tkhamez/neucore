@@ -50,7 +50,14 @@ class DataTest extends TestCase
         $player = $char->getPlayer();
         $char2 = self::$helper->addCharacterToPlayer('Alt 1', 102031, $player)->setCorporation($corp1);
         self::$helper->createOrUpdateEsiToken(
-            $char, time(), 'at', true, 'test.login', ['scope1'], ['role1'], new \DateTime()
+            $char,
+            time(),
+            'at',
+            true,
+            'test.login',
+            ['scope1'],
+            ['role1'],
+            new \DateTime(),
         );
         self::$playerId = $player->getId();
 
@@ -61,7 +68,7 @@ class DataTest extends TestCase
             ->setId($char->getId())
             ->setName($char->getName())
             ->setCorporation($corp1)
-            ->setLogonDate(new \DateTime("@".(time()-1)))
+            ->setLogonDate(new \DateTime("@" . (time() - 1)))
             ->setLogoffDate(new \DateTime())
             ->setLocation($location)
             ->setShipType($ship)
@@ -70,7 +77,7 @@ class DataTest extends TestCase
             ->setId($char2->getId())
             ->setName($char2->getName())
             ->setCorporation($corp1)
-            ->setLogonDate(new \DateTime("@".(time()-2)))
+            ->setLogonDate(new \DateTime("@" . (time() - 2)))
             ->setLogoffDate(new \DateTime())
             ->setLocation($location)
             ->setShipType($ship)
@@ -213,7 +220,7 @@ class DataTest extends TestCase
     {
         $this->assertSame(
             [EveLogin::NAME_DEFAULT, 'test.login'],
-            $this->data->getEveLoginNames()
+            $this->data->getEveLoginNames(),
         );
     }
 

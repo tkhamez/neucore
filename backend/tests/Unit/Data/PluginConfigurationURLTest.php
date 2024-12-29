@@ -18,7 +18,7 @@ class PluginConfigurationURLTest extends TestCase
 
         $this->assertSame(
             ['url' => 'http', 'title' => 'title', 'target' => '_blank'],
-            $url->jsonSerialize()
+            $url->jsonSerialize(),
         );
     }
 }

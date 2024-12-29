@@ -63,7 +63,7 @@ class StatisticsControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [['unique_logins' => 1, 'total_logins' => 4, 'year' => 2021, 'month' => 1]],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 
@@ -89,7 +89,7 @@ class StatisticsControllerTest extends WebTestCase
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertSame(
             [['requests' => 43, 'year' => 2021, 'month' => 1]],
-            $this->parseJsonBody($response1)
+            $this->parseJsonBody($response1),
         );
     }
 
@@ -116,7 +116,7 @@ class StatisticsControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [['app_id' => self::$app->getId(), 'app_name' => 'a1', 'requests' => 43, 'year' => 2021, 'month' => 1]],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 
@@ -143,7 +143,7 @@ class StatisticsControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [['requests' => 43, 'year' => 2021, 'month' => 1, 'day_of_month' => 23]],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 
@@ -178,7 +178,7 @@ class StatisticsControllerTest extends WebTestCase
                 'day_of_month' => 23,
                 'hour' => 13,
             ]],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 }

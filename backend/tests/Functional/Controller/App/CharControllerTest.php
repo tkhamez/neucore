@@ -31,7 +31,7 @@ class CharControllerTest extends WebTestCase
         $this->assertEquals(403, $response1->getStatusCode());
 
         $this->setUpDb();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->app0Id . ':s0')];
         $response2 = $this->runApp('GET', '/api/app/v1/main/123', null, $headers);
         $this->assertEquals(403, $response2->getStatusCode());
     }
@@ -40,7 +40,7 @@ class CharControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/main/123', null, $headers);
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -53,7 +53,7 @@ class CharControllerTest extends WebTestCase
         $this->assertEquals(403, $response1->getStatusCode());
 
         $this->setUpDb();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->app0Id . ':s0')];
         $response2 = $this->runApp('GET', '/api/app/v2/main/123', null, $headers);
         $this->assertEquals(403, $response2->getStatusCode());
     }
@@ -62,7 +62,7 @@ class CharControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v2/main/123', null, $headers);
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -76,7 +76,7 @@ class CharControllerTest extends WebTestCase
         $char->setMain(false);
         $this->helper->getObjectManager()->flush();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/main/123', null, $headers);
 
         $this->assertEquals(204, $response->getStatusCode());
@@ -88,7 +88,7 @@ class CharControllerTest extends WebTestCase
         $char = $this->helper->addCharacterMain('C1', 123, [Role::USER]);
         $this->helper->addCharacterToPlayer('C2', 456, $char->getPlayer());
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response1 = $this->runApp('GET', '/api/app/v1/main/123', null, $headers);
         $response2 = $this->runApp('GET', '/api/app/v1/main/456', null, $headers);
 
@@ -109,9 +109,9 @@ class CharControllerTest extends WebTestCase
                 'validToken' => null,
                 'validTokenTime' => null,
                 'tokenLastChecked' => null,
-                'corporation' => null
+                'corporation' => null,
             ],
-            $body1
+            $body1,
         );
     }
 
@@ -122,7 +122,7 @@ class CharControllerTest extends WebTestCase
         $response1 = $this->runApp('GET', '/api/app/v1/player/123');
         $this->assertEquals(403, $response1->getStatusCode());
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s0')]; // does not have role app-chars
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->app0Id . ':s0')]; // does not have role app-chars
         $response2 = $this->runApp('GET', '/api/app/v1/player/123', null, $headers);
         $this->assertEquals(403, $response2->getStatusCode());
     }
@@ -131,7 +131,7 @@ class CharControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/player/123', null, $headers);
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -143,13 +143,13 @@ class CharControllerTest extends WebTestCase
         $this->setUpDb();
         $playerId = $this->helper->addCharacterMain('C1', 123, [Role::USER])->getPlayer()->getId();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/player/123', null, $headers);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             ['id' => $playerId,'name' => 'C1'],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 
@@ -160,7 +160,7 @@ class CharControllerTest extends WebTestCase
         $response1 = $this->runApp('POST', '/api/app/v1/players');
         $this->assertEquals(403, $response1->getStatusCode());
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s0')]; // does not have role app-chars
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->app0Id . ':s0')]; // does not have role app-chars
         $response2 = $this->runApp('POST', '/api/app/v1/players', null, $headers);
         $this->assertEquals(403, $response2->getStatusCode());
     }
@@ -169,7 +169,7 @@ class CharControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('POST', '/api/app/v1/players', '', $headers);
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -182,7 +182,7 @@ class CharControllerTest extends WebTestCase
         $playerId2 = $this->helper->addCharacterMain('C2', 234, [Role::USER])->getPlayer()->getId();
 
         $headers = [
-            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
+            'Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1'),
             'Content-Type' => 'application/json',
         ];
         $response = $this->runApp('POST', '/api/app/v1/players', [123, 234, 345], $headers);
@@ -193,7 +193,7 @@ class CharControllerTest extends WebTestCase
                 ['id' => $playerId1, 'name' => 'C1', 'characterId' => 123],
                 ['id' => $playerId2, 'name' => 'C2', 'characterId' => 234],
             ],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 
@@ -203,7 +203,7 @@ class CharControllerTest extends WebTestCase
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->setUpDb();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->app0Id . ':s0')];
         $response = $this->runApp('GET', '/api/app/v1/characters/123', null, $headers);
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -212,7 +212,7 @@ class CharControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/characters/123', null, $headers);
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -225,7 +225,7 @@ class CharControllerTest extends WebTestCase
         $char = $this->helper->addCharacterMain('C1', 123, [Role::USER]);
         $this->helper->addCharacterToPlayer('C2', 456, $char->getPlayer());
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response1 = $this->runApp('GET', '/api/app/v1/characters/123', null, $headers);
         $response2 = $this->runApp('GET', '/api/app/v1/characters/456', null, $headers);
 
@@ -246,7 +246,7 @@ class CharControllerTest extends WebTestCase
                 'validToken' => null,
                 'validTokenTime' => null,
                 'tokenLastChecked' => null,
-                'corporation' => null
+                'corporation' => null,
             ],[
                 'id' => 456,
                 'name' => 'C2',
@@ -256,9 +256,9 @@ class CharControllerTest extends WebTestCase
                 'validToken' => null,
                 'validTokenTime' => null,
                 'tokenLastChecked' => null,
-                'corporation' => null
+                'corporation' => null,
             ]],
-            $body1
+            $body1,
         );
     }
 
@@ -266,7 +266,7 @@ class CharControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->app0Id . ':s0')];
         $response = $this->runApp('POST', '/api/app/v1/characters', [], $headers);
 
         $this->assertEquals(403, $response->getStatusCode());
@@ -277,7 +277,7 @@ class CharControllerTest extends WebTestCase
         $this->setUpDb();
 
         $response = $this->runApp('POST', '/api/app/v1/characters', '123', [
-            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
+            'Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1'),
             'Content-Type' => 'application/json',
         ]);
 
@@ -292,7 +292,7 @@ class CharControllerTest extends WebTestCase
         $this->helper->addCharacterToPlayer('C2', 456, $char->getPlayer());
 
         $response = $this->runApp('POST', '/api/app/v1/characters', [123, 456, 987], [
-            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
+            'Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1'),
             'Content-Type' => 'application/json',
         ]);
 
@@ -305,7 +305,7 @@ class CharControllerTest extends WebTestCase
         $this->setUpDb();
 
         $headers = [
-            'Authorization' => 'Bearer '.base64_encode($this->app0Id.':s0'),
+            'Authorization' => 'Bearer ' . base64_encode($this->app0Id . ':s0'),
             'Content-Type' => 'application/json',
         ];
         $response = $this->runApp('POST', '/api/app/v1/character-list', [123, 789, 012], $headers);
@@ -321,7 +321,7 @@ class CharControllerTest extends WebTestCase
         $this->helper->addCharacterMain('C3', 789);
 
         $headers = [
-            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
+            'Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1'),
             'Content-Type' => 'application/json',
         ];
         $response = $this->runApp('POST', '/api/app/v1/character-list', "", $headers);
@@ -337,7 +337,7 @@ class CharControllerTest extends WebTestCase
         $this->helper->addCharacterMain('C3', 789);
 
         $headers = [
-            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
+            'Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1'),
             'Content-Type' => 'application/json',
         ];
         $response = $this->runApp('POST', '/api/app/v1/character-list', [123, 789, 012], $headers);
@@ -362,7 +362,7 @@ class CharControllerTest extends WebTestCase
                 'validToken' => null,
                 'validTokenTime' => null,
                 'tokenLastChecked' => null,
-            ]
+            ],
         ], $this->parseJsonBody($response));
     }
 
@@ -372,7 +372,7 @@ class CharControllerTest extends WebTestCase
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->setUpDb();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->app0Id . ':s0')];
         $response = $this->runApp('GET', '/api/app/v1/player-chars/5000', null, $headers);
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -381,7 +381,7 @@ class CharControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/player-chars/5000', null, $headers);
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -394,8 +394,8 @@ class CharControllerTest extends WebTestCase
         $player = $this->helper->addCharacterMain('C1', 123, [Role::USER])->getPlayer();
         $this->helper->addCharacterToPlayer('C2', 456, $player);
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
-        $response = $this->runApp('GET', '/api/app/v1/player-chars/'.$player->getId(), null, $headers);
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/player-chars/' . $player->getId(), null, $headers);
 
         $this->assertEquals(200, $response->getStatusCode());
         $body = $this->parseJsonBody($response);
@@ -409,7 +409,7 @@ class CharControllerTest extends WebTestCase
                 'validToken' => null,
                 'validTokenTime' => null,
                 'tokenLastChecked' => null,
-                'corporation' => null
+                'corporation' => null,
             ],[
                 'id' => 456,
                 'name' => 'C2',
@@ -419,9 +419,9 @@ class CharControllerTest extends WebTestCase
                 'validToken' => null,
                 'validTokenTime' => null,
                 'tokenLastChecked' => null,
-                'corporation' => null
+                'corporation' => null,
             ]],
-            $body
+            $body,
         );
     }
 
@@ -431,7 +431,7 @@ class CharControllerTest extends WebTestCase
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->setUpDb();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->app0Id . ':s0')];
         $response = $this->runApp('GET', '/api/app/v1/player-with-characters/123', null, $headers);
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -440,7 +440,7 @@ class CharControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/player-with-characters/123', null, $headers);
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -453,7 +453,7 @@ class CharControllerTest extends WebTestCase
         $player = $this->helper->addCharacterMain('C1', 123, [Role::USER])->getPlayer();
         $this->helper->addCharacterToPlayer('C2', 456, $player);
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/player-with-characters/123', null, $headers);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -469,7 +469,7 @@ class CharControllerTest extends WebTestCase
                 'validToken' => null,
                 'validTokenTime' => null,
                 'tokenLastChecked' => null,
-                'corporation' => null
+                'corporation' => null,
             ],[
                 'id' => 456,
                 'name' => 'C2',
@@ -479,8 +479,8 @@ class CharControllerTest extends WebTestCase
                 'validToken' => null,
                 'validTokenTime' => null,
                 'tokenLastChecked' => null,
-                'corporation' => null
-            ]]
+                'corporation' => null,
+            ]],
         ], $this->parseJsonBody($response));
     }
 
@@ -490,7 +490,7 @@ class CharControllerTest extends WebTestCase
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->setUpDb();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->app0Id . ':s0')];
         $response = $this->runApp('GET', '/api/app/v1/removed-characters/123', null, $headers);
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -499,7 +499,7 @@ class CharControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/removed-characters/123', null, $headers);
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -526,7 +526,7 @@ class CharControllerTest extends WebTestCase
         $this->helper->getObjectManager()->flush();
         $this->helper->getObjectManager()->clear();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/removed-characters/123', null, $headers);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -539,7 +539,7 @@ class CharControllerTest extends WebTestCase
                 'reason' => RemovedCharacter::REASON_DELETED_MANUALLY,
                 'deletedBy' => ['id' => $player1->getId(), 'name' => 'p1'],
                 'newPlayerId' => null,
-                'newPlayerName' => null
+                'newPlayerName' => null,
             ],[
                 'player' => ['id' => $player1->getId(), 'name' => 'p1'],
                 'characterId' => 101,
@@ -548,9 +548,9 @@ class CharControllerTest extends WebTestCase
                 'reason' => RemovedCharacter::REASON_MOVED,
                 'deletedBy' => null,
                 'newPlayerId' => $player2->getId(),
-                'newPlayerName' => 'p2'
+                'newPlayerName' => 'p2',
             ]],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 
@@ -560,7 +560,7 @@ class CharControllerTest extends WebTestCase
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->setUpDb();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->app0Id . ':s0')];
         $response = $this->runApp('GET', '/api/app/v1/incoming-characters/123', null, $headers);
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -569,7 +569,7 @@ class CharControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/incoming-characters/123', null, $headers);
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -590,7 +590,7 @@ class CharControllerTest extends WebTestCase
         $this->helper->getObjectManager()->flush();
         $this->helper->getObjectManager()->clear();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/incoming-characters/456', null, $headers);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -602,7 +602,7 @@ class CharControllerTest extends WebTestCase
             'reason' => RemovedCharacter::REASON_MOVED,
             'deletedBy' => null,
             'newPlayerId' => $player2->getId(),
-            'newPlayerName' => 'p2'
+            'newPlayerName' => 'p2',
         ]], $this->parseJsonBody($response));
     }
 
@@ -612,7 +612,7 @@ class CharControllerTest extends WebTestCase
         $this->assertSame(403, $response1->getStatusCode());
 
         $this->setUpDb();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s0')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->app0Id . ':s0')];
         $response2 = $this->runApp('GET', '/api/app/v1/corp-players/1000', null, $headers);
         $this->assertSame(403, $response2->getStatusCode());
     }
@@ -621,7 +621,7 @@ class CharControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/corp-players/1000', null, $headers);
 
         $this->assertSame(200, $response->getStatusCode());
@@ -637,7 +637,7 @@ class CharControllerTest extends WebTestCase
         $char->setCorporation($corp);
         $this->helper->addCharacterToPlayer('C2', 456, $char->getPlayer());
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/corp-players/1000', null, $headers);
 
         $this->assertSame(200, $response->getStatusCode());
@@ -646,7 +646,7 @@ class CharControllerTest extends WebTestCase
 
         $this->assertSame(
             [['id' => $char->getPlayer()->getId(), 'name' => 'C1']],
-            $body
+            $body,
         );
     }
 
@@ -655,7 +655,7 @@ class CharControllerTest extends WebTestCase
         $this->setUpDb();
 
         $headers = [
-            'Authorization' => 'Bearer '.base64_encode($this->app0Id.':s0'),
+            'Authorization' => 'Bearer ' . base64_encode($this->app0Id . ':s0'),
             'Content-Type' => 'application/json',
         ];
         $response = $this->runApp('GET', '/api/app/v1/corp-characters/1000', null, $headers);
@@ -676,7 +676,7 @@ class CharControllerTest extends WebTestCase
         $this->helper->getObjectManager()->flush();
         $this->helper->getObjectManager()->clear();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
         $response1 = $this->runApp('GET', '/api/app/v1/corp-characters/1000', null, $headers);
         $response2 = $this->runApp('GET', '/api/app/v1/corp-characters/3000', null, $headers);
 
@@ -701,7 +701,7 @@ class CharControllerTest extends WebTestCase
                 'validToken' => null,
                 'validTokenTime' => null,
                 'tokenLastChecked' => null,
-            ]
+            ],
         ], $this->parseJsonBody($response1));
         $this->assertSame([], $this->parseJsonBody($response2));
     }

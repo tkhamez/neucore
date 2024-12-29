@@ -29,7 +29,7 @@ class HttpClientFactoryTest extends TestCase
             new Config(['guzzle' => ['cache' => ['dir' => __DIR__], 'user_agent' => 'Test']]),
             new EsiHeaders($logger, new ApcuStorage()),
             new Esi429Response($logger, new ApcuStorage()),
-            $logger
+            $logger,
         );
     }
 

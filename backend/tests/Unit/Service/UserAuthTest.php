@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -138,8 +139,8 @@ class UserAuthTest extends TestCase
 
         $this->assertSame(UserAuth::LOGIN_AUTHENTICATED_FAIL, $result);
         $this->assertSame(
-            'UserAuth::authenticate(): Role "'.Role::USER.'" not found.',
-            $this->log->getMessages()[0]
+            'UserAuth::authenticate(): Role "' . Role::USER . '" not found.',
+            $this->log->getMessages()[0],
         );
     }
 
@@ -157,12 +158,12 @@ class UserAuthTest extends TestCase
         $this->client->setResponse(
             new Response(200, [], '{"name": "New User", "corporation_id": 102}'), // getCharactersCharacterId
             new Response(200, [], '[]'), // postCharactersAffiliation())
-            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}') // getCorporationsCorporationId()
+            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}'), // getCorporationsCorporationId()
         );
 
         $accessToken = Helper::generateToken()[0];
         $token = new AccessToken(
-            ['access_token' => $accessToken, 'expires' => 1525456785, 'refresh_token' => 'refresh']
+            ['access_token' => $accessToken, 'expires' => 1525456785, 'refresh_token' => 'refresh'],
         );
         $result = $this->service->login(new EveAuthentication(888, 'New User', 'coh', $token));
 
@@ -205,7 +206,7 @@ class UserAuthTest extends TestCase
 
         $accessToken = Helper::generateToken()[0];
         $token = new AccessToken(
-            ['access_token' => $accessToken, 'expires' => 1525456785, 'refresh_token' => 'refresh']
+            ['access_token' => $accessToken, 'expires' => 1525456785, 'refresh_token' => 'refresh'],
         );
         $result = $this->service->login(new EveAuthentication(9013, 'Test User Changed Name', '123', $token));
 
@@ -232,9 +233,9 @@ class UserAuthTest extends TestCase
         $main = $this->helper->addCharacterMain('Main character', 9013, [Role::USER]);
         $alt = $this->helper->addCharacterToPlayer('Alt character', 9014, $main->getPlayer());
 
-        $token = new AccessToken(['access_token' => 'ac', 'expires' => 1525456785, 'refresh_token' => 'rt'] );
+        $token = new AccessToken(['access_token' => 'ac', 'expires' => 1525456785, 'refresh_token' => 'rt']);
         $result = $this->service->login(
-            new EveAuthentication(9014, 'Alt character', (string)$alt->getCharacterOwnerHash(), $token)
+            new EveAuthentication(9014, 'Alt character', (string) $alt->getCharacterOwnerHash(), $token),
         );
 
         $this->assertSame(UserAuth::LOGIN_ALT_FAILED, $result);
@@ -287,7 +288,7 @@ class UserAuthTest extends TestCase
         $this->client->setResponse(
             new Response(200, [], '{"name": "Alt 1", "corporation_id": 102}'), // getCharactersCharacterId
             new Response(200, [], '[]'), // postCharactersAffiliation())
-            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}') // getCorporationsCorporationId()
+            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}'), // getCorporationsCorporationId()
         );
 
         $token = new AccessToken(['access_token' => 'tk', 'expires' => 1525456785]);
@@ -319,7 +320,7 @@ class UserAuthTest extends TestCase
         $this->client->setResponse(
             new Response(200, [], '{"name": "Alt 1", "corporation_id": 102}'), // getCharactersCharacterId
             new Response(200, [], '[]'), // postCharactersAffiliation())
-            new Response(200, [], '{"name": "c1 updated", "ticker": "t1"}') // getCorporationsCorporationId()
+            new Response(200, [], '{"name": "c1 updated", "ticker": "t1"}'), // getCorporationsCorporationId()
         );
         $token = new AccessToken(['access_token' => 'tk', 'expires' => 1525456785, 'refresh_token' => 'rf']);
 
@@ -490,7 +491,7 @@ class UserAuthTest extends TestCase
     public function testFindCharacterOnAccount_NotLoggedIn()
     {
         $result = $this->service->findCharacterOnAccount(
-            new EveAuthentication(100, 'Main1', 'hash', new AccessToken(['access_token' => 'tk']))
+            new EveAuthentication(100, 'Main1', 'hash', new AccessToken(['access_token' => 'tk'])),
         );
         $this->assertNull($result);
     }
@@ -501,7 +502,7 @@ class UserAuthTest extends TestCase
         $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
 
         $result = $this->service->findCharacterOnAccount(
-            new EveAuthentication(200, 'Main1', 'hash', new AccessToken(['access_token' => 'tk']))
+            new EveAuthentication(200, 'Main1', 'hash', new AccessToken(['access_token' => 'tk'])),
         );
 
         $this->assertNull($result);
@@ -513,7 +514,7 @@ class UserAuthTest extends TestCase
         $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
 
         $result = $this->service->findCharacterOnAccount(
-            new EveAuthentication(100, 'Main1', 'hash', new AccessToken(['access_token' => 'a',]))
+            new EveAuthentication(100, 'Main1', 'hash', new AccessToken(['access_token' => 'a',])),
         );
 
         $this->assertSame(100, $result->getId());
@@ -527,14 +528,14 @@ class UserAuthTest extends TestCase
         $result = $this->service->addToken(
             new EveLogin(),
             new EveAuthentication(100, 'Main1', 'hash', new AccessToken(['access_token' => 'a-second-token'])),
-            $character
+            $character,
         );
 
         $this->assertFalse($result);
         $this->assertSame(1, count($this->log->getHandler()->getRecords()));
         $this->assertStringStartsWith(
             'A new entity was found', // EveLogin was not persisted
-            $this->log->getMessages()[0]
+            $this->log->getMessages()[0],
         );
     }
 

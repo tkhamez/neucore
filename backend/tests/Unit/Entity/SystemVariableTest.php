@@ -16,7 +16,7 @@ class SystemVariableTest extends TestCase
 
         $this->assertSame(
             ['name' => 'nam', 'value' => 'val'],
-            json_decode((string) json_encode($var), true)
+            json_decode((string) json_encode($var), true),
         );
     }
 

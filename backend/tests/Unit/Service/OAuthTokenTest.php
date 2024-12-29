@@ -61,7 +61,7 @@ class OAuthTokenTest extends TestCase
         $this->es = new OAuthToken(
             Helper::getAuthenticationProvider($this->client),
             new ObjectManager($this->em, $this->log),
-            $this->log
+            $this->log,
         );
 
         $this->charRepo = (new RepositoryFactory($this->em))->getCharacterRepository();
@@ -135,7 +135,7 @@ class OAuthTokenTest extends TestCase
             '{"access_token": "new-token",
             "expires_in": 1200,
             "refresh_token": "gEy...fM0",
-            "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
+            "expires": 1519933900}', // 03/01/2018 @ 7:51pm (UTC)
         ));
 
         $token = $this->es->getToken($char, EveLogin::NAME_DEFAULT);
@@ -195,10 +195,12 @@ class OAuthTokenTest extends TestCase
         $esiToken = $this->getToken($this->helper->addCharacterMain('Name', 1, [], [], true, null, time() - 60, true));
         $this->assertNull($esiToken->getLastChecked());
 
-        $this->client->setResponse(new Response(
+        $this->client->setResponse(
+            new Response(
                 200,
                 [],
-                '{"access_token": "new_token", "expires_in": 60, "refresh_token": null}')
+                '{"access_token": "new_token", "expires_in": 60, "refresh_token": null}',
+            ),
         );
 
         $this->assertNull($this->es->updateEsiToken($esiToken));
@@ -217,7 +219,7 @@ class OAuthTokenTest extends TestCase
         $this->client->setResponse(new Response(200, [], '{
             "access_token": "new_token", 
             "refresh_token": "rt2", 
-            "expires": '.$newTokenTime.'
+            "expires": ' . $newTokenTime . '
         }'));
 
         $this->em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
@@ -242,7 +244,7 @@ class OAuthTokenTest extends TestCase
             [],
             '{"access_token": "invalid",
             "refresh_token": "updated",
-            "expires": '.$newTokenTime.'}' // 03/01/2018 @ 7:51pm (UTC)
+            "expires": ' . $newTokenTime . '}', // 03/01/2018 @ 7:51pm (UTC)
         ));
 
         $token = $this->es->updateEsiToken($esiToken);
@@ -281,7 +283,7 @@ class OAuthTokenTest extends TestCase
             '{"access_token": ' . json_encode($token) . ',
             "expires_in": 1200,
             "refresh_token": "gEy...fM0",
-            "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
+            "expires": 1519933900}', // 03/01/2018 @ 7:51pm (UTC)
         ));
 
         $token = $this->es->updateEsiToken($esiToken);
@@ -305,7 +307,7 @@ class OAuthTokenTest extends TestCase
             '{"access_token": ' . json_encode($token) . ',
             "expires_in": 1200,
             "refresh_token": "gEy...fM0",
-            "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
+            "expires": 1519933900}', // 03/01/2018 @ 7:51pm (UTC)
         ));
 
         $token = $this->es->updateEsiToken($esiToken);

@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -93,7 +94,7 @@ class AllianceControllerTest extends WebTestCase
         $this->assertSame([[
             'id' => 222,
             'name' => '1 alli 2',
-            'ticker' => 't200'
+            'ticker' => 't200',
         ]], $this->parseJsonBody($response2));
 
         $response3 = $this->runApp('GET', '/api/user/alliance/find/300');
@@ -101,7 +102,7 @@ class AllianceControllerTest extends WebTestCase
         $this->assertSame([[
             'id' => 333,
             'name' => 'alli 3',
-            'ticker' => 't300'
+            'ticker' => 't300',
         ]], $this->parseJsonBody($response3));
     }
 
@@ -123,9 +124,10 @@ class AllianceControllerTest extends WebTestCase
         $this->loginUser(7);
 
         $response = $this->runApp(
-            'POST', '/api/user/alliance/alliances',
+            'POST',
+            '/api/user/alliance/alliances',
             null,
-            ['Content-Type' => 'application/json']
+            ['Content-Type' => 'application/json'],
         );
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -137,16 +139,17 @@ class AllianceControllerTest extends WebTestCase
         $this->loginUser(7);
 
         $response = $this->runApp(
-            'POST', '/api/user/alliance/alliances',
+            'POST',
+            '/api/user/alliance/alliances',
             [222, 111],
-            ['Content-Type' => 'application/json']
+            ['Content-Type' => 'application/json'],
         );
 
         $this->assertEquals(200, $response->getStatusCode());
         $body = $this->parseJsonBody($response);
         $expected = [
             ['id' => 222, 'name' => '1 alli 2', 'ticker' => 't200'],
-            ['id' => 111, 'name' => '2 alli 1', 'ticker' => 't100']
+            ['id' => 111, 'name' => '2 alli 1', 'ticker' => 't100'],
         ];
         $this->assertSame($expected, $body);
     }
@@ -177,14 +180,14 @@ class AllianceControllerTest extends WebTestCase
                     ['id' => $this->groupId1, 'name' => 'group 1', 'description' => null,
                         'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                     ['id' => $this->groupId2, 'name' => 'group 2', 'description' => null,
-                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
+                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                 ]],
                 ['id' => 111, 'name' => '2 alli 1', 'ticker' => 't100', 'groups' => [
                     ['id' => $this->groupId1, 'name' => 'group 1', 'description' => null,
-                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
+                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                 ]],
             ],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
     }
 
@@ -215,8 +218,8 @@ class AllianceControllerTest extends WebTestCase
             null,
             [
                 ClientInterface::class => $this->client,
-                LoggerInterface::class => $this->log
-            ]
+                LoggerInterface::class => $this->log,
+            ],
         );
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -236,8 +239,8 @@ class AllianceControllerTest extends WebTestCase
             null,
             [
                 ClientInterface::class => $this->client,
-                LoggerInterface::class => $this->log
-            ]
+                LoggerInterface::class => $this->log,
+            ],
         );
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -266,8 +269,8 @@ class AllianceControllerTest extends WebTestCase
             null,
             [
                 ClientInterface::class => $this->client,
-                LoggerInterface::class => $this->log
-            ]
+                LoggerInterface::class => $this->log,
+            ],
         );
 
         $this->assertEquals(503, $response->getStatusCode());
@@ -288,13 +291,13 @@ class AllianceControllerTest extends WebTestCase
             '/api/user/alliance/add/123456',
             null,
             null,
-            [ClientInterface::class => $this->client]
+            [ClientInterface::class => $this->client],
         );
 
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertSame(
             ['id' => 123456, 'name' => 'The Alliance.', 'ticker' => '-AT-'],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
 
         $this->em->clear();
@@ -325,8 +328,8 @@ class AllianceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $response1 = $this->runApp('PUT', '/api/user/alliance/'.$this->alliId1.'/add-group/5');
-        $response2 = $this->runApp('PUT', '/api/user/alliance/123/add-group/'.$this->groupId2);
+        $response1 = $this->runApp('PUT', '/api/user/alliance/' . $this->alliId1 . '/add-group/5');
+        $response2 = $this->runApp('PUT', '/api/user/alliance/123/add-group/' . $this->groupId2);
         $response3 = $this->runApp('PUT', '/api/user/alliance/123/add-group/5');
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -338,8 +341,8 @@ class AllianceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $response1 = $this->runApp('PUT', '/api/user/alliance/'.$this->alliId1.'/add-group/'.$this->groupId2);
-        $response2 = $this->runApp('PUT', '/api/user/alliance/'.$this->alliId1.'/add-group/'.$this->groupId2);
+        $response1 = $this->runApp('PUT', '/api/user/alliance/' . $this->alliId1 . '/add-group/' . $this->groupId2);
+        $response2 = $this->runApp('PUT', '/api/user/alliance/' . $this->alliId1 . '/add-group/' . $this->groupId2);
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
     }
@@ -362,8 +365,8 @@ class AllianceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $response1 = $this->runApp('PUT', '/api/user/alliance/'.$this->alliId1.'/remove-group/5');
-        $response2 = $this->runApp('PUT', '/api/user/alliance/123/remove-group/'.$this->groupId1);
+        $response1 = $this->runApp('PUT', '/api/user/alliance/' . $this->alliId1 . '/remove-group/5');
+        $response2 = $this->runApp('PUT', '/api/user/alliance/123/remove-group/' . $this->groupId1);
         $response3 = $this->runApp('PUT', '/api/user/alliance/123/remove-group/5');
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -379,10 +382,10 @@ class AllianceControllerTest extends WebTestCase
 
         $res = $this->runApp(
             'PUT',
-            '/api/user/alliance/'.$this->alliId1.'/remove-group/'.$this->groupId1,
+            '/api/user/alliance/' . $this->alliId1 . '/remove-group/' . $this->groupId1,
             null,
             null,
-            [ObjectManager::class => $this->em, LoggerInterface::class => $this->log]
+            [ObjectManager::class => $this->em, LoggerInterface::class => $this->log],
         );
         $this->assertEquals(500, $res->getStatusCode());
     }
@@ -392,8 +395,8 @@ class AllianceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $response1 = $this->runApp('PUT', '/api/user/alliance/'.$this->alliId1.'/remove-group/'.$this->groupId1);
-        $response2 = $this->runApp('PUT', '/api/user/alliance/'.$this->alliId1.'/remove-group/'.$this->groupId1);
+        $response1 = $this->runApp('PUT', '/api/user/alliance/' . $this->alliId1 . '/remove-group/' . $this->groupId1);
+        $response2 = $this->runApp('PUT', '/api/user/alliance/' . $this->alliId1 . '/remove-group/' . $this->groupId1);
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
     }

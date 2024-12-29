@@ -71,7 +71,7 @@ class AutoAllowlistTest extends ConsoleTestCase
     {
         $client = new Client();
         $client->setResponse(
-            new Response(200, [], '[1012]') // getCorporationsCorporationIdMembers watchlist 3
+            new Response(200, [], '[1012]'), // getCorporationsCorporationIdMembers watchlist 3
         );
 
         $output = $this->runConsoleApp('auto-allowlist', ['--sleep' => 0], [
@@ -81,12 +81,12 @@ class AutoAllowlistTest extends ConsoleTestCase
         $log = explode("\n", $output);
         $this->assertSame(14, count($log));
         $this->assertStringContainsString('Started "auto-allowlist"', $log[0]);
-        $this->assertStringContainsString('  Processing watchlist '.$this->data['watchlist1Id'], $log[1]);
+        $this->assertStringContainsString('  Processing watchlist ' . $this->data['watchlist1Id'], $log[1]);
         $this->assertStringContainsString("    Collected data from player {$this->data['player1Id']}", $log[2]);
         $this->assertStringContainsString("    No token for corporation 2000101", $log[3]);
         $this->assertStringContainsString("    No token for corporation 2000103", $log[4]);
         $this->assertStringContainsString('    Corporations to check: 2, checked: 0, allowlist: 0', $log[5]);
-        $this->assertStringContainsString('  Processing watchlist '.$this->data['watchlist2Id'], $log[6]);
+        $this->assertStringContainsString('  Processing watchlist ' . $this->data['watchlist2Id'], $log[6]);
         $this->assertStringContainsString("    Collected data from player {$this->data['player1Id']}", $log[7]);
         $this->assertStringContainsString("    Collected data from player {$this->data['player2Id']}", $log[8]);
         $this->assertStringContainsString('    Checked corporation 2000102', $log[9]);

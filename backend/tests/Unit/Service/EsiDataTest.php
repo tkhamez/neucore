@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -77,7 +78,7 @@ class EsiDataTest extends TestCase
     public function testFetchCharacterWithCorporationAndAlliance_CharInvalid()
     {
         $this->client->setResponse(
-            new Response(404)
+            new Response(404),
         );
 
         $char = $this->esiData->fetchCharacterWithCorporationAndAlliance(10);
@@ -98,7 +99,7 @@ class EsiDataTest extends TestCase
                 "character_id": 10,
                 "corporation_id": 20
             }]'),
-            new Response(404)
+            new Response(404),
         );
 
         $char = $this->esiData->fetchCharacterWithCorporationAndAlliance(10);
@@ -125,7 +126,7 @@ class EsiDataTest extends TestCase
                 "ticker": "-cn-",
                 "alliance_id": 30
             }'),
-            new Response(404)
+            new Response(404),
         );
 
         $char = $this->esiData->fetchCharacterWithCorporationAndAlliance(10);
@@ -155,7 +156,7 @@ class EsiDataTest extends TestCase
             new Response(200, [], '{
                 "name": "alli name",
                 "ticker": "-an-"
-            }')
+            }'),
         );
 
         $char = $this->esiData->fetchCharacterWithCorporationAndAlliance(10);
@@ -232,8 +233,8 @@ class EsiDataTest extends TestCase
             }'),
             new Response(200, [], '[{
                 "character_id": 123,
-                "corporation_id": '.EsiData::CORPORATION_DOOMHEIM_ID.'
-            }]')
+                "corporation_id": ' . EsiData::CORPORATION_DOOMHEIM_ID . '
+            }]'),
         );
         $char = $this->esiData->fetchCharacter(123);
         $this->em->flush();
@@ -263,7 +264,7 @@ class EsiDataTest extends TestCase
             new Response(200, [], '[{
                 "character_id": 10,
                 "corporation_id": 234
-            }]')
+            }]'),
         );
 
         $char = $this->esiData->fetchCharacter(123, false);
@@ -295,7 +296,7 @@ class EsiDataTest extends TestCase
             new Response(200, [], '[{
                 "character_id": 10,
                 "corporation_id": 234
-            }]')
+            }]'),
         );
 
         $char = $this->esiData->fetchCharacter(123);
@@ -386,7 +387,7 @@ class EsiDataTest extends TestCase
             new Response(200, [], '{
                 "name": "The A.",
                 "ticker": "-A-"
-            }')
+            }'),
         );
 
         $corp = $this->esiData->fetchCorporation(234);
@@ -542,7 +543,7 @@ class EsiDataTest extends TestCase
     {
         $this->client->setMiddleware(function () {
             static $requestNumber = 0;
-            $requestNumber ++;
+            $requestNumber++;
             if (in_array($requestNumber, [1, 2, 3, 6])) {
                 $msg = '... {\"error\":\"Ensure all IDs are valid before resolving.\"}';
                 throw new ApiException($msg, 404, [], $msg);
@@ -581,7 +582,7 @@ class EsiDataTest extends TestCase
             new Response(200, [], '[]'), // r29 - 701-800
             new Response(200, [], '[]'), // r30 - 801-900
             new Response(200, [], '[{"id": 1000, "name": "N 1000", "category": "character"}]'), // r31 - 901-1000
-            new Response(200, [], '[{"id": 1500, "name": "N 1500", "category": "character"}]') // r32 - 1001 - 1500
+            new Response(200, [], '[{"id": 1500, "name": "N 1500", "category": "character"}]'), // r32 - 1001 - 1500
         );
 
         $names = $this->esiData->fetchUniverseNames(range(1, 1500));
@@ -603,22 +604,22 @@ class EsiDataTest extends TestCase
         $this->assertSame(4, count($records));
         $this->assertSame(
             'fetchUniverseNames: Invalid ID(s) in request, trying again with max. 100 IDs.',
-            $records[0]['message']
+            $records[0]['message'],
         );
         $this->assertNull($records[0]['context']['IDs'] ?? null);
         $this->assertSame(
             'fetchUniverseNames: Invalid ID(s) in request, trying again with max. 10 IDs.',
-            $records[1]['message']
+            $records[1]['message'],
         );
         $this->assertNull($records[1]['context']['IDs'] ?? null);
         $this->assertSame(
             'fetchUniverseNames: Invalid ID(s) in request, trying again with max. 1 IDs.',
-            $records[2]['message']
+            $records[2]['message'],
         );
         $this->assertNull($records[2]['context']['IDs'] ?? null);
         $this->assertSame(
             '... {\"error\":\"Ensure all IDs are valid before resolving.\"}',
-            $records[3]['message']
+            $records[3]['message'],
         );
         $this->assertSame([3], $records[3]['context']['IDs'] ?? []);
     }
@@ -745,7 +746,7 @@ class EsiDataTest extends TestCase
         $location2 = $this->esiData->fetchStructure(1023100200300, 'access-token');
         $this->assertSame(
             $location1->getLastUpdate()->getTimestamp(),
-            $location2->getLastUpdate()->getTimestamp()
+            $location2->getLastUpdate()->getTimestamp(),
         );
         $this->assertSame('Name Update 1', $location1->getName());
     }
@@ -812,7 +813,7 @@ class EsiDataTest extends TestCase
     {
         $this->client->setResponse(
             new Response(200, [], '{"roles": ["Director", "Auditor", "Accountant"]}'),
-            new Response(200, [], '{"roles": ["Director", "Auditor", "Accountant"]}')
+            new Response(200, [], '{"roles": ["Director", "Auditor", "Accountant"]}'),
         );
         $this->assertTrue($this->esiData->verifyRoles(['Accountant', 'Director'], 100, 'access-token'));
         $this->assertTrue($this->esiData->verifyRoles(['Auditor'], 100, 'access-token'));
@@ -846,7 +847,7 @@ class EsiDataTest extends TestCase
             $this->om,
             $this->repoFactory,
             new Character($this->om, $this->repoFactory),
-            $this->config
+            $this->config,
         );
     }
 }

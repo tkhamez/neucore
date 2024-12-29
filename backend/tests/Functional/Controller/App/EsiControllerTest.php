@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -55,7 +56,7 @@ class EsiControllerTest extends WebTestCase
         $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         $this->helper->getEm()->persist($eveLogin);
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_LOGIN])->getId();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')];
         $response2 = $this->runApp('GET', '/api/app/v1/esi/eve-login/core.default/characters', null, $headers);
         $this->assertSame(403, $response2->getStatusCode());
     }
@@ -63,7 +64,7 @@ class EsiControllerTest extends WebTestCase
     public function testEveLoginCharacters403_MissingEveLogin()
     {
         $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_LOGIN]);
-        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s1')];
 
         // app may not use the login
         $eveLogin = (new EveLogin())->setName('test-1');
@@ -76,7 +77,7 @@ class EsiControllerTest extends WebTestCase
     public function testEveLoginCharacters404()
     {
         $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_LOGIN]);
-        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s1')];
 
         // login does not exist
         $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/name1/characters', null, $headers);
@@ -96,7 +97,7 @@ class EsiControllerTest extends WebTestCase
         $this->helper->getEm()->flush();
         $this->helper->getEm()->clear();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/characters', null, $headers);
 
         $this->assertSame(200, $response->getStatusCode());
@@ -109,7 +110,7 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame(403, $response0->getStatusCode());
 
         $app = $this->helper->addApp('A1', 's1', [Role::APP]);
-        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s1')];
         $response1 = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/token-data', null, $headers);
         $this->assertSame(403, $response1->getStatusCode());
     }
@@ -120,7 +121,7 @@ class EsiControllerTest extends WebTestCase
         $this->helper->getEm()->persist($eveLogin);
         $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_LOGIN]);
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/token-data', null, $headers);
 
         $this->assertSame(403, $response->getStatusCode());
@@ -132,7 +133,7 @@ class EsiControllerTest extends WebTestCase
         $this->helper->getEm()->persist($eveLogin);
         $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_LOGIN], ['core.default']);
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/core.default/token-data', null, $headers);
 
         $this->assertSame(403, $response->getStatusCode());
@@ -142,7 +143,7 @@ class EsiControllerTest extends WebTestCase
     {
         $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_LOGIN], ['test-1']);
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-2/token-data', null, $headers);
 
         $this->assertSame(404, $response->getStatusCode());
@@ -159,7 +160,7 @@ class EsiControllerTest extends WebTestCase
         $this->helper->getEm()->flush();
         $this->helper->getEm()->clear();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s1')];
         $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/token-data', null, $headers);
 
         $this->assertSame(200, $response->getStatusCode());
@@ -184,7 +185,7 @@ class EsiControllerTest extends WebTestCase
         $this->helper->addEveLogin('test');
         $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_TOKEN]);
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode("{$app->getId()}:s1")];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode("{$app->getId()}:s1")];
         $response = $this->runApp('GET', '/api/app/v1/esi/access-token/321?eveLoginName=test', null, $headers);
 
         $this->assertSame(403, $response->getStatusCode());
@@ -194,7 +195,7 @@ class EsiControllerTest extends WebTestCase
     {
         $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_TOKEN], ['test']);
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode("{$app->getId()}:s1")];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode("{$app->getId()}:s1")];
         $response = $this->runApp('GET', '/api/app/v1/esi/access-token/321?eveLoginName=test', null, $headers);
 
         $this->assertSame(404, $response->getStatusCode());
@@ -209,7 +210,7 @@ class EsiControllerTest extends WebTestCase
         $this->helper->getEm()->flush();
         $this->helper->getEm()->clear();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode("{$app->getId()}:s1")];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode("{$app->getId()}:s1")];
         $response = $this->runApp('GET', '/api/app/v1/esi/access-token/123?eveLoginName=test', null, $headers);
 
         $this->assertSame(204, $response->getStatusCode());
@@ -224,7 +225,12 @@ class EsiControllerTest extends WebTestCase
         $now = time();
         $accessToken = Helper::generateToken(['scope-one'])[0];
         $esiToken = $this->helper->createOrUpdateEsiToken(
-            $character, $now - 60, $accessToken, true, 'test', ['scope-one']
+            $character,
+            $now - 60,
+            $accessToken,
+            true,
+            'test',
+            ['scope-one'],
         );
         $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_TOKEN]);
         $app->addEveLogin($esiToken->getEveLogin() ?: new EveLogin());
@@ -232,13 +238,13 @@ class EsiControllerTest extends WebTestCase
         $this->helper->getEm()->clear();
 
         $httpClient = new Client();
-        $httpClient->setResponse(new Response(body: (string)json_encode([
+        $httpClient->setResponse(new Response(body: (string) json_encode([
             'access_token' => $accessToken,
             'refresh_token' => 'rf',
-            'expires' => $now+60
+            'expires' => $now + 60,
         ])));
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode("{$app->getId()}:s1")];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode("{$app->getId()}:s1")];
         $response = $this->runApp('GET', '/api/app/v1/esi/access-token/123?eveLoginName=test', null, $headers, [
             HttpClientFactoryInterface::class => new HttpClientFactory($httpClient),
         ]);
@@ -257,7 +263,7 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame(403, $response1->getStatusCode());
 
         $appId = $this->helper->addApp('A1', 's1', [Role::APP])->getId();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')];
 
         $response2 = $this->runApp('GET', '/api/app/v2/esi', null, $headers);
         $this->assertSame(403, $response2->getStatusCode());
@@ -273,9 +279,9 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v2/esi/v3/characters/96061222/assets/?page=1&datasource=123:core.default',
             [],
             [
-                'Authorization' => 'Bearer '.base64_encode($appId.':s1'),
-                'If-None-Match' => '686897696a7c876b7e'
-            ]
+                'Authorization' => 'Bearer ' . base64_encode($appId . ':s1'),
+                'If-None-Match' => '686897696a7c876b7e',
+            ],
         );
 
         $this->assertSame(403, $response->getStatusCode());
@@ -287,7 +293,7 @@ class EsiControllerTest extends WebTestCase
         // Only test the reason phrase, rest is in v2 test.
 
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY])->getId();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')];
 
         $response1 = $this->runApp('GET', '/api/app/v1/esi', null, $headers);
         $this->assertSame(400, $response1->getStatusCode());
@@ -297,7 +303,7 @@ class EsiControllerTest extends WebTestCase
     public function testEsiV2400_MissingParameters()
     {
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY])->getId();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')];
 
         $response1 = $this->runApp('GET', '/api/app/v2/esi', null, $headers);
         $this->assertSame(400, $response1->getStatusCode());
@@ -307,13 +313,13 @@ class EsiControllerTest extends WebTestCase
             'GET',
             '/api/app/v2/esi/latest/characters/96061222/stats/',
             null,
-            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')]
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
         );
         $this->assertSame(400, $response2->getStatusCode());
         $this->assertSame(
             '"The Neucore-EveCharacter header and datasource parameter cannot both be empty, ' .
             'one of them must contain an EVE character ID"',
-            $response2->getBody()->__toString()
+            $response2->getBody()->__toString(),
         );
     }
 
@@ -323,7 +329,7 @@ class EsiControllerTest extends WebTestCase
         // testEsiV1400_MissingParameters_ReasonPhrase().
 
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY])->getId();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')];
 
         $response1 = $this->runApp('GET', '/api/app/v2/esi/latest/alliances/', null, $headers);
         $this->assertSame(400, $response1->getStatusCode());
@@ -346,7 +352,7 @@ class EsiControllerTest extends WebTestCase
             'GET',
             '/api/app/v1/esi/latest/characters/96061222/stats/?datasource=96061222',
             null,
-            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')]
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
         );
 
         $this->assertSame(400, $response->getStatusCode());
@@ -361,7 +367,7 @@ class EsiControllerTest extends WebTestCase
             'GET',
             '/api/app/v2/esi/latest/characters/96061222/stats/?datasource=96061222',
             null,
-            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')]
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
         );
 
         $this->assertSame(400, $response->getStatusCode());
@@ -377,7 +383,7 @@ class EsiControllerTest extends WebTestCase
             'GET',
             '/api/app/v1/esi/latest/characters/96061222/stats/?datasource=123%3Atest-1',
             null,
-            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')]
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
         );
 
         $this->assertSame(400, $response->getStatusCode());
@@ -393,7 +399,7 @@ class EsiControllerTest extends WebTestCase
             'GET',
             '/api/app/v2/esi/latest/characters/96061222/stats/?datasource=123%3Atest-1',
             null,
-            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')]
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
         );
 
         $this->assertSame(400, $response->getStatusCode());
@@ -409,7 +415,7 @@ class EsiControllerTest extends WebTestCase
         // add var
         $this->storage->set(
             Variables::ESI_ERROR_LIMIT,
-            (string)\json_encode(new EsiErrorLimit(time(), 20, 86))
+            (string) \json_encode(new EsiErrorLimit(time(), 20, 86)),
         );
 
         $response = $this->runApp(
@@ -417,7 +423,7 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v1/esi',
             [],
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
-            [LoggerInterface::class => $this->logger, StorageInterface::class => $this->storage]
+            [LoggerInterface::class => $this->logger, StorageInterface::class => $this->storage],
         );
 
         $this->assertSame(429, $response->getStatusCode());
@@ -432,7 +438,7 @@ class EsiControllerTest extends WebTestCase
         // add var
         $this->storage->set(
             Variables::ESI_ERROR_LIMIT,
-            (string)\json_encode(new EsiErrorLimit(time(), 20, 86))
+            (string) \json_encode(new EsiErrorLimit(time(), 20, 86)),
         );
 
         $response = $this->runApp(
@@ -440,7 +446,7 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v2/esi',
             [],
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
-            [LoggerInterface::class => $this->logger, StorageInterface::class => $this->storage]
+            [LoggerInterface::class => $this->logger, StorageInterface::class => $this->storage],
         );
 
         $this->assertSame(429, $response->getStatusCode());
@@ -448,12 +454,12 @@ class EsiControllerTest extends WebTestCase
         $this->assertLessThanOrEqual('86', $response->getHeaderLine('Retry-After'));
         $this->assertSame(
             '"Maximum permissible ESI error limit reached (X-Esi-Error-Limit-Remain <= 20)."',
-            $response->getBody()->__toString()
+            $response->getBody()->__toString(),
         );
         $this->assertSame(
             'App\EsiController: application ' . $appId .
             ' "A1": Maximum permissible ESI error limit reached (X-Esi-Error-Limit-Remain <= 20).',
-            $this->logger->getHandler()->getRecords()[0]['message']
+            $this->logger->getHandler()->getRecords()[0]['message'],
         );
     }
 
@@ -464,7 +470,7 @@ class EsiControllerTest extends WebTestCase
         // add var
         $this->storage->set(
             Variables::ESI_ERROR_LIMIT,
-            (string)\json_encode(new EsiErrorLimit(time(), 21, 86))
+            (string) \json_encode(new EsiErrorLimit(time(), 21, 86)),
         );
 
         $response = $this->runApp(
@@ -472,7 +478,7 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v2/esi',
             [],
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
-            [StorageInterface::class => $this->storage]
+            [StorageInterface::class => $this->storage],
         );
 
         $this->assertNotEquals(429, $response->getStatusCode());
@@ -485,7 +491,7 @@ class EsiControllerTest extends WebTestCase
         // add var
         $this->storage->set(
             Variables::ESI_ERROR_LIMIT,
-            (string)\json_encode(new EsiErrorLimit(time() - 87, 20, 86))
+            (string) \json_encode(new EsiErrorLimit(time() - 87, 20, 86)),
         );
 
         $response = $this->runApp(
@@ -493,7 +499,7 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v2/esi',
             [],
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
-            [StorageInterface::class => $this->storage]
+            [StorageInterface::class => $this->storage],
         );
 
         $this->assertNotEquals(429, $response->getStatusCode());
@@ -503,22 +509,22 @@ class EsiControllerTest extends WebTestCase
     {
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY])->getId();
 
-        $this->storage->set(Variables::ESI_RATE_LIMIT, (string)(time() - 10));
+        $this->storage->set(Variables::ESI_RATE_LIMIT, (string) (time() - 10));
         $response1 = $this->runApp(
             'GET',
             '/api/app/v2/esi',
             [],
-            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')]
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
         );
         $this->assertNotEquals(429, $response1->getStatusCode());
 
-        $this->storage->set(Variables::ESI_RATE_LIMIT, (string)(time() + 20));
+        $this->storage->set(Variables::ESI_RATE_LIMIT, (string) (time() + 20));
         $response2 = $this->runApp(
             'GET',
             '/api/app/v2/esi',
             [],
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
-            [LoggerInterface::class => $this->logger, StorageInterface::class => $this->storage]
+            [LoggerInterface::class => $this->logger, StorageInterface::class => $this->storage],
         );
 
         $this->assertSame(429, $response2->getStatusCode());
@@ -528,7 +534,7 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame(json_encode($errorMessage), $response2->getBody()->__toString());
         $this->assertSame(
             "App\EsiController: application $appId \"A1\": $errorMessage",
-            $this->logger->getHandler()->getRecords()[0]['message']
+            $this->logger->getHandler()->getRecords()[0]['message'],
         );
     }
 
@@ -536,22 +542,22 @@ class EsiControllerTest extends WebTestCase
     {
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY])->getId();
 
-        $this->storage->set(Variables::ESI_THROTTLED, (string)(time() - 5));
+        $this->storage->set(Variables::ESI_THROTTLED, (string) (time() - 5));
         $response1 = $this->runApp(
             'GET',
             '/api/app/v2/esi',
             [],
-            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')]
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
         );
         $this->assertNotEquals(429, $response1->getStatusCode());
 
-        $this->storage->set(Variables::ESI_THROTTLED, (string)(time() + 5));
+        $this->storage->set(Variables::ESI_THROTTLED, (string) (time() + 5));
         $response2 = $this->runApp(
             'GET',
             '/api/app/v2/esi',
             [],
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
-            [LoggerInterface::class => $this->logger, StorageInterface::class => $this->storage]
+            [LoggerInterface::class => $this->logger, StorageInterface::class => $this->storage],
         );
 
         $this->assertSame(429, $response2->getStatusCode());
@@ -561,7 +567,7 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame(json_encode($errorMessage), $response2->getBody()->__toString());
         $this->assertSame(
             "App\EsiController: application $appId \"A1\": $errorMessage",
-            $this->logger->getHandler()->getRecords()[0]['message']
+            $this->logger->getHandler()->getRecords()[0]['message'],
         );
     }
 
@@ -580,18 +586,18 @@ class EsiControllerTest extends WebTestCase
             'GET',
             '/api/app/v2/esi/latest/universe/structures/1/?page=1&datasource=123:core.default',
             [],
-            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')],
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
             [
                 HttpClientFactoryInterface::class => new HttpClientFactory($httpClient),
-                LoggerInterface::class => $this->logger
-            ]
+                LoggerInterface::class => $this->logger,
+            ],
         );
 
         $this->assertSame(500, $response->getStatusCode());
         $this->assertSame('error message', $response->getBody()->__toString());
         $this->assertSame(
             'App\EsiController: (application ' . $appId . ' "A1"): error message',
-            $this->logger->getHandler()->getRecords()[0]['message']
+            $this->logger->getHandler()->getRecords()[0]['message'],
         );
     }
 
@@ -604,30 +610,30 @@ class EsiControllerTest extends WebTestCase
         $httpClient->setResponse(new Response(
             400,
             [],
-            '{"error": "not a potential structure_id (id < 100000000)"}'
+            '{"error": "not a potential structure_id (id < 100000000)"}',
         ));
 
         $response = $this->runApp(
             'GET',
             '/api/app/v2/esi/latest/universe/structures/1/?page=1&datasource=123:core.default',
             [],
-            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')],
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
             [
                 HttpClientFactoryInterface::class => new HttpClientFactory($httpClient),
-                LoggerInterface::class => $this->logger
-            ]
+                LoggerInterface::class => $this->logger,
+            ],
         );
 
         $this->assertSame(400, $response->getStatusCode());
         $this->assertSame(
             '{"error": "not a potential structure_id (id < 100000000)"}',
-            $response->getBody()->__toString()
+            $response->getBody()->__toString(),
         );
         $this->assertSame(
             'App\EsiController: (application ' . $appId . ' "A1") ' .
-            '/latest/universe/structures/1/?page=1: '  .
+            '/latest/universe/structures/1/?page=1: ' .
             '{"error": "not a potential structure_id (id < 100000000)"}',
-            $this->logger->getHandler()->getRecords()[0]['message']
+            $this->logger->getHandler()->getRecords()[0]['message'],
         );
     }
 
@@ -647,9 +653,9 @@ class EsiControllerTest extends WebTestCase
                 'X-Pages' => ['3'],
                 'warning' => ['199 - This route has an upgrade available'],
                 'Warning' => ['199 - This route has an upgrade available'],
-                'Retry-After' => ['55']
+                'Retry-After' => ['55'],
             ],
-            '{"key": "value"}'
+            '{"key": "value"}',
         ));
 
         $response = $this->runApp(
@@ -657,10 +663,10 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v2/esi/v3/characters/96061222/assets/?page=1&datasource=123:core.default',
             [],
             [
-                'Authorization' => 'Bearer '.base64_encode($appId.':s1'),
-                'If-None-Match' => '686897696a7c876b7e'
+                'Authorization' => 'Bearer ' . base64_encode($appId . ':s1'),
+                'If-None-Match' => '686897696a7c876b7e',
             ],
-            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)],
         );
 
         $this->assertSame(200, $response->getStatusCode());
@@ -684,22 +690,22 @@ class EsiControllerTest extends WebTestCase
         // create client with middleware
         $httpClient = new Client();
         $httpClient->setMiddleware(
-            new EsiHeaders(new Logger(), $this->storage)
+            new EsiHeaders(new Logger(), $this->storage),
         );
         $httpClient->setResponse(new Response(
             200,
-            ['X-Esi-Error-Limit-Remain' => ['100'], 'X-Esi-Error-Limit-Reset' => ['60']]
+            ['X-Esi-Error-Limit-Remain' => ['100'], 'X-Esi-Error-Limit-Reset' => ['60']],
         ));
 
         $response = $this->runApp(
             'GET',
             '/api/app/v2/esi/v3/characters/96061222/assets/?page=1&datasource=123',
             [],
-            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')],
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
             [
                 HttpClientFactoryInterface::class => new HttpClientFactory($httpClient),
                 StorageInterface::class => $this->storage,
-            ]
+            ],
         );
 
         $this->assertSame(200, $response->getStatusCode());
@@ -708,7 +714,7 @@ class EsiControllerTest extends WebTestCase
             'X-Esi-Error-Limit-Reset' => ['60'],
         ], $response->getHeaders());
 
-        $esiErrorValues = EsiErrorLimit::fromJson((string)$this->storage->get(Variables::ESI_ERROR_LIMIT));
+        $esiErrorValues = EsiErrorLimit::fromJson((string) $this->storage->get(Variables::ESI_ERROR_LIMIT));
         $this->assertLessThanOrEqual(time(), $esiErrorValues->updated);
         $this->assertSame(100, $esiErrorValues->remain);
         $this->assertSame(60, $esiErrorValues->reset);
@@ -724,10 +730,10 @@ class EsiControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/api/app/v2/esi?esi-path-query='. urlencode('/v3/characters/96061222/assets/?page=1') . '&datasource=123',
+            '/api/app/v2/esi?esi-path-query=' . urlencode('/v3/characters/96061222/assets/?page=1') . '&datasource=123',
             null,
-            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')],
-            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)],
         );
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('{"key": "value"}', $response->getBody()->__toString());
@@ -751,8 +757,8 @@ class EsiControllerTest extends WebTestCase
             'GET',
             '/api/app/v2/esi/v3/characters/96061222/assets/?page=1&datasource=123:login2',
             null,
-            ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')],
-            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
+            ['Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s1')],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)],
         );
 
         $this->assertSame('{"key": "value"}', $response->getBody()->__toString());
@@ -781,10 +787,10 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v2/esi/v3/characters/96061222/assets/?page=1&datasource=invalid',
             null,
             [
-                'Authorization' => 'Bearer '.base64_encode($app->getId().':s1'),
+                'Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s1'),
                 'Neucore-EveCharacter' => '123',
             ],
-            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)],
         );
         $this->assertSame(200, $response1->getStatusCode());
         $this->assertSame('{"key": "value1"}', $response1->getBody()->__toString());
@@ -794,11 +800,11 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v2/esi/v3/characters/96061222/assets/?page=1&datasource=invalid',
             null,
             [
-                'Authorization' => 'Bearer '.base64_encode($app->getId().':s1'),
+                'Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s1'),
                 'Neucore-EveCharacter' => '123',
                 'Neucore-EveLogin' => 'login2',
             ],
-            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)],
         );
         $this->assertSame(200, $response2->getStatusCode());
         $this->assertSame('{"key": "value2"}', $response2->getBody()->__toString());
@@ -810,7 +816,7 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame(403, $response1->getStatusCode());
 
         $appId = $this->helper->addApp('A1', 's1', [Role::APP])->getId();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')];
 
         $response2 = $this->runApp('POST', '/api/app/v2/esi', null, $headers);
         $this->assertSame(403, $response2->getStatusCode());
@@ -825,7 +831,7 @@ class EsiControllerTest extends WebTestCase
             'POST',
             '/api/app/v1/esi/v2/characters/96061222/assets/names/?datasource=123:another-app',
             [123456],
-            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')]
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
         );
 
         $this->assertSame(403, $response->getStatusCode());
@@ -841,21 +847,21 @@ class EsiControllerTest extends WebTestCase
         $httpClient->setResponse(new Response(
             200,
             [],
-            '[{ "item_id": 12345,"name": "Awesome Name" }]'
+            '[{ "item_id": 12345,"name": "Awesome Name" }]',
         ));
 
         $response = $this->runApp(
             'POST',
             '/api/app/v1/esi/v2/characters/96061222/assets/names/?datasource=123',
             [123456],
-            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')],
-            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)],
         );
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame(
             [['item_id' => 12345, 'name' => 'Awesome Name']],
-            \json_decode($response->getBody()->__toString(), true)
+            \json_decode($response->getBody()->__toString(), true),
         );
     }
 }

@@ -31,7 +31,7 @@ class ConsoleTestCase extends TestCase
         }
 
         // Add existing db connection
-        $mocks = (new Helper)->addEm($mocks);
+        $mocks = (new Helper())->addEm($mocks);
 
         try {
             $console = $app->getConsoleApp($mocks);

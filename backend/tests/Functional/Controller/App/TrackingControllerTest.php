@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -29,7 +30,7 @@ class TrackingControllerTest extends WebTestCase
 
         $this->helper->emptyDb();
         $appId = $this->helper->addApp('A1', 's1', [Role::APP])->getId();
-        $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')];
 
         $response2 = $this->runApp('GET', '/api/app/v1/corporation/10/member-tracking', null, $headers);
         $this->assertEquals(403, $response2->getStatusCode());
@@ -59,14 +60,14 @@ class TrackingControllerTest extends WebTestCase
         $this->helper->getObjectManager()->persist($member3);
         $this->helper->getObjectManager()->flush();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')];
 
         $params = '?inactive=7&active=12&account=true';
-        $response1 = $this->runApp('GET', '/api/app/v1/corporation/11/member-tracking'.$params, null, $headers);
+        $response1 = $this->runApp('GET', '/api/app/v1/corporation/11/member-tracking' . $params, null, $headers);
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertSame([], $this->parseJsonBody($response1));
 
-        $response2 = $this->runApp('GET', '/api/app/v1/corporation/10/member-tracking'.$params, null, $headers);
+        $response2 = $this->runApp('GET', '/api/app/v1/corporation/10/member-tracking' . $params, null, $headers);
         $this->assertEquals(200, $response2->getStatusCode());
         $result2 = $this->parseJsonBody($response2);
         $this->assertSame(1, count($result2));

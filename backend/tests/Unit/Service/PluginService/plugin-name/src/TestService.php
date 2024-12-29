@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpIllegalPsrClassPathInspection */
 
 declare(strict_types=1);
@@ -28,9 +29,7 @@ class TestService implements ServiceInterface
         $this->pluginConfiguration = $pluginConfiguration;
     }
 
-    public function onConfigurationChange(): void
-    {
-    }
+    public function onConfigurationChange(): void {}
 
     public function request(
         string $name,
@@ -55,18 +54,14 @@ class TestService implements ServiceInterface
         CoreCharacter $character,
         array $groups,
         string $emailAddress,
-        array $allCharacterIds
+        array $allCharacterIds,
     ): ServiceAccountData {
         throw new Exception();
     }
 
-    public function updateAccount(CoreCharacter $character, array $groups, ?CoreCharacter $mainCharacter): void
-    {
-    }
+    public function updateAccount(CoreCharacter $character, array $groups, ?CoreCharacter $mainCharacter): void {}
 
-    public function updatePlayerAccount(CoreCharacter $mainCharacter, array $groups): void
-    {
-    }
+    public function updatePlayerAccount(CoreCharacter $mainCharacter, array $groups): void {}
 
     public function moveServiceAccount(int $toPlayerId, int $fromPlayerId): bool
     {

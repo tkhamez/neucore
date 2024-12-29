@@ -27,7 +27,7 @@ class FluentdFormatterTest extends TestCase
 
         $this->assertStringContainsString(
             '"context":{"exception":{"class":"Exception","message":"test","code":10',
-            $formatter->format($record)
+            $formatter->format($record),
         );
     }
 }

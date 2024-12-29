@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 namespace Tests\Functional\Command;
@@ -42,7 +43,7 @@ class UpdateCorporationsTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('update-corporations', ['--sleep' => 0], [
             ClientInterface::class => $this->client,
-            LoggerInterface::class => $this->log
+            LoggerInterface::class => $this->log,
         ]);
 
         $actual = explode("\n", $output);
@@ -77,7 +78,7 @@ class UpdateCorporationsTest extends ConsoleTestCase
 
         $this->client->setResponse(
             new Response(200, [], '{"name": "corp1", "ticker": "t", "alliance_id": 212}'),
-            new Response(200, [], '{"name": "The Alli.", "ticker": "-A-"}')
+            new Response(200, [], '{"name": "The Alli.", "ticker": "-A-"}'),
         );
 
         $output = $this->runConsoleApp('update-corporations', ['--sleep' => 0], [

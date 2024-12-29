@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -25,7 +26,7 @@ class PluginTest extends TestCase
 
         $this->assertSame(
             ['id' => 0, 'name' => 's1'],
-            json_decode((string) json_encode($plugin), true)
+            json_decode((string) json_encode($plugin), true),
         );
 
         $this->assertSame(
@@ -55,7 +56,7 @@ class PluginTest extends TestCase
                     'configurationData' => '',
                 ],
             ],
-            $plugin->jsonSerialize(false)
+            $plugin->jsonSerialize(false),
         );
 
         $this->assertSame(
@@ -92,7 +93,7 @@ class PluginTest extends TestCase
                     'configurationData' => '',
                 ],
             ],
-            $plugin->jsonSerialize(false, true)
+            $plugin->jsonSerialize(false, true),
         );
 
         $this->assertSame(
@@ -126,7 +127,7 @@ class PluginTest extends TestCase
                     'configurationData' => '',
                 ],
             ],
-            $plugin->jsonSerialize(false, true, false)
+            $plugin->jsonSerialize(false, true, false),
         );
     }
 
@@ -139,7 +140,7 @@ class PluginTest extends TestCase
     {
         $plugin = new Plugin();
         $this->assertSame('', $plugin->getName());
-        $this->assertSame('name',  $plugin->setName('name')->getName());
+        $this->assertSame('name', $plugin->setName('name')->getName());
     }
 
     public function testSetGetConfigurationDatabase()
@@ -171,7 +172,7 @@ class PluginTest extends TestCase
 
         $this->assertSame(
             $expected,
-            (new Plugin())->setConfigurationDatabase($data)->getConfigurationDatabase()?->jsonSerialize()
+            (new Plugin())->setConfigurationDatabase($data)->getConfigurationDatabase()?->jsonSerialize(),
         );
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -95,7 +96,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('send-invalid-token-mail', ['--sleep' => 0], [
             ClientInterface::class => $client,
-            LoggerInterface::class => $log
+            LoggerInterface::class => $log,
         ]);
 
         $actual = explode("\n", $output);
@@ -103,7 +104,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "send-invalid-token-mail"', $actual[0]);
         $this->assertStringEndsWith(
             '  Invalid token mail could not be sent to 30 because of CSPA charge or blocked sender',
-            $actual[1]
+            $actual[1],
         );
         $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);
         $this->assertSame('', $actual[3]);
@@ -122,7 +123,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $this->client->setResponse(new Response(200, [], '373515628'));
 
         $output = $this->runConsoleApp('send-invalid-token-mail', ['--sleep' => 0], [
-            ClientInterface::class => $this->client
+            ClientInterface::class => $this->client,
         ]);
 
         $actual = explode("\n", $output);

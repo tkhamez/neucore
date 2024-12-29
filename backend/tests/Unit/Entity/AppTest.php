@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -31,7 +32,7 @@ class AppTest extends TestCase
 
     public function testGetId()
     {
-        $this->assertSame(0, (new App)->getId());
+        $this->assertSame(0, (new App())->getId());
     }
 
     public function testSetGetName()

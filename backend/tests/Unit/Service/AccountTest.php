@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -117,7 +118,7 @@ class AccountTest extends TestCase
         list($this->role0, $this->role1, $this->role2, $this->role3, $this->role4, $this->role5) =
             $this->helper->addRoles([
                 Role::GROUP_MANAGER, Role::TRACKING, Role::WATCHLIST, Role::APP_MANAGER, Role::USER_CHARS,
-                Role::ESI, Role::USER_ADMIN, Role::WATCHLIST_MANAGER
+                Role::ESI, Role::USER_ADMIN, Role::WATCHLIST_MANAGER,
             ]);
         $this->om = $this->helper->getObjectManager();
 
@@ -129,7 +130,7 @@ class AccountTest extends TestCase
 
         $config = new Config([
             'eve' => ['datasource' => '', 'esi_host' => ''],
-            'plugins_install_dir' => __DIR__ . '/Account'
+            'plugins_install_dir' => __DIR__ . '/Account',
         ]);
         $this->service = $this->helper->getAccountService($this->log, $this->client, $config);
         $this->charRepo = $repoFactory->getCharacterRepository();
@@ -184,7 +185,7 @@ class AccountTest extends TestCase
         $this->assertSame($newPlayer, $player->getRemovedCharacters()[0]->getNewPlayer());
         $this->assertSame(
             RemovedCharacter::REASON_MOVED_OWNER_CHANGED,
-            $player->getRemovedCharacters()[0]->getReason()
+            $player->getRemovedCharacters()[0]->getReason(),
         );
         $this->assertSame($newPlayer, $player->getRemovedCharacters()[0]->getNewPlayer());
 
@@ -225,7 +226,7 @@ class AccountTest extends TestCase
         $this->assertSame($newPlayer, $player->getRemovedCharacters()[0]->getNewPlayer());
         $this->assertSame(
             RemovedCharacter::REASON_MOVED_OWNER_CHANGED,
-            $player->getRemovedCharacters()[0]->getReason()
+            $player->getRemovedCharacters()[0]->getReason(),
         );
         $this->assertSame($newPlayer, $player->getRemovedCharacters()[0]->getNewPlayer());
 
@@ -240,13 +241,13 @@ class AccountTest extends TestCase
     {
         $result = $this->service->updateAndStoreCharacterWithPlayer(
             new Character(),
-            new EveAuthentication(100, '', '', new AccessToken(['access_token' => 'irrelevant']))
+            new EveAuthentication(100, '', '', new AccessToken(['access_token' => 'irrelevant'])),
         );
         $this->assertFalse($result);
 
         $this->assertSame(
             'Account::updateAndStoreCharacterWithPlayer: Could not find default EveLogin entity.',
-            $this->log->getHandler()->getRecords()[0]['message']
+            $this->log->getHandler()->getRecords()[0]['message'],
         );
     }
 
@@ -255,7 +256,7 @@ class AccountTest extends TestCase
      */
     public function testUpdateAndStoreCharacterWithPlayer_Success()
     {
-        $eveLogin = (new EveLogin)->setName(EveLogin::NAME_DEFAULT);
+        $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         $this->om->persist($eveLogin);
         $this->om->flush();
 
@@ -267,7 +268,7 @@ class AccountTest extends TestCase
         $this->client->setResponse(
             new Response(200, [], '{"name": "char name changed", "corporation_id": 102}'), // getCharactersCharacterId
             new Response(200, [], '[]'), // postCharactersAffiliation())
-            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}') // getCorporationsCorporationId()
+            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}'), // getCorporationsCorporationId()
         );
 
         $expires = time() + (60 * 20);
@@ -278,8 +279,8 @@ class AccountTest extends TestCase
                 100,
                 'will be updated because corporation is missing',
                 'character-owner-hash',
-                new AccessToken(['access_token' => $token[0], 'refresh_token' => 'r-t', 'expires' => $expires])
-            )
+                new AccessToken(['access_token' => $token[0], 'refresh_token' => 'r-t', 'expires' => $expires]),
+            ),
         );
         $this->assertTrue($result);
 
@@ -300,7 +301,7 @@ class AccountTest extends TestCase
         $this->assertSame(['s1', 's2'], (new JsonWebToken(new AccessToken([
             'access_token' => $esiToken->getAccessToken(),
             'refresh_token' => $esiToken->getRefreshToken(),
-            'expires' => $esiToken->getExpires()
+            'expires' => $esiToken->getExpires(),
         ])))->getEveAuthentication()->getScopes());
         $this->assertSame(102, $character->getCorporation()->getId());
         $this->assertSame('name corp', $character->getCorporation()->getName());
@@ -308,7 +309,7 @@ class AccountTest extends TestCase
 
     public function testUpdateAndStoreCharacterWithPlayer_NoToken()
     {
-        $eveLogin = (new EveLogin)->setName(EveLogin::NAME_DEFAULT);
+        $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         $this->om->persist($eveLogin);
         $this->om->flush();
 
@@ -323,8 +324,8 @@ class AccountTest extends TestCase
                 100,
                 'char name changed',
                 'character-owner-hash',
-                new AccessToken(['access_token' => 'a-t'])
-            )
+                new AccessToken(['access_token' => 'a-t']),
+            ),
         );
         $this->assertTrue($result);
 
@@ -338,7 +339,7 @@ class AccountTest extends TestCase
 
     public function testUpdateAndStoreCharacterWithPlayer_NoToken_RemovesExistingToken()
     {
-        $eveLogin = (new EveLogin)->setName(EveLogin::NAME_DEFAULT);
+        $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         $defaultEsiToken = (new EsiToken())->setEveLogin($eveLogin)
             ->setRefreshToken('rt')->setAccessToken('at')->setExpires(123);
         $corp = (new Corporation())->setId(1);
@@ -357,7 +358,7 @@ class AccountTest extends TestCase
         $char = $char ?: new Character(); // only for PHPStan
         $result = $this->service->updateAndStoreCharacterWithPlayer(
             $char,
-            new EveAuthentication(100, '', '', new AccessToken(['access_token' => 'a-t']))
+            new EveAuthentication(100, '', '', new AccessToken(['access_token' => 'a-t'])),
         );
         $this->assertTrue($result);
 
@@ -381,8 +382,8 @@ class AccountTest extends TestCase
         $this->assertGreaterThanOrEqual(1, $logins[0]->getPlayer()->getId());
         $this->assertSame($player->getId(), $logins[0]->getPlayer()->getId());
         $this->assertSame(2, $logins[0]->getCount());
-        $this->assertSame((int)date('Y'), $logins[0]->getYear());
-        $this->assertSame((int)date('m'), $logins[0]->getMonth());
+        $this->assertSame((int) date('Y'), $logins[0]->getYear());
+        $this->assertSame((int) date('m'), $logins[0]->getMonth());
     }
 
     public function testCheckCharacter_DeletesBiomassedChar()
@@ -427,7 +428,7 @@ class AccountTest extends TestCase
 
         $this->client->setResponse(
             // for refreshAccessToken()
-            new Response(400, [], '{"error": "invalid_grant"}')
+            new Response(400, [], '{"error": "invalid_grant"}'),
         );
 
         $result = $this->service->checkCharacter($char);
@@ -467,8 +468,8 @@ class AccountTest extends TestCase
             new Response(200, [], '{
                 "access_token": ' . json_encode($token) . ', 
                 "refresh_token": "r-t", 
-                "expires": '.$newExpires.'
-            }')
+                "expires": ' . $newExpires . '
+            }'),
         );
 
         $expires = time() - 1000;
@@ -496,8 +497,8 @@ class AccountTest extends TestCase
             new Response(200, [], '{
                 "access_token": ' . json_encode($token) . ', 
                 "refresh_token": "r-t", 
-                "expires": '. (time() + 60) .'
-            }')
+                "expires": ' . (time() + 60) . '
+            }'),
         );
         $char = $this->setUpCharacterWithToken(time() - 60, true);
 
@@ -520,7 +521,6 @@ class AccountTest extends TestCase
                 "expires_in": 1200,
                 "refresh_token": "fM0...gEy"
             }'),
-
             new Response(200, [], '{"roles": ["Accountant"]}'), // read_corporation_roles for "custom.1"
             new Response(200, [], '{"roles": []}'), // read_corporation_roles for "custom.3"
 
@@ -584,7 +584,7 @@ class AccountTest extends TestCase
                 "access_token": ' . json_encode($token) . ',
                 "expires_in": 1200,
                 "refresh_token": "gEy...fM0"
-            }') // for getAccessToken()
+            }'), // for getAccessToken()
         );
 
         $expires = time() - 1000;
@@ -687,7 +687,7 @@ class AccountTest extends TestCase
 
         $this->assertSame(
             [$groupAuto1->getId(), $groupAuto2->getId(), $group1->getId(), $group2->getId()],
-            $players[0]->getGroupIds()
+            $players[0]->getGroupIds(),
         );
         $this->assertSame([$group2->getId()], $players[1]->getGroupIds());
     }
@@ -784,7 +784,7 @@ class AccountTest extends TestCase
         $this->assertSame(
             'An admin (player ID: unknown) deleted character "char" [10] from player "player 1" [' .
                 $player->getId() . ']',
-            $this->log->getHandler()->getRecords()[0]['message']
+            $this->log->getHandler()->getRecords()[0]['message'],
         );
     }
 
@@ -881,7 +881,7 @@ class AccountTest extends TestCase
             'Player 1',
             1,
             [Role::GROUP_MANAGER, Role::APP_MANAGER, Role::WATCHLIST_MANAGER, Role::USER_CHARS, Role::ESI],
-            ['group 2']
+            ['group 2'],
         )->getPlayer();
         $this->role0->addRequiredGroup($group1); # GROUP_MANAGER
         $this->role3->addRequiredGroup($group1); # APP_MANAGER
@@ -913,7 +913,7 @@ class AccountTest extends TestCase
             'Player 1',
             1,
             [Role::GROUP_MANAGER, Role::APP_MANAGER, Role::WATCHLIST_MANAGER, Role::USER_CHARS, Role::ESI],
-            ['group 1']
+            ['group 1'],
         )->getPlayer();
 
         $this->assertFalse($this->service->mayHaveRole($player, 'invalid'));
@@ -925,14 +925,14 @@ class AccountTest extends TestCase
     public function testSyncTrackingRoleInvalidCall()
     {
         $this->service->syncTrackingRole();
-        $this->service->syncTrackingRole(new Player, new Corporation);
+        $this->service->syncTrackingRole(new Player(), new Corporation());
 
         $this->assertSame(
             [
                 'Account::syncTrackingRole(): Invalid function call.',
                 'Account::syncTrackingRole(): Invalid function call.',
             ],
-            $this->log->getMessages()
+            $this->log->getMessages(),
         );
     }
 
@@ -943,7 +943,7 @@ class AccountTest extends TestCase
 
         $this->assertSame(
             "Account::syncRole(): Role 'tracking' not found.",
-            $this->log->getHandler()->getRecords()[0]['message']
+            $this->log->getHandler()->getRecords()[0]['message'],
         );
     }
 
@@ -951,7 +951,7 @@ class AccountTest extends TestCase
     {
         $this->setUpTrackingData();
 
-        $this->service->syncTrackingRole(new Player);
+        $this->service->syncTrackingRole(new Player());
         $this->om->flush();
 
         $players = $this->playerRepo->findBy([]);
@@ -961,14 +961,14 @@ class AccountTest extends TestCase
         $this->assertTrue($players[0]->hasRole(Role::TRACKING));
         $this->assertFalse($players[1]->hasRole(Role::TRACKING));
     }
-    
+
     public function testSyncTrackingRolePlayerChanged()
     {
         $this->setUpTrackingData();
 
         $this->player1->removeGroup($this->group1);
         $this->player2->addGroup($this->group1);
-        
+
         $this->service->syncTrackingRole($this->player1);
         $this->service->syncTrackingRole($this->player2);
         $this->om->flush();
@@ -978,7 +978,7 @@ class AccountTest extends TestCase
         $this->assertFalse($players[0]->hasRole(Role::TRACKING));
         $this->assertTrue($players[1]->hasRole(Role::TRACKING));
     }
-    
+
     public function testSyncTrackingRoleCorporationChanged()
     {
         $this->setUpTrackingData();
@@ -1000,7 +1000,7 @@ class AccountTest extends TestCase
     {
         $this->setUpWatchlistData();
 
-        $this->service->syncWatchlistRole(new Player);
+        $this->service->syncWatchlistRole(new Player());
         $this->om->flush();
 
         $players = $this->playerRepo->findBy([]);
@@ -1077,11 +1077,11 @@ class AccountTest extends TestCase
 
     public function testSyncManagerRole_RoleNotFound()
     {
-        $this->service->syncManagerRole(new Player, 'name');
+        $this->service->syncManagerRole(new Player(), 'name');
 
         $this->assertSame(
             "Account::syncGroupManagerRole(): Role 'name' not found.",
-            $this->log->getHandler()->getRecords()[0]['message']
+            $this->log->getHandler()->getRecords()[0]['message'],
         );
     }
 
@@ -1181,7 +1181,7 @@ class AccountTest extends TestCase
     private function setUpCharacterWithToken(
         int $expires,
         ?bool $valid = null,
-        string $hash = 'hash'
+        string $hash = 'hash',
     ): Character {
         $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setValidToken($valid)

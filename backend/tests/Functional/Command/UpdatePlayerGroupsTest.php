@@ -19,7 +19,7 @@ class UpdatePlayerGroupsTest extends ConsoleTestCase
 {
     public function testExecute()
     {
-// setup
+        // setup
         $h = new Helper();
         $h->emptyDb();
         $h->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
@@ -43,7 +43,7 @@ class UpdatePlayerGroupsTest extends ConsoleTestCase
 
         // run
         $output = $this->runConsoleApp('update-player-groups', ['--sleep' => 0], [
-            LoggerInterface::class => new Logger()
+            LoggerInterface::class => new Logger(),
         ]);
 
         $om->clear();
@@ -51,8 +51,8 @@ class UpdatePlayerGroupsTest extends ConsoleTestCase
         $actual = explode("\n", $output);
         $this->assertSame(5, count($actual));
         $this->assertStringEndsWith('Started "update-player-groups"', $actual[0]);
-        $this->assertStringEndsWith('  Account '.$p1->getId().' groups updated', $actual[1]);
-        $this->assertStringEndsWith('  Account '.$p2->getId().' groups updated', $actual[2]);
+        $this->assertStringEndsWith('  Account ' . $p1->getId() . ' groups updated', $actual[1]);
+        $this->assertStringEndsWith('  Account ' . $p2->getId() . ' groups updated', $actual[2]);
         $this->assertStringEndsWith('Finished "update-player-groups"', $actual[3]);
         $this->assertSame('', $actual[4]);
 

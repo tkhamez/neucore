@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnused */
 /** @noinspection PhpIllegalPsrClassPathInspection */
 
@@ -31,21 +32,16 @@ class TestService implements GeneralInterface, ServiceInterface
         LoggerInterface     $logger,
         PluginConfiguration $pluginConfiguration,
         FactoryInterface    $factory,
-    )
-    {
-    }
+    ) {}
 
-    public function onConfigurationChange(): void
-    {
-    }
+    public function onConfigurationChange(): void {}
 
     public function request(
         string                 $name,
         ServerRequestInterface $request,
         ResponseInterface      $response,
         ?CoreAccount           $coreAccount,
-    ): ResponseInterface
-    {
+    ): ResponseInterface {
         throw new Exception();
     }
 
@@ -63,9 +59,7 @@ class TestService implements GeneralInterface, ServiceInterface
         ];
     }
 
-    public function command(array $arguments, array $options, OutputInterface $output): void
-    {
-    }
+    public function command(array $arguments, array $options, OutputInterface $output): void {}
 
     public function getAccounts(array $characters): array
     {
@@ -76,9 +70,8 @@ class TestService implements GeneralInterface, ServiceInterface
         CoreCharacter $character,
         array         $groups,
         string        $emailAddress,
-        array         $allCharacterIds
-    ): ServiceAccountData
-    {
+        array         $allCharacterIds,
+    ): ServiceAccountData {
         throw new Exception();
     }
 

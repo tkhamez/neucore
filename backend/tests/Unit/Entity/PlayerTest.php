@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -69,9 +70,9 @@ class PlayerTest extends TestCase
                     'id' => 0,
                     'name' => 'corp1',
                     'ticker' => 'ABC',
-                    'alliance' => ['id' => 0, 'name' => 'alli1', 'ticker' => 'DEF']
+                    'alliance' => ['id' => 0, 'name' => 'alli1', 'ticker' => 'DEF'],
                 ],
-               #'characterNameChanges' => [],
+                #'characterNameChanges' => [],
             ], [
                 'id' => 234,
                 'name' => 'eve two',
@@ -90,7 +91,7 @@ class PlayerTest extends TestCase
                 'description' => null,
                 'visibility' => Group::VISIBILITY_PRIVATE,
                 'autoAccept' => false,
-                'isDefault' => false
+                'isDefault' => false,
             ]],
             'managerGroups' => [[
                 'id' => null,
@@ -98,7 +99,7 @@ class PlayerTest extends TestCase
                 'description' => null,
                 'visibility' => Group::VISIBILITY_PRIVATE,
                 'autoAccept' => false,
-                'isDefault' => false
+                'isDefault' => false,
             ]],
             'managerApps' => [['id' => null, 'name' => 'app-one', 'groups' => [], 'roles' => [], 'eveLogins' => []]],
         ];
@@ -119,12 +120,12 @@ class PlayerTest extends TestCase
             'validToken' => null,
             'validTokenTime' => null,
             'hasRoles' => null,
-            'lastChecked' => null
+            'lastChecked' => null,
         ]];
         $expected3['characters'][1]['esiTokens'] = [];
         $this->assertSame(
             $expected3,
-            json_decode((string) json_encode($play->jsonSerialize(false, false, true)), true)
+            json_decode((string) json_encode($play->jsonSerialize(false, false, true)), true),
         );
     }
 
@@ -141,14 +142,14 @@ class PlayerTest extends TestCase
 
     public function testSetGetName()
     {
-        $play= new Player();
+        $play = new Player();
         $play->setName('nam');
         $this->assertSame('nam', $play->getName());
     }
 
     public function testSetGetPassword()
     {
-        $play= new Player();
+        $play = new Player();
         $play->setPassword('123456');
         $this->assertSame('123456', $play->getPassword());
     }

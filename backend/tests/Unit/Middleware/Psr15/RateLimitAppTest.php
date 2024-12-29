@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -58,7 +59,7 @@ class RateLimitAppTest extends TestCase
         $this->storage = new SystemVariableStorage($this->repoFactory, new ObjectManager($this->om, $this->logger));
         $this->storage->set(
             Variables::RATE_LIMIT_APP . '_' . $this->appId,
-            (string) \json_encode((object) ['remaining' => 0, 'created' => time() - 5])
+            (string) \json_encode((object) ['remaining' => 0, 'created' => time() - 5]),
         );
 
         $this->middleware = new RateLimitApp(
@@ -66,14 +67,14 @@ class RateLimitAppTest extends TestCase
             $this->storage,
             new ResponseFactory(),
             $this->logger,
-            $this->repoFactory
+            $this->repoFactory,
         );
     }
 
     public function testProcess_active()
     {
         $request = RequestFactory::createRequest();
-        $request = $request->withHeader('Authorization', 'Bearer ' . base64_encode($this->appId.':secret'));
+        $request = $request->withHeader('Authorization', 'Bearer ' . base64_encode($this->appId . ':secret'));
 
         $response = $this->middleware->process($request, new RequestHandler());
 
@@ -83,14 +84,14 @@ class RateLimitAppTest extends TestCase
         $this->assertEqualsWithDelta(4.5, $response->getHeader(RateLimit::HEADER_RESET)[0], 1.0);
         $this->assertStringStartsWith(
             'Application rate limit exceeded with 51 requests in ', // ... ~5.5 seconds
-            $response->getBody()->__toString()
+            $response->getBody()->__toString(),
         );
 
         $logs = $this->logger->getMessages();
         $this->assertSame(1, count($logs));
         $this->assertStringStartsWith(
             "API Rate Limit: App $this->appId 'Test app', limit exceeded with 51 request in ", // ... ~5.5 seconds.
-            $logs[0]
+            $logs[0],
         );
     }
 
@@ -98,11 +99,11 @@ class RateLimitAppTest extends TestCase
     {
         $this->storage->set(
             Variables::RATE_LIMIT_APP . '_' . $this->appId,
-            (string) \json_encode((object) ['remaining' => 10, 'created' => time() - 15])
+            (string) \json_encode((object) ['remaining' => 10, 'created' => time() - 15]),
         );
 
         $request = RequestFactory::createRequest();
-        $request = $request->withHeader('Authorization', 'Bearer ' . base64_encode($this->appId.':secret'));
+        $request = $request->withHeader('Authorization', 'Bearer ' . base64_encode($this->appId . ':secret'));
 
         $response = $this->middleware->process($request, new RequestHandler());
 
@@ -121,7 +122,7 @@ class RateLimitAppTest extends TestCase
         $this->om->flush();
 
         $request = RequestFactory::createRequest();
-        $request = $request->withHeader('Authorization', 'Bearer ' . base64_encode($this->appId.':secret'));
+        $request = $request->withHeader('Authorization', 'Bearer ' . base64_encode($this->appId . ':secret'));
 
         $response = $this->middleware->process($request, new RequestHandler());
 
@@ -134,7 +135,7 @@ class RateLimitAppTest extends TestCase
         $this->assertSame(1, count($logs));
         $this->assertStringStartsWith(
             "API Rate Limit: App $this->appId 'Test app', limit exceeded with 51 request in ", // ... ~5.5 seconds.
-            $logs[0]
+            $logs[0],
         );
     }
 
@@ -145,7 +146,7 @@ class RateLimitAppTest extends TestCase
         $this->om->flush();
 
         $request = RequestFactory::createRequest();
-        $request = $request->withHeader('Authorization', 'Bearer ' . base64_encode($this->appId.':secret'));
+        $request = $request->withHeader('Authorization', 'Bearer ' . base64_encode($this->appId . ':secret'));
 
         $response = $this->middleware->process($request, new RequestHandler());
 

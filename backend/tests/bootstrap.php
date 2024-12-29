@@ -16,7 +16,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 // Setup error handler
 $config = (new Application())->loadSettings(true);
-error_reporting((int)$config['error_reporting']);
+error_reporting((int) $config['error_reporting']);
 $handler = new StreamHandler($config['monolog']['path'], Level::Debug);
 $log = new \Monolog\Logger('Test');
 $log->pushHandler($handler);

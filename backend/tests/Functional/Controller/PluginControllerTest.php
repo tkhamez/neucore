@@ -58,7 +58,7 @@ class PluginControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/plugin/'.$plugin->getId().'/auth',
+            '/plugin/' . $plugin->getId() . '/auth',
             null,
             null,
             [],
@@ -82,7 +82,7 @@ class PluginControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/plugin/'.$plugin->getId().'/auth',
+            '/plugin/' . $plugin->getId() . '/auth',
             null,
             null,
             [],
@@ -105,7 +105,7 @@ class PluginControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/plugin/'.$plugin->getId().'/auth',
+            '/plugin/' . $plugin->getId() . '/auth',
             null,
             null,
             [],
@@ -132,7 +132,7 @@ class PluginControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/plugin/'.$plugin->getId().'/auth',
+            '/plugin/' . $plugin->getId() . '/auth',
             null,
             null,
             [],
@@ -190,7 +190,7 @@ class PluginControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/plugin/'.$plugin->getId().'/auth',
+            '/plugin/' . $plugin->getId() . '/auth',
             null,
             null,
             [],
@@ -214,7 +214,7 @@ class PluginControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/plugin/'.$plugin->getId().'/test',
+            '/plugin/' . $plugin->getId() . '/test',
             null,
             null,
             [],
@@ -241,7 +241,7 @@ class PluginControllerTest extends WebTestCase
         $logger = new Logger();
         $response = $this->runApp(
             'GET',
-            '/plugin/'.$plugin->getId().'/auth?error=1',
+            '/plugin/' . $plugin->getId() . '/auth?error=1',
             null,
             null,
             [LoggerInterface::class => $logger],
@@ -250,8 +250,8 @@ class PluginControllerTest extends WebTestCase
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(
-            '/#Service/'.$plugin->getId().'/?message=Unknown%20error.',
-            $response->getHeader('Location')[0]
+            '/#Service/' . $plugin->getId() . '/?message=Unknown%20error.',
+            $response->getHeader('Location')[0],
         );
         $this->assertSame('Exception from service plugin.', $logger->getHandler()->getRecords()[0]['message']);
     }
@@ -270,7 +270,7 @@ class PluginControllerTest extends WebTestCase
         $logger = new Logger();
         $response = $this->runApp(
             'GET',
-            '/plugin/'.$plugin->getId().'/test',
+            '/plugin/' . $plugin->getId() . '/test',
             null,
             null,
             [LoggerInterface::class => $logger],

@@ -38,7 +38,7 @@ class ClearCacheTest extends ConsoleTestCase
 
         $this->assertStringStartsWith(
             'Cleared ' . __DIR__ . '/cache/di, ' . __DIR__ . '/cache/proxies, ' . __DIR__ . '/cache/http',
-            $actual[0]
+            $actual[0],
         );
         $this->assertSame('', $actual[1]);
         $this->assertSame(2, count($actual));

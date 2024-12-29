@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -44,7 +45,7 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
             ClientInterface::class => $this->client,
-            LoggerInterface::class => $this->log
+            LoggerInterface::class => $this->log,
         ]);
 
         $actual = explode("\n", $output);
@@ -69,7 +70,7 @@ class UpdateCharactersTest extends ConsoleTestCase
             new Response(200, [], '[
                 {"character_id": 3, "corporation_id": 101},
                 {"character_id": 6, "corporation_id": 101}
-            ]') // postCharactersAffiliation
+            ]'), // postCharactersAffiliation
         );
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [

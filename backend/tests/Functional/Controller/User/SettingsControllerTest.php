@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -95,7 +96,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'navigationShowGroups', 'value' => '0'],
             ['name' => 'navigationServices', 'value' => \json_encode([])],
             ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([
-                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service1->getId().'/t7',
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/' . $this->service1->getId() . '/t7',
                     'target' => '_self'],
             ])],
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
@@ -130,17 +131,17 @@ class SettingsControllerTest extends WebTestCase
                 $this->service2->jsonSerialize(),
             ])],
             ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([
-                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service1->getId().'/t1',
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/' . $this->service1->getId() . '/t1',
                     'target' => '_blank'],
-                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service1->getId().'/t4',
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/' . $this->service1->getId() . '/t4',
                     'target' => '_self'],
-                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service1->getId().'/t6',
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/' . $this->service1->getId() . '/t6',
                     'target' => '_self'],
-                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service2->getId().'/t1',
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/' . $this->service2->getId() . '/t1',
                     'target' => '_blank'],
-                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service2->getId().'/t4',
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/' . $this->service2->getId() . '/t4',
                     'target' => '_self'],
-                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service2->getId().'/t6',
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/' . $this->service2->getId() . '/t6',
                     'target' => '_self'],
             ])],
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
@@ -169,7 +170,7 @@ class SettingsControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $parsedBody = $this->parseJsonBody($response);
         $this->assertSame([
-            'name' => 'navigationGeneralPlugins', 'value' => \json_encode([]) // had t4 with active groups
+            'name' => 'navigationGeneralPlugins', 'value' => \json_encode([]), // had t4 with active groups
         ], $parsedBody[7]);
 
     }
@@ -203,8 +204,8 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'navigationShowGroups', 'value' => '1'],
             ['name' => 'navigationServices', 'value' => \json_encode([$this->service1->jsonSerialize()])],
             ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([
-                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/'.$this->service1->getId().'/t1',
-                    'target' => '_blank']
+                ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/' . $this->service1->getId() . '/t1',
+                    'target' => '_blank'],
             ])],
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
         ], $this->parseJsonBody($response));
@@ -214,8 +215,8 @@ class SettingsControllerTest extends WebTestCase
     {
         $response1 = $this->runApp(
             'PUT',
-            '/api/user/settings/system/change/'.SystemVariable::ALLOW_CHARACTER_DELETION,
-            ['value' => '1']
+            '/api/user/settings/system/change/' . SystemVariable::ALLOW_CHARACTER_DELETION,
+            ['value' => '1'],
         );
         $this->assertEquals(403, $response1->getStatusCode());
 
@@ -224,8 +225,8 @@ class SettingsControllerTest extends WebTestCase
 
         $response2 = $this->runApp(
             'PUT',
-            '/api/user/settings/system/change/'.SystemVariable::ALLOW_CHARACTER_DELETION,
-            ['value' => '1']
+            '/api/user/settings/system/change/' . SystemVariable::ALLOW_CHARACTER_DELETION,
+            ['value' => '1'],
         );
         $this->assertEquals(403, $response2->getStatusCode());
     }
@@ -238,7 +239,7 @@ class SettingsControllerTest extends WebTestCase
         $response = $this->runApp(
             'PUT',
             '/api/user/settings/system/change/' . SystemVariable::MAIL_TOKEN,
-            ['value' => '']
+            ['value' => ''],
         );
         $this->assertEquals(404, $response->getStatusCode());
     }
@@ -251,7 +252,7 @@ class SettingsControllerTest extends WebTestCase
         $response2 = $this->runApp(
             'PUT',
             '/api/user/settings/system/change/invalid-name',
-            ['value' => '1']
+            ['value' => '1'],
         );
         $this->assertEquals(404, $response2->getStatusCode());
     }
@@ -265,10 +266,10 @@ class SettingsControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'PUT',
-            '/api/user/settings/system/change/'.SystemVariable::ALLOW_CHARACTER_DELETION,
+            '/api/user/settings/system/change/' . SystemVariable::ALLOW_CHARACTER_DELETION,
             ['value' => '1'],
             null,
-            [ObjectManager::class => $this->em, LoggerInterface::class => $this->logger]
+            [ObjectManager::class => $this->em, LoggerInterface::class => $this->logger],
         );
         $this->assertEquals(500, $response->getStatusCode());
     }
@@ -280,15 +281,15 @@ class SettingsControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'PUT',
-            '/api/user/settings/system/change/'.SystemVariable::ALLOW_CHARACTER_DELETION,
+            '/api/user/settings/system/change/' . SystemVariable::ALLOW_CHARACTER_DELETION,
             ['value' => '1'],
-            ['Content-Type' => 'application/x-www-form-urlencoded']
+            ['Content-Type' => 'application/x-www-form-urlencoded'],
         );
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '1'],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response),
         );
 
         $this->em->clear();
@@ -303,8 +304,8 @@ class SettingsControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'PUT',
-            '/api/user/settings/system/change/'.SystemVariable::MAIL_CHARACTER,
-            ['value' => 'does-not-matter']
+            '/api/user/settings/system/change/' . SystemVariable::MAIL_CHARACTER,
+            ['value' => 'does-not-matter'],
         );
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -399,11 +400,11 @@ class SettingsControllerTest extends WebTestCase
         $this->em->clear();
         $client = new Client();
         $client->setResponse(
-            new Response(200, [], '373515628') // for postCharactersCharacterIdMail()
+            new Response(200, [], '373515628'), // for postCharactersCharacterIdMail()
         );
 
         $response3 = $this->runApp('POST', '/api/user/settings/system/send-missing-character-mail', null, null, [
-            ClientInterface::class => $client
+            ClientInterface::class => $client,
         ]);
         $this->assertEquals(200, $response3->getStatusCode());
         $this->assertSame('', $this->parseJsonBody($response3)); // success
@@ -441,7 +442,7 @@ class SettingsControllerTest extends WebTestCase
         $conf3 = new PluginConfigurationDatabase();
         $conf3->directoryName = 'plugin';
         $conf3->active = true;
-        $conf3->requiredGroups = [$group->getId()+99];
+        $conf3->requiredGroups = [$group->getId() + 99];
         $service3 = (new Plugin())->setName('s3')->setConfigurationDatabase($conf3);
 
         // Inactive service, will be ignored
