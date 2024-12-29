@@ -46,7 +46,7 @@ The differences between `dev` and `prod` mode (which is determined by the enviro
 
 ## Style Guide
 
-[PSR-12: Coding Style Guide](https://www.php-fig.org/psr/psr-12/)
+This project uses the [PER Coding Style 2.0](https://www.php-fig.org/per/coding-style/).
 
 You can partially check and fix the code by executing the following:
 ```

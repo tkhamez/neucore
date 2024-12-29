@@ -97,8 +97,8 @@
         "phpstan": "phpstan analyse --level 8 --ansi --memory-limit 512M src tests",
         "test": "phpunit --colors=always",
         "test:cov": "phpunit --colors=always --coverage-html var/phpunit",
-        "style:check": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix src --dry-run --diff --ansi",
-        "style:fix": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix src --ansi",
+        "style:check": "php-cs-fixer fix --config config/php-cs-fixer.dist.php --dry-run --diff --ansi",
+        "style:fix": "php-cs-fixer fix --config config/php-cs-fixer.dist.php --ansi",
         "licenses-scan": "composer licenses:scan",
         "require-checker": "XDEBUG_MODE=off composer-require-checker check composer.json"
     },
