@@ -89,6 +89,8 @@ class SessionData
             throw new RuntimeException('Session is read-only.');
         }
 
+        // With "session.use_strict_mode = 1" this also removes the session cookie,
+        // see also https://www.php.net/manual/en/function.session-destroy.php.
         $_SESSION = [];
 
         return $this;
