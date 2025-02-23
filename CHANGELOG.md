@@ -1,5 +1,11 @@
 # Changelog
 
+# next
+
+dd mm yyyy
+ 
+- Updated backend dependencies.
+
 # 2.7.1
 
 27 Dec 2024
