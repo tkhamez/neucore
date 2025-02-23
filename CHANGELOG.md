@@ -4,6 +4,7 @@
 
 dd mm yyyy
  
+- Updated ESI paths for the drop-down menu.
 - Updated backend dependencies.
 
 # 2.7.1
