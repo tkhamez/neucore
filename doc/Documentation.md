@@ -8,6 +8,7 @@
   * [Authentication](#authentication)
   * [Rate Limits](#rate-limits)
   * [ESI Proxy](#esi-proxy)
+  * [Access Token](#access-token)
 - [Service Registration Plugins](#service-registration-plugins)
 - [Player Accounts](#player-accounts)
   * [Character Registration](#character-registration)
@@ -101,7 +102,7 @@ with the lower "remain" value.
 
 Note that IP-based rate limit works without a database connection and needs the APCu PHP extension.
 
-### ESI Proxy 
+### ESI Proxy
 
 The endpoint `/app/v2/esi` acts as an ESI proxy for each character token that was added.
 
@@ -109,6 +110,11 @@ There's a command `bin/console check-tokens` that can be used as a cronjob to ke
 also implements refresh token rotation.
 
 The API respects the ESI cache headers and will return a cached response if it is still valid.
+
+### Access Token
+
+As an alternative to the ESI proxy, applications can also request an ESI token from 
+`/app/v1/esi/access-token/{characterId}`.
 
 #### ESI Error Limit
 
