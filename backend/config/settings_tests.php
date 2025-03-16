@@ -30,8 +30,8 @@ return [
         ],
     ],
     'error_reporting' => (string)(
-        version_compare(PHP_VERSION, '8.4.0') >= 0 ?
-            E_ALL & ~E_DEPRECATED : // Temporarily reduce error level for PHP 8.4
+        version_compare(PHP_VERSION, '99.0.0') >= 0 ?
+            E_ALL & ~E_DEPRECATED :
             E_ALL
     ),
 ];

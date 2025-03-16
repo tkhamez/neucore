@@ -5,7 +5,7 @@ RUN apk update && \
 RUN mkdir -p /usr/src/php/ext/apcu && \
     curl -fsSL https://pecl.php.net/get/apcu-5.1.24.tgz | tar xvz -C "/usr/src/php/ext/apcu" --strip 1
 RUN mkdir -p /usr/src/php/ext/xdebug && \
-    curl -fsSL https://pecl.php.net/get/xdebug-3.4.0beta1.tgz | tar xvz -C "/usr/src/php/ext/xdebug" --strip 1
+    curl -fsSL https://pecl.php.net/get/xdebug-3.4.2.tgz | tar xvz -C "/usr/src/php/ext/xdebug" --strip 1
 RUN docker-php-ext-install pdo_mysql bcmath gmp zip intl apcu xdebug opcache mysqli
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

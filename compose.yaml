@@ -50,8 +50,8 @@ services:
       context: setup
       #dockerfile: Dockerfile-php81-fpm
       #dockerfile: Dockerfile-php82-fpm
-      dockerfile: Dockerfile-php83-fpm
-      #dockerfile: Dockerfile-php84-fpm
+      #dockerfile: Dockerfile-php83-fpm
+      dockerfile: Dockerfile-php84-fpm
     depends_on: [neucore_db]
     volumes: [
         ".:/app",

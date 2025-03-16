@@ -28,7 +28,7 @@
         "graylog2/gelf-php": "^2.0",
         "guzzlehttp/guzzle": "^7.2",
         "guzzlehttp/psr7": "^2.7",
-        "kevinrob/guzzle-cache-middleware": "^5.1",
+        "kevinrob/guzzle-cache-middleware": "^6.0",
         "league/oauth2-client": "^2.2",
         "monolog/monolog": "^3.8",
         "php-di/php-di": "^7.0",
@@ -51,7 +51,7 @@
         "tkhamez/neucore-plugin": "^4.0",
         "tkhamez/slim-role-auth": "^5.0",
         "tkhamez/swagger-eve-php": "~10.2.0",
-        "zircote/swagger-php": "^4.4"
+        "zircote/swagger-php": "^5.0"
     },
     "require-dev": {
         "arokettu/composer-license-manager": "^1.2",
