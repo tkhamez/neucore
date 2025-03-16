@@ -338,7 +338,7 @@ class CharacterController extends BaseController
         // https://github.com/OpenAPITools/openapi-generator/pull/19483
         if (
             $eveChar instanceof GetCharactersCharacterIdNotFound &&
-            str_contains($eveChar->getError(), 'Character not found')
+            str_contains((string) $eveChar->getError(), 'Character not found')
         ) {
             return $this->withJson('Character not found.', 404);
         }

@@ -166,7 +166,7 @@ class EsiData
         // https://github.com/OpenAPITools/openapi-generator/pull/19483
         if (
             $eveChar instanceof GetCharactersCharacterIdNotFound &&
-            str_contains($eveChar->getError(), 'Character has been deleted')
+            str_contains((string) $eveChar->getError(), 'Character has been deleted')
         ) {
             $corpId = self::CORPORATION_DOOMHEIM_ID;
         }
