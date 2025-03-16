@@ -13,7 +13,5 @@ use Neucore\Entity\SystemVariable;
  * @method SystemVariable|null find($id, $lockMode = null, $lockVersion = null)
  * @method SystemVariable[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  * @method SystemVariable|null findOneBy(array $criteria, array $orderBy = null)
- *
- * @psalm-suppress MissingTemplateParam
  */
 class SystemVariableRepository extends EntityRepository {}

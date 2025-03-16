@@ -431,7 +431,7 @@ class WatchlistController extends BaseController
 
         $data = array_map(function (Player $player) {
             return $player->jsonSerialize(true);
-        }, $this->watchlistService->getList((int) $id, 'exemption'));
+        }, $this->watchlistService->getExemptionList((int) $id));
 
         return $this->withJson($data);
     }
@@ -1242,7 +1242,7 @@ class WatchlistController extends BaseController
 
         $data = array_map(function (Corporation $corporation) {
             return $corporation->jsonSerialize(false, true);
-        }, $this->watchlistService->getList((int) $id, Watchlist::ALLOWLIST_CORPORATION));
+        }, $this->watchlistService->getAllowlistCorporationList((int) $id));
 
         return $this->withJson($data);
     }

@@ -16,8 +16,6 @@ use Neucore\Entity\Player;
 /**
  * @method CorporationMember|null find($id, $lockMode = null, $lockVersion = null)
  * @method CorporationMember[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- *
- * @psalm-suppress MissingTemplateParam
  */
 class CorporationMemberRepository extends EntityRepository
 {

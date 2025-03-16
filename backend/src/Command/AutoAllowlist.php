@@ -120,7 +120,11 @@ class AutoAllowlist extends Command
         }
 
         $players = $this->watchlistService->getWarningList($id, true, true); // include kicklist and allowlist
-        $watchedCorporationIds = $this->watchlistService->getCorporationIds($id, 'alliance', 'corporation');
+        $watchedCorporationIds = $this->watchlistService->getCorporationIds(
+            $id,
+            Watchlist::ALLIANCE,
+            Watchlist::CORPORATION
+        );
 
         $accountsData = $this->getAccountData($players, $watchedCorporationIds);
         $this->objectManager->clear(); // reduces memory usage a little bit

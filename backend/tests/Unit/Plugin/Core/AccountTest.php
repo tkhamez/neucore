@@ -80,9 +80,6 @@ class AccountTest extends TestCase
         );
     }
 
-    /**
-     * @phan-suppress PhanTypeArraySuspiciousNullable
-     */
     public function testGetAccountsByGroup()
     {
         $this->assertNull($this->account->getAccountsByGroup(99));
@@ -98,9 +95,6 @@ class AccountTest extends TestCase
         $this->assertNull($result[0]->roles);
     }
 
-    /**
-     * @phan-suppress PhanTypeArraySuspiciousNullable
-     */
     public function testGetAccountsByGroupManager()
     {
         $this->assertNull($this->account->getAccountsByGroupManager(99));
@@ -111,9 +105,6 @@ class AccountTest extends TestCase
         $this->assertSame(self::$player1Id, $result[0]->playerId);
     }
 
-    /**
-     * @phan-suppress PhanTypeArraySuspiciousNullable
-     */
     public function testGetAccountsByRole()
     {
         $this->assertNull($this->account->getAccountsByRole(Role::USER));
@@ -141,9 +132,6 @@ class AccountTest extends TestCase
         $this->assertSame(102030, $this->account->getMain(self::$player1Id)->id);
     }
 
-    /**
-     * @phan-suppress PhanTypeArraySuspiciousNullable
-     */
     public function testGetCharacters()
     {
         $this->assertNull($this->account->getCharacters(self::$player1Id + 22));
@@ -152,9 +140,6 @@ class AccountTest extends TestCase
         $this->assertInstanceOf(CoreCharacter::class, $this->account->getCharacters(self::$player1Id)[0]);
     }
 
-    /**
-     * @phan-suppress PhanTypeArraySuspiciousNullable
-     */
     public function testGetMemberGroups()
     {
         $this->assertNull($this->account->getMemberGroups(self::$player1Id + 22));
@@ -172,9 +157,6 @@ class AccountTest extends TestCase
         $this->assertTrue($this->account->groupsDeactivated(self::$player1Id));
     }
 
-    /**
-     * @phan-suppress PhanTypeArraySuspiciousNullable
-     */
     public function testManagerGroups()
     {
         $this->assertNull($this->account->getManagerGroups(self::$player1Id + 22));
@@ -184,9 +166,6 @@ class AccountTest extends TestCase
         $this->assertSame('G3', $this->account->getManagerGroups(self::$player1Id)[0]->name);
     }
 
-    /**
-     * @phan-suppress PhanTypeArraySuspiciousNullable
-     */
     public function testGetRoles()
     {
         $this->assertNull($this->account->getRoles(self::$player1Id + 22));
@@ -197,9 +176,6 @@ class AccountTest extends TestCase
         $this->assertSame(Role::USER, $this->account->getRoles(self::$player1Id)[1]->name);
     }
 
-    /**
-     * @phan-suppress PhanTypeArraySuspiciousNullable
-     */
     public function testGetRemovedCharacters()
     {
         $this->assertNull($this->account->getRemovedCharacters(self::$player1Id + 22));
@@ -218,9 +194,6 @@ class AccountTest extends TestCase
         $this->assertSame('Main1', $chars[0]->deletedBy->playerName);
     }
 
-    /**
-     * @phan-suppress PhanTypeArraySuspiciousNullable
-     */
     public function testGetIncomingCharacters()
     {
         $this->assertNull($this->account->getIncomingCharacters(self::$player1Id + 22));

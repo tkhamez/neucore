@@ -188,9 +188,29 @@ class WatchlistTest extends TestCase
         );
     }
 
+    public function testGetExemptionList()
+    {
+        $this->assertInstanceOf(
+            Player::class,
+            self::$watchlistService->getExemptionList(self::$watchlistId)[0],
+        );
+    }
+
+    public function testGetAllowlistCorporationList()
+    {
+        $this->assertInstanceOf(
+            Corporation::class,
+            self::$watchlistService->getAllowlistCorporationList(self::$watchlistId)[0],
+        );
+    }
+
     public function testGetCorporationIds()
     {
-        $actual = self::$watchlistService->getCorporationIds(self::$watchlistId, 'alliance', 'corporation');
+        $actual = self::$watchlistService->getCorporationIds(
+            self::$watchlistId,
+            Watchlist::ALLIANCE,
+            Watchlist::CORPORATION
+        );
 
         $this->assertSame([self::$corp1a->getId(), self::$corp1b->getId()], $actual);
     }

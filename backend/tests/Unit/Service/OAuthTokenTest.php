@@ -350,7 +350,6 @@ class OAuthTokenTest extends TestCase
 
     private function getToken(Character $char): EsiToken
     {
-        /* @phan-suppress-next-line PhanTypeMismatchReturnNullable */
         return $char->getEsiToken(EveLogin::NAME_DEFAULT);
     }
 }

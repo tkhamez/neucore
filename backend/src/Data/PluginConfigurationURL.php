@@ -20,11 +20,10 @@ class PluginConfigurationURL implements \JsonSerializable
 
     public function jsonSerialize(): array
     {
-        $return = [];
-        /* @phan-suppress-next-line PhanTypeSuspiciousNonTraversableForeach */
-        foreach ($this as $key => $value) {
-            $return[$key] = $value;
-        }
-        return $return;
+        return [
+            'url' => $this->url,
+            'title' => $this->title,
+            'target' => $this->target,
+        ];
     }
 }

@@ -31,11 +31,9 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Yaml\Parser;
 use Tests\Helper;
 use Tests\Logger;
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Tests\Unit\Service\PluginService\plugin\src\TestService;
 use Tests\Unit\Service\PluginService\plugin\src\TestService1;
 
-/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 class PluginServiceTest extends TestCase
 {
     private const PSR_PREFIX = 'Tests\Unit\Service\PluginService\plugin\src';
@@ -245,15 +243,16 @@ class PluginServiceTest extends TestCase
         $conf->configurationData = 'other: data';
         $service->setConfigurationDatabase($conf);
 
-        /* @var TestService $implementation */
         $implementation = $this->pluginService->getPluginImplementation($service);
+        if (!$implementation instanceof TestService) {
+            $this->fail();
+        }
 
         $this->assertSame([PluginConfigurationFile::TYPE_SERVICE], $service->getConfigurationFile()?->types);
 
         $this->assertNotInstanceOf(GeneralInterface::class, $implementation);
         $this->assertInstanceOf(ServiceInterface::class, $implementation);
 
-        /* @phan-suppress-next-line PhanUndeclaredMethod */
         $configuration = $implementation->getPluginConfiguration();
         $this->assertSame(0, $configuration->id);
         $this->assertTrue($configuration->active);

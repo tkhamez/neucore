@@ -36,7 +36,7 @@ class AssureMain extends Command
     {
         $this
             ->setName('assure-main')
-            ->setDescription('')
+            ->setDescription('Makes sure that every player has a main character.')
             ->addOption('db-result-limit', null, InputOption::VALUE_OPTIONAL, '', '1000');
     }
 

@@ -17,8 +17,6 @@ use Neucore\Entity\Group;
  * @method Group|null find($id, $lockMode = null, $lockVersion = null)
  * @method Group|null findOneBy(array $criteria, array $orderBy = null)
  * @method Group[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- *
- * @psalm-suppress MissingTemplateParam
  */
 class GroupRepository extends EntityRepository
 {

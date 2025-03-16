@@ -9,16 +9,12 @@ use Exception;
 use Neucore\Log\Context;
 use Psr\Log\LoggerInterface;
 
-/**
- * @psalm-suppress MissingTemplateParam
- */
 class ObjectManager extends ObjectManagerDecorator
 {
     private LoggerInterface $log;
 
     public function __construct(\Doctrine\Persistence\ObjectManager $wrapped, LoggerInterface $log)
     {
-        /* @phan-suppress-next-line PhanTypeMismatchProperty */
         $this->wrapped = $wrapped;
         $this->log = $log;
     }

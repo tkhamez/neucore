@@ -11,7 +11,5 @@ use Neucore\Entity\EveLogin;
  * @method EveLogin|null find($id, $lockMode = null, $lockVersion = null)
  * @method EveLogin|null findOneBy(array $criteria, array $orderBy = null)
  * @method EveLogin[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- *
- * @psalm-suppress MissingTemplateParam
  */
 class EveLoginRepository extends EntityRepository {}

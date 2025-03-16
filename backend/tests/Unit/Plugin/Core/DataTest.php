@@ -105,9 +105,6 @@ class DataTest extends TestCase
         $this->assertSame([102031, 102030], $this->data->getCharacterIdsByCorporation(1020));
     }
 
-    /**
-     * @phan-suppress PhanTypeArraySuspiciousNullable
-     */
     public function testGetCharactersByCorporation()
     {
         $this->assertNull($this->data->getCharactersByCorporation(9999));
@@ -122,9 +119,6 @@ class DataTest extends TestCase
         $this->assertSame(102030, $result[1]->id);
     }
 
-    /**
-     * @phan-suppress PhanTypeArraySuspiciousNullable
-     */
     public function testGetMemberTracking()
     {
         $this->assertNull($this->data->getMemberTracking(9999));
@@ -177,9 +171,6 @@ class DataTest extends TestCase
         $this->assertSame(102031, $result->id);
     }
 
-    /**
-     * @phan-suppress PhanTypeArraySuspiciousNullable
-     */
     public function testGetCharacterTokens()
     {
         $this->assertNull($this->data->getCharacterTokens(888999));
@@ -224,9 +215,6 @@ class DataTest extends TestCase
         );
     }
 
-    /**
-     * @phan-suppress PhanTypeArraySuspiciousNullable
-     */
     public function testGetLoginTokens()
     {
         $this->assertNull($this->data->getLoginTokens(EveLogin::NAME_DEFAULT));
@@ -250,9 +238,6 @@ class DataTest extends TestCase
         $this->assertSame('G2', $result[1]->name);
     }
 
-    /**
-     * @phan-suppress PhanTypeArraySuspiciousNullable
-     */
     public function testGetCorporationGroups()
     {
         $this->assertNull($this->data->getCorporationGroups(99887778));
@@ -263,9 +248,6 @@ class DataTest extends TestCase
         $this->assertSame('G1', $result[0]->name);
     }
 
-    /**
-     * @phan-suppress PhanTypeArraySuspiciousNullable
-     */
     public function testGetAllianceGroups()
     {
         $this->assertNull($this->data->getAllianceGroups(99887778));

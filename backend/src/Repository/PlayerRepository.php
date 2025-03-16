@@ -18,8 +18,6 @@ use Neucore\Util\Database;
  * @method Player|null find($id, $lockMode = null, $lockVersion = null)
  * @method Player|null findOneBy(array $criteria, array $orderBy = null)
  * @method Player[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- *
- * @psalm-suppress MissingTemplateParam
  */
 class PlayerRepository extends EntityRepository
 {
@@ -270,7 +268,6 @@ class PlayerRepository extends EntityRepository
 
         $result = $query1->getQuery()->getResult();
         if (!$currentOnly) {
-            /* @phan-suppress-next-line PhanPossiblyUndeclaredVariable */
             $result = array_merge($result, $query2->getQuery()->getResult(), $query3->getQuery()->getResult());
         }
 

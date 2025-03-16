@@ -72,7 +72,6 @@ class EsiClient
     /**
      * @throws RuntimeException If character or a valid token could not be found.
      * @throws ClientExceptionInterface On request error.
-     * @phan-suppress PhanTypeInvalidThrowsIsInterface
      */
     public function request(
         string $esiPath,

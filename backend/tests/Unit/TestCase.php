@@ -14,7 +14,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * @throws Exception
-     * @phan-suppress PhanTypeInvalidThrowsIsInterface
      */
     protected function createRequestWithRoute(string $method = 'GET', ?string $path = null): ServerRequestInterface
     {

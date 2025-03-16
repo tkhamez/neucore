@@ -168,6 +168,10 @@ class RepositoryFactory
         return $this->getRepository(WatchlistRepository::class, Watchlist::class);
     }
 
+    /**
+     * @phpstan-param class-string<T> $entityClass
+     * @template T of object
+     */
     private function getRepository(string $repositoryClass, string $entityClass): mixed
     {
         if (!isset($this->factories[$repositoryClass])) {

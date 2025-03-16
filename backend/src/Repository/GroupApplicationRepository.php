@@ -13,7 +13,5 @@ use Doctrine\ORM\EntityRepository;
  * @method GroupApplication|null find($id, $lockMode = null, $lockVersion = null)
  * @method GroupApplication|null findOneBy(array $criteria, array $orderBy = null)
  * @method GroupApplication[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- *
- * @psalm-suppress MissingTemplateParam
  */
 class GroupApplicationRepository extends EntityRepository {}

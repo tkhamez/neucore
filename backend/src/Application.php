@@ -272,36 +272,35 @@ class Application
      * @param App $app
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @phan-suppress PhanTypeInvalidThrowsIsInterface
      */
     private function addMiddleware(App $app): void
     {
-        $config = $this->container->get(Config::class);
+        $config = $this->getFromContainer(Config::class);
 
         // Add middleware, last added will be executed first.
 
-        $app->add($this->container->get(RateLimitApp::class));
-        $app->add($this->container->get(AppRequestCount::class));
+        $app->add($this->getFromContainer(RateLimitApp::class));
+        $app->add($this->getFromContainer(AppRequestCount::class));
         $app->add(new CSRFToken(
-            $this->container->get(ResponseFactoryInterface::class),
-            $this->container->get(SessionData::class),
+            $this->getFromContainer(ResponseFactoryInterface::class),
+            $this->getFromContainer(SessionData::class),
             '/api/user',
         ));
 
         $app->add(new SecureRouteMiddleware(
-            $this->container->get(ResponseFactoryInterface::class),
+            $this->getFromContainer(ResponseFactoryInterface::class),
             self::loadFile('security.php'),
         ));
 
-        $app->add(new RoleMiddleware($this->container->get(AppAuth::class), ['route_pattern' => ['/api/app']]));
+        $app->add(new RoleMiddleware($this->getFromContainer(AppAuth::class), ['route_pattern' => ['/api/app']]));
         $app->add(new RoleMiddleware(
-            $this->container->get(UserAuth::class),
+            $this->getFromContainer(UserAuth::class),
             ['route_pattern' => ['/api/user', '/plugin']],
         ));
 
         $app->add(new SessionMiddleware(
-            $this->container->get(SessionData::class),
-            $this->container->get(SessionHandlerFactory::class),
+            $this->getFromContainer(SessionData::class),
+            $this->getFromContainer(SessionHandlerFactory::class),
             [
                 SessionMiddleware::OPTION_NAME                   => 'neucore_session',
                 SessionMiddleware::OPTION_SECURE                 => $config['session']['secure'],
@@ -314,22 +313,22 @@ class Application
         // so the `route` attribute is available from the ServerRequestInterface object
         $app->addRoutingMiddleware();
 
-        $app->add($this->container->get(BodyParams::class));
+        $app->add($this->getFromContainer(BodyParams::class));
 
         // Add the IP based rate limit before the database connection is used.
-        $app->add($this->container->get(RateLimitIP::class));
+        $app->add($this->getFromContainer(RateLimitIP::class));
 
         $errorMiddleware = $app->addErrorMiddleware(false, true, true);
         $errorMiddleware->setDefaultErrorHandler(new Slim\ErrorHandler(
             $app->getCallableResolver(),
             $app->getResponseFactory(),
-            $this->container->get(LoggerInterface::class),
+            $this->getFromContainer(LoggerInterface::class),
         ));
 
         // add CORS last, so it is executed first, especially before the error handler.
         if ($config['CORS']['allow_origin']) { // not false or empty string
             $app->add(new Cors(
-                $this->container->get(ResponseFactoryInterface::class),
+                $this->getFromContainer(ResponseFactoryInterface::class),
                 explode(',', $config['CORS']['allow_origin']),
             ));
         }
@@ -368,12 +367,11 @@ class Application
      *
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @phan-suppress PhanTypeInvalidThrowsIsInterface
      */
     private function errorHandling(): void
     {
         // PHP settings.
-        $path = realpath($this->container->get(Config::class)['monolog']['path']);
+        $path = realpath($this->getFromContainer(Config::class)['monolog']['path']);
         if ($path !== false && is_writable($path)) {
             ini_set('error_log', $path . '/error.log');
         }
@@ -384,7 +382,7 @@ class Application
         }
 
         // Logs errors that are not handled by Slim and for CLI
-        ErrorHandler::register($this->container->get(LoggerInterface::class));
+        ErrorHandler::register($this->getFromContainer(LoggerInterface::class));
     }
 
     private function registerRoutes(App $app): void
@@ -415,27 +413,26 @@ class Application
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws LogicException
-     * @phan-suppress PhanTypeInvalidThrowsIsInterface
      */
     private function addCommands(ConsoleApplication $console): void
     {
-        $console->add($this->container->get(Plugin::class));
-        $console->add($this->container->get(MakeAdmin::class));
-        $console->add($this->container->get(UpdateCharacters::class));
-        $console->add($this->container->get(UpdateCorporations::class));
-        $console->add($this->container->get(CheckTokens::class));
-        $console->add($this->container->get(UpdatePlayerGroups::class));
-        $console->add($this->container->get(SendInvalidTokenMail::class));
-        $console->add($this->container->get(SendMissingCharacterMail::class));
-        $console->add($this->container->get(UpdateMemberTracking::class));
-        $console->add($this->container->get(DoctrineFixturesLoad::class));
-        $console->add($this->container->get(DBVerifySSL::class));
-        $console->add($this->container->get(ClearCache::class));
-        $console->add($this->container->get(CleanHttpCache::class));
-        $console->add($this->container->get(RevokeToken::class));
-        $console->add($this->container->get(AutoAllowlist::class));
-        $console->add($this->container->get(AssureMain::class));
-        $console->add($this->container->get(UpdateServiceAccounts::class));
+        $console->add($this->getFromContainer(Plugin::class));
+        $console->add($this->getFromContainer(MakeAdmin::class));
+        $console->add($this->getFromContainer(UpdateCharacters::class));
+        $console->add($this->getFromContainer(UpdateCorporations::class));
+        $console->add($this->getFromContainer(CheckTokens::class));
+        $console->add($this->getFromContainer(UpdatePlayerGroups::class));
+        $console->add($this->getFromContainer(SendInvalidTokenMail::class));
+        $console->add($this->getFromContainer(SendMissingCharacterMail::class));
+        $console->add($this->getFromContainer(UpdateMemberTracking::class));
+        $console->add($this->getFromContainer(DoctrineFixturesLoad::class));
+        $console->add($this->getFromContainer(DBVerifySSL::class));
+        $console->add($this->getFromContainer(ClearCache::class));
+        $console->add($this->getFromContainer(CleanHttpCache::class));
+        $console->add($this->getFromContainer(RevokeToken::class));
+        $console->add($this->getFromContainer(AutoAllowlist::class));
+        $console->add($this->getFromContainer(AssureMain::class));
+        $console->add($this->getFromContainer(UpdateServiceAccounts::class));
     }
 
     private function logException(Throwable $e): void
@@ -443,7 +440,7 @@ class Application
         $log = null;
         if ($this->container instanceof ContainerInterface) {
             try {
-                $log = $this->container->get(LoggerInterface::class);
+                $log = $this->getFromContainer(LoggerInterface::class);
             } catch (ContainerExceptionInterface | NotFoundExceptionInterface $e) {
                 // do nothing
             }
@@ -458,5 +455,13 @@ class Application
             echo 'Error: ', $e->getMessage(), PHP_EOL;
             exit(1);
         }
+    }
+
+    /**
+     * @throws ContainerExceptionInterface|NotFoundExceptionInterface
+     */
+    private function getFromContainer(string $className): mixed
+    {
+        return $this->container?->get($className);
     }
 }

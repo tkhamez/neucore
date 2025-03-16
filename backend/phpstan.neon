@@ -9,25 +9,13 @@ parameters:
             message: '#Offset (.*) might not exist on array\|string\|null.#'
             path: %currentWorkingDirectory%/*
         -
-            message: '#Cannot call method (.*) on DI\\Container\|null.#'
-            path: %currentWorkingDirectory%/src/Application.php
-        -
-            message: '#Property (.*)\$id \(int\|null\) is never assigned int so it can be removed from the property type.#'
+            message: '#Property (.*)\$id \(int\|null\) is never assigned int (.*)#'
             path: %currentWorkingDirectory%/src/Entity/*
         -
-            message: '#invalid type(.*)only iterables are supported#'
-            path: %currentWorkingDirectory%/src/Data/PluginConfigurationURL.php
-        -
-            message: '#expects class-string<object>, string given#'
-            path: %currentWorkingDirectory%/src/Factory/RepositoryFactory.php
-        -
-            message: '#Unable to resolve the template type T#'
-            path: %currentWorkingDirectory%/src/Factory/RepositoryFactory.php
-        -
-            message: '#Parameter \#1 \$pdoOrDsn (.*) object\|resource given.#'
-            path: %currentWorkingDirectory%/src/Factory/SessionHandlerFactory.php
-        -
             message: '#(.*)Watchlist::getExemptionList\(\) should return(.*)but returns(.*)#'
+            path: %currentWorkingDirectory%/src/Service/Watchlist.php
+        -
+            message: '#(.*)Watchlist::getAllowlistCorporationList\(\) should return(.*)but returns(.*)#'
             path: %currentWorkingDirectory%/src/Service/Watchlist.php
         -
             message: '#Parameter \#1 \$callback of function array_map expects (.*), (.*) given.#'
@@ -42,9 +30,6 @@ parameters:
             message: '#Cannot call method (.*) on (.*)#'
             path: %currentWorkingDirectory%/tests/*
         -
-            message: '#Parameter \#1 \$prefix of method (.*)assertStringStartsWith\(\) expects non-empty-string, string given.#'
-            path: %currentWorkingDirectory%/tests/*
-        -
             message: '#Class Tests\\Client extends @final class GuzzleHttp\\Client.#'
             path: %currentWorkingDirectory%/tests/Client.php
         -
@@ -54,17 +39,8 @@ parameters:
             message: '#Method (.*) should return (.*) but returns (.*)#'
             path: %currentWorkingDirectory%/tests/*
         -
-            message: '#expects Doctrine\\Persistence\\ObjectManager#'
-            path: %currentWorkingDirectory%/tests/Helper.php
-        -
             message: '#Cannot access offset (.*) on array(.*)#'
             path: %currentWorkingDirectory%/tests/Unit/*
-        -
-            message: '#Call to an undefined method #'
-            path: %currentWorkingDirectory%/tests/Unit/Service/PluginServiceTest.php
-        -
-            message: '#Offset 0 might not exist on array{}#'
-            path: %currentWorkingDirectory%/tests/Unit/Entity/PlayerTest.php
         -
             message: '#Cannot access property (.*) on (.*)null.#'
             path: %currentWorkingDirectory%/tests/Unit/Entity/PlayerTest.php
@@ -94,6 +70,9 @@ parameters:
             path: %currentWorkingDirectory%/tests/Unit/Entity/CorporationMemberTest.php
         -
             message: '#Cannot access property (.*) on (.*)null.#'
+            path: %currentWorkingDirectory%/tests/Unit/Entity/EsiTokenTest.php
+        -
+            message: '#Call to method (.*)assertNotNull\(\) with null will always evaluate to false.#'
             path: %currentWorkingDirectory%/tests/Unit/Entity/EsiTokenTest.php
         -
             message: '#Cannot access property (.*) on (.*)null.#'

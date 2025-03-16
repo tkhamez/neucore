@@ -2,7 +2,6 @@
 
 /** @noinspection PhpUnused */
 /** @noinspection PhpIllegalPsrClassPathInspection */
-/* @phan-file-suppress PhanTypeMismatchReturn */
 
 declare(strict_types=1);
 

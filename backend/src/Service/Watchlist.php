@@ -176,6 +176,22 @@ class Watchlist
     }
 
     /**
+     * @return Player[]
+     */
+    public function getExemptionList(int $id): array
+    {
+        return $this->getList($id, self::EXEMPTION);
+    }
+
+    /**
+     * @return Corporation[]
+     */
+    public function getAllowlistCorporationList(int $id): array
+    {
+        return $this->getList($id, self::ALLOWLIST_CORPORATION);
+    }
+
+    /**
      * @return int[]
      */
     public function getCorporationIds(int $watchlistId, string $allianceList, string $corporationList): array
@@ -191,16 +207,5 @@ class Watchlist
         }, $this->getList($watchlistId, $corporationList));
 
         return array_unique(array_merge($corporationIds1, $corporationIds2));
-    }
-
-    /**
-     * @param int $id
-     * @return Player[]
-     * @psalm-suppress InvalidReturnType
-     * @psalm-suppress InvalidReturnStatement
-     */
-    private function getExemptionList(int $id): array
-    {
-        return $this->getList($id, self::EXEMPTION);
     }
 }

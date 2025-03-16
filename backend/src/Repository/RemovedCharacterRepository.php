@@ -10,7 +10,5 @@ use Neucore\Entity\RemovedCharacter;
 /**
  * @method RemovedCharacter|null findOneBy(array $criteria, array $orderBy = null)
  * @method RemovedCharacter[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- *
- * @psalm-suppress MissingTemplateParam
  */
 class RemovedCharacterRepository extends EntityRepository {}
