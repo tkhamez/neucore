@@ -1,8 +1,8 @@
 # Changelog
 
-# next
+# 2.7.2
 
-dd mm yyyy
+16 Mar 2025
 
 - Fix: Missing main character on the account after the main character was removed due to a change 
   of ownership.
