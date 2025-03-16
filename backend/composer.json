@@ -24,7 +24,7 @@
         "doctrine/dbal": "^4.1",
         "doctrine/migrations": "^3.5",
         "doctrine/orm": "^3.2",
-        "doctrine/persistence": "^3.4",
+        "doctrine/persistence": "^4.0",
         "graylog2/gelf-php": "^2.0",
         "guzzlehttp/guzzle": "^7.2",
         "guzzlehttp/psr7": "^2.7",

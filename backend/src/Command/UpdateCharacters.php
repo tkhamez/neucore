@@ -151,7 +151,7 @@ class UpdateCharacters extends Command
                 $updateOk[] = $char->getId();
                 usleep($this->sleep * 1000); // reduce CPU usage
             }
-            if (! empty($updateOk) && $this->entityManager->flush()) {
+            if (! empty($updateOk) && $this->entityManager->flush2()) {
                 $this->writeLine('  Characters ' . implode(',', $updateOk) . ': update OK');
             }
 

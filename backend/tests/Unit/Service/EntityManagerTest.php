@@ -29,14 +29,14 @@ class EntityManagerTest extends TestCase
         self::$em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
-    public function testFlush()
+    public function testFlush2()
     {
         $em = new EntityManager(self::$em, new Logger());
 
-        $this->assertTrue($em->flush());
+        $this->assertTrue($em->flush2());
     }
 
-    public function testFlushException()
+    public function testFlush2Exception()
     {
         self::$em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
 
@@ -44,7 +44,7 @@ class EntityManagerTest extends TestCase
 
         $om = new EntityManager(self::$em, $log);
 
-        $this->assertFalse($om->flush());
+        $this->assertFalse($om->flush2());
         $this->assertSame('error', $log->getHandler()->getRecords()[0]['message']);
     }
 }

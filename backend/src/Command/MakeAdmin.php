@@ -70,7 +70,7 @@ class MakeAdmin extends Command
             }
         }
 
-        if (!$this->objectManager->flush()) {
+        if (!$this->objectManager->flush2()) {
             return 0;
         }
 

@@ -185,7 +185,7 @@ class Account
         $this->objectManager->persist($char->getPlayer());
         $this->objectManager->persist($char);
 
-        $success = $this->objectManager->flush();
+        $success = $this->objectManager->flush2();
 
         // update character if corporation is missing
         if ($char->getCorporation() === null) {
@@ -428,7 +428,7 @@ class Account
 
         $this->checkRoles($player);
 
-        return $this->objectManager->flush();
+        return $this->objectManager->flush2();
     }
 
     /**
@@ -470,7 +470,7 @@ class Account
             $player->removeRole($role);
         }
 
-        if ($this->objectManager->flush() && !empty($rolesToRemove)) {
+        if ($this->objectManager->flush2() && !empty($rolesToRemove)) {
             $this->log->info("Removed role(s) from player {$player->getId()}.");
             return true;
         }

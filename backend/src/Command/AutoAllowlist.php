@@ -269,7 +269,7 @@ class AutoAllowlist extends Command
             }
         }
 
-        if (!$this->objectManager->flush()) {
+        if (!$this->objectManager->flush2()) {
             $this->writeLine('    Failed to save list.', false);
         }
     }

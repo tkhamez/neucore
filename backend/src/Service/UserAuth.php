@@ -166,7 +166,7 @@ class UserAuth implements RoleProviderInterface
             $esiToken->setHasRoles(true);
         }
 
-        return $this->objectManager->flush();
+        return $this->objectManager->flush2();
     }
 
     public function hasRequiredGroups(Plugin $service, bool $allowAnonymous = false): bool

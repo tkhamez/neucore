@@ -36,7 +36,7 @@ class SystemVariableStorage implements StorageInterface
         $variable->setValue($value);
         $this->objectManager->persist($variable);
 
-        return $this->objectManager->flush();
+        return $this->objectManager->flush2();
     }
 
     public function get(string $key): ?string

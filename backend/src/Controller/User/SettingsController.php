@@ -166,7 +166,7 @@ class SettingsController extends BaseController
             $variable->setValue((string) $this->getBodyParam($request, self::COLUMN_VALUE));
         }
 
-        if (!$this->objectManager->flush()) {
+        if (!$this->objectManager->flush2()) {
             return $this->response->withStatus(500);
         }
 

@@ -187,7 +187,7 @@ class OAuthToken
             $esiToken->setRefreshToken($token->getRefreshToken());
             $esiToken->setLastChecked(new \DateTime());
             $esiToken->setExpires($token->getExpires());
-            if (!$this->objectManager->flush()) {
+            if (!$this->objectManager->flush2()) {
                 return null; // old token is invalid, new token could not be saved
             }
         }

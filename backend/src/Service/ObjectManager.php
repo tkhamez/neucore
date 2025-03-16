@@ -28,10 +28,16 @@ class ObjectManager extends ObjectManagerDecorator
         return $this->wrapped->isUninitializedObject($value);
     }
 
-    /**
-     * @return bool
-     */
-    public function flush(): bool
+    public function flush(): void
+    {
+        try {
+            parent::flush();
+        } catch (Exception $e) {
+            $this->log->critical($e->getMessage(), [Context::EXCEPTION => $e]);
+        }
+    }
+
+    public function flush2(): bool
     {
         try {
             parent::flush();

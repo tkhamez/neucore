@@ -103,7 +103,7 @@ class EsiData
             }
         }
 
-        if (!$this->objectManager->flush()) {
+        if (!$this->objectManager->flush2()) {
             return null;
         }
 
@@ -211,7 +211,7 @@ class EsiData
         }
 
         // flush
-        if ($flush && !$this->objectManager->flush()) {
+        if ($flush && !$this->objectManager->flush2()) {
             return null;
         }
 
@@ -299,7 +299,7 @@ class EsiData
         }
 
         // flush
-        if ($flush && !$this->objectManager->flush()) {
+        if ($flush && !$this->objectManager->flush2()) {
             return null;
         }
 
@@ -352,7 +352,7 @@ class EsiData
         }
 
         // flush
-        if ($flush && !$this->objectManager->flush()) {
+        if ($flush && !$this->objectManager->flush2()) {
             return null;
         }
 

@@ -74,7 +74,7 @@ class EveMail
             SystemVariable::TOKEN_EXPIRES => $eveAuth->getToken()->getExpires(),
         ]));
 
-        return $this->objectManager->flush();
+        return $this->objectManager->flush2();
     }
 
     public function deleteToken(): void

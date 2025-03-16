@@ -85,7 +85,7 @@ abstract class BaseController
 
     protected function flushAndReturn(int $status, mixed $data = null): ResponseInterface
     {
-        if (!$this->objectManager->flush()) {
+        if (!$this->objectManager->flush2()) {
             return $this->response->withStatus(500);
         }
 
