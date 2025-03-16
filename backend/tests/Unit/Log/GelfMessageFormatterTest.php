@@ -20,11 +20,14 @@ class GelfMessageFormatterTest extends TestCase
             Level::Debug,
             'msg',
             ['exception' => new \Exception('test', 10)],
-            ['extra'],
+            ['key' => 'extra'],
             Logger::toMonologLevel(Level::Debug),
         );
         $formatter = new GelfMessageFormatter();
 
-        $this->assertStringContainsString('"short_message":"msg"', $formatter->format($record));
+        $result = json_decode($formatter->format($record), true);
+
+        $this->assertSame('msg', $result['short_message']);
+        $this->assertSame(7, $result['level']);
     }
 }
