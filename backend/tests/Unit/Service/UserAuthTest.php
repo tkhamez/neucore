@@ -242,7 +242,7 @@ class UserAuthTest extends TestCase
         $this->assertSame('Login with alt 9014 denied.', $this->log->getMessages()[0]);
     }
 
-    public function testLogin_Authenticate_NewOwner()
+    public function testLogin_Authenticate_NewOwner_Alt()
     {
         SessionData::setReadOnly(false);
         $corp = (new Corporation())->setId(101);
@@ -251,30 +251,61 @@ class UserAuthTest extends TestCase
         $player = $char1->getPlayer();
         $char2 = $this->helper->addCharacterToPlayer('Test User2', 9014, $player);
         $char2->setCorporation($corp);
+        $this->om->flush();
 
-        $this->assertSame(9014, $char2->getId());
         $this->assertSame('456', $char2->getCharacterOwnerHash());
-        $this->assertSame($char2->getPlayer()->getId(), $player->getId());
 
         // changed hash 789, was 456
         $token = new AccessToken(['access_token' => 'token', 'expires' => 1525456785, 'refresh_token' => 'refresh']);
-        $result = $this->service->login(new EveAuthentication(9014, 'Test User2', '789', $token));
+        $result = $this->service->login(new EveAuthentication($char2->getId(), 'Test User2', '789', $token));
 
         $user = $this->service->getUser();
         $newPlayer = $user->getPlayer();
 
         $this->assertSame(UserAuth::LOGIN_AUTHENTICATED_SUCCESS, $result);
-        $this->assertSame(9014, $_SESSION['character_id']);
-        $this->assertSame(9014, $user->getId());
+        $this->assertSame($char2->getId(), $_SESSION['character_id']);
+        $this->assertSame($char2->getId(), $user->getId());
         $this->assertSame('789', $user->getCharacterOwnerHash());
+        $this->assertTrue($user->getMain());
         $this->assertNotSame($newPlayer->getId(), $player->getId());
+        $this->assertSame([$char2->getId()], $newPlayer->getCharactersId());
 
         // check RemovedCharacter
-        $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 9014]);
+        $removedChar = $this->removedCharRepo->findOneBy(['characterId' => $char2->getId()]);
         $this->assertSame($user->getId(), $removedChar->getcharacterId());
         $this->assertSame($player->getId(), $removedChar->getPlayer()->getId());
         $this->assertSame($newPlayer->getId(), $removedChar->getNewPlayer()->getId());
         $this->assertSame(RemovedCharacter::REASON_MOVED_OWNER_CHANGED, $removedChar->getReason());
+
+        // Check main on old account
+        $oldPlayer = $this->playerRepo->find($player->getId());
+        $this->assertSame([$char1->getId()], $oldPlayer->getCharactersId());
+        $this->assertTrue($char1->getMain());
+    }
+
+    public function testLogin_Authenticate_NewOwner_Main()
+    {
+        // Same test as testLogin_Authenticate_NewOwner_Alt() but with switched main.
+
+        SessionData::setReadOnly(false);
+        $corp = (new Corporation())->setId(101);
+        $this->om->persist($corp);
+        $char1 = $this->helper->addCharacterMain('Test User1', 9013, [Role::USER, Role::GROUP_MANAGER]);
+        $player = $char1->getPlayer();
+        $char2 = $this->helper->addCharacterToPlayer('Test User2', 9014, $player);
+        $char2->setCorporation($corp);
+        $char1->setMain(false);
+        $char2->setMain(true);
+        $this->om->flush();
+
+        // changed hash 789, was 456
+        $token = new AccessToken(['access_token' => 'token', 'expires' => 1525456785, 'refresh_token' => 'refresh']);
+        $this->service->login(new EveAuthentication($char2->getId(), 'Test User2', '789', $token));
+
+        // Check main on old account
+        $oldPlayer = $this->playerRepo->find($player->getId());
+        $this->assertSame([$char1->getId()], $oldPlayer->getCharactersId());
+        $this->assertTrue($char1->getMain());
     }
 
     public function testLogin_addAltMoveOrMergeAccounts_NoRefreshToken()

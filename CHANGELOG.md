@@ -3,7 +3,8 @@
 # next
 
 dd mm yyyy
- 
+
+- Fix: Missing main character on the account after the main character was removed due to a change of ownership.
 - Updated ESI paths for the drop-down menu.
 - Updated backend dependencies.
 

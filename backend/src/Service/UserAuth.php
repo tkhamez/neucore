@@ -227,9 +227,10 @@ class UserAuth implements RoleProviderInterface
             if ($char === null) {
                 $char = $this->accountService->createNewPlayerWithMain($characterId, $eveAuth->getCharacterName());
             } else {
-                $oldPlayerId = $char->getPlayer()->getId();
+                $oldPlayer = $char->getPlayer();
                 $char = $this->accountService->moveCharacterToNewAccount($char);
-                $this->accountService->updateGroups($oldPlayerId); // flushes the entity manager
+                $this->accountService->assureMain($oldPlayer);
+                $this->accountService->updateGroups($oldPlayer->getId()); // flushes the entity manager
             }
             $char->getPlayer()->addRole($userRole[0]);
         } else {
