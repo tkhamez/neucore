@@ -9,7 +9,7 @@ dd mm yyyy
 - Group Management/Admin: Changed the label for the search box from "Search Player/Character" to 
   "Add Player/Character".
 - Updated ESI paths for the drop-down menu.
-- Updated backend dependencies.
+- Updated backend and frontend dependencies.
 
 # 2.7.1
 
