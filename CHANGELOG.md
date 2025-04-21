@@ -1,6 +1,6 @@
 # Changelog
 
-# 2.7.2
+## 2.7.2
 
 16 Mar 2025
 
@@ -11,7 +11,7 @@
 - Updated ESI paths for the drop-down menu.
 - Updated backend and frontend dependencies.
 
-# 2.7.1
+## 2.7.1
 
 27 Dec 2024
 
@@ -19,14 +19,14 @@
 - Changed default error reporting level to "E_ALL & ~E_DEPRECATED".
 - Updated backend dependencies.
 
-# 2.7.0
+## 2.7.0
 
 23 Nov 2024
 
 - Added PHP 8.4 compatibility.
 - Updated backend dependencies.
 
-# 2.6.0
+## 2.6.0
 
 1 Nov 2024
 
