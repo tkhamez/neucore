@@ -12,7 +12,7 @@ jobs:
         include:
           - php-version: '8.1'
             db-image: mariadb
-            db-version: '10.5'
+            db-version: '10.5.1'
           - php-version: '8.1'
             db-image: mariadb
             db-version: '10.11'
@@ -22,12 +22,9 @@ jobs:
           - php-version: '8.3'
             db-image: mysql
             db-version: '8.0.22'
-          - php-version: '8.3'
-            db-image: mysql
-            db-version: '8.4.0'
           - php-version: '8.4'
             db-image: mysql
-            db-version: '8.4.0'
+            db-version: '8.4'
       fail-fast: false
     services:
       database:
