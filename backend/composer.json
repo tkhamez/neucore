@@ -47,7 +47,7 @@
         "symfony/dotenv": "^6.0",
         "symfony/http-foundation": "^6.0",
         "symfony/yaml": "^6.0",
-        "tkhamez/eve-sso": "^5.0",
+        "tkhamez/eve-sso": "^6.0",
         "tkhamez/neucore-plugin": "^4.0",
         "tkhamez/slim-role-auth": "^5.0",
         "tkhamez/swagger-eve-php": "~10.2.0",

@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Updated dependencies.
+
 ## 2.7.2
 
 16 Mar 2025
