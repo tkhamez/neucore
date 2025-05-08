@@ -44,7 +44,7 @@ sudo systemctl enable docker
 
 In the second line replace "user" with your username, after that login again.
 
-If you don't have a database you can also use Docker to create one, for example:
+If you don't have a database, you can also use Docker to create one, for example:
 
 ```shell
 docker network create neucore_prod
@@ -121,9 +121,9 @@ In a production environment you want to run a web server with SSL and remove the
 environment variable.
 
 You can do that by setting up a reverse proxy (recommended) or by forwarding the SSL port from the Docker 
-container and provide an SSL certificate.
+container and providing an SSL certificate.
 
-To use SSL from Docker use the following arguments when running the container:
+To use SSL from Docker, use the following arguments when running the container:
 
 ```
   --volume="/path/to/your/certificate":/etc/ssl/certs/neucore.pem \
@@ -131,7 +131,7 @@ To use SSL from Docker use the following arguments when running the container:
   --publish=443:443 \
 ```
 
-If you do not have a certificate you can remove those arguments, but there will be a certificate warning
+If you do not have a certificate, you can remove those arguments, but there will be a certificate warning
 from your browser.
 
 The application will be available at e.g. https://localhost.
@@ -193,8 +193,8 @@ for example:
   --volume="$(pwd)/theme.js":/var/www/web/dist/theme.js \
 ```
 
-To add a service plugin, for example the [Discord Plugin](https://github.com/tkhamez/neucore-discord-plugin), add
-the following arguments (note: `$(pwd)/neucore-discord-plugin` is the path on the host where you stored
+To add a service plugin, for example, the [Discord Plugin](https://github.com/tkhamez/neucore-discord-plugin),
+add the following arguments (note: `$(pwd)/neucore-discord-plugin` is the path on the host where you stored
 the plugin), for example:
 
 ```
@@ -218,13 +218,13 @@ docker build -f setup/Dockerfile --no-cache -t neucore dist
 
 #### Server Requirements
 
-A Linux server (others may work, but were not tested).
+A Linux server (others may work but were not tested).
 
 To run the application:
-* PHP >=8.1.0 - 8.4 (64bit version), see [backend/composer.json](../backend/composer.json) for
-  necessary and  suggested extensions (APCu highly recommended).
+* PHP 8.1.0–8.4 (64bit version), see [backend/composer.json](../backend/composer.json) for
+  necessary and suggested extensions (APCu highly recommended).
 * MariaDB or MySQL Server (tested with MariaDB 10.5, 10.11, 11.4 and MySQL 8.0.22, 8.4.0). Unit
-  tests can also be run with a SQLite in-memory database.
+  tests can also be run with an SQLite in-memory database.
 * An HTTP Server with support for PHP and URL rewriting.
   * Set the document root to the `web` directory.
   * Configure URL rewriting to `app.php`:
@@ -249,9 +249,10 @@ set the required environment variables accordingly.
 Make sure that the web server can write to the log and cache directories, by default
 `backend/var/logs` and `backend/var/cache`.
 
-Please note that both the web server and console user write the same files to the cache directory,
-so make sure they can override each other's files, e.g. by putting them into each other's group
-(the app uses umask 0002 when writing files and directories), or simply use the same user.
+The app uses umask 0002 when writing files and directories (the owner and group can read and write).
+Please note that both the web server and console user write the same files to the cache directory. 
+So make sure they can override each other's files, e.g. by putting them into each other's group or 
+using the same user.
 
 If available, the app uses an APCu cache in production mode. It must be cleared during an update:
 depending on the setup, restart the web server or php-fpm.
@@ -268,7 +269,7 @@ cd backend
 bin/doctrine orm:generate-proxies
 ```
 
-Then execute (adjust cache path if necessary)
+Then execute (adjust the cache path if necessary)
 ```
 cd backend
 rm -rf var/cache/di
@@ -334,7 +335,7 @@ analytics software.
 
 ### Security
 
-It is recommended to set the following security related HTTP headers in the web server configuration:
+It is recommended to set the following security-related HTTP headers in the web server configuration:
 
 ```
 Strict-Transport-Security "max-age=31536000"
