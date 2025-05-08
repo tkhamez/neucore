@@ -41,7 +41,6 @@ services:
     ports: ["3000:8080"]
     user: node
     working_dir: /app/frontend
-    dns: [1.1.1.1]
     networks: [neucore]
 
   neucore_php:
@@ -61,7 +60,6 @@ services:
       PHP_IDE_CONFIG: serverName=docker # for PhpStorm
     user: ${UID}
     working_dir: /app/backend
-    dns: [1.1.1.1]
     networks: [neucore]
 
   neucore_http:
