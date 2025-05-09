@@ -22,6 +22,7 @@ use Neucore\Service\UserAuth;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 
 #[OA\SecurityScheme(securityScheme: 'Session', type: 'apiKey', name: 'neucore', in: 'cookie')]
 #[OA\SecurityScheme(
@@ -59,25 +60,16 @@ class AuthController extends BaseController
 
     private const STATE_PREFIX_SEPARATOR = '*';
 
-    private SessionData $session;
-
-    private AuthenticationProvider $authProvider;
-
-    private Config $config;
-
     public function __construct(
-        ResponseInterface $response,
-        ObjectManager $objectManager,
-        RepositoryFactory $repositoryFactory,
-        SessionData $session,
-        AuthenticationProvider $authProvider,
-        Config $config,
+        ResponseInterface                       $response,
+        ObjectManager                           $objectManager,
+        RepositoryFactory                       $repositoryFactory,
+        private readonly SessionData            $session,
+        private readonly AuthenticationProvider $authProvider,
+        private readonly Config                 $config,
+        private readonly LoggerInterface        $log,
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
-
-        $this->session = $session;
-        $this->authProvider = $authProvider;
-        $this->config = $config;
     }
 
     /**
@@ -324,7 +316,15 @@ class AuthController extends BaseController
 
         $this->authProvider->setScopes($this->getLoginScopes($state));
 
-        return $this->redirect($this->authProvider->buildLoginUrl($state));
+        try {
+            $url = $this->authProvider->buildLoginUrl($state);
+        } catch (Exception $e) {
+            $this->log->error('redirectToLoginUrl: ' . $e->getMessage());
+            $this->response->getBody()->write('Error.');
+            return $this->response->withStatus(500);
+        }
+
+        return $this->redirect($url);
     }
 
     private function getLoginScopes(string $state): array

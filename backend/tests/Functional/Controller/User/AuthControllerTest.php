@@ -8,12 +8,15 @@ namespace Tests\Functional\Controller\User;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
+use Eve\Sso\AuthenticationProvider;
 use Neucore\Controller\User\AuthController;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Psr15\CSRFToken;
+use Neucore\Service\Config;
+use Neucore\Service\ObjectManager;
 use Neucore\Service\SessionData;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
@@ -22,6 +25,7 @@ use Tests\Helper;
 use Tests\Functional\WebTestCase;
 use Tests\Client;
 use Tests\Logger;
+use Tests\RequestFactory;
 use Tests\WriteErrorListener;
 
 class AuthControllerTest extends WebTestCase
@@ -56,6 +60,43 @@ class AuthControllerTest extends WebTestCase
     public function tearDown(): void
     {
         self::$em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
+        $this->helper->resetSessionData();
+    }
+
+    public function testLogin_SsoException()
+    {
+        $_SESSION = [];
+        SessionData::setReadOnly(false);
+
+        // For the request to the metadata URL
+        $this->client->setResponse(new Response());
+
+        $om = $this->helper->getObjectManager();
+        $logger = new Logger();
+        $controller = new AuthController(
+            new \Slim\Psr7\Response(),
+            new ObjectManager($om, $logger),
+            new RepositoryFactory($om),
+            new SessionData(),
+            new AuthenticationProvider(
+                [
+                    'clientId'       => 'your-EVE-app-client-ID',
+                    'clientSecret'   => 'your-EVE-app-secret-key',
+                    'redirectUri'    => 'https://your-callback.url',
+                ],
+                httpClient: $this->client
+            ),
+            new Config(['eve' => ['scopes' => '']]),
+            $logger,
+        );
+
+        $response = $controller->login(EveLogin::NAME_DEFAULT, RequestFactory::createRequest());
+
+        self::assertSame(500, $response->getStatusCode());
+        self::assertSame(
+            ['redirectToLoginUrl: Missing entries from metadata URL.'],
+            $logger->getMessages()
+        );
     }
 
     public function testLogin_404()
