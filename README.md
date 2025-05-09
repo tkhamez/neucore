@@ -80,7 +80,6 @@ Plugins:
 - Mumble auth: [neucore-mumble-plugin](https://github.com/tkhamez/neucore-mumble-plugin)
 - General plugin example [neucore-example-plugin](https://github.com/tkhamez/neucore-example-plugin)
 - Brave Collective [Slack](https://github.com/bravecollective/neucore-plugin-slack)
-- Brave Collective [phpBB forum](https://github.com/bravecollective/neucore-plugin-forum)
 
 Software that uses the Neucore API:
 
