@@ -192,6 +192,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-callback?state=INVALID'); // fail early
         $this->assertSame(302, $response->getStatusCode());
 
+        // @phpstan-ignore isset.offset, method.impossibleType
         $this->assertfalse(isset($_SESSION['auth_state'])); // test that it was deleted
         $this->assertSame(
             ['success' => false, 'message' => 'OAuth state mismatch.'],

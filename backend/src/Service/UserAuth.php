@@ -305,8 +305,8 @@ class UserAuth implements RoleProviderInterface
 
     private function resetInvalidTokenMailSentStatus(): void
     {
-        $playerId = $this->user->getPlayer()->getId();
-        if (($this->eveMail->invalidTokenFindCharacter($playerId)) === null) {
+        $playerId = $this->user?->getPlayer()->getId();
+        if ($playerId && ($this->eveMail->invalidTokenFindCharacter($playerId)) === null) {
             $this->eveMail->invalidTokenMailSent($playerId, false);
         }
     }
