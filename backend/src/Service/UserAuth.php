@@ -41,34 +41,17 @@ class UserAuth implements RoleProviderInterface
 
     public const LOGIN_ALT_FAILED = 6;
 
-    private SessionData $session;
-
-    private Account $accountService;
-
-    private AccountGroup $accountGroupService;
-
-    private ObjectManager $objectManager;
-
-    private RepositoryFactory $repositoryFactory;
-
-    private LoggerInterface $log;
-
     private ?Character $user = null;
 
     public function __construct(
-        SessionData $session,
-        Account $accountService,
-        AccountGroup $accountGroupService,
-        ObjectManager $objectManager,
-        RepositoryFactory $repositoryFactory,
-        LoggerInterface $log,
+        private readonly SessionData $session,
+        private readonly Account $accountService,
+        private readonly AccountGroup $accountGroupService,
+        private readonly ObjectManager $objectManager,
+        private readonly RepositoryFactory $repositoryFactory,
+        private readonly LoggerInterface $log,
+        private readonly EveMail $eveMail,
     ) {
-        $this->session = $session;
-        $this->accountService = $accountService;
-        $this->accountGroupService = $accountGroupService;
-        $this->objectManager = $objectManager;
-        $this->repositoryFactory = $repositoryFactory;
-        $this->log = $log;
     }
 
     /**
@@ -115,17 +98,20 @@ class UserAuth implements RoleProviderInterface
     public function login(EveAuthentication $eveAuth): int
     {
         $this->getUser();
-        if ($this->user === null) {
+        if ($this->user === null) { // not yet logged in
             $result = $this->authenticate($eveAuth);
             if ($result === 0) {
+                $this->resetInvalidTokenMailSentStatus();
                 return self::LOGIN_AUTHENTICATED_SUCCESS;
             } elseif ($result === 2) { // Login with alt but only main logins are allowed
                 return self::LOGIN_ALT_FAILED;
             } else { // 1, other error
                 return self::LOGIN_AUTHENTICATED_FAIL;
             }
-        } else {
-            return $this->addAltMoveOrMergeAccounts($eveAuth, $this->user->getPlayer());
+        } else { // already logged in
+            $result = $this->addAltMoveOrMergeAccounts($eveAuth, $this->user->getPlayer());
+            $this->resetInvalidTokenMailSentStatus();
+            return $result;
         }
     }
 
@@ -314,6 +300,14 @@ class UserAuth implements RoleProviderInterface
 
         if ($userId !== null) {
             $this->user = $this->repositoryFactory->getCharacterRepository()->find($userId);
+        }
+    }
+
+    private function resetInvalidTokenMailSentStatus(): void
+    {
+        $playerId = $this->user->getPlayer()->getId();
+        if (($this->eveMail->invalidTokenFindCharacter($playerId)) === null) {
+            $this->eveMail->invalidTokenMailSent($playerId, false);
         }
     }
 }

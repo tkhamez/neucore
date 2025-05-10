@@ -48,6 +48,7 @@ use Neucore\Service\AutoGroupAssignment;
 use Neucore\Service\Config;
 use Neucore\Service\EsiClient;
 use Neucore\Service\EsiData;
+use Neucore\Service\EveMail;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\PluginService;
 use Neucore\Service\SessionData;
@@ -251,6 +252,14 @@ class Helper
             $objectManager,
             $repoFactory,
             $logger,
+            new EveMail(
+                $repoFactory,
+                $objectManager,
+                self::getAuthenticationProvider($client),
+                $logger,
+                new EsiApiFactory($client, $config),
+                $config,
+            ),
         );
     }
 

@@ -104,6 +104,7 @@ class SendInvalidTokenMail extends Command
 
                 $characterId = $this->eveMail->invalidTokenFindCharacter($playerId);
                 if ($characterId === null) {
+                    // The status should already be correct, just in case.
                     $this->eveMail->invalidTokenMailSent($playerId, false);
                     continue;
                 }
