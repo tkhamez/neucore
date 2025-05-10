@@ -43,21 +43,23 @@
                             <td style="white-space: pre-wrap;">{{ group.description }}</td>
                             <td>{{ group.statusText }}</td>
                             <td>
-                                <button v-if="group.statusText === 'Member'"
-                                        type="button" class="btn btn-warning btn-sm"
-                                        v-on:click="askLeave(group.id, group.name, group.autoAccept)">
-                                    Leave group
-                                </button>
-                                <button v-if="group.statusText === ''"
-                                        type="button" class="btn btn-primary btn-sm"
-                                        v-on:click="apply(group.id)">
-                                    {{ group.autoAccept ? 'Join' : 'Apply' }}
-                                </button>
-                                <button v-if="group.statusText === 'pending' || group.statusText === 'denied'"
-                                        type="button" class="btn btn-secondary btn-sm"
-                                        v-on:click="cancel(group.id)">
-                                    {{ group.statusText === 'pending' ? 'Cancel' : 'Remove' }} application
-                                </button>
+                                <template v-if="!group.isAutoManaged">
+                                    <button v-if="group.statusText === 'Member'"
+                                            type="button" class="btn btn-warning btn-sm"
+                                            v-on:click="askLeave(group.id, group.name, group.autoAccept)">
+                                        Leave group
+                                    </button>
+                                    <button v-if="group.statusText === ''"
+                                            type="button" class="btn btn-primary btn-sm"
+                                            v-on:click="apply(group.id)">
+                                        {{ group.autoAccept ? 'Join' : 'Apply' }}
+                                    </button>
+                                    <button v-if="group.statusText === 'pending' || group.statusText === 'denied'"
+                                            type="button" class="btn btn-secondary btn-sm"
+                                            v-on:click="cancel(group.id)">
+                                        {{ group.statusText === 'pending' ? 'Cancel' : 'Remove' }} application
+                                    </button>
+                                </template>
                             </td>
                         </tr>
                     </tbody>
