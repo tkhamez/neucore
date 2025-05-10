@@ -107,6 +107,7 @@ class GroupController extends BaseController
         $player = $this->getUser($this->userAuth)->getPlayer();
         foreach ($publicGroups as $publicGroup) {
             if ($player->isAllowedMember($publicGroup)) {
+                $publicGroup->setIsAutoManaged();
                 $groups[] = $publicGroup;
             }
         }

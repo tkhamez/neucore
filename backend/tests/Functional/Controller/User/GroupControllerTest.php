@@ -137,7 +137,7 @@ class GroupControllerTest extends WebTestCase
         $this->assertSame(
             [['id' => $this->gid2, 'name' => 'group-public', 'description' => null,
                 'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false,
-                'isDefault' => false, 'isAutoManaged' => null]],
+                'isDefault' => false, 'isAutoManaged' => false]],
             $this->parseJsonBody($response1),
         );
     }
