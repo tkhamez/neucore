@@ -188,13 +188,16 @@ class CorporationControllerTest extends WebTestCase
             [
                 ['id' => 222, 'name' => '1 corp 2', 'ticker' => 't200', 'alliance' => null, 'groups' => [
                     ['id' => $this->group1->getId(), 'name' => 'group 1', 'description' => null,
-                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
+                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                        'isDefault' => false, 'isAutoManaged' => null],
                     ['id' => $this->gid2, 'name' => 'group 2', 'description' => null,
-                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
+                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                        'isDefault' => false, 'isAutoManaged' => null],
                 ]],
                 ['id' => 111, 'name' => '2 corp 1', 'ticker' => 't100', 'alliance' => null, 'groups' => [
                     ['id' => $this->group1->getId(), 'name' => 'group 1', 'description' => null,
-                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
+                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                        'isDefault' => false, 'isAutoManaged' => null],
                 ]],
             ],
             $this->parseJsonBody($response),
@@ -562,7 +565,8 @@ class CorporationControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [['id' => $this->group1->getId(), 'name' => 'group 1', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                'isDefault' => false, 'isAutoManaged' => null]],
             $this->parseJsonBody($response),
         );
     }

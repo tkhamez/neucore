@@ -102,15 +102,20 @@ class GroupControllerTest extends WebTestCase
         $this->assertSame(
             [
                 ['id' => $this->gidForbidden, 'name' => 'forbidden-group', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                    'isDefault' => false, 'isAutoManaged' => null],
                 ['id' => $this->gid, 'name' => 'group-one', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                    'isDefault' => false, 'isAutoManaged' => null],
                 ['id' => $this->gid2, 'name' => 'group-public', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false, 'isDefault' => false],
+                    'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false,
+                    'isDefault' => false, 'isAutoManaged' => null],
                 ['id' => $this->gid4, 'name' => 'group-public2', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false, 'isDefault' => false],
+                    'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false,
+                    'isDefault' => false, 'isAutoManaged' => null],
                 ['id' => $this->gidReq, 'name' => 'required-group', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                    'isDefault' => false, 'isAutoManaged' => null],
             ],
             $this->parseJsonBody($response1),
         );
@@ -131,7 +136,8 @@ class GroupControllerTest extends WebTestCase
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertSame(
             [['id' => $this->gid2, 'name' => 'group-public', 'description' => null,
-                'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false, 'isDefault' => false]],
+                'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false,
+                'isDefault' => false, 'isAutoManaged' => null]],
             $this->parseJsonBody($response1),
         );
     }
@@ -184,7 +190,8 @@ class GroupControllerTest extends WebTestCase
         $ng = $this->groupRepo->findOneBy(['name' => 'new-g']);
         $this->assertSame(
             ['id' => $ng->getId(), 'name' => 'new-g', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                'isDefault' => false, 'isAutoManaged' => null],
             $this->parseJsonBody($response),
         );
     }
@@ -251,13 +258,15 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertSame(
             ['id' => $this->gid, 'name' => 'group-one', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                'isDefault' => false, 'isAutoManaged' => null],
             $this->parseJsonBody($response1),
         );
 
         $this->assertSame(
             ['id' => $this->gid, 'name' => 'new-name', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                'isDefault' => false, 'isAutoManaged' => null],
             $this->parseJsonBody($response2),
         );
 
@@ -305,7 +314,8 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertSame(
             ['id' => $this->gid, 'name' => 'group-one', 'description' => "A\ndescription",
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                'isDefault' => false, 'isAutoManaged' => null],
             $this->parseJsonBody($response),
         );
 
@@ -353,7 +363,8 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertSame(
             ['id' => $this->gid, 'name' => 'group-one', 'description' => null,
-                'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false, 'isDefault' => false],
+                'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false,
+                'isDefault' => false, 'isAutoManaged' => null],
             $this->parseJsonBody($response),
         );
 
@@ -405,7 +416,8 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertSame(
             ['id' => $this->gid, 'name' => 'group-one', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => true, 'isDefault' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => true,
+                'isDefault' => false, 'isAutoManaged' => null],
             $this->parseJsonBody($response2),
         );
 
@@ -457,7 +469,8 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertSame(
             ['id' => $this->gid, 'name' => 'group-one', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => true],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                'isDefault' => true, 'isAutoManaged' => null],
             $this->parseJsonBody($response2),
         );
 
@@ -654,7 +667,8 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertSame(
             [['id' => $this->gidReq, 'name' => 'required-group', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                'isDefault' => false, 'isAutoManaged' => null]],
             $this->parseJsonBody($response),
         );
     }
@@ -772,7 +786,8 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertSame(
             [['id' => $this->gidForbidden, 'name' => 'forbidden-group', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                'isDefault' => false, 'isAutoManaged' => null]],
             $this->parseJsonBody($response),
         );
     }
@@ -1001,6 +1016,7 @@ class GroupControllerTest extends WebTestCase
                     'visibility' => Group::VISIBILITY_PUBLIC,
                     'autoAccept' => false,
                     'isDefault' => false,
+                    'isAutoManaged' => null,
                 ],
                 'status' => GroupApplication::STATUS_PENDING,
                 'created' => null,

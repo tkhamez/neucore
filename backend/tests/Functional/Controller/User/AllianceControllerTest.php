@@ -178,13 +178,16 @@ class AllianceControllerTest extends WebTestCase
             [
                 ['id' => 222, 'name' => '1 alli 2', 'ticker' => 't200', 'groups' => [
                     ['id' => $this->groupId1, 'name' => 'group 1', 'description' => null,
-                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
+                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                        'isDefault' => false, 'isAutoManaged' => null],
                     ['id' => $this->groupId2, 'name' => 'group 2', 'description' => null,
-                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
+                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                        'isDefault' => false, 'isAutoManaged' => null],
                 ]],
                 ['id' => 111, 'name' => '2 alli 1', 'ticker' => 't100', 'groups' => [
                     ['id' => $this->groupId1, 'name' => 'group 1', 'description' => null,
-                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
+                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                        'isDefault' => false, 'isAutoManaged' => null],
                 ]],
             ],
             $this->parseJsonBody($response),

@@ -62,7 +62,8 @@ class RoleControllerTest extends WebTestCase
 
         $this->assertSame(
             [['id' => $this->group1, 'name' => 'group-1', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                'isDefault' => false, 'isAutoManaged' => null]],
             $this->parseJsonBody($response),
         );
     }

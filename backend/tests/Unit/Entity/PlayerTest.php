@@ -92,6 +92,7 @@ class PlayerTest extends TestCase
                 'visibility' => Group::VISIBILITY_PRIVATE,
                 'autoAccept' => false,
                 'isDefault' => false,
+                'isAutoManaged' => null,
             ]],
             'managerGroups' => [[
                 'id' => null,
@@ -100,6 +101,7 @@ class PlayerTest extends TestCase
                 'visibility' => Group::VISIBILITY_PRIVATE,
                 'autoAccept' => false,
                 'isDefault' => false,
+                'isAutoManaged' => null,
             ]],
             'managerApps' => [['id' => null, 'name' => 'app-one', 'groups' => [], 'roles' => [], 'eveLogins' => []]],
         ];

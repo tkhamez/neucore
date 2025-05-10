@@ -6,6 +6,7 @@ dd mm yyyy
 
 - Fix: Reset the "invalid token mail sent" status after the login if all ESI tokens are valid. This
   makes sure that another mail is sent should a token become invalid before they are checked again.
+- Fix: Do not show buttons to leave or join groups that are automatically managed.
 - Updated dependencies.
 
 ## 2.7.2

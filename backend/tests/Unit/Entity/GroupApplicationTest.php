@@ -22,7 +22,8 @@ class GroupApplicationTest extends TestCase
             'id' => null,
             'player' => ['id' => null, 'name' => 'p'],
             'group' => ['id' => null, 'name' => 'g', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                'isDefault' => false, 'isAutoManaged' => null],
             'status' => GroupApplication::STATUS_PENDING,
             'created' => '2019-04-06T16:09:24Z',
         ], json_decode((string) json_encode($groupApp), true));

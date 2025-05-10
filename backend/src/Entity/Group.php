@@ -59,7 +59,6 @@ class Group implements \JsonSerializable
 
     /**
      * Group members.
-     *
      */
     #[ORM\ManyToMany(targetEntity: Player::class, mappedBy: "groups")]
     #[ORM\OrderBy(["name" => "ASC"])]
@@ -76,7 +75,6 @@ class Group implements \JsonSerializable
 
     /**
      * Corporations for automatic assignment.
-     *
      */
     #[ORM\ManyToMany(targetEntity: Corporation::class, mappedBy: "groups")]
     #[ORM\OrderBy(["name" => "ASC"])]
@@ -84,15 +82,13 @@ class Group implements \JsonSerializable
 
     /**
      * Alliances for automatic assignment.
-     *
      */
     #[ORM\ManyToMany(targetEntity: Alliance::class, mappedBy: "groups")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $alliances;
 
     /**
-     * A player must be a member of one of these groups in order to be a member of this group.
-     *
+     * A player must be a member of at least one of these groups to be a member of this group.
      */
     #[ORM\ManyToMany(targetEntity: Group::class)]
     #[ORM\JoinTable(name: "group_required_groups")]
@@ -100,13 +96,18 @@ class Group implements \JsonSerializable
     private Collection $requiredGroups;
 
     /**
-     * A player must not be a member of any of these groups in order to be a member of this group.
-     *
+     * A player must not be a member of any of these groups to be a member of this group.
      */
     #[ORM\ManyToMany(targetEntity: Group::class)]
     #[ORM\JoinTable(name: "group_forbidden_groups")]
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $forbiddenGroups;
+
+    /**
+     * API: The value of this property is not always set.
+     */
+    #[OA\Property]
+    private ?bool $isAutoManaged = null;
 
     /**
      * Contains only information of interest to clients.
@@ -120,6 +121,7 @@ class Group implements \JsonSerializable
             'visibility' => $this->visibility,
             'autoAccept' => $this->autoAccept,
             'isDefault' => $this->isDefault,
+            'isAutoManaged' => $this->isAutoManaged,
         ];
     }
 
@@ -287,9 +289,40 @@ class Group implements \JsonSerializable
         return array_values($this->apps->toArray());
     }
 
+    public function addCorporation(Corporation $corporation): self
+    {
+        $this->corporations[] = $corporation;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeCorporation(Corporation $corporation): bool
+    {
+        return $this->corporations->removeElement($corporation);
+    }
+
     public function getCorporations(): array
     {
         return array_values($this->corporations->toArray());
+    }
+
+    public function addAlliance(Alliance $alliance): self
+    {
+        $this->alliances[] = $alliance;
+
+        return $this;
+    }
+
+    /**
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeAlliance(Alliance $alliance): bool
+    {
+        return $this->alliances->removeElement($alliance);
     }
 
     /**
@@ -363,5 +396,14 @@ class Group implements \JsonSerializable
     public function toCoreGroup(): CoreGroup
     {
         return new CoreGroup($this->getId(), $this->getName());
+    }
+
+    public function setIsAutoManaged(): bool
+    {
+        $this->isAutoManaged =
+            count($this->getAlliances()) > 0 ||
+            count($this->getCorporations()) > 0;
+
+        return $this->isAutoManaged;
     }
 }

@@ -872,6 +872,7 @@ class WatchlistControllerTest extends WebTestCase
             'visibility' => Group::VISIBILITY_PRIVATE,
             'autoAccept' => false,
             'isDefault' => false,
+            'isAutoManaged' => null,
         ]], $this->parseJsonBody($response));
     }
 
@@ -980,6 +981,7 @@ class WatchlistControllerTest extends WebTestCase
             'visibility' => Group::VISIBILITY_PRIVATE,
             'autoAccept' => false,
             'isDefault' => false,
+            'isAutoManaged' => null,
         ]], $this->parseJsonBody($response));
     }
 
