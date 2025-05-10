@@ -134,8 +134,8 @@ class Account
     public function updateAndStoreCharacterWithPlayer(Character $char, EveAuthentication $eveAuth): bool
     {
         $token = $eveAuth->getToken();
-        // Do not update the character name here: after a character rename the name from SSO is/can be? the old name.
-        // https://github.com/ccpgames/sso-issues/issues/68
+        // Do not update the character name here: after a character was renamed, the name from SSO
+        // is (can be?) the old name. https://github.com/ccpgames/sso-issues/issues/68
         try {
             $char->setLastLogin(new \DateTime());
         } catch (\Exception) {
