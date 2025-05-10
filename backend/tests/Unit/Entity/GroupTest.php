@@ -136,38 +136,6 @@ class GroupTest extends TestCase
         $this->assertSame([], $group->getApps());
     }
 
-    public function testAddGetRemoveCorporation()
-    {
-        $group = new Group();
-        $c1 = new Corporation();
-        $c2 = new Corporation();
-
-        $this->assertSame([], $group->getCorporations());
-
-        $group->addCorporation($c1);
-        $group->addCorporation($c2);
-        $this->assertSame([$c1, $c2], $group->getCorporations());
-
-        $group->removeCorporation($c2);
-        $this->assertSame([$c1], $group->getCorporations());
-    }
-
-    public function testAddGetRemoveAlliance()
-    {
-        $group = new Group();
-        $a1 = new Alliance();
-        $a2 = new Alliance();
-
-        $this->assertSame([], $group->getAlliances());
-
-        $group->addAlliance($a1);
-        $group->addAlliance($a2);
-        $this->assertSame([$a1, $a2], $group->getAlliances());
-
-        $group->removeAlliance($a2);
-        $this->assertSame([$a1], $group->getAlliances());
-    }
-
     public function testAddGetRemoveRequiredGroups()
     {
         $group = new Group();

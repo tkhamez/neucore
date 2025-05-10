@@ -542,6 +542,9 @@ class Player implements \JsonSerializable
 
     /**
      * Checks required and forbidden groups.
+     *
+     * This does not check alliances or corporations that are used to automatically
+     * add and remove members from this group.
      */
     public function isAllowedMember(Group $group): bool
     {

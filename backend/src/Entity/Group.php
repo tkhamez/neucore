@@ -287,40 +287,9 @@ class Group implements \JsonSerializable
         return array_values($this->apps->toArray());
     }
 
-    public function addCorporation(Corporation $corporation): self
-    {
-        $this->corporations[] = $corporation;
-
-        return $this;
-    }
-
-    /**
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeCorporation(Corporation $corporation): bool
-    {
-        return $this->corporations->removeElement($corporation);
-    }
-
     public function getCorporations(): array
     {
         return array_values($this->corporations->toArray());
-    }
-
-    public function addAlliance(Alliance $alliance): self
-    {
-        $this->alliances[] = $alliance;
-
-        return $this;
-    }
-
-    /**
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeAlliance(Alliance $alliance): bool
-    {
-        return $this->alliances->removeElement($alliance);
     }
 
     /**

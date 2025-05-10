@@ -72,6 +72,8 @@ class PlayerControllerTest extends WebTestCase
 
     private int $autoAssignGroupId;
 
+    private int $publicAutoAssignGroupId;
+
     private PlayerRepository $playerRepo;
 
     private CharacterRepository $charRepo;
@@ -195,19 +197,31 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('PUT', '/api/user/player/add-application/' . ($this->groupId + 5));
+        $response = $this->runApp('PUT', '/api/user/player/add-application/' . ($this->groupId + 50));
         $this->assertEquals(404, $response->getStatusCode());
 
         $response = $this->runApp('PUT', '/api/user/player/add-application/' . $this->gPrivateId);
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testAddApplication400()
+    public function testAddApplication400_NotAllowed()
     {
         $this->setupDb();
         $this->loginUser(10);
 
         $response = $this->runApp('PUT', '/api/user/player/add-application/' . $this->groupId);
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function testAddApplication400_ManagedGroup()
+    {
+        $this->setupDb();
+        $this->loginUser(10);
+
+        $response = $this->runApp(
+            'PUT',
+            '/api/user/player/add-application/' . $this->publicAutoAssignGroupId
+        );
         $this->assertEquals(400, $response->getStatusCode());
     }
 
@@ -266,7 +280,7 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('PUT', '/api/user/player/remove-application/' . ($this->groupId + 5));
+        $response = $this->runApp('PUT', '/api/user/player/remove-application/' . ($this->groupId + 50));
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -318,6 +332,19 @@ class PlayerControllerTest extends WebTestCase
         ]], $this->parseJsonBody($response));
     }
 
+    public function testLeaveGroup400()
+    {
+        $this->setupDb();
+        // Player is not a member of that group, but that doesn't matter for this test
+        $this->loginUser(12);
+
+        $response = $this->runApp(
+            'PUT',
+            '/api/user/player/leave-group/' . $this->publicAutoAssignGroupId
+        );
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
     public function testLeaveGroup403()
     {
         $response = $this->runApp('PUT', '/api/user/player/leave-group/11');
@@ -329,7 +356,7 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('PUT', '/api/user/player/leave-group/' . ($this->groupId + 5));
+        $response = $this->runApp('PUT', '/api/user/player/leave-group/' . ($this->groupId + 50));
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -844,7 +871,7 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('GET', '/api/user/player/' . ($this->player3Id + 5) . '/show');
+        $response = $this->runApp('GET', '/api/user/player/' . ($this->player3Id + 50) . '/show');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -978,7 +1005,7 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12); // user-admin
 
-        $response = $this->runApp('GET', '/api/user/player/' . ($this->player3Id + 5) . '/characters');
+        $response = $this->runApp('GET', '/api/user/player/' . ($this->player3Id + 50) . '/characters');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -1491,9 +1518,13 @@ class PlayerControllerTest extends WebTestCase
             Role::WATCHLIST_ADMIN,
         ]);
 
-        $gs = $this->h->addGroups(['test-pub', 'test-private', 'required-group', 'auto-accept', 'auto-assign']);
+        $gs = $this->h->addGroups([
+            'test-pub', 'test-private', 'required-group', 'auto-accept', 'auto-assign',
+            'public-auto-assign'
+        ]);
         $gs[0]->setVisibility(Group::VISIBILITY_PUBLIC);
         $gs[3]->setVisibility(Group::VISIBILITY_PUBLIC);
+        $gs[5]->setVisibility(Group::VISIBILITY_PUBLIC);
         $gs[3]->setAutoAccept(true);
         $gs[0]->addRequiredGroup($gs[2]);
         $this->groupId = $gs[0]->getId();
@@ -1501,6 +1532,7 @@ class PlayerControllerTest extends WebTestCase
         $this->requiredGroupId = $gs[2]->getId();
         $this->autoAcceptGroupId = $gs[3]->getId();
         $this->autoAssignGroupId = $gs[4]->getId();
+        $this->publicAutoAssignGroupId = $gs[5]->getId();
 
         $corp1 = (new Corporation())->setId(123)->setName('c1')->setTicker('c1');
         $this->em->persist($corp1);
@@ -1526,6 +1558,9 @@ class PlayerControllerTest extends WebTestCase
         $corp2 = (new Corporation())->setId(234)->setName('ccc')->setTicker('c-c')->setAlliance($alli);
         $this->corpId = $corp2->getId();
 
+        $corp3 = (new Corporation())->setId(235)->setName('cc3')->setTicker('c-3');
+        $corp3->addGroup($gs[5]);
+
         $char3a = $this->h->addCharacterMain(
             'Admin',
             12,
@@ -1546,6 +1581,7 @@ class PlayerControllerTest extends WebTestCase
         $emptyAcc = (new Player())->setName('empty account');
 
         $this->em->persist($corp2);
+        $this->em->persist($corp3);
         $this->em->persist($alli);
         $this->em->persist($emptyAcc);
 

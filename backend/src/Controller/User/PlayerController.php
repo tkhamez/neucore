@@ -216,7 +216,7 @@ class PlayerController extends BaseController
     )]
     public function addApplication(string $gid): ResponseInterface
     {
-        // players can only apply to public groups
+        // Players can only apply to public groups.
         $criteria = ['id' => (int) $gid, 'visibility' => Group::VISIBILITY_PUBLIC];
         $group = $this->repositoryFactory->getGroupRepository()->findOneBy($criteria);
         if ($group === null) {
@@ -229,7 +229,13 @@ class PlayerController extends BaseController
             return $this->response->withStatus(400);
         }
 
-        // update existing or create new application
+        // Do not allow an application if the group has an alliance or corporation that are
+        // used to automatically manage membership.
+        if (count($group->getAlliances()) > 0 || count($group->getCorporations()) > 0) {
+            return $this->response->withStatus(400);
+        }
+
+        // Update existing or create a new application.
         $groupApplication = $this->repositoryFactory->getGroupApplicationRepository()->findOneBy([
             self::COLUMN_PLAYER => $player->getId(),
             self::COLUMN_GROUP => $group->getId(),
@@ -340,6 +346,7 @@ class PlayerController extends BaseController
         ],
         responses: [
             new OA\Response(response: '204', description: 'Group left.'),
+            new OA\Response(response: '400', description: 'Cannot leave group.'),
             new OA\Response(response: '403', description: 'Not authorized.'),
             new OA\Response(response: '404', description: 'Group not found.'),
         ],
@@ -349,6 +356,12 @@ class PlayerController extends BaseController
         $group = $this->repositoryFactory->getGroupRepository()->findOneBy(['id' => (int) $gid]);
         if ($group === null) {
             return $this->response->withStatus(404);
+        }
+
+        // Do not allow leaving the group if it has an alliance or corporation that are
+        // used to automatically manage membership.
+        if (count($group->getAlliances()) > 0 || count($group->getCorporations()) > 0) {
+            return $this->response->withStatus(400);
         }
 
         $player = $this->getUser($this->userAuth)->getPlayer();
