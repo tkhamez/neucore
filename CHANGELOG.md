@@ -1,12 +1,13 @@
 # Changelog
 
-## next
+## 2.7.3
 
-dd mm yyyy
+10 May 2025
 
 - Fix: Reset the "invalid token mail sent" status after the login if all ESI tokens are valid. This
   makes sure that another mail is sent should a token become invalid before they are checked again.
-- Fix: Do not show buttons to leave or join groups that are automatically managed.
+- Fix: Do not show buttons to leave or join groups that are automatically managed (only relevant if 
+  such a group was mistakenly configured as public).
 - Updated dependencies.
 
 ## 2.7.2
