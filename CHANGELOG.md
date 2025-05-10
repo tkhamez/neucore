@@ -9,6 +9,8 @@
 - Fix: Do not show buttons to leave or join groups that are automatically managed (only relevant if 
   such a group was mistakenly configured as public).
 - Updated dependencies.
+  - Including [tkhamez/eve-sso-php](https://github.com/tkhamez/eve-sso-php),
+    which results in fewer requests to the metadata URL.
 
 ## 2.7.2
 
