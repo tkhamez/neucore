@@ -109,7 +109,7 @@ class Group implements \JsonSerializable
     private Collection $forbiddenGroups;
 
     /**
-     * Contains only information that is of interest to clients.
+     * Contains only information of interest to clients.
      */
     public function jsonSerialize(): array
     {

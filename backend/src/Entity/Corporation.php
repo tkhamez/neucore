@@ -92,7 +92,7 @@ class Corporation implements \JsonSerializable
     private bool $autoAllowlist = false;
 
     /**
-     * Contains only information that is of interest for clients.
+     * Contains only information of interest to clients.
      *
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()

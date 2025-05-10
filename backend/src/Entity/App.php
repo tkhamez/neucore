@@ -61,7 +61,7 @@ class App implements \JsonSerializable
     private Collection $eveLogins;
 
     /**
-     * Contains only information that is of interest to clients.
+     * Contains only information of interest to clients.
      *
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()

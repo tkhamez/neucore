@@ -97,7 +97,7 @@ class Role implements \JsonSerializable
     private Collection $requiredGroups;
 
     /**
-     * Contains only information that is of interest to clients.
+     * Contains only information of interest to clients.
      */
     public function jsonSerialize(): string
     {

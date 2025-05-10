@@ -164,7 +164,7 @@ class Player implements \JsonSerializable
     private Collection $incomingCharacters;
 
     /**
-     * Contains only information that is of interest for clients.
+     * Contains only information of interest to clients.
      */
     public function jsonSerialize(
         bool $minimum = false,
