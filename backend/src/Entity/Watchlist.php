@@ -18,6 +18,7 @@ class Watchlist implements \JsonSerializable
     #[ORM\Column(type: "integer")]
     #[ORM\GeneratedValue]
     #[OA\Property]
+    // @phpstan-ignore property.unusedType
     private ?int $id = null;
 
     #[ORM\Column(type: "string", length: 32)]

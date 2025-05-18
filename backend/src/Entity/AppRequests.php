@@ -22,6 +22,7 @@ class AppRequests
     #[ORM\Id]
     #[ORM\Column(type: "bigint")]
     #[ORM\GeneratedValue]
+    // @phpstan-ignore property.unusedType
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: App::class)]

@@ -39,6 +39,7 @@ class GroupApplication implements \JsonSerializable
     #[ORM\Column(type: "integer")]
     #[ORM\GeneratedValue]
     #[OA\Property]
+    // @phpstan-ignore property.unusedType
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Player::class, inversedBy: "groupApplications")]

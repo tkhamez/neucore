@@ -22,6 +22,7 @@ class CharacterNameChange implements \JsonSerializable
     #[ORM\Id]
     #[ORM\Column(type: "integer")]
     #[ORM\GeneratedValue]
+    // @phpstan-ignore property.unusedType
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Character::class, inversedBy: "characterNameChanges")]

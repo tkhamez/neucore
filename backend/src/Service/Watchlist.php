@@ -180,6 +180,7 @@ class Watchlist
      */
     public function getExemptionList(int $id): array
     {
+        // @phpstan-ignore return.type
         return $this->getList($id, self::EXEMPTION);
     }
 
@@ -188,6 +189,7 @@ class Watchlist
      */
     public function getAllowlistCorporationList(int $id): array
     {
+        // @phpstan-ignore return.type
         return $this->getList($id, self::ALLOWLIST_CORPORATION);
     }
 
@@ -196,12 +198,14 @@ class Watchlist
      */
     public function getCorporationIds(int $watchlistId, string $allianceList, string $corporationList): array
     {
+        // @phpstan-ignore argument.type
         $allianceIds = array_map(function (Alliance $alliance) {
             return $alliance->getId();
         }, $this->getList($watchlistId, $allianceList));
         $corporationIds1 = array_map(function (Corporation $corporation) {
             return $corporation->getId();
         }, $this->corporationRepository->getAllFromAlliances($allianceIds));
+        // @phpstan-ignore argument.type
         $corporationIds2 = array_map(function (Corporation $corporation) {
             return $corporation->getId();
         }, $this->getList($watchlistId, $corporationList));
