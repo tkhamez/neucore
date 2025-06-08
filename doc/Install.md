@@ -292,10 +292,14 @@ cd frontend && npm run build
 ### Docker Development Environment
 
 Needs [Docker Compose](https://docs.docker.com/compose/) V2. Only tested on Linux and once or 
-twice on macOS.
+twice on macOS. You can also use [Podman](https://podman.io/) instead of Docker.
 
 Copy `backend/.env.dist` file to `backend/.env` and adjust values, the database password and user 
 are both `neucore`, the database host is `neucore_db` and the database name also `neucore`.
+
+Copy `setup/compose.yaml` to `/compose.yaml` and adjust its content if necessary. If you use
+rootless Podman, you can change the user to root for the Node, PHP, and Java containers (that will
+create the files on the host with the user that runs podman).
 
 - Always run `export UID` first in each console that you use to execute any of the following commands.
 - Build the containers:  
@@ -303,7 +307,7 @@ are both `neucore`, the database host is `neucore_db` and the database name also
 - Start services:  
   `docker compose up`
 - Install the app:  
-  `setup/install-docker.sh`  
+  `setup/install-docker.sh` or `setup/install-podman.sh`  
   `docker compose exec neucore_node npm run build`
 - After the first login, make the account with the ID 1 admin:  
   `docker compose exec neucore_php bin/console make-admin 1`
