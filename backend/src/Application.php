@@ -81,7 +81,7 @@ class Application
     private const RUN_CONSOLE = 'console';
 
     /**
-     * Path to application root directory.
+     * Path to the application root directory.
      *
      * Does not have a trailing slash.
      *
@@ -108,9 +108,28 @@ class Application
 
     private ?Container $container = null;
 
-    public static function loadFile(string $name, string $directory = 'config'): mixed
+    /**
+     * @var array<string, mixed>
+     */
+    private static array $loadedFiles = [];
+
+    public static function loadFile(string $name): mixed
     {
-        return require self::ROOT_DIR . "/$directory/$name";
+        $allowed = [
+            'security.php',
+            'settings.php',
+            'settings_dev.php',
+            'settings_tests.php',
+            'routes.php',
+            'esi-paths-public.php',
+        ];
+        if (in_array($name, $allowed)) {
+            if (!array_key_exists($name, self::$loadedFiles)) {
+                self::$loadedFiles[$name] = require_once self::ROOT_DIR . "/config/$name";
+            }
+            return self::$loadedFiles[$name];
+        }
+        return null;
     }
 
     public function __construct()
@@ -118,7 +137,7 @@ class Application
         // Set timezone - also used by Doctrine for dates/times in the database.
         date_default_timezone_set('UTC');
 
-        // Allow group to change files created by this application.
+        // Allow the group to change files created by this application.
         umask(0002);
     }
 
@@ -142,7 +161,7 @@ class Application
             return $this->config;
         }
 
-        // Load environment variables from file if it exists.
+        // Load environment variables from the file if it exists.
         if (file_exists(Application::ROOT_DIR . '/.env')) {
             $dotEnv = new Dotenv();
             try {
@@ -315,7 +334,7 @@ class Application
 
         $app->add($this->getFromContainer(BodyParams::class));
 
-        // Add the IP based rate limit before the database connection is used.
+        // Add the IP-based rate limit before the database connection is used.
         $app->add($this->getFromContainer(RateLimitIP::class));
 
         $errorMiddleware = $app->addErrorMiddleware(false, true, true);
@@ -326,7 +345,7 @@ class Application
         ));
 
         // add CORS last, so it is executed first, especially before the error handler.
-        if ($config['CORS']['allow_origin']) { // not false or empty string
+        if ($config['CORS']['allow_origin']) { // not false or an empty string
             $app->add(new Cors(
                 $this->getFromContainer(ResponseFactoryInterface::class),
                 explode(',', $config['CORS']['allow_origin']),
@@ -376,7 +395,7 @@ class Application
             ini_set('error_log', $path . '/error.log');
         }
         ini_set('display_errors', '0');
-        ini_set('log_errors', '0'); // all errors are logged with Monolog
+        ini_set('log_errors', '0'); // All errors are logged with a custom error handler.
         if ($this->config) {
             error_reporting((int) $this->config['error_reporting']);
         }
@@ -441,7 +460,7 @@ class Application
         if ($this->container instanceof ContainerInterface) {
             try {
                 $log = $this->getFromContainer(LoggerInterface::class);
-            } catch (ContainerExceptionInterface | NotFoundExceptionInterface $e) {
+            } catch (ContainerExceptionInterface $e) {
                 // do nothing
             }
         }
@@ -458,7 +477,7 @@ class Application
     }
 
     /**
-     * @throws ContainerExceptionInterface|NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
      */
     private function getFromContainer(string $className): mixed
     {

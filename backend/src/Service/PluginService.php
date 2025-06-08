@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
+use Composer\Autoload\ClassLoader;
 use Neucore\Application;
 use Neucore\Data\PluginConfigurationFile;
 use Neucore\Entity\Character;
@@ -36,6 +37,8 @@ class PluginService
     private Parser $parser;
 
     private Factory $pluginFactory;
+
+    private ?ClassLoader $loader = null;
 
     public function __construct(
         LoggerInterface $log,
@@ -194,18 +197,22 @@ class PluginService
             if (!str_ends_with($pluginConfigYaml->psr4Prefix, '\\')) {
                 $pluginConfigYaml->psr4Prefix .= '\\';
             }
-            /** @noinspection PhpFullyQualifiedNameUsageInspection */
-            /* @var \Composer\Autoload\ClassLoader $loader */
-            $loader = Application::loadFile('autoload.php', 'vendor');
-            foreach ($loader->getPrefixesPsr4() as $existingPrefix => $paths) {
-                if ($existingPrefix === $pluginConfigYaml->psr4Prefix) {
-                    $psr4Paths = array_merge($paths, $psr4Paths);
-                }
+            if (!$this->loader) {
+                // Note: require_once cannot be used here.
+                /** @noinspection PhpIncludeInspection */
+                $this->loader = require Application::ROOT_DIR . '/vendor/autoload.php';
             }
-            try {
-                $loader->setPsr4($pluginConfigYaml->psr4Prefix, $psr4Paths);
-            } catch (\InvalidArgumentException) {
-                // psr4 prefix ends this \ is checked above
+            if ($this->loader) {
+                foreach ($this->loader->getPrefixesPsr4() as $existingPrefix => $paths) {
+                    if ($existingPrefix === $pluginConfigYaml->psr4Prefix) {
+                        $psr4Paths = array_merge($paths, $psr4Paths);
+                    }
+                }
+                try {
+                    $this->loader->setPsr4($pluginConfigYaml->psr4Prefix, $psr4Paths);
+                } catch (\InvalidArgumentException) {
+                    // psr4 prefix ends this \ is checked above
+                }
             }
         }
 
@@ -283,7 +290,7 @@ class PluginService
                 continue;
             }
 
-            // Check if service has the "update-account" action
+            // Check if the service has the "update-account" action
             $actions = $plugin->getConfigurationFile() ? $plugin->getConfigurationFile()->actions : [];
             if (!in_array(PluginConfigurationFile::ACTION_UPDATE_ACCOUNT, $actions)) {
                 continue;
@@ -333,7 +340,7 @@ class PluginService
     public function updateServiceAccount(?Character $character, ServiceInterface $serviceImplementation): ?string
     {
         if (!$character) {
-            // Does not happen, but makes it easier in other places.
+            // Does not happen but makes it easier in other places.
             return 'No character provided.';
         }
 
