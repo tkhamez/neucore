@@ -19,7 +19,7 @@ function fetchDone(def) {
     const get = [];
     const post = [];
     for (const path in def.paths) {
-        if (! def.paths.hasOwnProperty(path)) {
+        if (!def.paths.hasOwnProperty(path)) {
             continue;
         }
         if (def.paths[path].get) {
@@ -39,7 +39,7 @@ function writeFiles(get, post) {
         result(err, 'frontend/public/esi-paths-http-post.json');
     });
     function result(err, file) {
-        if (! err) {
+        if (!err) {
             console.log(`wrote ${file}`);
         } else {
             console.log(err);

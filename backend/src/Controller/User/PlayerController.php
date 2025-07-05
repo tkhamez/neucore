@@ -458,7 +458,7 @@ class PlayerController extends BaseController
             Player::STATUS_MANAGED,
         ];
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
-        if (! in_array($status, $validStatus) || !$player) {
+        if (!in_array($status, $validStatus) || !$player) {
             return $this->response->withStatus(400);
         }
 
@@ -594,7 +594,7 @@ class PlayerController extends BaseController
     )]
     public function withRole(string $name): ResponseInterface
     {
-        if (! in_array($name, [
+        if (!in_array($name, [
             Role::USER_ADMIN,
             Role::USER_MANAGER,
             Role::USER_CHARS,
@@ -646,7 +646,7 @@ class PlayerController extends BaseController
     )]
     public function withStatus(string $name): ResponseInterface
     {
-        if (! in_array($name, $this->availableStatus)) {
+        if (!in_array($name, $this->availableStatus)) {
             return $this->response->withStatus(400);
         }
 
@@ -744,7 +744,7 @@ class PlayerController extends BaseController
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
 
-        if (!$player || !$role || ! in_array($role->getName(), $this->assignableRoles)) {
+        if (!$player || !$role || !in_array($role->getName(), $this->assignableRoles)) {
             return $this->response->withStatus(404);
         }
 
@@ -894,7 +894,7 @@ class PlayerController extends BaseController
             $char = $charRepo->findOneBy(['name' => $name]);
             if ($char) {
                 $player = $char->getPlayer();
-                if (! isset($result[$player->getId()])) {
+                if (!isset($result[$player->getId()])) {
                     $result[$player->getId()] = ['player_id' => $player->getId(), 'characters' => []];
                     $main = $player->getMain();
                     if ($main) {
@@ -903,7 +903,7 @@ class PlayerController extends BaseController
                         $result[$player->getId()]['characters'][0] = ['id' => 0, 'name' => '[no main]'];
                     }
                 }
-                if (! isset($result[$player->getId()]['characters'][$char->getId()])) {
+                if (!isset($result[$player->getId()]['characters'][$char->getId()])) {
                     $result[$player->getId()]['characters'][$char->getId()] = $char->jsonSerialize(true, false);
                 }
             } else {
@@ -918,7 +918,7 @@ class PlayerController extends BaseController
         }
 
         // add missing chars
-        if (! empty($notFound['characters'])) {
+        if (!empty($notFound['characters'])) {
             $result[] = $notFound;
         }
 
@@ -1095,7 +1095,7 @@ class PlayerController extends BaseController
             foreach ($watchlist->getGroups() as $group) {
                 $requiredGroups[] = $group->getId();
             }
-            if (! empty($userGroupIds) && ! empty(array_intersect($requiredGroups, $userGroupIds))) {
+            if (!empty($userGroupIds) && !empty(array_intersect($requiredGroups, $userGroupIds))) {
                 $watchlistsWithAccess[] = $watchlist;
             }
         }

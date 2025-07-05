@@ -37,7 +37,7 @@ class SessionData
      */
     public function get(string $key, mixed $default = null): mixed
     {
-        if (! isset($_SESSION)) {
+        if (!isset($_SESSION)) {
             throw new RuntimeException('Session not started.');
         }
         return array_key_exists($key, $_SESSION) ? $_SESSION[$key] : $default;
@@ -50,7 +50,7 @@ class SessionData
      */
     public function set(string $key, mixed $value): self
     {
-        if (self::$readOnly || ! isset($_SESSION)) {
+        if (self::$readOnly || !isset($_SESSION)) {
             throw new RuntimeException('Session is read-only or not started.');
         }
 

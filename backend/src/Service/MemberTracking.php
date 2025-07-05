@@ -93,7 +93,7 @@ class MemberTracking
         $stationNames = $this->esiData->fetchUniverseNames($stationIds);
 
         foreach (array_merge($typeNames, $systemNames, $stationNames) as $name) {
-            if (! in_array($name->getCategory(), [
+            if (!in_array($name->getCategory(), [
                 PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE,
                 PostUniverseNames200Ok::CATEGORY_SOLAR_SYSTEM,
                 PostUniverseNames200Ok::CATEGORY_STATION,

@@ -56,7 +56,7 @@ class EsiApiFactory
     {
         $key = $class . hash('sha256', $token);
 
-        if (! isset($this->instances[$key])) {
+        if (!isset($this->instances[$key])) {
             $configuration = new Configuration();
             if ($token !== '') {
                 $configuration->setAccessToken($token);

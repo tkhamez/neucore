@@ -234,7 +234,7 @@ const getMembersDelayed = _.debounce(vm => {
 function getMembers(vm) {
     vm.table.clear();
     vm.table.draw();
-    if (! vm.corporation) {
+    if (!vm.corporation) {
         return;
     }
 

@@ -41,7 +41,7 @@ class WebTestCase extends TestCase
         // Add request data, if it exists
         if ($requestData !== null) {
             $contentType = $headers['Content-Type'] ?? null;
-            if ($contentType === 'application/x-www-form-urlencoded' && ! is_string($requestData)) {
+            if ($contentType === 'application/x-www-form-urlencoded' && !is_string($requestData)) {
                 if ($requestMethod === 'POST') {
                     $request = $request->withParsedBody($requestData);
                 } else { // PUT

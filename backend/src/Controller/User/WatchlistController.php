@@ -1483,7 +1483,7 @@ class WatchlistController extends BaseController
         if (
             $checkSettingsLock &&
             $watchlist->getLockWatchlistSettings() &&
-            ! in_array(Role::WATCHLIST_ADMIN, $userAuth->getRoles())
+            !in_array(Role::WATCHLIST_ADMIN, $userAuth->getRoles())
         ) {
             return false;
         }

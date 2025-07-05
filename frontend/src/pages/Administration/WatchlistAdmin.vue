@@ -224,7 +224,7 @@ function setWatchlistAndContentType(vm) {
 
 function getWatchlists(vm) {
     (new WatchlistApi).watchlistListAll((error, data) => {
-        if (! error) {
+        if (!error) {
             vm.watchlists = data;
             setWatchlistAndContentType(vm);
         }

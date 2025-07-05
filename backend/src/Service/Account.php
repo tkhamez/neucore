@@ -588,8 +588,8 @@ class Account
 
         $addRole = false;
         if (
-            ($roleName === Role::GROUP_MANAGER && ! empty($player->getManagerGroups())) ||
-            ($roleName === Role::APP_MANAGER && ! empty($player->getManagerApps()))
+            ($roleName === Role::GROUP_MANAGER && !empty($player->getManagerGroups())) ||
+            ($roleName === Role::APP_MANAGER && !empty($player->getManagerApps()))
         ) {
             $addRole = true;
         }

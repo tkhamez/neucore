@@ -81,7 +81,7 @@ export default {
         find() {
             this.listResult = [];
             new PlayerApi().playerGroupCharactersByAccount(this.input, (error, data) => {
-                if (! error) {
+                if (!error) {
                     this.listResult = data;
                 }
             })

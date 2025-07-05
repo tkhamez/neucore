@@ -221,7 +221,7 @@ class AutoGroupAssignment
             $map[$eId] = [];
             foreach ($entity->getGroups() as $group) {
                 $gId = $group->getId();
-                if (! in_array($gId, $map)) {
+                if (!in_array($gId, $map)) {
                     $map[$eId][] = $gId;
                 }
                 if (!in_array($gId, $this->autoGroups ?? [])) {

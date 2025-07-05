@@ -126,7 +126,7 @@ class UpdateCharacters extends Command
                     break;
                 }
 
-                if (! isset($affiliations[$char->getId()])) {
+                if (!isset($affiliations[$char->getId()])) {
                     $this->writeLine('  Character ' . $char->getId() . ': update NOK');
                     continue;
                 }
@@ -151,7 +151,7 @@ class UpdateCharacters extends Command
                 $updateOk[] = $char->getId();
                 usleep($this->sleep * 1000); // reduce CPU usage
             }
-            if (! empty($updateOk) && $this->entityManager->flush2()) {
+            if (!empty($updateOk) && $this->entityManager->flush2()) {
                 $this->writeLine('  Characters ' . implode(',', $updateOk) . ': update OK');
             }
 

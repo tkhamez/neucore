@@ -226,7 +226,7 @@ class EsiData
     public function fetchCharactersAffiliation(array $ids): array
     {
         $affiliations = [];
-        while (! empty($ids)) {
+        while (!empty($ids)) {
             $checkIds = array_splice($ids, 0, 1000);
             try {
                 $result = $this->esiApiFactory->getCharacterApi()

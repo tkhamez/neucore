@@ -456,7 +456,7 @@ class AppController extends BaseController
         foreach ($this->application->getGroups() as $gp) {
             $hasGroups[] = $gp->getId();
         }
-        if (! in_array($this->group->getId(), $hasGroups)) {
+        if (!in_array($this->group->getId(), $hasGroups)) {
             $this->application->addGroup($this->group);
         }
 
@@ -755,7 +755,7 @@ class AppController extends BaseController
     private function findAppAndRole(string $id, string $name): bool
     {
         $roleEntity = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
-        if (!$this->findApp($id) || !$roleEntity || ! in_array($roleEntity->getName(), $this->availableRoles)) {
+        if (!$this->findApp($id) || !$roleEntity || !in_array($roleEntity->getName(), $this->availableRoles)) {
             return false;
         }
         $this->role = $roleEntity;

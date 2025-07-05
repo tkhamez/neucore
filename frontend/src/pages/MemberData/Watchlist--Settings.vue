@@ -3,10 +3,10 @@
     <add-entity ref="addEntityModal" v-on:success="addEntitySuccess()"></add-entity>
 
     <div class="card">
-        <div  v-cloak v-if="! list.lockWatchlistSettings" class="card-header bg-light text-dark">
+        <div  v-cloak v-if="!list.lockWatchlistSettings" class="card-header bg-light text-dark">
             <strong>Watchlist</strong>
         </div>
-        <div v-cloak v-if="! list.lockWatchlistSettings" class="card-body">
+        <div v-cloak v-if="!list.lockWatchlistSettings" class="card-body">
             <p>
                 Alliances and corporations whose members are included in the list if they
                 also have characters in other (not NPC) corporations.

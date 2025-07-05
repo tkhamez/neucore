@@ -93,7 +93,7 @@ export default {
 function getWatchlists(vm, callback) {
     const api = new WatchlistApi;
     api.watchlistListAvailable((error, data) => {
-        if (! error) {
+        if (!error) {
             vm.watchlists = data;
             if (typeof callback === typeof Function) {
                 callback();
@@ -101,7 +101,7 @@ function getWatchlists(vm, callback) {
         }
     });
     api.watchlistListAvailableManage((error, data) => {
-        if (! error) {
+        if (!error) {
             vm.manageIds = [];
             for (const list of data) {
                 vm.manageIds.push(list.id);

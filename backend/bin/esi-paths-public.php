@@ -8,9 +8,10 @@ $def = json_decode($swagger);
 
 $public = [];
 foreach ($def->paths as $path => $data) {
-    if ((! isset($data->get) && ! isset($data->post)) ||
-        (isset($data->get) && isset($data->get->security)) ||
-        (isset($data->post) && isset($data->post->security))
+    if (
+        (!isset($data->get) && !isset($data->post)) ||
+        (isset($data->get->security)) ||
+        (isset($data->post->security))
     ) {
         continue;
     }

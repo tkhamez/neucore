@@ -112,7 +112,7 @@ class Container
                 $path = $config['path'];
                 $rotation = $config['rotation'];
                 if (!str_contains($path, 'php://')) {
-                    if (! is_writable($path)) {
+                    if (!is_writable($path)) {
                         throw new RuntimeException("The log directory '$path' must be writable by the web server.");
                     }
                     $date = date('o\wW'); // weekly rotation

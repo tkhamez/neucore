@@ -190,7 +190,7 @@
                             </div>
                             <div class="card-footer">
                                 <span v-if="char.main" class="badge bg-warning me-1">Main</span>
-                                <a v-if="! char.main" class="btn btn-primary nc-btn-xs fw-normal me-1" href="#"
+                                <a v-if="!char.main" class="btn btn-primary nc-btn-xs fw-normal me-1" href="#"
                                    v-on:click.prevent="makeMain(char.id)">Make Main</a>
 
                                 <a class="btn btn-primary nc-btn-xs fw-normal me-1" href="#"

@@ -650,7 +650,7 @@ export default {
         },
 
         changePlayerAttribute(method, param) {
-            if (! this.playerEdit) {
+            if (!this.playerEdit) {
                 return;
             }
             const playerId = this.playerEdit.id;

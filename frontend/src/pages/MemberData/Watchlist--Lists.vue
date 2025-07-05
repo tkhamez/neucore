@@ -181,7 +181,7 @@ export default {
          * @param {number} id
          */
          removeFromAllowlist(type, id) {
-            if (! this.id) {
+            if (!this.id) {
                 return;
             }
             const api = new WatchlistApi();

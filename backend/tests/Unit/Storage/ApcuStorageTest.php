@@ -14,7 +14,7 @@ class ApcuStorageTest extends TestCase
 
     protected function setup(): void
     {
-        if (! function_exists('apcu_store')) {
+        if (!function_exists('apcu_store')) {
             $this->markTestSkipped('APCu is not installed.');
         }
         if (ini_get('apc.enable_cli') === '0') {

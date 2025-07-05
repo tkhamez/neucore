@@ -108,7 +108,7 @@ class Watchlist
         foreach ($playersFromWatchedCorporations as $playerFromCorporations) {
             if (
                 in_array($playerFromCorporations->getId(), $playersNotOnAllowList) &&
-                ! in_array($playerFromCorporations->getId(), $playersOnKicklist)
+                !in_array($playerFromCorporations->getId(), $playersOnKicklist)
             ) {
                 $result[] = $playerFromCorporations;
             }

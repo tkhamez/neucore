@@ -242,7 +242,7 @@ class EveMail
             if (
                 $corporation &&
                 $corporation->getTrackingLastUpdate() > $yesterday &&
-                ! in_array($corporation->getId(), $result)
+                !in_array($corporation->getId(), $result)
             ) {
                 $result[] = $corporation->getId();
             }

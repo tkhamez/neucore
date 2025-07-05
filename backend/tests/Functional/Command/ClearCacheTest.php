@@ -16,16 +16,16 @@ class ClearCacheTest extends ConsoleTestCase
     public function testExecute()
     {
         $cacheDir = __DIR__ . '/cache';
-        if (! is_dir($cacheDir . '/di')) {
+        if (!is_dir($cacheDir . '/di')) {
             mkdir($cacheDir . '/di', 0775, true);
         }
-        if (! is_dir($cacheDir . '/proxies')) {
+        if (!is_dir($cacheDir . '/proxies')) {
             mkdir($cacheDir . '/proxies', 0775, true);
         }
-        if (! is_dir($cacheDir . '/http/dc')) {
+        if (!is_dir($cacheDir . '/http/dc')) {
             mkdir($cacheDir . '/http/dc', 0775, true);
         }
-        if (! is_dir($cacheDir . '/another')) {
+        if (!is_dir($cacheDir . '/another')) {
             mkdir($cacheDir . '/another', 0775, true);
         }
         touch($cacheDir . '/di/CompiledContainer.php');

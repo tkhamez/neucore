@@ -174,7 +174,7 @@ class Group implements \JsonSerializable
     public function setVisibility(string $visibility): self
     {
         $valid = [self::VISIBILITY_PRIVATE, self::VISIBILITY_PUBLIC];
-        if (! in_array($visibility, $valid)) {
+        if (!in_array($visibility, $valid)) {
             throw new \InvalidArgumentException('Parameter must be one of ' . implode(', ', $valid));
         }
 
