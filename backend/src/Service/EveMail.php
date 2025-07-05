@@ -7,7 +7,6 @@ namespace Neucore\Service;
 use Eve\Sso\AuthenticationProvider;
 use Eve\Sso\EveAuthentication;
 use Eve\Sso\InvalidGrantException;
-use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
@@ -327,15 +326,15 @@ class EveMail
             return 'Missing subject or body text.';
         }
 
-        $existingToken = new AccessToken([
-            OAuthToken::OPTION_ACCESS_TOKEN => $tokenValues[SystemVariable::TOKEN_ACCESS],
-            OAuthToken::OPTION_REFRESH_TOKEN => $tokenValues[SystemVariable::TOKEN_REFRESH],
-            OAuthToken::OPTION_EXPIRES => (int) $tokenValues[SystemVariable::TOKEN_EXPIRES],
-        ]);
+        $existingToken = OAuthToken::newAccessToken(
+            $tokenValues[SystemVariable::TOKEN_ACCESS],
+            $tokenValues[SystemVariable::TOKEN_REFRESH],
+            (int) $tokenValues[SystemVariable::TOKEN_EXPIRES],
+        );
         try {
             $accessToken = $this->authenticationProvider->refreshAccessToken($existingToken);
         } catch (InvalidGrantException) {
-            // Delete invalid refresh token so that it cannot be used again.
+            // Delete the invalid refresh token so that it cannot be used again.
             $this->deleteToken();
             return 'Invalid token.';
         } catch (\RuntimeException $e) {

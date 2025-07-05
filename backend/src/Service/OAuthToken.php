@@ -20,12 +20,6 @@ use Psr\Log\LoggerInterface;
  */
 class OAuthToken
 {
-    public const OPTION_ACCESS_TOKEN = 'access_token';
-
-    public const OPTION_REFRESH_TOKEN = 'refresh_token';
-
-    public const OPTION_EXPIRES = 'expires';
-
     private const TOKEN_INVALID = '__invalid__';
 
     private AuthenticationProvider $oauth;
@@ -33,6 +27,21 @@ class OAuthToken
     private ObjectManager $objectManager;
 
     private LoggerInterface $log;
+
+    /**
+     * @throws \InvalidArgumentException
+     */
+    public static function newAccessToken(
+        string $accessToken,
+        string $refreshToken,
+        int $expires,
+    ): AccessTokenInterface {
+        return new AccessToken([
+            'access_token' => $accessToken,
+            'refresh_token' => $refreshToken,
+            'expires' => $expires,
+        ]);
+    }
 
     public function __construct(AuthenticationProvider $oauth, ObjectManager $objectManager, LoggerInterface $log)
     {
@@ -45,11 +54,11 @@ class OAuthToken
     {
         $token = null;
         try {
-            $token = new AccessToken([
-                'access_token' => $esiToken->getAccessToken(),
-                'refresh_token' => $esiToken->getRefreshToken(),
-                'expires' => (int) $esiToken->getExpires(),
-            ]);
+            $token = self::newAccessToken(
+                $esiToken->getAccessToken(),
+                $esiToken->getRefreshToken(),
+                (int) $esiToken->getExpires(),
+            );
         } catch (\Exception) {
             // characters without a default "access_token" are okay.
         }
@@ -102,7 +111,7 @@ class OAuthToken
     public function updateEsiToken(EsiToken $esiToken): ?AccessTokenInterface
     {
         if (!$esiToken->getValidToken() || empty($esiToken->getRefreshToken())) {
-            // Do not try to refresh an already invalid token.
+            // Do not try to refresh an access token if the refresh token is invalid.
             return null;
         }
 
@@ -153,11 +162,11 @@ class OAuthToken
             // Refresh token may still be valid even if it failed before. For example, when EVE app client
             // configuration was temporarily wrong. In such a case the "valid_token" flag can manually be set to 1
             // in the database to try again.
-            $existingToken = new AccessToken([
-                'access_token' => self::TOKEN_INVALID,
-                'refresh_token' => $esiToken->getRefreshToken(),
-                'expires' => time() - 1000,
-            ]);
+            $existingToken = self::newAccessToken(
+                self::TOKEN_INVALID,
+                $esiToken->getRefreshToken(),
+                time() - 1000,
+            );
         }
 
         try {
