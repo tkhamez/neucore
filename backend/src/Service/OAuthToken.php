@@ -20,6 +20,8 @@ use Psr\Log\LoggerInterface;
  */
 class OAuthToken
 {
+    public const EXPIRES_BUFFER = 60; // seconds
+
     private const TOKEN_INVALID = '__invalid__';
 
     private AuthenticationProvider $oauth;
@@ -35,11 +37,15 @@ class OAuthToken
         string $accessToken,
         string $refreshToken,
         int $expires,
+        int $expiresBuffer = self::EXPIRES_BUFFER,
     ): AccessTokenInterface {
         return new AccessToken([
             'access_token' => $accessToken,
             'refresh_token' => $refreshToken,
-            'expires' => $expires,
+            // see oauth2InceptionDate in \League\OAuth2\Client\Token\AccessToken::isExpirationTimestamp()
+            'expires' => $expires > 1349067600 ?
+                         $expires - $expiresBuffer :
+                         $expires,
         ]);
     }
 

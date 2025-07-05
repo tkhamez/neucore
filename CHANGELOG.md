@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Change: A 60-second buffer has been added for the expiry time of an ESI access token.
+
 ## 2.7.3
 
 10 May 2025

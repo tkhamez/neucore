@@ -73,7 +73,7 @@ class OAuthTokenTest extends TestCase
         $this->em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
-    public function testCreateAccessToken()
+    public function testCreateAccessToken(): void
     {
         $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         $esiToken = (new EsiToken())
@@ -85,9 +85,9 @@ class OAuthTokenTest extends TestCase
         $this->assertNull($this->es->createAccessToken(new EsiToken()));
 
         $accessToken = $this->es->createAccessToken($esiToken);
-        $this->assertSame('refresh', $accessToken->getRefreshToken());
+        $this->assertSame('refresh', $accessToken?->getRefreshToken());
         $this->assertSame('access', $accessToken->getToken());
-        $this->assertSame(1519933545, $accessToken->getExpires());
+        $this->assertSame(1519933545 - OAuthToken::EXPIRES_BUFFER, $accessToken->getExpires());
     }
 
     /**
@@ -170,9 +170,12 @@ class OAuthTokenTest extends TestCase
         $this->assertNull($esiToken->getLastChecked());
     }
 
-    public function testUpdateEsiToken_RefreshEsiToken_FailRefresh()
+    public function testUpdateEsiToken_RefreshEsiToken_FailRefresh(): void
     {
-        $esiToken = $this->getToken($this->helper->addCharacterMain('Name', 1, [], [], true, null, 1349067601, true));
+        $expires = 1349067701; // Oct 01 2012 05:01:41
+        $esiToken = $this->getToken(
+            $this->helper->addCharacterMain('Name', 1, tokenExpires: $expires, tokenValid: true)
+        );
         $this->assertNull($esiToken->getLastChecked());
 
         // response for refreshAccessToken() -> IdentityProviderException
@@ -183,11 +186,11 @@ class OAuthTokenTest extends TestCase
         $this->assertSame('', $esiToken->getAccessToken()); // updated
         $this->assertSame('rt', $esiToken->getRefreshToken()); // not updated
         $this->assertNotNull($esiToken->getLastChecked()); // updated
-        $this->assertSame(1349067601, $esiToken->getExpires());
+        $this->assertSame($expires, $esiToken->getExpires());
 
         $this->em->clear();
         $tokenFromDd = $this->tokenRepo->find($esiToken->getId());
-        $this->assertSame('', $tokenFromDd->getAccessToken()); // updated
+        $this->assertSame('', $tokenFromDd?->getAccessToken()); // updated
     }
 
     public function testUpdateEsiToken_RefreshEsiToken_InvalidData()
