@@ -303,17 +303,22 @@ create the files on the host with the user that runs podman).
 
 - Always run `export UID` first in each console that you use to execute any of the following commands.
 - Build the containers:  
-  `docker compose build`
+  `docker compose build`  
+  `podman compose build`
 - Start services:  
-  `docker compose up`
+  `docker compose up`  
+  `podman compose up`
 - Install the app:  
   `setup/install-docker.sh` or `setup/install-podman.sh`  
-  `docker compose exec neucore_node npm run build`
+  `docker compose exec neucore_node npm run build`  
+  `podman compose exec neucore_node npm run build`
 - After the first login, make the account with the ID 1 admin:  
   `docker compose exec neucore_php bin/console make-admin 1`
 - Run tests and other commands in the php and node containers:  
   `docker compose exec neucore_php /bin/sh`  
-  `docker compose exec neucore_node /bin/sh`
+  `podman compose exec neucore_php /bin/sh`  
+  `docker compose exec neucore_node /bin/sh`  
+  `podman compose exec neucore_node /bin/sh`
 
 The web application is available at http://localhost:8080, the frontend development server at http://localhost:3000.
 The database is also available at `127.0.0.1:30306` and it's data is stored in the `.db` subdirectory.
