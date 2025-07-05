@@ -197,7 +197,7 @@ class EsiController extends BaseController
         path: '/app/v1/esi/access-token/{characterId}',
         operationId: 'esiAccessTokenV1',
         description: 'Needs role: app-esi-token',
-        summary: 'Returns an access token for a character and EVE login.',
+        summary: 'Returns an access token for a character and EVE login that is valid for at least 60 seconds.',
         security: [['BearerAuth' => []]],
         tags: ['Application - ESI'],
         parameters: [

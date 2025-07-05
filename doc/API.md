@@ -51,6 +51,8 @@ it cannot be added to player accounts.
 
 Auth API
 - Result of last SSO attempt. `GET /user/auth/result`
+- The CSRF token to use in POST, PUT and DELETE requests. `GET /user/auth/csrf-token`
+- Password login. `POST /user/auth/password-login`
 
 Settings API
 - List all settings. `GET /user/settings/system/list`
@@ -63,6 +65,7 @@ Auth API
 - Result of last SSO attempt. `GET /user/auth/result`
 - User logout. `POST /user/auth/logout`
 - The CSRF token to use in POST, PUT and DELETE requests. `GET /user/auth/csrf-token`
+- Generates the password for a user. `POST /user/auth/password-generate`
 
 Character API
 - Return the logged-in EVE character. `GET /user/character/show`
@@ -97,8 +100,7 @@ Service API
 Allows a player to add and remove roles from players.
 
 Character API
-- Returns a list of characters (together with the name of the player account/main character)
-                    that matches the name (partial matching). `GET /user/character/find-character/{name}`
+- Returns a list of characters (together with the name of the player account/main character) that matches the name (partial matching). `GET /user/character/find-character/{name}`
 - Add an EVE character to the database on a new account. `POST /user/character/add/{id}`
 
 Player API
@@ -125,8 +127,7 @@ Service API
 Allows a player to add and remove groups from any player and change the account status.
 
 Character API
-- Returns a list of characters (together with the name of the player account/main character)
-                    that matches the name (partial matching). `GET /user/character/find-character/{name}`
+- Returns a list of characters (together with the name of the player account/main character) that matches the name (partial matching). `GET /user/character/find-character/{name}`
 
 Group API
 - List all groups. `GET /user/group/all`
@@ -148,8 +149,7 @@ Service API
 Allows a player to view all characters of an account.
 
 Character API
-- Returns a list of characters (together with the name of the player account/main character)
-                    that matches the name (partial matching). `GET /user/character/find-character/{name}`
+- Returns a list of characters (together with the name of the player account/main character) that matches the name (partial matching). `GET /user/character/find-character/{name}`
 
 Player API
 - Checks whether groups for this account are disabled or will be disabled soon. `GET /user/player/{id}/groups-disabled`
@@ -328,7 +328,7 @@ Settings API
 #### tracking
 
 Allows a player to view corporation member tracking data.  
-In addition, membership in a group that determines which company is visible is necessary.  
+In addition, membership in a group that determines which corporation is visible is necessary.  
 This role is assigned automatically based on group membership.
 
 Corporation API
@@ -364,11 +364,8 @@ Player API
 
 Watchlist API
 - Lists all watchlists with view permission. `GET /user/watchlist/list-available`
-- List of player accounts that have characters in one of the configured alliances or corporations
-                    and additionally have other characters in another player (not NPC) corporation that is not
-                    on the allowlist and have not been manually excluded. `GET /user/watchlist/{id}/players`
-- Accounts from the watchlist with members in one of the alliances or corporations
-                    from the kicklist. `GET /user/watchlist/{id}/players-kicklist`
+- List of player accounts that have characters in one of the configured alliances or corporations and additionally have other characters in another player (not NPC) corporation that is not on the allowlist and have not been manually excluded. `GET /user/watchlist/{id}/players`
+- Accounts from the watchlist with members in one of the alliances or corporations from the kicklist. `GET /user/watchlist/{id}/players-kicklist`
 - List of exempt players. `GET /user/watchlist/{id}/exemption/list`
 - List of corporations for this list. `GET /user/watchlist/{id}/corporation/list`
 - List of alliances for this list. `GET /user/watchlist/{id}/alliance/list`
@@ -482,10 +479,8 @@ Application - Characters API
 - Returns all known characters from the parameter list. `POST /app/v1/character-list`
 - Returns all characters from the player account. `GET /app/v1/player-chars/{playerId}`
 - Returns the player account to which the character ID belongs with all characters. `GET /app/v1/player-with-characters/{characterId}`
-- Returns all characters that were removed from the player account to which the character ID
-                    belongs. `GET /app/v1/removed-characters/{characterId}`
-- Returns all characters that were moved from another account to the player account to which the
-                    ID belongs. `GET /app/v1/incoming-characters/{characterId}`
+- Returns all characters that were removed from the player account to which the character ID belongs. `GET /app/v1/removed-characters/{characterId}`
+- Returns all characters that were moved from another account to the player account to which the ID belongs. `GET /app/v1/incoming-characters/{characterId}`
 - Returns a list of all players that have a character in the corporation. `GET /app/v1/corp-players/{corporationId}`
 - Returns a list of all known characters from the corporation. `GET /app/v1/corp-characters/{corporationId}`
 
@@ -516,4 +511,4 @@ Allows an app to make ESI requests on behalf of a character from the database.
 Allows an app to use ESI access tokens.
 
 Application - ESI API
-- Returns an access token for a character and EVE login. `GET /app/v1/esi/access-token/{characterId}`
+- Returns an access token for a character and EVE login that is valid for at least 60 seconds. `GET /app/v1/esi/access-token/{characterId}`
