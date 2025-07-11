@@ -19,6 +19,7 @@ services:
       MYSQL_PASSWORD: neucore
       MYSQL_DATABASE: neucore
     ports: ["30306:3306"]
+    #user: root
     networks: [neucore]
 
   neucore_java:
@@ -26,6 +27,7 @@ services:
     image: eclipse-temurin:17-jre-alpine
     volumes: [".:/app"]
     user: ${UID}
+    #user: root
     networks: [neucore]
 
   neucore_node:
@@ -40,6 +42,7 @@ services:
       BACKEND_HOST: http://localhost:8080
     ports: ["3000:8080"]
     user: node
+    #user: root
     working_dir: /app/frontend
     networks: [neucore]
 
@@ -59,6 +62,7 @@ services:
     environment:
       PHP_IDE_CONFIG: serverName=docker # for PhpStorm
     user: ${UID}
+    #user: root
     working_dir: /app/backend
     networks: [neucore]
 
@@ -72,6 +76,7 @@ services:
       #"/path/to/plugin/frontend:/app/web/plugin/plugin-name",
     ]
     ports: ["8080:80"]
+    #user: root
     networks: [neucore]
 
 networks:
