@@ -63,6 +63,7 @@ return [
         'esi_host'     => 'https://esi.evetech.net',
         'oauth_urls'   => [], // only used for tests
         'oauth_verify_signature' => true,
+        'esi_compatibility_date' => '2025-07-11',
     ],
 
     'guzzle' => [

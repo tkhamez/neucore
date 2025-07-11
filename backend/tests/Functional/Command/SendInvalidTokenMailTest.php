@@ -7,19 +7,20 @@ declare(strict_types=1);
 namespace Tests\Functional\Command;
 
 use Doctrine\Persistence\ObjectManager;
-use GuzzleHttp\ClientInterface;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Player;
 use Neucore\Entity\SystemVariable;
 use Neucore\Exception\RuntimeException;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
 use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
+use Tests\HttpClientFactory;
 use Tests\Logger;
 
 class SendInvalidTokenMailTest extends ConsoleTestCase
@@ -95,7 +96,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $log = new Logger();
 
         $output = $this->runConsoleApp('send-invalid-token-mail', ['--sleep' => 0], [
-            ClientInterface::class => $client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($client),
             LoggerInterface::class => $log,
         ]);
 
@@ -123,7 +124,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $this->client->setResponse(new Response(200, [], '373515628'));
 
         $output = $this->runConsoleApp('send-invalid-token-mail', ['--sleep' => 0], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
         ]);
 
         $actual = explode("\n", $output);

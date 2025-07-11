@@ -222,7 +222,7 @@ class Helper
         $repoFactory = RepositoryFactory::getInstance($this->getObjectManager());
         $objectManager = new \Neucore\Service\ObjectManager($this->getObjectManager(), $logger);
         $characterService = new \Neucore\Service\Character($objectManager, $repoFactory);
-        $esiApiFactory = new EsiApiFactory($client, $config);
+        $esiApiFactory = new EsiApiFactory(new HttpClientFactory($client), $config);
         $esiData = new EsiData($logger, $esiApiFactory, $objectManager, $repoFactory, $characterService, $config);
         $accountGroup = new AccountGroup($repoFactory, $this->getObjectManager());
         $autoGroups = new AutoGroupAssignment($repoFactory, $accountGroup);
@@ -257,7 +257,7 @@ class Helper
                 $objectManager,
                 self::getAuthenticationProvider($client),
                 $logger,
-                new EsiApiFactory($client, $config),
+                new EsiApiFactory(new HttpClientFactory($client), $config),
                 $config,
             ),
         );
@@ -595,6 +595,10 @@ class Helper
 
     private static function getConfig(): config
     {
-        return new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
+        return new Config(['eve' => [
+            'datasource' => '',
+            'esi_host' => '',
+            'esi_compatibility_date' => ''],
+        ]);
     }
 }

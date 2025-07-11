@@ -8,9 +8,22 @@ use Psr\Http\Message\ResponseInterface;
 
 interface HttpClientFactoryInterface
 {
-    public function get(?string $cacheKey = 'default'): ClientInterface;
+    /**
+     * @param ?string $cacheKey Optional subdirectory for file system cache (defaults to "default") or null
+     *         to disable cache.
+     * @param array<string, string> $requestHeaders
+     */
+    public function get(?string $cacheKey = 'default', array $requestHeaders = []): ClientInterface;
 
-    public function getGuzzleClient(?string $cacheKey = 'default'): \GuzzleHttp\ClientInterface;
+    /**
+     * @param ?string $cacheKey Optional subdirectory for file system cache (defaults to "default") or null
+     *         to disable cache.
+     * @param array<string, string> $requestHeaders
+     */
+    public function getGuzzleClient(
+        ?string $cacheKey = 'default',
+        array $requestHeaders = [],
+    ): \GuzzleHttp\ClientInterface;
 
     public function createRequest(
         string $method,

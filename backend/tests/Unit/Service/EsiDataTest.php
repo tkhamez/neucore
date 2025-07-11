@@ -26,6 +26,7 @@ use Swagger\Client\Eve\ApiException;
 use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 use Tests\Helper;
 use Tests\Client;
+use Tests\HttpClientFactory;
 use Tests\Logger;
 use Tests\WriteErrorListener;
 
@@ -62,7 +63,11 @@ class EsiDataTest extends TestCase
         $this->log = new Logger();
         $this->log->pushHandler(new TestHandler());
 
-        $this->config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
+        $this->config = new Config(['eve' => [
+            'datasource' => '',
+            'esi_host' => '',
+            'esi_compatibility_date' => '',
+        ]]);
         $this->client = new Client();
         $this->repoFactory = new RepositoryFactory($this->em);
 
@@ -843,7 +848,7 @@ class EsiDataTest extends TestCase
     {
         return new EsiData(
             $this->log,
-            new EsiApiFactory($this->client, $this->config),
+            new EsiApiFactory(new HttpClientFactory($this->client), $this->config),
             $this->om,
             $this->repoFactory,
             new Character($this->om, $this->repoFactory),

@@ -8,13 +8,14 @@ namespace Tests\Functional\Command;
 
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Character;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
+use Tests\HttpClientFactory;
 use Tests\Logger;
 
 class UpdateCharactersTest extends ConsoleTestCase
@@ -44,7 +45,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->client->setResponse(new Response(500), new Response(500));
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
             LoggerInterface::class => $this->log,
         ]);
 
@@ -74,7 +75,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         );
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
         ]);
 
         $actual = explode("\n", $output);

@@ -21,10 +21,12 @@ class EsiApiFactory
 
     private Config $config;
 
-    public function __construct(ClientInterface $client, Config $config)
+    public function __construct(HttpClientFactoryInterface $httpClientFactory, Config $config)
     {
-        $this->client = $client;
         $this->config = $config;
+        $this->client = $httpClientFactory->getGuzzleClient(requestHeaders: [
+            'X-Compatibility-Date' => $this->config['eve']['esi_compatibility_date'],
+        ]);
     }
 
     public function getAllianceApi(): AllianceApi

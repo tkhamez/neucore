@@ -30,7 +30,6 @@ use Neucore\Storage\ApcuStorage;
 use Neucore\Storage\StorageInterface;
 use Neucore\Storage\SystemVariableStorage;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -82,6 +81,8 @@ class Container
 
             // EVE OAuth
             AuthenticationProvider::class => function (ContainerInterface $c) {
+                /* @var HttpClientFactoryInterface $factory */
+                $factory = $c->get(HttpClientFactoryInterface::class);
                 $conf = $c->get(Config::class)['eve'];
                 $provider = new AuthenticationProvider(
                     [
@@ -97,7 +98,7 @@ class Container
                         'urlRevoke'      => $conf['oauth_urls']['revoke'] ?? null,
                         'issuer'         => $conf['oauth_urls']['issuer'] ?? null,
                     ],
-                    httpClient: $c->get(\GuzzleHttp\ClientInterface::class),
+                    httpClient: $factory->getGuzzleClient(),
                     logger: $c->get(LoggerInterface::class),
                 );
                 if (!$conf['oauth_verify_signature']) {
@@ -152,14 +153,6 @@ class Container
             // Guzzle
             HttpClientFactoryInterface::class => function (ContainerInterface $c) {
                 return $c->get(HttpClientFactory::class);
-            },
-            ClientInterface::class => function (ContainerInterface $c) {
-                $factory = $c->get(HttpClientFactoryInterface::class); /* @var HttpClientFactoryInterface $factory */
-                return $factory->get();
-            },
-            \GuzzleHttp\ClientInterface::class => function (ContainerInterface $c) {
-                $factory = $c->get(HttpClientFactoryInterface::class); /* @var HttpClientFactoryInterface $factory */
-                return $factory->getGuzzleClient();
             },
 
             // Response

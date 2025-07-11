@@ -43,19 +43,17 @@ class HttpClientFactory implements HttpClientFactoryInterface
         $this->logger = $logger;
     }
 
-    /**
-     * @param string|null $cacheKey Optional subdirectory for file system cache (defaults to "default") or null
-     *        to disable cache.
-     * @see \Neucore\Command\CleanHttpCache::execute()
-     */
-    public function get(?string $cacheKey = 'default'): ClientInterface
+    public function get(?string $cacheKey = 'default', array $requestHeaders = []): ClientInterface
     {
-        return $this->getClient($cacheKey);
+        return $this->getClient($cacheKey, $requestHeaders);
     }
 
-    public function getGuzzleClient(?string $cacheKey = 'default'): \GuzzleHttp\ClientInterface
+    public function getGuzzleClient(
+        ?string $cacheKey = 'default',
+        array $requestHeaders = [],
+    ): \GuzzleHttp\ClientInterface
     {
-        return $this->getClient($cacheKey);
+        return $this->getClient($cacheKey, $requestHeaders);
     }
 
     public function createRequest(
@@ -76,7 +74,10 @@ class HttpClientFactory implements HttpClientFactoryInterface
         return new Response($status, $headers, $body, '1.1', $reason);
     }
 
-    private function getClient(?string $cacheKey): Client
+    /**
+     * @see \Neucore\Command\CleanHttpCache::execute()
+     */
+    private function getClient(?string $cacheKey, array $requestHeaders = []): Client
     {
         /** @noinspection PhpUnusedLocalVariableInspection */
         $debugFunc = function (MessageInterface $r): MessageInterface {
@@ -120,9 +121,12 @@ class HttpClientFactory implements HttpClientFactoryInterface
 
         return new Client([
             'handler' => $stack,
-            'headers' => [
-                'User-Agent' => $this->config['guzzle']['user_agent'],
-            ],
+            'headers' => array_merge(
+                $requestHeaders,
+                [
+                    'User-Agent' => $this->config['guzzle']['user_agent'],
+                ]
+            ),
         ]);
     }
 }

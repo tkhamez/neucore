@@ -13,6 +13,7 @@ use Swagger\Client\Eve\Api\CharacterApi;
 use Swagger\Client\Eve\Api\CorporationApi;
 use Swagger\Client\Eve\Api\MailApi;
 use Swagger\Client\Eve\Api\UniverseApi;
+use Tests\HttpClientFactory;
 
 class EsiApiFactoryTest extends TestCase
 {
@@ -20,19 +21,22 @@ class EsiApiFactoryTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->config = new Config(['eve' => ['esi_host' => '']]);
+        $this->config = new Config(['eve' => [
+            'esi_host' => '',
+            'esi_compatibility_date' => '',
+        ]]);
     }
 
     public function testGetAllianceApi()
     {
-        $factory = new EsiApiFactory(new Client(), $this->config);
+        $factory = new EsiApiFactory(new HttpClientFactory(new Client()), $this->config);
         $api = $factory->getAllianceApi();
         $this->assertInstanceOf(AllianceApi::class, $api);
     }
 
     public function testGetCorporationApi()
     {
-        $factory = new EsiApiFactory(new Client(), $this->config);
+        $factory = new EsiApiFactory(new HttpClientFactory(new Client()), $this->config);
         $api1 = $factory->getCorporationApi();
         $api2 = $factory->getCorporationApi();
         $api3 = $factory->getCorporationApi('access-token');
@@ -46,7 +50,7 @@ class EsiApiFactoryTest extends TestCase
 
     public function testGetCharacterApi()
     {
-        $factory = new EsiApiFactory(new Client(), $this->config);
+        $factory = new EsiApiFactory(new HttpClientFactory(new Client()), $this->config);
         $api1 = $factory->getCharacterApi();
         $api2 = $factory->getCharacterApi('access-token');
 
@@ -57,7 +61,7 @@ class EsiApiFactoryTest extends TestCase
 
     public function testGetMailApi()
     {
-        $factory = new EsiApiFactory(new Client(), $this->config);
+        $factory = new EsiApiFactory(new HttpClientFactory(new Client()), $this->config);
         $api1 = $factory->getMailApi('token');
         $api2 = $factory->getMailApi('token');
         $api3 = $factory->getMailApi('token2');
@@ -75,7 +79,7 @@ class EsiApiFactoryTest extends TestCase
 
     public function testGetUniverseApi()
     {
-        $factory = new EsiApiFactory(new Client(), $this->config);
+        $factory = new EsiApiFactory(new HttpClientFactory(new Client()), $this->config);
         $api = $factory->getUniverseApi();
         $this->assertInstanceOf(UniverseApi::class, $api);
     }

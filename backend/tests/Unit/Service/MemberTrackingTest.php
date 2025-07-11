@@ -23,6 +23,7 @@ use PHPUnit\Framework\TestCase;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
 use Tests\Client;
 use Tests\Helper;
+use Tests\HttpClientFactory;
 use Tests\Logger;
 
 class MemberTrackingTest extends TestCase
@@ -46,8 +47,12 @@ class MemberTrackingTest extends TestCase
         $this->client = new Client();
         $objectManager = new ObjectManager($this->om, $logger);
         $this->repositoryFactory = new RepositoryFactory($this->om);
-        $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
-        $esiApiFactory = new EsiApiFactory($this->client, $config);
+        $config = new Config(['eve' => [
+            'datasource' => '',
+            'esi_host' => '',
+            'esi_compatibility_date' => '',
+        ]]);
+        $esiApiFactory = new EsiApiFactory(new HttpClientFactory($this->client), $config);
         $authProvider = Helper::getAuthenticationProvider($this->client);
         $this->memberTracking = new MemberTracking(
             $logger,

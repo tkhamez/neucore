@@ -18,14 +18,15 @@ use Neucore\Entity\Role;
 use Neucore\Entity\Plugin;
 use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\SystemVariable;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\SystemVariableRepository;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\Functional\Controller\User\SettingsController\TestService;
+use Tests\HttpClientFactory;
 use Tests\Logger;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
@@ -404,7 +405,7 @@ class SettingsControllerTest extends WebTestCase
         );
 
         $response3 = $this->runApp('POST', '/api/user/settings/system/send-missing-character-mail', null, null, [
-            ClientInterface::class => $client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($client),
         ]);
         $this->assertEquals(200, $response3->getStatusCode());
         $this->assertSame('', $this->parseJsonBody($response3)); // success

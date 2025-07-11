@@ -5,15 +5,16 @@
 namespace Tests\Functional\Command;
 
 use Doctrine\Persistence\ObjectManager;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Neucore\Command\UpdateCorporations;
 use Neucore\Entity\Corporation;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
+use Tests\HttpClientFactory;
 use Tests\Logger;
 
 class UpdateCorporationsTest extends ConsoleTestCase
@@ -42,7 +43,7 @@ class UpdateCorporationsTest extends ConsoleTestCase
         $this->client->setResponse(new Response(500), new Response(500));
 
         $output = $this->runConsoleApp('update-corporations', ['--sleep' => 0], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
             LoggerInterface::class => $this->log,
         ]);
 
@@ -82,7 +83,7 @@ class UpdateCorporationsTest extends ConsoleTestCase
         );
 
         $output = $this->runConsoleApp('update-corporations', ['--sleep' => 0], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
         ]);
 
         $actual = explode("\n", $output);

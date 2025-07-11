@@ -26,6 +26,7 @@ use Neucore\Service\ObjectManager;
 use PHPUnit\Framework\TestCase;
 use Tests\Client;
 use Tests\Helper;
+use Tests\HttpClientFactory;
 
 class EveMailTest extends TestCase
 {
@@ -48,9 +49,13 @@ class EveMailTest extends TestCase
 
         $logger = new Logger('test');
         $objManager = new ObjectManager($this->om, $logger);
-        $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
+        $config = new Config(['eve' => [
+            'datasource' => '',
+            'esi_host' => '',
+            'esi_compatibility_date' => '',
+        ]]);
 
-        $esiFactory = new EsiApiFactory($this->client, $config);
+        $esiFactory = new EsiApiFactory(new HttpClientFactory($this->client), $config);
 
         $this->eveMail = new EveMail(
             $this->repoFactory,

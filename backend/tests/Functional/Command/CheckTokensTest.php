@@ -13,6 +13,7 @@ use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Player;
 use Neucore\Entity\SystemVariable;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
 use GuzzleHttp\Psr7\Response;
 use Neucore\Service\EsiData;
@@ -20,6 +21,7 @@ use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
+use Tests\HttpClientFactory;
 use Tests\Logger;
 
 class CheckTokensTest extends ConsoleTestCase
@@ -167,7 +169,7 @@ class CheckTokensTest extends ConsoleTestCase
         );
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
         ]);
 
         $actual = explode("\n", $output);
@@ -205,7 +207,7 @@ class CheckTokensTest extends ConsoleTestCase
         );
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
         ]);
 
         $actual = explode("\n", $output);
@@ -290,7 +292,7 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertSame('', $actual[3]);
     }
 
-    private function setupActive()
+    private function setupActive(): void
     {
         $alliance = (new Alliance())->setId(101)->setName('Alliance 1');
         $corporation1 = (new Corporation())->setId(1001)->setName('Corp 1')->setAlliance($alliance);

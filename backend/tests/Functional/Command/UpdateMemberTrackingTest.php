@@ -12,13 +12,14 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
+use Tests\HttpClientFactory;
 use Tests\Logger;
 
 class UpdateMemberTrackingTest extends ConsoleTestCase
@@ -57,7 +58,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $output = $this->runConsoleApp(
             'update-member-tracking',
             ['--sleep' => 0],
-            [ClientInterface::class => $this->client],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
         );
 
         $actual = explode("\n", $output);
@@ -75,7 +76,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->client->setResponse(new Response(500));
 
         $output = $this->runConsoleApp('update-member-tracking', ['--sleep' => 0], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
             LoggerInterface::class => new Logger(), // ignore the log entry
         ]);
 
@@ -101,7 +102,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         );
 
         $output = $this->runConsoleApp('update-member-tracking', ['--sleep' => 0], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
         ]);
 
         $actual = explode("\n", $output);

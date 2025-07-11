@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Tests\Functional\Command;
 
 use Doctrine\Persistence\ObjectManager;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Watchlist;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
 use Tests\Client;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
+use Tests\HttpClientFactory;
 
 class AutoAllowlistTest extends ConsoleTestCase
 {
@@ -75,7 +76,7 @@ class AutoAllowlistTest extends ConsoleTestCase
         );
 
         $output = $this->runConsoleApp('auto-allowlist', ['--sleep' => 0], [
-            ClientInterface::class => $client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($client),
         ]);
 
         $log = explode("\n", $output);

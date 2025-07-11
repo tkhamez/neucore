@@ -17,10 +17,10 @@ use Psr\Http\Message\ResponseInterface;
 class EsiClient
 {
     public function __construct(
-        private RepositoryFactory $repositoryFactory,
-        private Config $config,
-        private OAuthToken $tokenService,
-        private HttpClientFactoryInterface $httpClientFactory,
+        private readonly RepositoryFactory          $repositoryFactory,
+        private readonly Config                     $config,
+        private readonly OAuthToken                 $tokenService,
+        private readonly HttpClientFactoryInterface $httpClientFactory,
     ) {}
 
     /**
@@ -101,10 +101,13 @@ class EsiClient
 
         $request = $this->httpClientFactory->createRequest($method, $url, $header, $body);
 
+        $requestHeaders = [
+            'X-Compatibility-Date' => $this->config['eve']['esi_compatibility_date'],
+        ];
         if ($debug) {
-            $httpClient = $this->httpClientFactory->get(null);
+            $httpClient = $this->httpClientFactory->get(null, $requestHeaders);
         } else {
-            $httpClient = $this->httpClientFactory->get($eveLoginName);
+            $httpClient = $this->httpClientFactory->get($eveLoginName, $requestHeaders);
         }
 
         return $httpClient->sendRequest($request);

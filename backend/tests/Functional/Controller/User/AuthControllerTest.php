@@ -13,17 +13,18 @@ use Neucore\Controller\User\AuthController;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Psr15\CSRFToken;
 use Neucore\Service\Config;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\SessionData;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
 use Tests\Helper;
 use Tests\Functional\WebTestCase;
 use Tests\Client;
+use Tests\HttpClientFactory;
 use Tests\Logger;
 use Tests\RequestFactory;
 use Tests\WriteErrorListener;
@@ -227,7 +228,7 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
         );
 
         $this->assertSame(302, $response->getStatusCode());
@@ -266,7 +267,7 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
         );
 
         $this->assertSame(302, $response->getStatusCode());
@@ -305,7 +306,7 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
         );
 
         $this->assertSame(302, $response->getStatusCode());
@@ -350,7 +351,7 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
         );
 
         $this->assertSame(302, $response->getStatusCode());
@@ -392,7 +393,7 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
         );
 
         $this->assertSame(302, $response->getStatusCode());
@@ -431,7 +432,10 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client, LoggerInterface::class => $this->log],
+            [
+                HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
+                LoggerInterface::class => $this->log,
+            ],
             [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']],
         );
         $this->assertSame(302, $response->getStatusCode());
@@ -473,7 +477,7 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
             [['NEUCORE_EVE_SCOPES', 'read-this   and-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']],
         );
         $this->assertSame(302, $response->getStatusCode());
@@ -506,7 +510,10 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client, LoggerInterface::class => $this->log],
+            [
+                HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
+                LoggerInterface::class => $this->log,
+            ],
             [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']],
         );
         $this->assertSame(302, $response->getStatusCode());
@@ -546,7 +553,7 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
             [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']],
         );
         $this->assertSame(302, $response->getStatusCode());
@@ -591,7 +598,10 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client, LoggerInterface::class => $this->log],
+            [
+                HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
+                LoggerInterface::class => $this->log,
+            ],
             [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']],
         );
         $this->assertSame(302, $response->getStatusCode());
@@ -632,7 +642,10 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client, LoggerInterface::class => $this->log],
+            [
+                HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
+                LoggerInterface::class => $this->log,
+            ],
             [['NEUCORE_EVE_SCOPES', 'read-this'], ['NEUCORE_EVE_DATASOURCE', 'tranquility']],
         );
         $this->assertSame(302, $response->getStatusCode());
@@ -672,7 +685,7 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
             [['NEUCORE_EVE_DATASOURCE', 'tranquility']],
         );
         $this->assertSame(302, $response->getStatusCode());
@@ -711,7 +724,7 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state=' . $state,
             null,
             null,
-            [ClientInterface::class => $this->client],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
             [['NEUCORE_EVE_DATASOURCE', 'tranquility']],
         );
         $this->assertSame(302, $response->getStatusCode());

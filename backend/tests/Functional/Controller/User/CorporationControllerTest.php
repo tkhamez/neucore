@@ -15,12 +15,12 @@ use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Repository\AllianceRepository;
 use Neucore\Entity\Corporation;
 use Neucore\Repository\CorporationRepository;
 use Neucore\Entity\Group;
 use Neucore\Factory\RepositoryFactory;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
@@ -28,6 +28,7 @@ use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\Client;
+use Tests\HttpClientFactory;
 use Tests\WriteErrorListener;
 
 class CorporationControllerTest extends WebTestCase
@@ -230,7 +231,7 @@ class CorporationControllerTest extends WebTestCase
             null,
             null,
             [
-                ClientInterface::class => $this->client,
+                HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
                 LoggerInterface::class => $this->log,
             ],
         );
@@ -251,7 +252,7 @@ class CorporationControllerTest extends WebTestCase
             null,
             null,
             [
-                ClientInterface::class => $this->client,
+                HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
                 LoggerInterface::class => $this->log,
             ],
         );
@@ -281,7 +282,7 @@ class CorporationControllerTest extends WebTestCase
             null,
             null,
             [
-                ClientInterface::class => $this->client,
+                HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
                 LoggerInterface::class => $this->log,
             ],
         );
@@ -305,7 +306,7 @@ class CorporationControllerTest extends WebTestCase
             '/api/user/corporation/add/456123',
             null,
             null,
-            [ClientInterface::class => $this->client],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
         );
 
         $this->assertEquals(201, $response->getStatusCode());
@@ -346,7 +347,7 @@ class CorporationControllerTest extends WebTestCase
             '/api/user/corporation/add/456123',
             null,
             null,
-            [ClientInterface::class => $this->client],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
         );
 
         $this->assertEquals(201, $response->getStatusCode());

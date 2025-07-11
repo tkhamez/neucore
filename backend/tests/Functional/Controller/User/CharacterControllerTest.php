@@ -13,13 +13,14 @@ use Neucore\Entity\EveLogin;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\Plugin;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\Client;
+use Tests\HttpClientFactory;
 use Tests\Logger;
 
 class CharacterControllerTest extends WebTestCase
@@ -217,7 +218,7 @@ class CharacterControllerTest extends WebTestCase
         $this->client->setResponse(new Response(500));
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
             LoggerInterface::class => $this->log,
         ]);
 
@@ -253,7 +254,7 @@ class CharacterControllerTest extends WebTestCase
         );
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
             LoggerInterface::class => $this->log,
         ]);
 
@@ -297,7 +298,7 @@ class CharacterControllerTest extends WebTestCase
         );
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -345,7 +346,7 @@ class CharacterControllerTest extends WebTestCase
         );
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -394,7 +395,7 @@ class CharacterControllerTest extends WebTestCase
         $this->client->setResponse(new Response(404, [], '{"error": "Character not found"}'));
 
         $response = $this->runApp('POST', '/api/user/character/add/456789', [], [], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
         ]);
 
         $this->assertSame(404, $response->getStatusCode());
@@ -409,7 +410,7 @@ class CharacterControllerTest extends WebTestCase
         $this->client->setResponse(new Response(400));
 
         $response = $this->runApp('POST', '/api/user/character/add/456789', [], [], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
             LoggerInterface::class => $this->log,
         ]);
 
@@ -440,7 +441,7 @@ class CharacterControllerTest extends WebTestCase
         $this->client->setResponse(new Response(200, [], '{"name": "Char 456789"}'));
 
         $response = $this->runApp('POST', '/api/user/character/add/456789', [], [], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
         ]);
 
         $this->assertSame(201, $response->getStatusCode());

@@ -12,8 +12,8 @@ use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Group;
 use Neucore\Entity\Role;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
@@ -22,6 +22,7 @@ use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\Client;
+use Tests\HttpClientFactory;
 use Tests\WriteErrorListener;
 
 class AllianceControllerTest extends WebTestCase
@@ -220,7 +221,7 @@ class AllianceControllerTest extends WebTestCase
             null,
             null,
             [
-                ClientInterface::class => $this->client,
+                HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
                 LoggerInterface::class => $this->log,
             ],
         );
@@ -241,7 +242,7 @@ class AllianceControllerTest extends WebTestCase
             null,
             null,
             [
-                ClientInterface::class => $this->client,
+                HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
                 LoggerInterface::class => $this->log,
             ],
         );
@@ -271,7 +272,7 @@ class AllianceControllerTest extends WebTestCase
             null,
             null,
             [
-                ClientInterface::class => $this->client,
+                HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
                 LoggerInterface::class => $this->log,
             ],
         );
@@ -294,7 +295,7 @@ class AllianceControllerTest extends WebTestCase
             '/api/user/alliance/add/123456',
             null,
             null,
-            [ClientInterface::class => $this->client],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
         );
 
         $this->assertEquals(201, $response->getStatusCode());

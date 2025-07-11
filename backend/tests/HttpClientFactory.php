@@ -20,12 +20,15 @@ class HttpClientFactory implements HttpClientFactoryInterface
         $this->client = $client;
     }
 
-    public function get(?string $cacheKey = 'default'): ClientInterface
+    public function get(?string $cacheKey = 'default', array $requestHeaders = []): ClientInterface
     {
         return $this->client;
     }
 
-    public function getGuzzleClient(?string $cacheKey = 'default'): \GuzzleHttp\ClientInterface
+    public function getGuzzleClient(
+        ?string $cacheKey = 'default',
+        array $requestHeaders = [],
+    ): \GuzzleHttp\ClientInterface
     {
         return $this->client;
     }

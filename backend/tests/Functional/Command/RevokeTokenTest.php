@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Command;
 
-use GuzzleHttp\ClientInterface;
 use Neucore\Entity\Character;
 use GuzzleHttp\Psr7\Response;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
+use Tests\HttpClientFactory;
 use Tests\Logger;
 
 class RevokeTokenTest extends ConsoleTestCase
@@ -72,7 +73,7 @@ class RevokeTokenTest extends ConsoleTestCase
         $this->client->setResponse(new Response(200));
 
         $output = $this->runConsoleApp('revoke-token', ['id' => 3], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
         ]);
 
         $actual = explode("\n", $output);
@@ -90,7 +91,7 @@ class RevokeTokenTest extends ConsoleTestCase
         $this->client->setResponse(new Response(400));
 
         $output = $this->runConsoleApp('revoke-token', ['id' => 3], [
-            ClientInterface::class => $this->client,
+            HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
             LoggerInterface::class => new Logger(),
         ]);
 
