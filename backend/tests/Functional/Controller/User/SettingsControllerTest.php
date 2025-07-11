@@ -23,6 +23,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\SystemVariableRepository;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;
+use Neucore\Service\Config;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\Functional\Controller\User\SettingsController\TestService;
@@ -43,6 +44,8 @@ class SettingsControllerTest extends WebTestCase
     private SystemVariableRepository $systemVariableRepository;
 
     private Logger $logger;
+
+    private Config $config;
 
     private Plugin $service1;
 
@@ -66,6 +69,26 @@ class SettingsControllerTest extends WebTestCase
         $this->logger = new Logger();
         $this->logger->pushHandler(new TestHandler());
 
+        $this->config = new Config([
+            'monolog' => ['path' => $_ENV['NEUCORE_LOG_PATH']],
+            'repository' => 'https://github.com/tkhamez/neucore',
+            'CORS' => ['allow_origin' => $_ENV['NEUCORE_ALLOW_ORIGIN']],
+            'session' => ['secure' => $_ENV['NEUCORE_SESSION_SECURE']],
+            'eve' => [
+                'client_id' => '123',
+                'secret_key' => 'abc',
+                'callback_url' => 'https://example.com',
+                'datasource' => 'tranquility',
+                'esi_host' => 'https://esi.evetech.net',
+                'oauth_verify_signature' => true,
+                'esi_compatibility_date' => '2025-07-11'
+            ],
+            'guzzle' => [
+                'cache' => ['dir' => $_ENV['NEUCORE_CACHE_DIR']],
+                'user_agent' => '',
+            ],
+            'plugins_install_dir' => __DIR__ . '/SettingsController',
+        ]);
     }
 
     public function tearDown(): void
@@ -84,16 +107,16 @@ class SettingsControllerTest extends WebTestCase
             '/api/user/settings/system/list',
             null,
             null,
-            [LoggerInterface::class => $this->logger],
-            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/SettingsController']],
+            [LoggerInterface::class => $this->logger, Config::class => $this->config],
         );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['name' => SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES, 'value' => '11'],
             ['name' => SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS, 'value' => '101'],
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
-            ['name' => 'esiDataSource', 'value' => $_ENV['NEUCORE_EVE_DATASOURCE'] ?? 'tranquility'],
+            ['name' => 'esiDataSource', 'value' => 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
+            ['name' => 'esiCompatibilityDate', 'value' => '2025-07-11'],
             ['name' => 'navigationShowGroups', 'value' => '0'],
             ['name' => 'navigationServices', 'value' => \json_encode([])],
             ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([
@@ -116,8 +139,7 @@ class SettingsControllerTest extends WebTestCase
             '/api/user/settings/system/list',
             null,
             null,
-            [LoggerInterface::class => $this->logger],
-            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/SettingsController']],
+            [LoggerInterface::class => $this->logger, Config::class => $this->config],
         );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
@@ -126,6 +148,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
             ['name' => 'esiDataSource', 'value' => $_ENV['NEUCORE_EVE_DATASOURCE'] ?? 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
+            ['name' => 'esiCompatibilityDate', 'value' => '2025-07-11'],
             ['name' => 'navigationShowGroups', 'value' => '1'],
             ['name' => 'navigationServices', 'value' => \json_encode([
                 $this->service1->jsonSerialize(),
@@ -172,7 +195,7 @@ class SettingsControllerTest extends WebTestCase
         $parsedBody = $this->parseJsonBody($response);
         $this->assertSame([
             'name' => 'navigationGeneralPlugins', 'value' => \json_encode([]), // had t4 with active groups
-        ], $parsedBody[7]);
+        ], $parsedBody[8]);
 
     }
 
@@ -188,8 +211,7 @@ class SettingsControllerTest extends WebTestCase
             '/api/user/settings/system/list',
             null,
             null,
-            [LoggerInterface::class => $this->logger],
-            [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/SettingsController']],
+            [LoggerInterface::class => $this->logger, Config::class => $this->config],
         );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
@@ -202,6 +224,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => SystemVariable::MAIL_CHARACTER, 'value' => 'The char'],
             ['name' => 'esiDataSource', 'value' => $_ENV['NEUCORE_EVE_DATASOURCE'] ?? 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
+            ['name' => 'esiCompatibilityDate', 'value' => '2025-07-11'],
             ['name' => 'navigationShowGroups', 'value' => '1'],
             ['name' => 'navigationServices', 'value' => \json_encode([$this->service1->jsonSerialize()])],
             ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([

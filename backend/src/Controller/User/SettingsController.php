@@ -87,6 +87,9 @@ class SettingsController extends BaseController
                 self::COLUMN_NAME => 'esiHost',
                 self::COLUMN_VALUE => $config['eve']['esi_host'],
             ], [
+                self::COLUMN_NAME => 'esiCompatibilityDate',
+                self::COLUMN_VALUE => $config['eve']['esi_compatibility_date'],
+            ], [
                 self::COLUMN_NAME => 'navigationShowGroups',
                 self::COLUMN_VALUE => $groupRepository->count(['visibility' => Group::VISIBILITY_PUBLIC]) > 0 ?
                     '1' : '0',
