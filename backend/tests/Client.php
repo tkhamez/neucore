@@ -17,6 +17,11 @@ class Client extends \GuzzleHttp\Client
 
     private array $middleware = [];
 
+    /**
+     * @var array<string, string>
+     */
+    private array $headers = [];
+
     public function setMiddleware(callable ...$middleware): self
     {
         $this->middleware = $middleware;
@@ -29,6 +34,19 @@ class Client extends \GuzzleHttp\Client
         $this->responses = $responses;
 
         return $this;
+    }
+
+    public function setHeaders(array $requestHeaders): void
+    {
+        $this->headers = $requestHeaders;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getHeaders(): array
+    {
+        return $this->headers;
     }
 
     public function send(RequestInterface $request, array $options = []): ResponseInterface

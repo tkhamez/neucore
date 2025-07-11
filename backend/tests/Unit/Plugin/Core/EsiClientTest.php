@@ -52,6 +52,12 @@ class EsiClientTest extends TestCase
         $this->assertSame(15, $this->esiClient->getErrorLimitRemaining());
     }
 
+    public function testSetCompatibilityDate()
+    {
+        /** @noinspection PhpVoidFunctionResultUsedInspection */
+        self::assertNull($this->esiClient->setCompatibilityDate('2025-07-11'));
+    }
+
     public function testRequest_ErrorLimit()
     {
         $time = time();
@@ -118,12 +124,37 @@ class EsiClientTest extends TestCase
 
         $this->httpClient->setResponse(new Response(200, [], '{"name": "char name", "corporation_id": 20}'));
 
+        $this->esiClient->setCompatibilityDate('2025-07-11');
+
         $response = $this->esiClient->request('/latest/characters/102003000/', 'GET', null, 20300400);
 
+        $this->assertSame(['X-Compatibility-Date' => '2025-07-11'], $this->httpClient->getHeaders());
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame(
             ['name' => 'char name', 'corporation_id' => 20],
             json_decode($response->getBody()->__toString(), true),
         );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testRequest_CompatibilityDate()
+    {
+        $this->helper->addCharacterMain('char name', 20300400, tokenExpires: time() + 60, tokenValid: true);
+
+        $this->esiClient->setCompatibilityDate('2025-07-11');
+
+        $this->httpClient->setResponse(new Response());
+
+        $this->esiClient->request(
+            '/latest/characters/102003000/',
+            'GET',
+            null,
+            20300400,
+            compatibilityDate: '2025-07-12',
+        );
+
+        $this->assertSame(['X-Compatibility-Date' => '2025-07-12'], $this->httpClient->getHeaders());
     }
 }

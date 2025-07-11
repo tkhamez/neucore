@@ -13,15 +13,16 @@ use Psr\Http\Message\ResponseInterface;
 
 class HttpClientFactory implements HttpClientFactoryInterface
 {
-    private \GuzzleHttp\Client $client;
+    private Client $client;
 
-    public function __construct(\GuzzleHttp\Client $client)
+    public function __construct(Client $client)
     {
         $this->client = $client;
     }
 
     public function get(?string $cacheKey = 'default', array $requestHeaders = []): ClientInterface
     {
+        $this->client->setHeaders($requestHeaders);
         return $this->client;
     }
 
@@ -29,6 +30,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
         ?string $cacheKey = 'default',
         array $requestHeaders = [],
     ): \GuzzleHttp\ClientInterface {
+        $this->client->setHeaders($requestHeaders);
         return $this->client;
     }
 

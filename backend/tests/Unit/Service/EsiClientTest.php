@@ -36,7 +36,7 @@ class EsiClientTest extends TestCase
         $this->httpClient = new Client();
         $logger = new Logger();
         $om = $this->helper->getObjectManager();
-        $this->esiClient = Helper::getEsiClientService($this->httpClient, $logger);
+        $this->esiClient = Helper::getEsiClientService($this->httpClient, $logger, '2025-07-11');
         $this->storage = new SystemVariableStorage(new RepositoryFactory($om), new ObjectManager($om, $logger));
 
         $this->helper->emptyDb();
@@ -114,12 +114,38 @@ class EsiClientTest extends TestCase
 
         $this->httpClient->setResponse(new Response(200, [], '{"name": "char name", "corporation_id": 20}'));
 
-        $response = $this->esiClient->request('/latest/characters/102003000/', 'GET', null, 20300400);
+        $response = $this->esiClient->request(
+            '/latest/characters/102003000/',
+            'GET',
+            null,
+            20300400,
+        );
 
+        $this->assertSame(['X-Compatibility-Date' => '2025-07-11'], $this->httpClient->getHeaders());
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame(
             ['name' => 'char name', 'corporation_id' => 20],
             json_decode($response->getBody()->__toString(), true),
         );
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    public function testRequest_CompatibilityDate()
+    {
+        $this->helper->addCharacterMain('char name', 20300400, tokenExpires: time() + 60, tokenValid: true);
+
+        $this->httpClient->setResponse(new Response());
+
+        $this->esiClient->request(
+            '/latest/characters/102003000/',
+            'GET',
+            null,
+            20300400,
+            compatibilityDate: '2025-07-12',
+        );
+
+        $this->assertSame(['X-Compatibility-Date' => '2025-07-12'], $this->httpClient->getHeaders());
     }
 }

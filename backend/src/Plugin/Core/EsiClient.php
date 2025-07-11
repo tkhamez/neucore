@@ -19,15 +19,22 @@ class EsiClient implements EsiClientInterface
      */
     private int $errorLimitRemaining = 15;
 
+    private ?string $compatibilityDate = null;
+
     public function __construct(
-        private EsiClientService           $esiClient,
-        private HttpClientFactoryInterface $httpClientFactory,
-        private StorageInterface           $storage,
+        private readonly EsiClientService           $esiClient,
+        private readonly HttpClientFactoryInterface $httpClientFactory,
+        private readonly StorageInterface           $storage,
     ) {}
 
     public function getErrorLimitRemaining(): int
     {
         return $this->errorLimitRemaining;
+    }
+
+    public function setCompatibilityDate(string $compatibilityDate): void
+    {
+        $this->compatibilityDate = $compatibilityDate;
     }
 
     public function request(
@@ -37,6 +44,7 @@ class EsiClient implements EsiClientInterface
         ?int $characterId = null,
         string $eveLoginName = self::DEFAULT_LOGIN_NAME,
         bool $debug = false,
+        ?string $compatibilityDate = null,
     ): ResponseInterface {
         if (($retryAt1 = EsiClientService::getErrorLimitWaitTime($this->storage, $this->errorLimitRemaining)) > 0) {
             throw new Exception(EsiClientInterface::ERROR_ERROR_LIMIT_REACHED, $retryAt1);
@@ -49,7 +57,15 @@ class EsiClient implements EsiClientInterface
         }
 
         try {
-            $response = $this->esiClient->request($esiPath, $method, $body, $characterId, $eveLoginName, $debug);
+            $response = $this->esiClient->request(
+                $esiPath,
+                $method,
+                $body,
+                $characterId,
+                $eveLoginName,
+                $debug,
+                $compatibilityDate ?: $this->compatibilityDate
+            );
         } catch (RuntimeException $e) {
             if ($e->getCode() === 568420) {
                 throw new Exception(EsiClientInterface::ERROR_CHARACTER_NOT_FOUND);

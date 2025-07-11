@@ -6,13 +6,13 @@ namespace Tests\Unit\Factory;
 
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Service\Config;
-use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 use Swagger\Client\Eve\Api\AllianceApi;
 use Swagger\Client\Eve\Api\CharacterApi;
 use Swagger\Client\Eve\Api\CorporationApi;
 use Swagger\Client\Eve\Api\MailApi;
 use Swagger\Client\Eve\Api\UniverseApi;
+use Tests\Client;
 use Tests\HttpClientFactory;
 
 class EsiApiFactoryTest extends TestCase

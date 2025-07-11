@@ -177,12 +177,15 @@ class Helper
         );
     }
 
-    public static function getEsiClientService(Client $client, Logger $logger): EsiClient
-    {
+    public static function getEsiClientService(
+        Client $client,
+        Logger $logger,
+        string $compatibilityDate = '',
+    ): EsiClient {
         $objectManager = new \Neucore\Service\ObjectManager(self::getOm(), $logger);
         return new EsiClient(
             RepositoryFactory::getInstance(self::getOm()),
-            self::getConfig(),
+            self::getConfig($compatibilityDate),
             new OAuthToken(self::getAuthenticationProvider($client), $objectManager, $logger),
             new HttpClientFactory($client),
         );
@@ -593,12 +596,12 @@ class Helper
         return $eveLogin;
     }
 
-    private static function getConfig(): config
+    private static function getConfig(string $compatibilityDate = ''): config
     {
         return new Config(['eve' => [
             'datasource' => '',
             'esi_host' => '',
-            'esi_compatibility_date' => ''],
+            'esi_compatibility_date' => $compatibilityDate],
         ]);
     }
 }

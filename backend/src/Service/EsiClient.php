@@ -80,6 +80,7 @@ class EsiClient
         ?int $characterId,
         string $eveLoginName = EveLogin::NAME_DEFAULT,
         bool $debug = false,
+        ?string $compatibilityDate = null,
     ): ResponseInterface {
         $url = $this->config['eve']['esi_host'] . $esiPath .
             (strpos($esiPath, '?') ? '&' : '?') .
@@ -102,7 +103,7 @@ class EsiClient
         $request = $this->httpClientFactory->createRequest($method, $url, $header, $body);
 
         $requestHeaders = [
-            'X-Compatibility-Date' => $this->config['eve']['esi_compatibility_date'],
+            'X-Compatibility-Date' => $compatibilityDate ?: $this->config['eve']['esi_compatibility_date'],
         ];
         if ($debug) {
             $httpClient = $this->httpClientFactory->get(null, $requestHeaders);
