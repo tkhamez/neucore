@@ -2,8 +2,14 @@
     "name": "neucore/examples",
     "type": "project",
     "require": {
-        "bravecollective/neucore-api": "^1.31",
+        "bravecollective/neucore-api": "^2.7",
         "eveseat/eseye": "^2.4",
-        "tkhamez/swagger-eve-php": "^8.0"
+        "tkhamez/swagger-eve-php": "^10.0"
+    },
+    "config": {
+        "platform": {
+            "php": "8.1.0"
+        },
+        "sort-packages": true
     }
 }

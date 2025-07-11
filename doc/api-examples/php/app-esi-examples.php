@@ -9,6 +9,8 @@ use Swagger\Client\Eve\Api\AssetsApi;
 use Swagger\Client\Eve\ApiException;
 use Swagger\Client\Eve\Configuration;
 
+error_reporting(E_ALL & ~E_DEPRECATED);
+
 include __DIR__ . '/vendor/autoload.php';
 
 /**
