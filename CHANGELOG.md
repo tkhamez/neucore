@@ -6,7 +6,7 @@ dd mm yyyy
 
 - Change: A 60-second buffer has been added for the expiry time of an ESI access token.
 - Change: Added "X-Compatibility-Date" for ESI requests.
-- Updated backend dependencies.
+- Updated dependencies.
 
 ## 2.7.3
 
