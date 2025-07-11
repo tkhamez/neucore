@@ -35,6 +35,7 @@ services:
     build:
       context: setup
       dockerfile: Dockerfile-node
+      network: host
     tty: true
     stop_grace_period: 2s
     volumes: [".:/app"]
@@ -54,6 +55,7 @@ services:
       #dockerfile: Dockerfile-php82-fpm
       #dockerfile: Dockerfile-php83-fpm
       dockerfile: Dockerfile-php84-fpm
+      network: host
     depends_on: [neucore_db]
     volumes: [
         ".:/app",
