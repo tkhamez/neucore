@@ -209,7 +209,7 @@ class WatchlistTest extends TestCase
         $actual = self::$watchlistService->getCorporationIds(
             self::$watchlistId,
             Watchlist::ALLIANCE,
-            Watchlist::CORPORATION
+            Watchlist::CORPORATION,
         );
 
         $this->assertSame([self::$corp1a->getId(), self::$corp1b->getId()], $actual);

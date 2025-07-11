@@ -51,8 +51,7 @@ class UserAuth implements RoleProviderInterface
         private readonly RepositoryFactory $repositoryFactory,
         private readonly LoggerInterface $log,
         private readonly EveMail $eveMail,
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritdoc}

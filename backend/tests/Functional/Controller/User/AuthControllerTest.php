@@ -85,7 +85,7 @@ class AuthControllerTest extends WebTestCase
                     'clientSecret'   => 'your-EVE-app-secret-key',
                     'redirectUri'    => 'https://your-callback.url',
                 ],
-                httpClient: $this->client
+                httpClient: $this->client,
             ),
             new Config(['eve' => ['scopes' => '']]),
             $logger,
@@ -96,7 +96,7 @@ class AuthControllerTest extends WebTestCase
         self::assertSame(500, $response->getStatusCode());
         self::assertSame(
             ['redirectToLoginUrl: Missing entries from metadata URL.'],
-            $logger->getMessages()
+            $logger->getMessages(),
         );
     }
 

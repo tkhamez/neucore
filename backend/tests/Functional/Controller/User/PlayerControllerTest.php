@@ -222,7 +222,7 @@ class PlayerControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'PUT',
-            '/api/user/player/add-application/' . $this->publicAutoAssignGroupId
+            '/api/user/player/add-application/' . $this->publicAutoAssignGroupId,
         );
         $this->assertEquals(400, $response->getStatusCode());
     }
@@ -343,7 +343,7 @@ class PlayerControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'PUT',
-            '/api/user/player/leave-group/' . $this->publicAutoAssignGroupId
+            '/api/user/player/leave-group/' . $this->publicAutoAssignGroupId,
         );
         $this->assertEquals(400, $response->getStatusCode());
     }
@@ -1525,7 +1525,7 @@ class PlayerControllerTest extends WebTestCase
 
         $gs = $this->h->addGroups([
             'test-pub', 'test-private', 'required-group', 'auto-accept', 'auto-assign',
-            'public-auto-assign'
+            'public-auto-assign',
         ]);
         $gs[0]->setVisibility(Group::VISIBILITY_PUBLIC);
         $gs[3]->setVisibility(Group::VISIBILITY_PUBLIC);

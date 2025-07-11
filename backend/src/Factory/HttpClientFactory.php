@@ -51,8 +51,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
     public function getGuzzleClient(
         ?string $cacheKey = 'default',
         array $requestHeaders = [],
-    ): \GuzzleHttp\ClientInterface
-    {
+    ): \GuzzleHttp\ClientInterface {
         return $this->getClient($cacheKey, $requestHeaders);
     }
 
@@ -125,7 +124,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
                 $requestHeaders,
                 [
                     'User-Agent' => $this->config['guzzle']['user_agent'],
-                ]
+                ],
             ),
         ]);
     }

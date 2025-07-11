@@ -174,7 +174,7 @@ class OAuthTokenTest extends TestCase
     {
         $expires = 1349067701; // Oct 01 2012 05:01:41
         $esiToken = $this->getToken(
-            $this->helper->addCharacterMain('Name', 1, tokenExpires: $expires, tokenValid: true)
+            $this->helper->addCharacterMain('Name', 1, tokenExpires: $expires, tokenValid: true),
         );
         $this->assertNull($esiToken->getLastChecked());
 

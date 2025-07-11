@@ -123,7 +123,7 @@ class AutoAllowlist extends Command
         $watchedCorporationIds = $this->watchlistService->getCorporationIds(
             $id,
             Watchlist::ALLIANCE,
-            Watchlist::CORPORATION
+            Watchlist::CORPORATION,
         );
 
         $accountsData = $this->getAccountData($players, $watchedCorporationIds);
