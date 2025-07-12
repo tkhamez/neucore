@@ -1,4 +1,6 @@
 {
     "projectName": "neucore-js-client",
-    "licenseName": "MIT"
+    "licenseName": "MIT",
+    "disallowAdditionalPropertiesIfNotPresent": false,
+    "projectVersion": "latest"
 }

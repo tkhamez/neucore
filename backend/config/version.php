@@ -1,6 +1,7 @@
 <?php
 
-// Note: Reinstall the frontend (starting with "composer openapi") after the version was changed
-// because the version is included in the generated JS API client.
+// THe version is used for:
+// - the OpenAPI specification
+// - the default user agent for ESI requests
 
-const NEUCORE_VERSION = '2.8.0-dev';
+const NEUCORE_VERSION = 'dev';
