@@ -82,7 +82,7 @@ class SettingsControllerTest extends WebTestCase
                 'datasource' => 'tranquility',
                 'esi_host' => 'https://esi.evetech.net',
                 'oauth_verify_signature' => true,
-                'esi_compatibility_date' => '2025-07-11'
+                'esi_compatibility_date' => '2025-07-11',
             ],
             'guzzle' => [
                 'cache' => ['dir' => Application::ROOT_DIR . '/var/cache'],

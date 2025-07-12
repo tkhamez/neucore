@@ -64,7 +64,7 @@ class EsiClient implements EsiClientInterface
                 $characterId,
                 $eveLoginName,
                 $debug,
-                $compatibilityDate ?: $this->compatibilityDate
+                $compatibilityDate ?: $this->compatibilityDate,
             );
         } catch (RuntimeException $e) {
             if ($e->getCode() === 568420) {

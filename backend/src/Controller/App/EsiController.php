@@ -273,7 +273,7 @@ class EsiController extends BaseController
     #[OA\Get(
         path: '/app/v1/esi',
         operationId: 'esiV1',
-        summary: 'See GET /app/v2/esi',
+        summary: 'See GET /app/v2/esi. The only difference are the return values in case of errors.',
         security: [['BearerAuth' => []]],
         tags: ['Application - ESI'],
         parameters: [
@@ -346,12 +346,13 @@ class EsiController extends BaseController
             "Either the header 'Neucore-EveCharacter' and optionally 'Neucore-EveLogin' or the query " .
             "parameter 'datasource' is required.<br> " .
             "Public ESI routes are not allowed.<br>" .
-            "The following headers from ESI are passed through to the response if they exist: Content-Type " .
-            "Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning, Warning<br>" .
+            "The following headers from ESI are passed through to the response if they exist: Content-Type, " .
+            "Expires, X-Esi-Error-Limit-Remain, X-Esi-Error-Limit-Reset, X-Pages, X-Compatibility-Date, " .
+            "warning, Warning.<br>" .
             "The HTTP status code from ESI is also passed through, so there may be more than the documented " .
             "ones.<br>" .
             "The ESI path and query parameters can alternatively be appended to the path of this endpoint, this " .
-            "allows to use OpenAPI clients that were generated for the ESI API, see doc/api-examples for more.",
+            "allows using OpenAPI clients generated for the ESI API, see doc/api-examples for more.",
         summary: 'Makes an ESI GET request on behalf on an EVE character and returns the result.',
         security: [['BearerAuth' => []]],
         tags: ['Application - ESI'],
@@ -366,6 +367,12 @@ class EsiController extends BaseController
             new OA\Parameter(
                 name: 'Neucore-EveLogin',
                 description: 'The EVE login name from which the token should be used, defaults to core.default.',
+                in: 'header',
+                schema: new OA\Schema(type: 'string'),
+            ),
+            new OA\Parameter(
+                name: 'X-Compatibility-Date',
+                description: "The ESI compatibility date.",
                 in: 'header',
                 schema: new OA\Schema(type: 'string'),
             ),
@@ -389,7 +396,7 @@ class EsiController extends BaseController
             new OA\Response(
                 response: '200',
                 description: 'The data from ESI.<br> Please note that the JSON schema type can be an object, ' .
-                    'array or number etc., unfortunately there is no way to document this.',
+                    'array or number etc., unfortunately, there is no way to document this.',
                 headers: [
                     new OA\Header(
                         header: 'Expires',
@@ -467,7 +474,7 @@ class EsiController extends BaseController
     #[OA\Post(
         path: '/app/v1/esi',
         operationId: 'esiPostV1',
-        summary: 'See POST /app/v2/esi',
+        summary: 'See POST /app/v2/esi. The only difference are the return values in case of errors.',
         security: [['BearerAuth' => []]],
         requestBody: new OA\RequestBody(
             description: '',
@@ -560,6 +567,12 @@ class EsiController extends BaseController
             new OA\Parameter(
                 name: 'Neucore-EveLogin',
                 description: 'The EVE login name from which the token should be used, defaults to core.default.',
+                in: 'header',
+                schema: new OA\Schema(type: 'string'),
+            ),
+            new OA\Parameter(
+                name: 'X-Compatibility-Date',
+                description: "The ESI compatibility date.",
                 in: 'header',
                 schema: new OA\Schema(type: 'string'),
             ),
@@ -665,7 +678,14 @@ class EsiController extends BaseController
 
         // Send request and handle errors.
         try {
-            $esiResponse = $this->esiClient->request($esiPath, $method, $body, (int) $characterId, $eveLoginName);
+            $esiResponse = $this->esiClient->request(
+                $esiPath,
+                $method,
+                $body,
+                (int) $characterId,
+                $eveLoginName,
+                compatibilityDate: $request->getHeader('X-Compatibility-Date')[0] ?? null,
+            );
         } catch (RuntimeException $e) {
             if ($e->getCode() === 568420) {
                 $errorMessage = 'Character not found.';
@@ -805,6 +825,7 @@ class EsiController extends BaseController
             'X-Esi-Error-Limit-Remain',
             'X-Esi-Error-Limit-Reset',
             'X-Pages',
+            'X-Compatibility-Date',
             'warning',
             'Warning',
             'Retry-After',
