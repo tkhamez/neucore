@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7f0c2c58dc0a3da6c528e64f2d629856",
+    "content-hash": "eefdc149759daf1e34fc11058cf2e1d1",
     "packages": [
         {
             "name": "brick/math",
@@ -4822,16 +4822,16 @@
         },
         {
             "name": "tkhamez/swagger-eve-php",
-            "version": "10.4.0",
+            "version": "11.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/swagger-eve-php.git",
-                "reference": "aaa0fa869a3b2de8a8dc3d6165591b992dbecfa9"
+                "reference": "cecba7b2d2cefb2ef00de95f6ce9ce94c1fd311c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/aaa0fa869a3b2de8a8dc3d6165591b992dbecfa9",
-                "reference": "aaa0fa869a3b2de8a8dc3d6165591b992dbecfa9",
+                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/cecba7b2d2cefb2ef00de95f6ce9ce94c1fd311c",
+                "reference": "cecba7b2d2cefb2ef00de95f6ce9ce94c1fd311c",
                 "shasum": ""
             },
             "require": {
@@ -4875,9 +4875,9 @@
             ],
             "support": {
                 "issues": "https://github.com/tkhamez/swagger-eve-php/issues",
-                "source": "https://github.com/tkhamez/swagger-eve-php/tree/10.4.0"
+                "source": "https://github.com/tkhamez/swagger-eve-php/tree/11.0.0"
             },
-            "time": "2025-07-11T16:54:08+00:00"
+            "time": "2025-07-12T12:51:12+00:00"
         },
         {
             "name": "web-token/jwt-library",
