@@ -4,4 +4,4 @@
 // - the OpenAPI specification
 // - the default user agent for ESI requests
 
-const NEUCORE_VERSION = 'dev';
+const NEUCORE_VERSION = '2.8.0';
