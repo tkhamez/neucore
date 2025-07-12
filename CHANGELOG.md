@@ -1,6 +1,6 @@
 # Changelog
 
-## next
+## 2.8.0
 
 dd mm yyyy
 
