@@ -14,12 +14,12 @@ use Neucore\Service\MemberTracking;
 use Neucore\Service\OAuthToken;
 use Neucore\Storage\StorageInterface;
 use Psr\Log\LoggerInterface;
-use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Tkhamez\Eve\API\Model\CorporationsCorporationIdMembertrackingGetInner;
 
 class UpdateMemberTracking extends Command
 {
@@ -181,7 +181,7 @@ class UpdateMemberTracking extends Command
 
     /**
      * @param int $corporationId
-     * @param GetCorporationsCorporationIdMembertracking200Ok[] $trackingData
+     * @param CorporationsCorporationIdMembertrackingGetInner[] $trackingData
      * @param EsiToken|null $esiToken Used to resolve structure IDs to names if available
      */
     private function processData(int $corporationId, array $trackingData, ?EsiToken $esiToken): void
@@ -233,7 +233,7 @@ class UpdateMemberTracking extends Command
     }
 
     /**
-     * @param GetCorporationsCorporationIdMembertracking200Ok[] $structures
+     * @param CorporationsCorporationIdMembertrackingGetInner[] $structures
      */
     private function updateStructures(array $structures, ?EsiToken $esiToken): void
     {

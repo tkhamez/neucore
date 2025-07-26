@@ -13,8 +13,8 @@ use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Psr\Log\LoggerInterface;
-use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
 use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
+use Tkhamez\Eve\API\Model\CorporationsCorporationIdMembertrackingGetInner;
 
 class MemberTracking
 {
@@ -30,7 +30,7 @@ class MemberTracking
 
     private OAuthToken $oauthToken;
 
-    private string $datasource;
+    private \DateTime $compatibilityDate;
 
     public function __construct(
         LoggerInterface $log,
@@ -48,17 +48,24 @@ class MemberTracking
         $this->esiData = $esiData;
         $this->oauthToken = $oauthToken;
 
-        $this->datasource = (string) $config['eve']['datasource'];
+        try {
+            $this->compatibilityDate = new \DateTime($config['eve']['esi_compatibility_date']);
+        } catch (\Exception) {
+            // This will not happen.
+        }
     }
 
     /**
-     * @return GetCorporationsCorporationIdMembertracking200Ok[]|null Null if ESI request failed
+     * @return CorporationsCorporationIdMembertrackingGetInner[]|null Null if ESI request failed
      */
     public function fetchData(string $accessToken, int $corporationId): ?array
     {
         $corpApi = $this->esiApiFactory->getCorporationApi($accessToken);
         try {
-            $memberTracking = $corpApi->getCorporationsCorporationIdMembertracking($corporationId, $this->datasource);
+            $memberTracking = $corpApi->getCorporationsCorporationIdMembertracking(
+                $corporationId,
+                $this->compatibilityDate,
+            );
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return null;
@@ -160,11 +167,10 @@ class MemberTracking
      *
      *  This method does not flush the entity manager.
      *
-     * @param GetCorporationsCorporationIdMembertracking200Ok $memberData
      * @param EsiToken|null $esiToken Director char access token as primary token to resolve structure IDs to names.
      */
     public function updateStructure(
-        GetCorporationsCorporationIdMembertracking200Ok $memberData,
+        CorporationsCorporationIdMembertrackingGetInner $memberData,
         ?EsiToken $esiToken,
     ): void {
         $structureId = (int) $memberData->getLocationId();
@@ -197,7 +203,7 @@ class MemberTracking
      * This flushes and clears the ObjectManager every 100 members.
      *
      * @param int $corporationId
-     * @param GetCorporationsCorporationIdMembertracking200Ok[] $trackingData
+     * @param CorporationsCorporationIdMembertrackingGetInner[] $trackingData
      * @param array $charNames
      * @param int $sleep
      */

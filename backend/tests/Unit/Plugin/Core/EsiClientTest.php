@@ -55,6 +55,7 @@ class EsiClientTest extends TestCase
     public function testSetCompatibilityDate(): void
     {
         /** @noinspection PhpVoidFunctionResultUsedInspection */
+        // @phpstan-ignore method.void
         self::assertNull($this->esiClient->setCompatibilityDate('2025-07-11'));
     }
 
