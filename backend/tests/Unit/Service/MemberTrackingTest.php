@@ -20,11 +20,11 @@ use Neucore\Service\MemberTracking;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use PHPUnit\Framework\TestCase;
-use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
 use Tests\Client;
 use Tests\Helper;
 use Tests\HttpClientFactory;
 use Tests\Logger;
+use Tkhamez\Eve\API\Model\CorporationsCorporationIdMembertrackingGetInner;
 
 class MemberTrackingTest extends TestCase
 {
@@ -120,7 +120,7 @@ class MemberTrackingTest extends TestCase
 
     public function testUpdateStructure_DirectorSuccess()
     {
-        $data =  new GetCorporationsCorporationIdMembertracking200Ok([
+        $data =  new CorporationsCorporationIdMembertrackingGetInner([
             'character_id' => 102,
             'location_id' => 1023100200300,
         ]);
@@ -158,7 +158,7 @@ class MemberTrackingTest extends TestCase
         $char = $this->helper->addCharacterMain('C1', 102204, [], [], false);
         $this->helper->createOrUpdateEsiToken($char, time() + 1000, 'at', true);
 
-        $data =  new GetCorporationsCorporationIdMembertracking200Ok([
+        $data =  new CorporationsCorporationIdMembertrackingGetInner([
             'character_id' => 102204,
             'location_id' => 1023100200300,
         ]);
@@ -215,7 +215,7 @@ class MemberTrackingTest extends TestCase
         $this->helper->addNewPlayerToCharacterAndFlush($char);
 
         $data = [
-            new GetCorporationsCorporationIdMembertracking200Ok([
+            new CorporationsCorporationIdMembertrackingGetInner([
                 'character_id' => 101,
                 'location_id' => 60008494,
                 'logoff_date' => new \DateTime('2018-12-25 19:45:10'),
@@ -223,11 +223,11 @@ class MemberTrackingTest extends TestCase
                 'ship_type_id' => 670,
                 'start_date' => new \DateTime('2018-12-25 19:45:12'),
             ]),
-            new GetCorporationsCorporationIdMembertracking200Ok([
+            new CorporationsCorporationIdMembertrackingGetInner([
                 'character_id' => 102,
                 'location_id' => 1023100200300,
             ]),
-            new GetCorporationsCorporationIdMembertracking200Ok([
+            new CorporationsCorporationIdMembertrackingGetInner([
                 'character_id' => 103,
                 'location_id' => 30000142,
             ]),
