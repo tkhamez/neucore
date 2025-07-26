@@ -19,10 +19,10 @@ use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdNotFound;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;
-use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 use Swagger\Client\Eve\Model\GetUniverseStructuresStructureIdOk;
 use Swagger\Client\Eve\Model\PostCharactersAffiliation200Ok;
 use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
+use Tkhamez\Eve\API\Model\CorporationsCorporationIdGet;
 
 /**
  * Fetch and process data from ESI.
@@ -55,6 +55,8 @@ class EsiData
      */
     private ?string $errorConfiguration = null;
 
+    private \DateTime $compatibilityDate;
+
     public function __construct(
         LoggerInterface $log,
         EsiApiFactory $esiApiFactory,
@@ -69,6 +71,12 @@ class EsiData
         $this->repositoryFactory = $repositoryFactory;
         $this->characterService = $characterService;
         $this->config = $config;
+
+        try {
+            $this->compatibilityDate = new \DateTime($config['eve']['esi_compatibility_date']);
+        } catch (\Exception) {
+            // This will not happen.
+        }
     }
 
     public function getLastErrorCode(): ?int
@@ -265,13 +273,13 @@ class EsiData
         $this->lastErrorCode = null;
         try {
             $eveCorp = $this->esiApiFactory->getCorporationApi()
-                ->getCorporationsCorporationId($id, $this->config['eve']['datasource']);
+                ->getCorporationsCorporationId($id, $this->compatibilityDate);
         } catch (\Exception $e) {
             $this->lastErrorCode = $e->getCode();
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return null;
         }
-        if (!$eveCorp instanceof GetCorporationsCorporationIdOk) {
+        if (!$eveCorp instanceof CorporationsCorporationIdGet) {
             return null;
         }
 
@@ -523,7 +531,7 @@ class EsiData
 
         try {
             $members = $this->esiApiFactory->getCorporationApi($accessToken)
-                ->getCorporationsCorporationIdMembers($id, $this->config['eve']['datasource']);
+                ->getCorporationsCorporationIdMembers($id, $this->compatibilityDate);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             $members = [];
