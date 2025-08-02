@@ -80,7 +80,7 @@ class OAuthTokenTest extends TestCase
             ->setEveLogin($eveLogin)
             ->setRefreshToken('refresh')
             ->setAccessToken('access')
-            ->setExpires(1519933545);
+            ->setExpires(1519933545); # Thu Mar 01 2018 19:45:45 GMT+0000
 
         $this->assertNull($this->es->createAccessToken(new EsiToken()));
 

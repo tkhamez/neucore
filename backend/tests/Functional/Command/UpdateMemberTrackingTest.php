@@ -36,7 +36,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->client = new Client();
     }
 
-    public function testExecuteErrorCorp()
+    public function testExecuteErrorCorp(): void
     {
         $this->addData(true, false, false);
 
@@ -50,7 +50,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->assertSame('', $actual[3]);
     }
 
-    public function testExecuteErrorToken()
+    public function testExecuteErrorToken(): void
     {
         $this->addData(false, true, false);
         $this->client->setResponse(new Response(400, [], '{"error": "invalid_grant"}'));
@@ -69,7 +69,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->assertSame('', $actual[3]);
     }
 
-    public function testExecuteErrorData()
+    public function testExecuteErrorData(): void
     {
         $this->addData(false, false, false);
 
@@ -89,7 +89,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->assertSame('', $actual[4]);
     }
 
-    public function testExecuteSuccess()
+    public function testExecuteSuccess(): void
     {
         $this->addData();
 
@@ -138,12 +138,14 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         }
         $esiToken1 = (new EsiToken())->setEveLogin($eveLogin)->setCharacter($character1)
             ->setValidToken(true)->setHasRoles(true)
-            ->setRefreshToken('rt')->setAccessToken('at')->setExpires(time() + ($expiredToken ? -60 : 60));
+            ->setRefreshToken('rt')->setAccessToken('at')
+            ->setExpires(time() + ($expiredToken ? -60 : 600));
         $this->om->persist($esiToken1);
         if ($addSecond) {
             $esiToken2 = (new EsiToken())->setEveLogin($eveLogin)->setCharacter($character2)
                 ->setValidToken(true)->setHasRoles(true)
-                ->setRefreshToken('rt')->setAccessToken('at')->setExpires(time() + ($expiredToken ? -60 : 60));
+                ->setRefreshToken('rt')->setAccessToken('at')
+                ->setExpires(time() + ($expiredToken ? -60 : 600));
             $this->om->persist($esiToken2);
         }
         $this->om->persist($eveLogin);

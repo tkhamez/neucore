@@ -137,7 +137,7 @@ class MemberTrackingTest extends TestCase
         $esiToken->setValidToken(true);
         $esiToken->setAccessToken('at');
         $esiToken->setRefreshToken('rf');
-        $esiToken->setExpires(time() + 60);
+        $esiToken->setExpires(time() + 600);
 
         $this->memberTracking->updateStructure($data, $esiToken);
         $this->om->flush();
