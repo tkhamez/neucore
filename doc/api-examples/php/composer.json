@@ -2,8 +2,8 @@
     "name": "neucore/examples",
     "type": "project",
     "require": {
-        "bravecollective/neucore-api": "^2.7",
-        "tkhamez/swagger-eve-php": "^10.0"
+        "bravecollective/neucore-api": "^2.8",
+        "tkhamez/eve-api": "^2.20250802"
     },
     "config": {
         "platform": {
