@@ -86,4 +86,5 @@ object that is provided by Neucore in the plugin class constructor. However, not
 with each Neucore release.
 
 Besides that, **do not use** any class from Neucore or any library that Neucore provides. Those can change or
-be removed without notice. Also, do not access the Neucore database directly.
+be removed without notice. This also applies to the frontend API. Also, do not access the Neucore database 
+directly.
