@@ -3,7 +3,6 @@
     "type": "project",
     "require": {
         "bravecollective/neucore-api": "^2.7",
-        "eveseat/eseye": "^2.4",
         "tkhamez/swagger-eve-php": "^10.0"
     },
     "config": {

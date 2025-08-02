@@ -3,8 +3,6 @@
 declare(strict_types=1);
 
 use GuzzleHttp\Client;
-use Seat\Eseye\Containers\EsiAuthentication;
-use Seat\Eseye\Eseye;
 use Swagger\Client\Eve\Api\AssetsApi;
 use Swagger\Client\Eve\ApiException;
 use Swagger\Client\Eve\Configuration;
@@ -112,41 +110,5 @@ try {
     $esiApiInstance->esiV2('/lastest/alliances/', $coreCharId);
 } catch (\Brave\NeucoreApi\ApiException $e) {
     echo $e->getMessage(), PHP_EOL;
-}
-echo PHP_EOL;
-
-
-//
-// Example using Eseye
-//
-
-// Set the EVE character ID as the datasource
-$configuration = \Seat\Eseye\Configuration::getInstance();
-/* @see \Seat\Eseye\Containers\EsiConfiguration::$data */
-$configuration->datasource = $coreCharId;
-$configuration->esi_scheme = $coreHttpScheme;
-$configuration->esi_host = "$coreDomain/api/app/v2/esi";
-
-// Create an authorization object with the Core app token that does not expire
-$authentication = new EsiAuthentication([
-    'access_token'  => $coreAppToken,
-    'token_expires' => date('Y-m-d H:i:s', time() + 3600),
-    'scopes' => [
-        // must contain all scopes that are used or Eseye will not make the request
-       'esi-assets.read_assets.v1'
-    ],
-]);
-
-$esi = new Eseye($authentication);
-try {
-    $result = $esi
-        ->setQueryString(['page' => 1])
-        ->invoke('get', '/characters/{character_id}/assets/', ['character_id' => $coreCharId]);
-    echo 'Status: ', $result->getErrorCode(), PHP_EOL;
-    echo 'Headers: ';
-    print_r($result->headers);
-    echo 'item id: ', $result[0]->item_id, PHP_EOL;
-} catch (Exception $e) {
-    echo ((string)$e), PHP_EOL;
 }
 echo PHP_EOL;
