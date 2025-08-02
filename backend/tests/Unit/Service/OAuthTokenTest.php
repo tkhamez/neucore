@@ -195,7 +195,11 @@ class OAuthTokenTest extends TestCase
 
     public function testUpdateEsiToken_RefreshEsiToken_InvalidData()
     {
-        $esiToken = $this->getToken($this->helper->addCharacterMain('Name', 1, [], [], true, null, time() - 60, true));
+        $esiToken = $this->getToken($this->helper->addCharacterMain(
+            'Name', 1,
+            tokenExpires: time() - 60,
+            tokenValid: true
+        ));
         $this->assertNull($esiToken->getLastChecked());
 
         $this->client->setResponse(
@@ -216,7 +220,11 @@ class OAuthTokenTest extends TestCase
 
     public function testUpdateEsiToken_RefreshEsiToken_FailStore()
     {
-        $esiToken = $this->getToken($this->helper->addCharacterMain('Name', 1, [], [], true, null, time() - 60, true));
+        $esiToken = $this->getToken($this->helper->addCharacterMain(
+            'Name', 1,
+            tokenExpires: time() - 600,
+            tokenValid: true
+        ));
 
         $newTokenTime = time() + 60;
         $this->client->setResponse(new Response(200, [], '{
@@ -238,7 +246,11 @@ class OAuthTokenTest extends TestCase
 
     public function testUpdateEsiToken_RefreshEsiToken_Ok_InvalidToken()
     {
-        $esiToken = $this->getToken($this->helper->addCharacterMain('Name', 1, [], [], true, null, time() - 60, true));
+        $esiToken = $this->getToken($this->helper->addCharacterMain(
+            'Name', 1,
+            tokenExpires: time() - 60,
+            tokenValid: true,
+        ));
         $this->assertNull($esiToken->getLastChecked());
 
         $newTokenTime = time() + 60;

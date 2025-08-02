@@ -110,7 +110,11 @@ class EsiClientTest extends TestCase
     public function testRequest_Ok()
     {
         // Create char with valid, not expired, ESI token.
-        $this->helper->addCharacterMain('char name', 20300400, [], [], true, null, time() + 60, true);
+        $this->helper->addCharacterMain(
+            'char name', 20300400,
+            tokenExpires: time() + 600,
+            tokenValid: true
+        );
 
         $this->httpClient->setResponse(new Response(200, [], '{"name": "char name", "corporation_id": 20}'));
 
@@ -137,7 +141,12 @@ class EsiClientTest extends TestCase
      */
     public function testRequest_OptionalHeaders()
     {
-        $this->helper->addCharacterMain('char name', 20300400, tokenExpires: time() + 60, tokenValid: true);
+        $this->helper->addCharacterMain(
+            'char name',
+            20300400,
+            tokenExpires: time() + 600,
+            tokenValid: true,
+        );
 
         $this->httpClient->setResponse(new Response());
 
