@@ -47,18 +47,18 @@ class EsiClientTest extends TestCase
         $this->helper->emptyDb();
     }
 
-    public function testGetErrorLimitRemaining()
+    public function testGetErrorLimitRemaining(): void
     {
         $this->assertSame(15, $this->esiClient->getErrorLimitRemaining());
     }
 
-    public function testSetCompatibilityDate()
+    public function testSetCompatibilityDate(): void
     {
         /** @noinspection PhpVoidFunctionResultUsedInspection */
         self::assertNull($this->esiClient->setCompatibilityDate('2025-07-11'));
     }
 
-    public function testRequest_ErrorLimit()
+    public function testRequest_ErrorLimit(): void
     {
         $time = time();
         $this->storage->set(Variables::ESI_ERROR_LIMIT, (string) json_encode(new EsiErrorLimit($time, 10, 45)));
@@ -70,7 +70,7 @@ class EsiClientTest extends TestCase
         $this->esiClient->request('/latest/characters/102003000/', 'GET', null, 20300400);
     }
 
-    public function testRequest_RateLimit()
+    public function testRequest_RateLimit(): void
     {
         $time = time();
         $this->storage->set(Variables::ESI_RATE_LIMIT, (string) ($time + 20));
@@ -82,7 +82,7 @@ class EsiClientTest extends TestCase
         $this->esiClient->request('/latest/characters/102003000/', 'GET', null, 20300400);
     }
 
-    public function testRequest_Throttled()
+    public function testRequest_Throttled(): void
     {
         $time = time();
         $this->storage->set(Variables::ESI_THROTTLED, (string) ($time + 50));
@@ -94,7 +94,7 @@ class EsiClientTest extends TestCase
         $this->esiClient->request('/latest/characters/102003000/', 'GET', null, 20300400);
     }
 
-    public function testRequest_CharNotFound()
+    public function testRequest_CharNotFound(): void
     {
         $this->expectException(Exception::class);
         $this->expectExceptionCode(0);
@@ -103,7 +103,7 @@ class EsiClientTest extends TestCase
         $this->esiClient->request('/latest/characters/102003000/', 'GET', null, 20300400);
     }
 
-    public function testRequest_TokenInvalid()
+    public function testRequest_TokenInvalid(): void
     {
         $this->helper->addCharacterMain('char name', 20300400, [], [], false);
 
@@ -117,7 +117,7 @@ class EsiClientTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testRequest_OK()
+    public function testRequest_OK(): void
     {
         // Create char with valid, not expired, ESI token.
         $this->helper->addCharacterMain('char name', 20300400, [], [], true, null, time() + 60, true);
@@ -128,7 +128,10 @@ class EsiClientTest extends TestCase
 
         $response = $this->esiClient->request('/latest/characters/102003000/', 'GET', null, 20300400);
 
-        $this->assertSame(['X-Compatibility-Date' => '2025-07-11'], $this->httpClient->getHeaders());
+        $this->assertSame(
+            ['X-Compatibility-Date' => '2025-07-11', 'Accept-Language' => 'en'],
+            $this->httpClient->getHeaders()
+        );
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame(
             ['name' => 'char name', 'corporation_id' => 20],
@@ -139,7 +142,7 @@ class EsiClientTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testRequest_CompatibilityDate()
+    public function testRequest_OptionalHeaders(): void
     {
         $this->helper->addCharacterMain('char name', 20300400, tokenExpires: time() + 60, tokenValid: true);
 
@@ -153,8 +156,15 @@ class EsiClientTest extends TestCase
             null,
             20300400,
             compatibilityDate: '2025-07-12',
+            acceptLanguage: 'de',
         );
 
-        $this->assertSame(['X-Compatibility-Date' => '2025-07-12'], $this->httpClient->getHeaders());
+        $this->assertSame(
+            [
+                'X-Compatibility-Date' => '2025-07-12',
+                'Accept-Language' => 'de',
+            ],
+            $this->httpClient->getHeaders(),
+        );
     }
 }

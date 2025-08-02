@@ -352,7 +352,7 @@ class EsiController extends BaseController
             "The HTTP status code from ESI is also passed through, so there may be more than the documented " .
             "ones.<br>" .
             "The ESI path and query parameters can alternatively be appended to the path of this endpoint, this " .
-            "allows using OpenAPI clients generated for the ESI API, see doc/api-examples for more.",
+            "allows using OpenAPI clients generated for the EVE API (ESI), see doc/api-examples for more.",
         summary: 'Makes an ESI GET request on behalf on an EVE character and returns the result.',
         security: [['BearerAuth' => []]],
         tags: ['Application - ESI'],
@@ -375,6 +375,11 @@ class EsiController extends BaseController
                 description: "The ESI compatibility date.",
                 in: 'header',
                 schema: new OA\Schema(type: 'string'),
+            ),
+            new OA\Parameter(
+                name: 'Accept-Language',
+                in: 'header',
+                schema: new OA\Schema(type: 'string', enum: ['en', 'de', 'fr', 'ja', 'ru', 'zh', 'ko', 'es']),
             ),
             new OA\Parameter(
                 name: 'esi-path-query',
@@ -577,6 +582,11 @@ class EsiController extends BaseController
                 schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
+                name: 'Accept-Language',
+                in: 'header',
+                schema: new OA\Schema(type: 'string', enum: ['en', 'de', 'fr', 'ja', 'ru', 'zh', 'ko', 'es']),
+            ),
+            new OA\Parameter(
                 name: 'esi-path-query',
                 in: 'query',
                 required: true,
@@ -685,6 +695,7 @@ class EsiController extends BaseController
                 (int) $characterId,
                 $eveLoginName,
                 compatibilityDate: $request->getHeader('X-Compatibility-Date')[0] ?? null,
+                acceptLanguage: $request->getHeader('Accept-Language')[0] ?? null,
             );
         } catch (RuntimeException $e) {
             if ($e->getCode() === 568420) {

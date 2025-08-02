@@ -121,7 +121,10 @@ class EsiClientTest extends TestCase
             20300400,
         );
 
-        $this->assertSame(['X-Compatibility-Date' => '2025-07-11'], $this->httpClient->getHeaders());
+        $this->assertSame(
+            ['X-Compatibility-Date' => '2025-07-11', 'Accept-Language' => 'en'],
+            $this->httpClient->getHeaders(),
+        );
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame(
             ['name' => 'char name', 'corporation_id' => 20],
@@ -132,7 +135,7 @@ class EsiClientTest extends TestCase
     /**
      * @throws \Throwable
      */
-    public function testRequest_CompatibilityDate()
+    public function testRequest_OptionalHeaders()
     {
         $this->helper->addCharacterMain('char name', 20300400, tokenExpires: time() + 60, tokenValid: true);
 
@@ -144,8 +147,15 @@ class EsiClientTest extends TestCase
             null,
             20300400,
             compatibilityDate: '2025-07-12',
+            acceptLanguage: 'de',
         );
 
-        $this->assertSame(['X-Compatibility-Date' => '2025-07-12'], $this->httpClient->getHeaders());
+        $this->assertSame(
+            [
+                'X-Compatibility-Date' => '2025-07-12',
+                'Accept-Language' => 'de',
+            ],
+            $this->httpClient->getHeaders(),
+        );
     }
 }

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.9.0
+
+dd mm yyyy
+
+- Added the "Accept-Language" header to the ESI proxy.
+
 ## 2.8.0
 
 12 Jul 2025

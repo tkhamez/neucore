@@ -45,6 +45,7 @@ class EsiClient implements EsiClientInterface
         string $eveLoginName = self::DEFAULT_LOGIN_NAME,
         bool $debug = false,
         ?string $compatibilityDate = null,
+        ?string $acceptLanguage = null,
     ): ResponseInterface {
         if (($retryAt1 = EsiClientService::getErrorLimitWaitTime($this->storage, $this->errorLimitRemaining)) > 0) {
             throw new Exception(EsiClientInterface::ERROR_ERROR_LIMIT_REACHED, $retryAt1);
@@ -65,6 +66,7 @@ class EsiClient implements EsiClientInterface
                 $eveLoginName,
                 $debug,
                 $compatibilityDate ?: $this->compatibilityDate,
+                $acceptLanguage,
             );
         } catch (RuntimeException $e) {
             if ($e->getCode() === 568420) {
