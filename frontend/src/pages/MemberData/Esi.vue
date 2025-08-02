@@ -46,7 +46,10 @@
                     replaced with the corresponding IDs of the selected character, other placeholders
                     must be replaced manually.<br>
                     If the result contains an "X-Pages" header, you can request the other pages by
-                    adding "?page=2" etc. to the route.
+                    adding "?page=2" etc. to the route. This will change for new routes, see
+                    <a href="https://developers.eveonline.com/blog/changing-pagination-turning-a-new-page"
+                       class="external" target="_blank" rel="noopener noreferrer">Changing pagination:
+                        turning a new page</a>
                 </div>
 
                 <br>
