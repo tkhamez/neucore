@@ -38,7 +38,6 @@ $coreHttpScheme = 'http';
 $coreDomain = 'neucore_http'; // Works with compose.yaml.
 $coreAppToken = base64_encode('1:secret');
 $coreCharId = 96061222; // Character with token in Neucore
-$compatibilityDate = new DateTime('2025-08-02');
 
 
 //
@@ -62,7 +61,7 @@ $client = new \GuzzleHttp\Client(['headers' => [
 $assetsApiInstance = new \Tkhamez\Eve\API\Api\AssetsApi($client, $configuration);
 $itemId = 0; // used in example 2
 try {
-    $result = $assetsApiInstance->getCharactersCharacterIdAssets($coreCharId, $compatibilityDate);
+    $result = $assetsApiInstance->getCharactersCharacterIdAssets($coreCharId);
     $itemId = $result[0]->getItemId();
     echo 'item id: ', $itemId, PHP_EOL;
 } catch (\Tkhamez\Eve\API\ApiException $e) {

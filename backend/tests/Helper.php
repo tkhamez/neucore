@@ -601,7 +601,7 @@ class Helper
         return new Config(['eve' => [
             'datasource' => '',
             'esi_host' => '',
-            'esi_compatibility_date' => $compatibilityDate],
-        ]);
+            'esi_compatibility_date' => $compatibilityDate,
+        ]]);
     }
 }

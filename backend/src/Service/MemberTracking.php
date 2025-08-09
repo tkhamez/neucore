@@ -30,8 +30,6 @@ class MemberTracking
 
     private OAuthToken $oauthToken;
 
-    private \DateTime $compatibilityDate;
-
     public function __construct(
         LoggerInterface $log,
         EsiApiFactory $esiApiFactory,
@@ -47,12 +45,6 @@ class MemberTracking
         $this->entityManager = $entityManager;
         $this->esiData = $esiData;
         $this->oauthToken = $oauthToken;
-
-        try {
-            $this->compatibilityDate = new \DateTime($config['eve']['esi_compatibility_date']);
-        } catch (\Exception) {
-            // This will not happen.
-        }
     }
 
     /**
@@ -62,10 +54,7 @@ class MemberTracking
     {
         $corpApi = $this->esiApiFactory->getCorporationApi($accessToken);
         try {
-            $memberTracking = $corpApi->getCorporationsCorporationIdMembertracking(
-                $corporationId,
-                $this->compatibilityDate,
-            );
+            $memberTracking = $corpApi->getCorporationsCorporationIdMembertracking($corporationId);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return null;
