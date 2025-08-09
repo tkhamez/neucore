@@ -3,8 +3,13 @@
 
 declare(strict_types=1);
 
-$swagger = file_get_contents('https://esi.evetech.net/_latest/swagger.json');
-$def = json_decode($swagger);
+$openapi = file_get_contents('https://esi.evetech.net/meta/openapi.json');
+if (!$openapi) {
+    echo "Error reading openapi.json", PHP_EOL;
+    exit(1);
+}
+
+$def = json_decode($openapi);
 
 $public = [];
 foreach ($def->paths as $path => $data) {
@@ -16,13 +21,8 @@ foreach ($def->paths as $path => $data) {
         continue;
     }
 
-    // strip the version information
-    // e. g. /v1/alliances/{alliance_id}/corporations/
-    //   =>     /alliances/{alliance_id}/corporations/
-    $shortPath = substr($path, strpos($path, '/', 1));
-
     // change paths to regular expression
-    // e. g. /alliances/{alliance_id}/corporations/
+    // e.g. /alliances/{alliance_id}/corporations/
     //   =>  /alliances/[0-9]+/corporations/
     $regExp = str_replace([
         '{alliance_id}',
@@ -54,9 +54,9 @@ foreach ($def->paths as $path => $data) {
         '{wing_id}',
         '{origin}',
         '{destination}',
-    ], '[0-9]+', $shortPath);
+    ], '[0-9]+', $path);
 
-    // looks like this is a HEX value
+    // It looks like this is a HEX value
     $regExp2 = str_replace('{killmail_hash}', '[0-9a-fA-F]+', $regExp);
 
     $public[] = $regExp2;

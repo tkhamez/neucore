@@ -5,7 +5,7 @@
 const https = require('https');
 const fs = require('fs');
 
-https.get('https://esi.evetech.net/latest/swagger.json', response => {
+https.get('https://esi.evetech.net/meta/openapi.json', response => {
     let data = '';
     response.on('data', chunk => {
         data += chunk;
@@ -32,12 +32,20 @@ function fetchDone(def) {
 }
 
 function writeFiles(get, post) {
-    fs.writeFile(__dirname + "/../../frontend/public/esi-paths-http-get.json", JSON.stringify(get), function(err) {
-        result(err, 'frontend/public/esi-paths-http-get.json');
-    });
-    fs.writeFile(__dirname + "/../../frontend/public/esi-paths-http-post.json", JSON.stringify(post), function(err) {
-        result(err, 'frontend/public/esi-paths-http-post.json');
-    });
+    fs.writeFile(
+        __dirname + "/../../frontend/public/esi-paths-http-get.json",
+        JSON.stringify(get, null, 2),
+        function(err) {
+            result(err, 'frontend/public/esi-paths-http-get.json');
+        }
+    );
+    fs.writeFile(
+        __dirname + "/../../frontend/public/esi-paths-http-post.json",
+        JSON.stringify(post, null, 2),
+        function(err) {
+            result(err, 'frontend/public/esi-paths-http-post.json');
+        }
+    );
     function result(err, file) {
         if (!err) {
             console.log(`wrote ${file}`);
