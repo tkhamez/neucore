@@ -55,8 +55,9 @@ and more:
 * Member applications for groups, optionally automatically acceptable.
 * Optional automatic temporary removal of groups if an ESI token is invalid.
 * Optional EVE mail notifications for invalid ESI tokens and missing characters (via member tracking).
-* An [ESI](http://esi.evetech.net) proxy for all characters and their tokens, optionally available for apps, 
-  compatible with the ESI OpenAPI definition file. See also [api-examples](api-examples).
+* An [ESI](https://developers.eveonline.com/api-explorer) proxy for all characters and their tokens,
+  optionally available for apps, compatible with the ESI OpenAPI definition file. See also 
+  [api-examples](api-examples).
 * Configurable rate limits for apps or IP-based for all requests to the backend.
 * CLI commands for data updates from ESI.
 * Usable on small touch screens.
@@ -243,8 +244,9 @@ removals have priority over manually adding and removing a corporation from the 
 ## Mail Notifications
 
 Note: The ESI refresh token used to send the mails is not automatically refreshed when no mails are sent. This is 
-relevant should CCP add refresh token rotation for web based applications. See also 
-[esi-docs - Refreshing tokens](https://docs.esi.evetech.net/docs/sso/refreshing_access_tokens.html).
+relevant should CCP add refresh token rotation for web-based applications. See also 
+[esi-docs - SSO Response](https://docs.esi.evetech.net/docs/sso/refreshing_access_tokens.html#sso-response)
+(from the old docs, this part is not in the [new docs](https://developers.eveonline.com/docs/services/sso/)).
 
 ### Invalid ESI Token
 

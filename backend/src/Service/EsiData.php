@@ -221,7 +221,7 @@ class EsiData
     /**
      * @param array $ids Valid IDs
      * @return PostCharactersAffiliation200Ok[]
-     * @see https://esi.evetech.net/ui/#/Character/post_characters_affiliation
+     * @see https://developers.eveonline.com/api-explorer#/operations/PostCharactersAffiliation
      */
     public function fetchCharactersAffiliation(array $ids): array
     {
@@ -366,7 +366,7 @@ class EsiData
      *
      * @param array $ids Valid IDs
      * @return PostUniverseNames200Ok[]
-     * @see https://esi.evetech.net/ui/#/Universe/post_universe_names
+     * @see https://developers.eveonline.com/api-explorer#/operations/PostUniverseNames
      */
     public function fetchUniverseNames(array $ids): array
     {

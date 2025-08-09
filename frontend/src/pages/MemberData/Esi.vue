@@ -28,8 +28,9 @@
                 <label for="esiRoute">ESI route</label>
                 <small class="text-muted">
                     see also
-                    <a class="external" href="https://esi.evetech.net/ui" target="_blank" rel="noopener noreferrer">
-                        https://esi.evetech.net/ui</a>,
+                    <a class="external" href="https://developers.eveonline.com/api-explorer"
+                       target="_blank" rel="noopener noreferrer">
+                        https://developers.eveonline.com/api-explorer</a>,
                     only GET and POST request are implemented.
                 </small>
                 <multiselect v-model="selectedPath" :options="paths" :loading="false"

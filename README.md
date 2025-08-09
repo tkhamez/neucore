@@ -27,8 +27,9 @@
 A web application for [EVE Online](https://www.eveonline.com) communities to organise their members into groups,
 monitor them and provide access to external services.
 
-This application focuses on providing core functionality related to player identities, [ESI](http://esi.evetech.net)
-access and an API that other applications can build upon.
+This application focuses on providing core functionality related to player identities, 
+[ESI](https://developers.eveonline.com/api-explorer) access and an API that other applications can 
+build upon.
 
 Main features:
 

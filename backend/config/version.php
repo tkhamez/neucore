@@ -1,7 +1,7 @@
 <?php
 
 // THe version is used for:
-// - the OpenAPI specification
+// - the version in OpenAPI definition file
 // - the default user agent for ESI requests
 
-const NEUCORE_VERSION = '2.8.0';
+const NEUCORE_VERSION = '2.9.0-dev';
