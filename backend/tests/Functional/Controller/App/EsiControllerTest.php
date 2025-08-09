@@ -366,9 +366,15 @@ class EsiControllerTest extends WebTestCase
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY])->getId();
         $headers = ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')];
 
-        $response1 = $this->runApp('GET', '/api/app/v2/esi/latest/alliances/', null, $headers);
-        $this->assertSame(400, $response1?->getStatusCode());
-        $this->assertSame('"Public ESI routes are not allowed."', $response1->getBody()->__toString());
+        // without a slash at the end (new openapi definition)
+        $response1a = $this->runApp('GET', '/api/app/v2/esi/latest/alliances', null, $headers);
+        $this->assertSame(400, $response1a?->getStatusCode());
+        $this->assertSame('"Public ESI routes are not allowed."', $response1a->getBody()->__toString());
+
+        // with a slash at the end (old swagger definition)
+        $response1b = $this->runApp('GET', '/api/app/v2/esi/latest/alliances/', null, $headers);
+        $this->assertSame(400, $response1b?->getStatusCode());
+        $this->assertSame('"Public ESI routes are not allowed."', $response1b->getBody()->__toString());
 
         $response2 = $this->runApp(
             'GET',

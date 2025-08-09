@@ -778,10 +778,10 @@ class EsiController extends BaseController
     private function getEsiPathWithQueryParams(ServerRequestInterface $request, ?string $path): string
     {
         if (empty($path)) {
-            // for URLs like: /api/app/v2/esi?esi-path-query=%2Fv3%2Fcharacters%2F96061222%2Fassets%2F%3Fpage%3D1
+            // for URLs like: /api/app/v2/esi?esi-path-query=%2Fcharacters%2F96061222%2Fassets%3Fpage%3D1
             $esiPath = $this->getQueryParam($request, 'esi-path-query', '');
         } else {
-            // for URLs like /api/app/v2/esi/v3/characters/96061222/assets/?datasource=96061222&page=1
+            // for URLs like /api/app/v2/esi/characters/96061222/assets?datasource=96061222&page=1
             $esiPath = $path;
             $esiParams = [];
             foreach ($request->getQueryParams() as $key => $value) {
@@ -815,7 +815,7 @@ class EsiController extends BaseController
         $publicPaths = Application::loadFile('esi-paths-public.php');
 
         foreach ($publicPaths as $pattern) {
-            if (preg_match("@^$pattern$@", $path) === 1) {
+            if (preg_match("@^$pattern(/)?$@", $path) === 1) {
                 return true;
             }
         }
