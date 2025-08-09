@@ -55,8 +55,6 @@ class EsiData
      */
     private ?string $errorConfiguration = null;
 
-    private \DateTime $compatibilityDate;
-
     public function __construct(
         LoggerInterface $log,
         EsiApiFactory $esiApiFactory,
@@ -71,12 +69,6 @@ class EsiData
         $this->repositoryFactory = $repositoryFactory;
         $this->characterService = $characterService;
         $this->config = $config;
-
-        try {
-            $this->compatibilityDate = new \DateTime($config['eve']['esi_compatibility_date']);
-        } catch (\Exception) {
-            // This will not happen.
-        }
     }
 
     public function getLastErrorCode(): ?int
@@ -272,8 +264,7 @@ class EsiData
         // get data from ESI
         $this->lastErrorCode = null;
         try {
-            $eveCorp = $this->esiApiFactory->getCorporationApi()
-                ->getCorporationsCorporationId($id, $this->compatibilityDate);
+            $eveCorp = $this->esiApiFactory->getCorporationApi()->getCorporationsCorporationId($id);
         } catch (\Exception $e) {
             $this->lastErrorCode = $e->getCode();
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
@@ -531,7 +522,7 @@ class EsiData
 
         try {
             $members = $this->esiApiFactory->getCorporationApi($accessToken)
-                ->getCorporationsCorporationIdMembers($id, $this->compatibilityDate);
+                ->getCorporationsCorporationIdMembers($id);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             $members = [];
