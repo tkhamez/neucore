@@ -307,15 +307,19 @@ class AccountTest extends TestCase
         $this->assertSame('name corp', $character->getCorporation()->getName());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testUpdateAndStoreCharacterWithPlayer_DoesNotReplaceValidTokenWithNoScopesToken()
     {
         $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         // Test against valid token (i.e. it would have scopes)
-        $existingToken = (new EsiToken())->setEveLogin($eveLogin)
-            ->setRefreshToken('rt')->setAccessToken('at-existing-token')->setExpires(123)->setValidToken(true);
+        $existingToken = (new EsiToken())->setEveLogin($eveLogin)->setRefreshToken('rt')
+            ->setAccessToken('at-existing-token')->setExpires(123)->setValidToken(true);
         $corp = (new Corporation())->setId(1);
         $player = (new Player())->setName('p-name');
         $char = (new Character())->setName('c-name')->setId(12)->setPlayer($player)->setCorporation($corp);
+        $char->addEsiToken($existingToken);
         $existingToken->setCharacter($char);
         $this->om->persist($eveLogin);
         $this->om->persist($existingToken);
@@ -324,18 +328,32 @@ class AccountTest extends TestCase
         $this->om->persist($char);
         $this->om->flush();
 
-        // Pass in new token with no scopes
-        $token = Helper::generateToken([]);
+        // Pass in a new token with no scopes
+        $scopes = [];
+        $token = Helper::generateToken($scopes);
         $result = $this->service->updateAndStoreCharacterWithPlayer(
             $char,
-            new EveAuthentication(100, '', '', new AccessToken(['access_token' => $token[0]])),
+            new EveAuthentication(
+                100,
+                '',
+                '',
+                new AccessToken([
+                    'access_token' => $token[0],
+                    'refresh_token' => 'rt',
+                    'expires' => time() + 1000,
+                ]),
+                $scopes,
+            ),
         );
         $this->assertTrue($result);
         $this->om->clear();
 
         // We expect the token to still be the initial valid token, not the no-scopes token
         $updatedCharacter = $this->charRepo->find(12);
-        $this->assertSame('at-existing-token', $updatedCharacter->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken());
+        $this->assertSame(
+            'at-existing-token',
+            $updatedCharacter?->getEsiToken(EveLogin::NAME_DEFAULT)?->getAccessToken()
+        );
     }
 
     public function testUpdateAndStoreCharacterWithPlayer_NoToken()
