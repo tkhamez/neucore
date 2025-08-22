@@ -79,7 +79,6 @@ class SettingsControllerTest extends WebTestCase
                 'client_id' => '123',
                 'secret_key' => 'abc',
                 'callback_url' => 'https://example.com',
-                'datasource' => 'tranquility',
                 'esi_host' => 'https://esi.evetech.net',
                 'oauth_verify_signature' => true,
                 'esi_compatibility_date' => '2025-07-11',
@@ -97,7 +96,7 @@ class SettingsControllerTest extends WebTestCase
         $this->em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
-    public function testSystemList200Anonymous()
+    public function testSystemList200Anonymous(): void
     {
         $this->setupDb(false);
 
@@ -110,12 +109,11 @@ class SettingsControllerTest extends WebTestCase
             null,
             [LoggerInterface::class => $this->logger, Config::class => $this->config],
         );
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(200, $response?->getStatusCode());
         $this->assertSame([
             ['name' => SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES, 'value' => '11'],
             ['name' => SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS, 'value' => '101'],
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
-            ['name' => 'esiDataSource', 'value' => 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
             ['name' => 'esiCompatibilityDate', 'value' => '2025-07-11'],
             ['name' => 'navigationShowGroups', 'value' => '0'],
@@ -128,7 +126,7 @@ class SettingsControllerTest extends WebTestCase
         ], $this->parseJsonBody($response));
     }
 
-    public function testSystemList200Authenticated()
+    public function testSystemList200Authenticated(): void
     {
         $this->setupDb();
         $this->loginUser(5); // role: USER, GROUP_MANAGER; groups: g1
@@ -142,12 +140,11 @@ class SettingsControllerTest extends WebTestCase
             null,
             [LoggerInterface::class => $this->logger, Config::class => $this->config],
         );
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(200, $response?->getStatusCode());
         $this->assertSame([
             ['name' => SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES, 'value' => '11'],
             ['name' => SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS, 'value' => '101'],
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
-            ['name' => 'esiDataSource', 'value' => $_ENV['NEUCORE_EVE_DATASOURCE'] ?? 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
             ['name' => 'esiCompatibilityDate', 'value' => '2025-07-11'],
             ['name' => 'navigationShowGroups', 'value' => '1'],
@@ -179,7 +176,7 @@ class SettingsControllerTest extends WebTestCase
         ], $this->logger->getMessages());
     }
 
-    public function testSystemList200AuthenticatedGroupsDeactivated()
+    public function testSystemList200AuthenticatedGroupsDeactivated(): void
     {
         $this->setupDb();
         $this->loginUser(51); // role: USER; groups: g1, but deactivated
@@ -192,15 +189,15 @@ class SettingsControllerTest extends WebTestCase
             [LoggerInterface::class => $this->logger],
             [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/SettingsController']],
         );
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(200, $response?->getStatusCode());
         $parsedBody = $this->parseJsonBody($response);
         $this->assertSame([
             'name' => 'navigationGeneralPlugins', 'value' => \json_encode([]), // had t4 with active groups
-        ], $parsedBody[8]);
+        ], $parsedBody[7]);
 
     }
 
-    public function testSystemList200RoleSetting()
+    public function testSystemList200RoleSetting(): void
     {
         $this->setupDb();
         $this->loginUser(6); // roles: USER, GROUP_MANAGER, SETTINGS; groups: none
@@ -214,7 +211,7 @@ class SettingsControllerTest extends WebTestCase
             null,
             [LoggerInterface::class => $this->logger, Config::class => $this->config],
         );
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(200, $response?->getStatusCode());
         $this->assertSame([
             ['name' => SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES, 'value' => '11'],
             ['name' => SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS, 'value' => '101'],
@@ -223,7 +220,6 @@ class SettingsControllerTest extends WebTestCase
             ['name' => SystemVariable::DISABLE_ALT_LOGIN, 'value' => '0'],
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
             ['name' => SystemVariable::MAIL_CHARACTER, 'value' => 'The char'],
-            ['name' => 'esiDataSource', 'value' => $_ENV['NEUCORE_EVE_DATASOURCE'] ?? 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
             ['name' => 'esiCompatibilityDate', 'value' => '2025-07-11'],
             ['name' => 'navigationShowGroups', 'value' => '1'],
@@ -236,14 +232,14 @@ class SettingsControllerTest extends WebTestCase
         ], $this->parseJsonBody($response));
     }
 
-    public function testSystemChange403()
+    public function testSystemChange403(): void
     {
         $response1 = $this->runApp(
             'PUT',
             '/api/user/settings/system/change/' . SystemVariable::ALLOW_CHARACTER_DELETION,
             ['value' => '1'],
         );
-        $this->assertEquals(403, $response1->getStatusCode());
+        $this->assertEquals(403, $response1?->getStatusCode());
 
         $this->setupDb();
         $this->loginUser(5); // role: USER
@@ -253,10 +249,10 @@ class SettingsControllerTest extends WebTestCase
             '/api/user/settings/system/change/' . SystemVariable::ALLOW_CHARACTER_DELETION,
             ['value' => '1'],
         );
-        $this->assertEquals(403, $response2->getStatusCode());
+        $this->assertEquals(403, $response2?->getStatusCode());
     }
 
-    public function testSystemChange404InvalidName()
+    public function testSystemChange404InvalidName(): void
     {
         $this->setupDb();
         $this->loginUser(6); // role: SETTINGS
@@ -266,10 +262,10 @@ class SettingsControllerTest extends WebTestCase
             '/api/user/settings/system/change/' . SystemVariable::MAIL_TOKEN,
             ['value' => ''],
         );
-        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals(404, $response?->getStatusCode());
     }
 
-    public function testSystemChange404InvalidScope()
+    public function testSystemChange404InvalidScope(): void
     {
         $this->setupDb();
         $this->loginUser(6); // role: SETTINGS
@@ -279,10 +275,10 @@ class SettingsControllerTest extends WebTestCase
             '/api/user/settings/system/change/invalid-name',
             ['value' => '1'],
         );
-        $this->assertEquals(404, $response2->getStatusCode());
+        $this->assertEquals(404, $response2?->getStatusCode());
     }
 
-    public function testSystemChange500()
+    public function testSystemChange500(): void
     {
         $this->setupDb();
         $this->loginUser(6); // role: SETTINGS
@@ -296,10 +292,10 @@ class SettingsControllerTest extends WebTestCase
             null,
             [ObjectManager::class => $this->em, LoggerInterface::class => $this->logger],
         );
-        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertEquals(500, $response?->getStatusCode());
     }
 
-    public function testSystemChange200()
+    public function testSystemChange200(): void
     {
         $this->setupDb();
         $this->loginUser(6); // role: SETTINGS
@@ -310,7 +306,7 @@ class SettingsControllerTest extends WebTestCase
             ['value' => '1'],
             ['Content-Type' => 'application/x-www-form-urlencoded'],
         );
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(200, $response?->getStatusCode());
 
         $this->assertSame(
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '1'],
@@ -319,10 +315,10 @@ class SettingsControllerTest extends WebTestCase
 
         $this->em->clear();
         $changed = $this->systemVariableRepository->find(SystemVariable::ALLOW_CHARACTER_DELETION);
-        $this->assertSame("1", $changed->getValue());
+        $this->assertSame("1", $changed?->getValue());
     }
 
-    public function testSystemChange200MailCharacterIsRemoveOnlyAndAlsoRemovesToken()
+    public function testSystemChange200MailCharacterIsRemoveOnlyAndAlsoRemovesToken(): void
     {
         $this->setupDb();
         $this->loginUser(6); // role: SETTINGS
@@ -332,34 +328,34 @@ class SettingsControllerTest extends WebTestCase
             '/api/user/settings/system/change/' . SystemVariable::MAIL_CHARACTER,
             ['value' => 'does-not-matter'],
         );
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(200, $response?->getStatusCode());
 
         $this->em->clear();
 
         $changed1 = $this->systemVariableRepository->find(SystemVariable::MAIL_CHARACTER);
         $changed2 = $this->systemVariableRepository->find(SystemVariable::MAIL_TOKEN);
-        $this->assertSame('', $changed1->getValue());
-        $this->assertSame('', $changed2->getValue());
+        $this->assertSame('', $changed1?->getValue());
+        $this->assertSame('', $changed2?->getValue());
     }
 
-    public function testSendInvalidTokenMail403()
+    public function testSendInvalidTokenMail403(): void
     {
         $response = $this->runApp('POST', '/api/user/settings/system/send-invalid-token-mail');
-        $this->assertEquals(403, $response->getStatusCode());
+        $this->assertEquals(403, $response?->getStatusCode());
     }
 
-    public function testSendInvalidTokenMail200Deactivated()
+    public function testSendInvalidTokenMail200Deactivated(): void
     {
         $this->setupDb();
         $this->loginUser(6); // role: SETTINGS
 
         $response = $this->runApp('POST', '/api/user/settings/system/send-invalid-token-mail');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(200, $response?->getStatusCode());
 
         $this->assertSame('Mail is deactivated.', $this->parseJsonBody($response));
     }
 
-    public function testSendInvalidTokenMail200MissingSettings()
+    public function testSendInvalidTokenMail200MissingSettings(): void
     {
         $var = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
         $this->em->persist($var);
@@ -368,12 +364,12 @@ class SettingsControllerTest extends WebTestCase
         $this->loginUser(6); // role: SETTINGS
 
         $response = $this->runApp('POST', '/api/user/settings/system/send-invalid-token-mail');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(200, $response?->getStatusCode());
 
         $this->assertSame('Alliance and/or Corporation settings variable not found.', $this->parseJsonBody($response));
     }
 
-    public function testSendInvalidTokenMail200MissingChar()
+    public function testSendInvalidTokenMail200MissingChar(): void
     {
         $var1 = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
         $var2 = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('123,456');
@@ -386,24 +382,24 @@ class SettingsControllerTest extends WebTestCase
         $this->loginUser(6); // role: SETTINGS
 
         $response = $this->runApp('POST', '/api/user/settings/system/send-invalid-token-mail');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(200, $response?->getStatusCode());
 
         $this->assertSame('Missing subject or body text.', $this->parseJsonBody($response));
     }
 
-    public function testMissingCharacterMail403()
+    public function testMissingCharacterMail403(): void
     {
         $response = $this->runApp('POST', '/api/user/settings/system/send-missing-character-mail');
-        $this->assertEquals(403, $response->getStatusCode());
+        $this->assertEquals(403, $response?->getStatusCode());
     }
 
-    public function testMissingCharacterMail200()
+    public function testMissingCharacterMail200(): void
     {
         $this->setupDb();
         $this->loginUser(6); // role: SETTINGS
 
         $response1 = $this->runApp('POST', '/api/user/settings/system/send-missing-character-mail');
-        $this->assertEquals(200, $response1->getStatusCode());
+        $this->assertEquals(200, $response1?->getStatusCode());
         $this->assertSame('Mail is deactivated.', $this->parseJsonBody($response1));
 
         $activeVar = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_ACTIVE))->setValue('1');
@@ -412,7 +408,7 @@ class SettingsControllerTest extends WebTestCase
         $this->em->clear();
 
         $response2 = $this->runApp('POST', '/api/user/settings/system/send-missing-character-mail');
-        $this->assertEquals(200, $response2->getStatusCode());
+        $this->assertEquals(200, $response2?->getStatusCode());
         $this->assertSame('Invalid config.', $this->parseJsonBody($response2));
 
         $daysVar = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_RESEND))->setValue('20');
@@ -431,7 +427,7 @@ class SettingsControllerTest extends WebTestCase
         $response3 = $this->runApp('POST', '/api/user/settings/system/send-missing-character-mail', null, null, [
             HttpClientFactoryInterface::class => new HttpClientFactory($client),
         ]);
-        $this->assertEquals(200, $response3->getStatusCode());
+        $this->assertEquals(200, $response3?->getStatusCode());
         $this->assertSame('', $this->parseJsonBody($response3)); // success
     }
 

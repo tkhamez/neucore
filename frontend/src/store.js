@@ -28,7 +28,6 @@ const state = reactive({
      * @var {object}
      */
     settings: {
-        esiDataSource: '',
         esiHost: '',
         esiCompatibilityDate: '',
 

@@ -598,7 +598,6 @@ class Helper
     private static function getConfig(string $compatibilityDate = ''): config
     {
         return new Config(['eve' => [
-            'datasource' => '',
             'esi_host' => '',
             'esi_compatibility_date' => $compatibilityDate,
         ]]);

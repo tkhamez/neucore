@@ -81,9 +81,6 @@ class SettingsController extends BaseController
         $result = $settingsRepository->findBy(['scope' => $scopes], [self::COLUMN_NAME => 'ASC']);
         $result = array_merge($result, [
             [
-                self::COLUMN_NAME => 'esiDataSource',
-                self::COLUMN_VALUE => $config['eve']['datasource'],
-            ], [
                 self::COLUMN_NAME => 'esiHost',
                 self::COLUMN_VALUE => $config['eve']['esi_host'],
             ], [

@@ -5,6 +5,8 @@
 dd mm yyyy
 
 - The alternative SSO login, which does not require scopes, no longer replaces refresh tokens with scopes.
+- The environment variable NEUCORE_EVE_DATASOURCE has been removed. It is now always "tranquility", 
+  which was previously the default setting.
 - Added the "Accept-Language" header to the ESI proxy.
 
 ## 2.8.0

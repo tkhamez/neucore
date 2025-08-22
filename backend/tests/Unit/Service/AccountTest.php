@@ -129,7 +129,7 @@ class AccountTest extends TestCase
         $repoFactory = new RepositoryFactory($this->om);
 
         $config = new Config([
-            'eve' => ['datasource' => '', 'esi_host' => '', 'esi_compatibility_date' => ''],
+            'eve' => ['esi_host' => '', 'esi_compatibility_date' => ''],
             'plugins_install_dir' => __DIR__ . '/Account',
         ]);
         $this->service = $this->helper->getAccountService($this->log, $this->client, $config);

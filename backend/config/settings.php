@@ -7,7 +7,6 @@ use Neucore\Application;
 return [
 
     'env_var_defaults' => [
-        'NEUCORE_EVE_DATASOURCE'    => 'tranquility',
         'NEUCORE_USER_AGENT'        => 'Neucore/' . NEUCORE_VERSION . ' (https://github.com/tkhamez/neucore)',
         'NEUCORE_LOG_PATH'          => Application::ROOT_DIR . '/var/logs',
         'NEUCORE_LOG_ROTATION'      => 'weekly',
@@ -59,7 +58,6 @@ return [
         'secret_key'   => '${NEUCORE_EVE_SECRET_KEY}',
         'callback_url' => '${NEUCORE_EVE_CALLBACK_URL}',
         'scopes'       => '${NEUCORE_EVE_SCOPES}',
-        'datasource'   => '${NEUCORE_EVE_DATASOURCE}',
         'esi_host'     => 'https://esi.evetech.net',
         'oauth_urls'   => [], // only used for tests
         'oauth_verify_signature' => true,

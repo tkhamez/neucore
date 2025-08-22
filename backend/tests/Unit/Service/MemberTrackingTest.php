@@ -48,7 +48,6 @@ class MemberTrackingTest extends TestCase
         $objectManager = new ObjectManager($this->om, $logger);
         $this->repositoryFactory = new RepositoryFactory($this->om);
         $config = new Config(['eve' => [
-            'datasource' => '',
             'esi_host' => '',
             'esi_compatibility_date' => '',
         ]]);

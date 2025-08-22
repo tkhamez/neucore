@@ -50,7 +50,6 @@ class EveMailTest extends TestCase
         $logger = new Logger('test');
         $objManager = new ObjectManager($this->om, $logger);
         $config = new Config(['eve' => [
-            'datasource' => '',
             'esi_host' => '',
             'esi_compatibility_date' => '',
         ]]);

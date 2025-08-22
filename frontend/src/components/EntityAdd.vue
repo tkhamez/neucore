@@ -97,7 +97,7 @@ const searchAlliCorpDelayed = _.debounce((vm, query) => {
 
     vm.searchIsLoading = true;
     vm.searchResults = [];
-    vm.h.fetch(`${vm.settings.esiHost}/latest/universe/ids?datasource=${vm.settings.esiDataSource}`, {
+    vm.h.fetch(`${vm.settings.esiHost}/latest/universe/ids`, {
         method: 'POST',
         headers: {
             'X-Compatibility-Date': vm.settings.esiCompatibilityDate

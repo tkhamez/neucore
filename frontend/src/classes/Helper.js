@@ -90,10 +90,6 @@ export default class Helper {
     }
 
     characterPortrait(id, size) {
-        if (this.vm.globalStore.state.settings.esiDataSource === 'singularity') {
-            // there are no character images on Sisi at the moment.
-            return portrait;
-        }
         return `${Data.envVars.eveImageServer}/characters/${id}/portrait?size=${size}&tenant=tranquility`;
     }
 }

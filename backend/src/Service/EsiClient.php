@@ -83,9 +83,7 @@ class EsiClient
         ?string $compatibilityDate = null,
         ?string $acceptLanguage = null,
     ): ResponseInterface {
-        $url = $this->config['eve']['esi_host'] . $esiPath .
-            (strpos($esiPath, '?') ? '&' : '?') .
-            'datasource=' . $this->config['eve']['datasource'];
+        $url = $this->config['eve']['esi_host'] . $esiPath;
 
         $header = [];
         if ($characterId) {
