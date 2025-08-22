@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8ca12ce3691e3d1db92acf1829fa6d66",
+    "content-hash": "8a18d5a656eeca4b0cafc05fb2586328",
     "packages": [
         {
             "name": "brick/math",
@@ -4880,65 +4880,6 @@
                 "source": "https://github.com/tkhamez/slim-role-auth/tree/5.1.0"
             },
             "time": "2024-11-23T15:27:02+00:00"
-        },
-        {
-            "name": "tkhamez/swagger-eve-php",
-            "version": "11.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/tkhamez/swagger-eve-php.git",
-                "reference": "cecba7b2d2cefb2ef00de95f6ce9ce94c1fd311c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/cecba7b2d2cefb2ef00de95f6ce9ce94c1fd311c",
-                "reference": "cecba7b2d2cefb2ef00de95f6ce9ce94c1fd311c",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "ext-json": "*",
-                "ext-mbstring": "*",
-                "guzzlehttp/guzzle": "^7.3",
-                "guzzlehttp/psr7": "^1.7 || ^2.0",
-                "php": "^8.1"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.5",
-                "phpunit/phpunit": "^8.0 || ^9.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Swagger\\Client\\Eve\\": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "OpenAPI",
-                    "homepage": "https://openapi-generator.tech"
-                }
-            ],
-            "description": "An OpenAPI Client Library for EVE Online (ESI)",
-            "homepage": "https://openapi-generator.tech",
-            "keywords": [
-                "api",
-                "openapi",
-                "openapi-generator",
-                "openapitools",
-                "php",
-                "rest",
-                "sdk"
-            ],
-            "support": {
-                "issues": "https://github.com/tkhamez/swagger-eve-php/issues",
-                "source": "https://github.com/tkhamez/swagger-eve-php/tree/11.0.0"
-            },
-            "time": "2025-07-12T12:51:12+00:00"
         },
         {
             "name": "web-token/jwt-library",
