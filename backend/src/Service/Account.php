@@ -160,10 +160,18 @@ class Account
             $this->objectManager->persist($esiToken);
         }
         if (is_numeric($token->getExpires()) && is_string($token->getRefreshToken())) {
-            $esiToken->setAccessToken($token->getToken());
-            $esiToken->setExpires($token->getExpires());
-            $esiToken->setRefreshToken($token->getRefreshToken());
-            $esiToken->setLastChecked(new \DateTime());
+            if (count($eveAuth->getScopes()) === 0 && $esiToken->getValidToken() === true) {
+                // Avoid replacing an existing valid token (i.e. one with at least one scope) with one that has no scopes
+                // This prevents players that login with the no-scopes login (commonly intended for allies) from bricking their groups
+                $this->log->debug(
+                    "Account::updateAndStoreCharacterWithPlayer: Skipped updating token for {$char->getId()} because it would replace a valid token with a no-scopes token.",
+                );
+            } else {
+                $esiToken->setAccessToken($token->getToken());
+                $esiToken->setExpires($token->getExpires());
+                $esiToken->setRefreshToken($token->getRefreshToken());
+                $esiToken->setLastChecked(new \DateTime());
+            }
         } else {
             $char->removeEsiToken($esiToken);
             $this->objectManager->remove($esiToken);
