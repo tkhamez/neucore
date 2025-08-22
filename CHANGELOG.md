@@ -7,6 +7,8 @@ dd mm yyyy
 - The alternative SSO login, which does not require scopes, no longer replaces refresh tokens with scopes.
 - The environment variable NEUCORE_EVE_DATASOURCE has been removed. It is now always "tranquility", 
   which was previously the default setting.
+- The ESI client [tkhamez/swagger-eve-php](https://github.com/tkhamez/swagger-eve-php) has been replaced by 
+  [tkhamez/eve-api](https://github.com/tkhamez/eve-api-php), which uses the new OpenAPI 3.1 specification.
 - Added the "Accept-Language" header to the ESI proxy.
 
 ## 2.8.0
