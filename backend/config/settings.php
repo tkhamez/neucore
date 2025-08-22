@@ -61,6 +61,9 @@ return [
         'esi_host'     => 'https://esi.evetech.net',
         'oauth_urls'   => [], // only used for tests
         'oauth_verify_signature' => true,
+
+        // If the date it changed here, it must also be changed in esi-paths.js and
+        // esi-paths-public.php.
         'esi_compatibility_date' => '2020-01-01',
     ],
 

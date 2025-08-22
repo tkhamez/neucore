@@ -3,7 +3,8 @@
 
 declare(strict_types=1);
 
-$openapi = file_get_contents('https://esi.evetech.net/meta/openapi.json');
+$compatDate = '2020-01-01'; // Same date as in settings.php.
+$openapi = file_get_contents("https://esi.evetech.net/meta/openapi.json?compatibility_date=$compatDate");
 if (!$openapi) {
     echo "Error reading openapi.json", PHP_EOL;
     exit(1);

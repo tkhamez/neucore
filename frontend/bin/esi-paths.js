@@ -5,7 +5,8 @@
 const https = require('https');
 const fs = require('fs');
 
-https.get('https://esi.evetech.net/meta/openapi.json', response => {
+const compatDate = '2020-01-01'; // Same date as in settings.php.
+https.get(`https://esi.evetech.net/meta/openapi.json?compatibility_date=${compatDate}`, response => {
     let data = '';
     response.on('data', chunk => {
         data += chunk;
