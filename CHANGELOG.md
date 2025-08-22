@@ -4,6 +4,7 @@
 
 dd mm yyyy
 
+- The alternative SSO login, which does not require scopes, no longer replaces refresh tokens with scopes.
 - Added the "Accept-Language" header to the ESI proxy.
 
 ## 2.8.0
