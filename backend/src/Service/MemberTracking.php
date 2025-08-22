@@ -13,8 +13,8 @@ use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Psr\Log\LoggerInterface;
-use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 use Tkhamez\Eve\API\Model\CorporationsCorporationIdMembertrackingGetInner;
+use Tkhamez\Eve\API\Model\UniverseNamesPostInner;
 
 class MemberTracking
 {
@@ -37,7 +37,6 @@ class MemberTracking
         EntityManager $entityManager,
         EsiData $esiData,
         OAuthToken $oauthToken,
-        Config $config,
     ) {
         $this->log = $log;
         $this->esiApiFactory = $esiApiFactory;
@@ -81,7 +80,7 @@ class MemberTracking
     public function updateNames(array $typeIds, array $systemIds, array $stationIds, int $sleep = 0): void
     {
         // get ESI data
-        $esiNames = []; /* @var PostUniverseNames200Ok[] $esiNames */
+        $esiNames = []; /* @var UniverseNamesPostInner[] $esiNames */
 
         // Do not request different types at once, that may lead to errors from ESI.
         $typeNames = $this->esiData->fetchUniverseNames($typeIds);
@@ -90,9 +89,9 @@ class MemberTracking
 
         foreach (array_merge($typeNames, $systemNames, $stationNames) as $name) {
             if (!in_array($name->getCategory(), [
-                PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE,
-                PostUniverseNames200Ok::CATEGORY_SOLAR_SYSTEM,
-                PostUniverseNames200Ok::CATEGORY_STATION,
+                UniverseNamesPostInner::CATEGORY_INVENTORY_TYPE,
+                UniverseNamesPostInner::CATEGORY_SOLAR_SYSTEM,
+                UniverseNamesPostInner::CATEGORY_STATION,
             ])) {
                 continue;
             }
@@ -101,20 +100,20 @@ class MemberTracking
 
         // create database entries
         $allIds = [
-            PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE => $typeIds,
+            UniverseNamesPostInner::CATEGORY_INVENTORY_TYPE => $typeIds,
             EsiLocation::CATEGORY_SYSTEM => $systemIds,
             EsiLocation::CATEGORY_STATION => $stationIds,
         ];
         $num = 0;
         foreach ($allIds as $category => $ids) {
             foreach ($ids as $id) {
-                if ($category === PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE) {
+                if ($category === UniverseNamesPostInner::CATEGORY_INVENTORY_TYPE) {
                     $entity = $this->repositoryFactory->getEsiTypeRepository()->find($id);
                 } else {
                     $entity = $this->repositoryFactory->getEsiLocationRepository()->find($id);
                 }
                 if ($entity === null) {
-                    if ($category === PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE) {
+                    if ($category === UniverseNamesPostInner::CATEGORY_INVENTORY_TYPE) {
                         $entity = new EsiType();
                     } else {
                         $entity = new EsiLocation();

@@ -22,13 +22,13 @@ use Neucore\Service\ObjectManager;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;
 use PHPUnit\Framework\TestCase;
-use Swagger\Client\Eve\ApiException;
-use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 use Tests\Helper;
 use Tests\Client;
 use Tests\HttpClientFactory;
 use Tests\Logger;
 use Tests\WriteErrorListener;
+use Tkhamez\Eve\API\ApiException;
+use Tkhamez\Eve\API\Model\UniverseNamesPostInner;
 
 class EsiDataTest extends TestCase
 {
@@ -80,7 +80,7 @@ class EsiDataTest extends TestCase
         $this->em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
-    public function testFetchCharacterWithCorporationAndAlliance_CharInvalid()
+    public function testFetchCharacterWithCorporationAndAlliance_CharInvalid(): void
     {
         $this->client->setResponse(
             new Response(404),
@@ -90,7 +90,7 @@ class EsiDataTest extends TestCase
         $this->assertNull($char);
     }
 
-    public function testFetchCharacterWithCorporationAndAlliance_CorpError()
+    public function testFetchCharacterWithCorporationAndAlliance_CorpError(): void
     {
         $this->testHelper->emptyDb();
         $this->testHelper->addCharacterMain('newChar', 10);
@@ -111,7 +111,7 @@ class EsiDataTest extends TestCase
         $this->assertNull($char);
     }
 
-    public function testFetchCharacterWithCorporationAndAlliance_AlliError()
+    public function testFetchCharacterWithCorporationAndAlliance_AlliError(): void
     {
         $this->testHelper->emptyDb();
         $this->testHelper->addCharacterMain('newChar', 10);
@@ -138,7 +138,7 @@ class EsiDataTest extends TestCase
         $this->assertNull($char);
     }
 
-    public function testFetchCharacterWithCorporationAndAlliance_Ok()
+    public function testFetchCharacterWithCorporationAndAlliance_Ok(): void
     {
         $this->testHelper->emptyDb();
         $this->testHelper->addCharacterMain('newChar', 10);
@@ -165,19 +165,19 @@ class EsiDataTest extends TestCase
         );
 
         $char = $this->esiData->fetchCharacterWithCorporationAndAlliance(10);
-        $this->assertSame('char name', $char->getName());
+        $this->assertSame('char name', $char?->getName());
         $this->assertSame('char name', $char->getPlayer()->getName());
-        $this->assertSame('corp name', $char->getCorporation()->getName());
-        $this->assertSame('alli name', $char->getCorporation()->getAlliance()->getName());
+        $this->assertSame('corp name', $char->getCorporation()?->getName());
+        $this->assertSame('alli name', $char->getCorporation()->getAlliance()?->getName());
     }
 
-    public function testFetchCharacter_InvalidId()
+    public function testFetchCharacter_InvalidId(): void
     {
         $char = $this->esiData->fetchCharacter(-1);
         $this->assertNull($char);
     }
 
-    public function testFetchCharacter_NotInDB()
+    public function testFetchCharacter_NotInDB(): void
     {
         $this->testHelper->emptyDb();
 
@@ -185,7 +185,7 @@ class EsiDataTest extends TestCase
         $this->assertNull($char);
     }
 
-    public function testFetchCharacter_404NotFound()
+    public function testFetchCharacter_404NotFound(): void
     {
         $this->testHelper->emptyDb();
         $this->testHelper->addCharacterMain('newChar', 123);
@@ -197,7 +197,7 @@ class EsiDataTest extends TestCase
         $this->assertStringStartsWith('Error JSON decoding server response', $this->log->getMessages()[0]);
     }
 
-    public function testFetchCharacter_404Deleted()
+    public function testFetchCharacter_404Deleted(): void
     {
         $this->testHelper->emptyDb();
         $char = $this->testHelper->addCharacterMain('old char name', 123);
@@ -211,20 +211,20 @@ class EsiDataTest extends TestCase
 
         $this->assertFalse(isset($this->log->getMessages()[0]));
 
-        $this->assertSame(123, $char->getId());
+        $this->assertSame(123, $char?->getId());
         $this->assertSame('old char name', $char->getName());
-        $this->assertSame(EsiData::CORPORATION_DOOMHEIM_ID, $char->getCorporation()->getId());
+        $this->assertSame(EsiData::CORPORATION_DOOMHEIM_ID, $char->getCorporation()?->getId());
         $this->assertNull($char->getCorporation()->getName());
 
         $this->em->clear();
         $charDb = $this->repoFactory->getCharacterRepository()->find(123);
-        $this->assertSame(EsiData::CORPORATION_DOOMHEIM_ID, $charDb->getCorporation()->getId());
-        $this->assertSame('UTC', $charDb->getLastUpdate()->getTimezone()->getName());
+        $this->assertSame(EsiData::CORPORATION_DOOMHEIM_ID, $charDb?->getCorporation()?->getId());
+        $this->assertSame('UTC', $charDb->getLastUpdate()?->getTimezone()->getName());
         $this->assertGreaterThan('2021-11-15 14:29:31', $charDb->getLastUpdate()->format('Y-m-d H:i:s'));
         $this->assertSame('old char name', $charDb->getName());
     }
 
-    public function testFetchCharacter_AffiliationDeleted()
+    public function testFetchCharacter_AffiliationDeleted(): void
     {
         $this->testHelper->emptyDb();
         $char = $this->testHelper->addCharacterMain('old char name', 123);
@@ -244,17 +244,17 @@ class EsiDataTest extends TestCase
         $char = $this->esiData->fetchCharacter(123);
         $this->em->flush();
 
-        $this->assertFalse(isset($this->log->getHandler()->getRecords()[0]));
+        $this->assertFalse(isset($this->log->getHandler()?->getRecords()[0]));
 
-        $this->assertSame(123, $char->getId());
+        $this->assertSame(123, $char?->getId());
         $this->assertSame('new char name', $char->getName());
-        $this->assertSame(EsiData::CORPORATION_DOOMHEIM_ID, $char->getCorporation()->getId());
+        $this->assertSame(EsiData::CORPORATION_DOOMHEIM_ID, $char->getCorporation()?->getId());
     }
 
     /**
      * @throws \Exception
      */
-    public function testFetchCharacter_NoFlush()
+    public function testFetchCharacter_NoFlush(): void
     {
         $this->testHelper->emptyDb();
         $char = $this->testHelper->addCharacterMain('newChar', 123);
@@ -273,20 +273,20 @@ class EsiDataTest extends TestCase
         );
 
         $char = $this->esiData->fetchCharacter(123, false);
-        $this->assertSame(123, $char->getId());
+        $this->assertSame(123, $char?->getId());
         $this->assertSame('new corp', $char->getName());
-        $this->assertSame(234, $char->getCorporation()->getId());
+        $this->assertSame(234, $char->getCorporation()?->getId());
         $this->assertNull($char->getCorporation()->getName());
 
         $this->em->clear();
         $charDb = $this->repoFactory->getCharacterRepository()->find(123);
-        $this->assertNull($charDb->getCorporation());
+        $this->assertNull($charDb?->getCorporation());
     }
 
     /**
      * @throws \Exception
      */
-    public function testFetchCharacter_Ok()
+    public function testFetchCharacter_Ok(): void
     {
         $this->testHelper->emptyDb();
         $char = $this->testHelper->addCharacterMain('old char name', 123);
@@ -305,23 +305,23 @@ class EsiDataTest extends TestCase
         );
 
         $char = $this->esiData->fetchCharacter(123);
-        $this->assertSame(123, $char->getId());
+        $this->assertSame(123, $char?->getId());
         $this->assertSame('new char name', $char->getName());
         $this->assertSame('old char name', $char->getCharacterNameChanges()[0]->getOldName());
-        $this->assertSame(234, $char->getCorporation()->getId());
+        $this->assertSame(234, $char->getCorporation()?->getId());
         $this->assertNull($char->getCorporation()->getName());
 
         $this->em->clear();
         $charDb = $this->repoFactory->getCharacterRepository()->find(123);
-        $this->assertSame(234, $charDb->getCorporation()->getId());
-        $this->assertSame('UTC', $charDb->getLastUpdate()->getTimezone()->getName());
+        $this->assertSame(234, $charDb?->getCorporation()?->getId());
+        $this->assertSame('UTC', $charDb->getLastUpdate()?->getTimezone()->getName());
         $this->assertGreaterThan('2018-03-26 17:24:30', $charDb->getLastUpdate()->format('Y-m-d H:i:s'));
         $this->assertSame('new char name', $charDb->getName());
         $this->assertSame(1, count($charDb->getCharacterNameChanges()));
         $this->assertSame('old char name', $charDb->getCharacterNameChanges()[0]->getOldName());
     }
 
-    public function testFetchCharacters_Affiliation()
+    public function testFetchCharacters_Affiliation(): void
     {
         $this->client->setResponse(new Response(200, [], '[{
             "alliance_id": 11,
@@ -343,13 +343,13 @@ class EsiDataTest extends TestCase
         $this->assertSame(null, $actual[1]->getAllianceId());
     }
 
-    public function testFetchCorporationInvalidId()
+    public function testFetchCorporationInvalidId(): void
     {
         $corp = $this->esiData->fetchCorporation(-1);
         $this->assertNull($corp);
     }
 
-    public function testFetchCorporationError500()
+    public function testFetchCorporationError500(): void
     {
         $this->client->setResponse(new Response(500));
 
@@ -358,7 +358,7 @@ class EsiDataTest extends TestCase
         $this->assertStringStartsWith('Error JSON decoding server response', $this->log->getMessages()[0]);
     }
 
-    public function testFetchCorporationNoFlushNoAlliance()
+    public function testFetchCorporationNoFlushNoAlliance(): void
     {
         $this->testHelper->emptyDb();
 
@@ -369,17 +369,17 @@ class EsiDataTest extends TestCase
         }'));
 
         $corp = $this->esiData->fetchCorporation(234, false);
-        $this->assertSame(234, $corp->getId());
+        $this->assertSame(234, $corp?->getId());
         $this->assertSame('The Corp.', $corp->getName());
         $this->assertSame('-HAT-', $corp->getTicker());
         $this->assertNull($corp->getAlliance());
 
         $this->em->clear();
         $corpDb = $this->repoFactory->getCorporationRepository()->find(234);
-        $this->assertNull($corpDb->getName());
+        $this->assertNull($corpDb?->getName());
     }
 
-    public function testFetchCorporation()
+    public function testFetchCorporation(): void
     {
         $this->testHelper->emptyDb();
 
@@ -396,22 +396,22 @@ class EsiDataTest extends TestCase
         );
 
         $corp = $this->esiData->fetchCorporation(234);
-        $this->assertSame(234, $corp->getId());
+        $this->assertSame(234, $corp?->getId());
         $this->assertSame('The Corp.', $corp->getName());
         $this->assertSame('-HAT-', $corp->getTicker());
-        $this->assertSame(345, $corp->getAlliance()->getId());
+        $this->assertSame(345, $corp->getAlliance()?->getId());
         $this->assertNull($corp->getAlliance()->getName());
         $this->assertNull($corp->getAlliance()->getTicker());
-        $this->assertSame('UTC', $corp->getLastUpdate()->getTimezone()->getName());
+        $this->assertSame('UTC', $corp->getLastUpdate()?->getTimezone()->getName());
         $this->assertGreaterThan('2018-07-29 16:30:30', $corp->getLastUpdate()->format('Y-m-d H:i:s'));
 
         $this->em->clear();
         $corpDb = $this->repoFactory->getCorporationRepository()->find(234);
-        $this->assertSame(234, $corpDb->getId());
-        $this->assertSame(345, $corpDb->getAlliance()->getId());
+        $this->assertSame(234, $corpDb?->getId());
+        $this->assertSame(345, $corpDb->getAlliance()?->getId());
     }
 
-    public function testFetchCorporationNoAllianceRemovesAlliance()
+    public function testFetchCorporationNoAllianceRemovesAlliance(): void
     {
         $this->testHelper->emptyDb();
         $alli = (new Alliance())->setId(100)->setName('A')->setTicker('a');
@@ -428,23 +428,23 @@ class EsiDataTest extends TestCase
         }'));
 
         $corpResult = $this->esiData->fetchCorporation(200);
-        $this->assertNull($corpResult->getAlliance());
+        $this->assertNull($corpResult?->getAlliance());
         $this->em->clear();
 
         // load from DB
         $corporation = $this->repoFactory->getCorporationRepository()->find(200);
-        $this->assertNull($corporation->getAlliance());
+        $this->assertNull($corporation?->getAlliance());
         $alliance = $this->repoFactory->getAllianceRepository()->find(100);
-        $this->assertSame([], $alliance->getCorporations());
+        $this->assertSame([], $alliance?->getCorporations());
     }
 
-    public function testFetchAllianceInvalidId()
+    public function testFetchAllianceInvalidId(): void
     {
         $alli = $this->esiData->fetchAlliance(-1);
         $this->assertNull($alli);
     }
 
-    public function testFetchAllianceError500()
+    public function testFetchAllianceError500(): void
     {
         $this->client->setResponse(new Response(500));
 
@@ -453,7 +453,7 @@ class EsiDataTest extends TestCase
         $this->assertStringStartsWith('Error JSON decoding server response', $this->log->getMessages()[0]);
     }
 
-    public function testFetchAllianceNoFlush()
+    public function testFetchAllianceNoFlush(): void
     {
         $this->testHelper->emptyDb();
 
@@ -463,16 +463,16 @@ class EsiDataTest extends TestCase
         }'));
 
         $alli = $this->esiData->fetchAlliance(345, false);
-        $this->assertSame(345, $alli->getId());
+        $this->assertSame(345, $alli?->getId());
         $this->assertSame('The A.', $alli->getName());
         $this->assertSame('-A-', $alli->getTicker());
 
         $this->em->clear();
         $alliDb = $this->repoFactory->getAllianceRepository()->find(345);
-        $this->assertNull($alliDb->getName());
+        $this->assertNull($alliDb?->getName());
     }
 
-    public function testFetchAlliance()
+    public function testFetchAlliance(): void
     {
         $this->testHelper->emptyDb();
 
@@ -482,18 +482,18 @@ class EsiDataTest extends TestCase
         }'));
 
         $alli = $this->esiData->fetchAlliance(345);
-        $this->assertSame(345, $alli->getId());
+        $this->assertSame(345, $alli?->getId());
         $this->assertSame('The A.', $alli->getName());
         $this->assertSame('-A-', $alli->getTicker());
-        $this->assertSame('UTC', $alli->getLastUpdate()->getTimezone()->getName());
+        $this->assertSame('UTC', $alli->getLastUpdate()?->getTimezone()->getName());
         $this->assertGreaterThan('2018-07-29 16:30:30', $alli->getLastUpdate()->format('Y-m-d H:i:s'));
 
         $this->em->clear();
         $alliDb = $this->repoFactory->getAllianceRepository()->find(345);
-        $this->assertSame(345, $alliDb->getId());
+        $this->assertSame(345, $alliDb?->getId());
     }
 
-    public function testFetchAllianceCreateFlushError()
+    public function testFetchAllianceCreateFlushError(): void
     {
         $this->em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
 
@@ -508,7 +508,7 @@ class EsiDataTest extends TestCase
         $this->assertNull($alli);
     }
 
-    public function testFetchUniverseNames()
+    public function testFetchUniverseNames(): void
     {
         $this->client->setResponse(new Response(200, [], '[{
             "id": 123,
@@ -527,11 +527,11 @@ class EsiDataTest extends TestCase
         $this->assertSame(124, $names[1]->getId());
         $this->assertSame('The Name', $names[0]->getName());
         $this->assertSame('Another Name', $names[1]->getName());
-        $this->assertSame(PostUniverseNames200Ok::CATEGORY_CHARACTER, $names[0]->getCategory());
-        $this->assertSame(PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE, $names[1]->getCategory());
+        $this->assertSame(UniverseNamesPostInner::CATEGORY_CHARACTER, $names[0]->getCategory());
+        $this->assertSame(UniverseNamesPostInner::CATEGORY_INVENTORY_TYPE, $names[1]->getCategory());
     }
 
-    public function testFetchUniverseNames_Exceptions()
+    public function testFetchUniverseNames_Exceptions(): void
     {
         $this->client->setMiddleware(function () {
             throw new \Exception('message');
@@ -544,7 +544,7 @@ class EsiDataTest extends TestCase
         $this->assertSame(['message'], $this->log->getMessages());
     }
 
-    public function testFetchUniverseNames_InvalidIds()
+    public function testFetchUniverseNames_InvalidIds(): void
     {
         $this->client->setMiddleware(function () {
             static $requestNumber = 0;
@@ -602,34 +602,38 @@ class EsiDataTest extends TestCase
         $this->assertSame(1000, $names[6]->getId());
         $this->assertSame(1500, $names[7]->getId());
         $this->assertSame('N 1', $names[0]->getName());
-        $this->assertSame(PostUniverseNames200Ok::CATEGORY_CHARACTER, $names[0]->getCategory());
+        $this->assertSame(UniverseNamesPostInner::CATEGORY_CHARACTER, $names[0]->getCategory());
 
-        $records = $this->log->getHandler()->getRecords();
+        $records = (array) $this->log->getHandler()?->getRecords();
         #print_r($this->log->getMessages());
         $this->assertSame(4, count($records));
         $this->assertSame(
             'fetchUniverseNames: Invalid ID(s) in request, trying again with max. 100 IDs.',
             $records[0]['message'],
         );
+        // @phpstan-ignore-next-line
         $this->assertNull($records[0]['context']['IDs'] ?? null);
         $this->assertSame(
             'fetchUniverseNames: Invalid ID(s) in request, trying again with max. 10 IDs.',
             $records[1]['message'],
         );
+        // @phpstan-ignore-next-line
         $this->assertNull($records[1]['context']['IDs'] ?? null);
         $this->assertSame(
             'fetchUniverseNames: Invalid ID(s) in request, trying again with max. 1 IDs.',
             $records[2]['message'],
         );
+        // @phpstan-ignore-next-line
         $this->assertNull($records[2]['context']['IDs'] ?? null);
         $this->assertSame(
             '... {\"error\":\"Ensure all IDs are valid before resolving.\"}',
             $records[3]['message'],
         );
+        // @phpstan-ignore-next-line
         $this->assertSame([3], $records[3]['context']['IDs'] ?? []);
     }
 
-    public function testFetchStructure_NoToken()
+    public function testFetchStructure_NoToken(): void
     {
         $this->testHelper->emptyDb();
 
@@ -640,7 +644,7 @@ class EsiDataTest extends TestCase
         $this->assertSame('', $location->getName());
         $this->assertNull($location->getOwnerId());
         $this->assertNull($location->getSystemId());
-        $this->assertLessThanOrEqual(time(), $location->getLastUpdate()->getTimestamp());
+        $this->assertLessThanOrEqual(time(), $location->getLastUpdate()?->getTimestamp());
         $this->assertSame(0, $location->getErrorCount());
 
         $this->em->clear();
@@ -648,13 +652,13 @@ class EsiDataTest extends TestCase
         $this->assertSame(1, count($resultLocations));
     }
 
-    public function testFetchStructure_ErrorConfiguration()
+    public function testFetchStructure_ErrorConfiguration(): void
     {
         $this->testHelper->emptyDb();
 
         $setting = (new SystemVariable(SystemVariable::FETCH_STRUCTURE_NAME_ERROR_DAYS))->setValue('3=7,10=30');
 
-        // 3 errors, updated 6 day ago
+        // 3 errors, updated 6 days ago
         $updated1 = new \DateTime('now -6 days');
         $location1 = new EsiLocation();
         $location1->setId(1023100200300);
@@ -670,11 +674,11 @@ class EsiDataTest extends TestCase
         $this->em->clear();
 
         $location2 = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
-        $this->assertSame(3, $location2->getErrorCount());
+        $this->assertSame(3, $location2?->getErrorCount());
         $this->assertSame('', $location2->getName());
-        $this->assertSame($updated1->getTimestamp(), $location2->getLastUpdate()->getTimestamp()); // not updated
+        $this->assertSame($updated1->getTimestamp(), $location2->getLastUpdate()?->getTimestamp()); // not updated
 
-        // 3 errors, updated 7 day ago
+        // 3 errors, updated 7 days ago
         $updated2 = new \DateTime('now -7 days');
         $location2->setLastUpdate($updated2);
         $this->em->flush();
@@ -685,11 +689,11 @@ class EsiDataTest extends TestCase
         $this->em->clear();
 
         $location3 = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
-        $this->assertSame(0, $location3->getErrorCount());
+        $this->assertSame(0, $location3?->getErrorCount());
         $this->assertSame('update 1', $location3->getName());
-        $this->assertGreaterThan($updated2->getTimestamp(), $location3->getLastUpdate()->getTimestamp()); // updated
+        $this->assertGreaterThan($updated2->getTimestamp(), $location3->getLastUpdate()?->getTimestamp()); // updated
 
-        // 10 errors, updated 7 day ago
+        // 10 errors, updated 7 days ago
         $updated3 = new \DateTime('now -7 day');
         $location3->setErrorCount(10);
         $location3->setLastUpdate($updated3);
@@ -700,11 +704,11 @@ class EsiDataTest extends TestCase
         $this->em->clear();
 
         $location4 = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
-        $this->assertSame(10, $location4->getErrorCount());
-        $this->assertSame($updated3->getTimestamp(), $location4->getLastUpdate()->getTimestamp()); // not updated
+        $this->assertSame(10, $location4?->getErrorCount());
+        $this->assertSame($updated3->getTimestamp(), $location4->getLastUpdate()?->getTimestamp()); // not updated
     }
 
-    public function testFetchStructure_Success()
+    public function testFetchStructure_Success(): void
     {
         $this->testHelper->emptyDb();
 
@@ -721,21 +725,21 @@ class EsiDataTest extends TestCase
         $this->assertSame(EsiLocation::CATEGORY_STRUCTURE, $location->getCategory());
         $this->assertSame(109299958, $location->getOwnerId());
         $this->assertSame(30000142, $location->getSystemId());
-        $this->assertLessThanOrEqual(time(), $location->getLastUpdate()->getTimestamp());
+        $this->assertLessThanOrEqual(time(), $location->getLastUpdate()?->getTimestamp());
         $this->assertSame(0, $location->getErrorCount());
 
         $this->em->clear();
         $locationDb = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
-        $this->assertSame(1023100200300, $locationDb->getId());
+        $this->assertSame(1023100200300, $locationDb?->getId());
         $this->assertSame('V-3YG7 VI - The Capital', $locationDb->getName());
         $this->assertSame(EsiLocation::CATEGORY_STRUCTURE, $locationDb->getCategory());
         $this->assertSame(109299958, $locationDb->getOwnerId());
         $this->assertSame(30000142, $locationDb->getSystemId());
-        $this->assertLessThanOrEqual(time(), $locationDb->getLastUpdate()->getTimestamp());
+        $this->assertLessThanOrEqual(time(), $locationDb->getLastUpdate()?->getTimestamp());
         $this->assertSame(0, $locationDb->getErrorCount());
     }
 
-    public function testFetchStructure_AlreadyUpdated()
+    public function testFetchStructure_AlreadyUpdated(): void
     {
         $this->testHelper->emptyDb();
 
@@ -745,18 +749,18 @@ class EsiDataTest extends TestCase
         );
 
         $location1 = $this->esiData->fetchStructure(1023100200300, 'access-token');
-        $this->assertLessThanOrEqual(time(), $location1->getLastUpdate()->getTimestamp());
+        $this->assertLessThanOrEqual(time(), $location1->getLastUpdate()?->getTimestamp());
         $this->assertSame('Name Update 1', $location1->getName());
 
         $location2 = $this->esiData->fetchStructure(1023100200300, 'access-token');
         $this->assertSame(
-            $location1->getLastUpdate()->getTimestamp(),
-            $location2->getLastUpdate()->getTimestamp(),
+            $location1->getLastUpdate()?->getTimestamp(),
+            $location2->getLastUpdate()?->getTimestamp(),
         );
         $this->assertSame('Name Update 1', $location1->getName());
     }
 
-    public function testFetchStructure_AuthError()
+    public function testFetchStructure_AuthError(): void
     {
         $this->testHelper->emptyDb();
 
@@ -775,12 +779,12 @@ class EsiDataTest extends TestCase
         $this->assertSame(1, $location->getErrorCount());
     }
 
-    public function testFetchCorporationMembersNoToken()
+    public function testFetchCorporationMembersNoToken(): void
     {
         $this->assertSame([], $this->esiData->fetchCorporationMembers(100200300, ''));
     }
 
-    public function testFetchCorporationMembersEsiError()
+    public function testFetchCorporationMembersEsiError(): void
     {
         $this->client->setMiddleware(function () {
             throw new RuntimeException("", 520);
@@ -790,31 +794,31 @@ class EsiDataTest extends TestCase
         $this->assertSame([], $this->esiData->fetchCorporationMembers(100200300, 'access-token'));
     }
 
-    public function testVerifyRoles_NoRoleToVerify()
+    public function testVerifyRoles_NoRoleToVerify(): void
     {
         $this->assertTrue($this->esiData->verifyRoles([], 100, 'access-token'));
     }
 
-    public function testVerifyRoles_Exception()
+    public function testVerifyRoles_Exception(): void
     {
         $this->client->setResponse(new Response(500));
         $this->assertFalse($this->esiData->verifyRoles(['Auditor'], 100, 'access-token'));
         $this->assertStringStartsWith('Error JSON decoding server response', $this->log->getMessages()[0]);
     }
 
-    public function testVerifyRoles_CharacterNotFound()
+    public function testVerifyRoles_CharacterNotFound(): void
     {
         $this->client->setResponse(new Response(404, [], ''));
         $this->assertFalse($this->esiData->verifyRoles(['Accountant'], 100, 'access-token'));
     }
 
-    public function testVerifyRoles_NotDirector()
+    public function testVerifyRoles_NotDirector(): void
     {
         $this->client->setResponse(new Response(200, [], '{"roles": ["Auditor", "Accountant"]}'));
         $this->assertFalse($this->esiData->verifyRoles(['Accountant', 'Director'], 100, 'access-token'));
     }
 
-    public function testVerifyRoles_OK()
+    public function testVerifyRoles_OK(): void
     {
         $this->client->setResponse(
             new Response(200, [], '{"roles": ["Director", "Auditor", "Accountant"]}'),
@@ -824,14 +828,14 @@ class EsiDataTest extends TestCase
         $this->assertTrue($this->esiData->verifyRoles(['Auditor'], 100, 'access-token'));
     }
 
-    public function testFetchCorporationMembers()
+    public function testFetchCorporationMembers(): void
     {
         $this->client->setResponse(new Response(200, [], '[100, 200]'));
 
         $this->assertSame([100, 200], $this->esiData->fetchCorporationMembers(100200300, 'access-token'));
     }
 
-    public function testGetCorporationEntity()
+    public function testGetCorporationEntity(): void
     {
         $this->testHelper->emptyDb();
 
@@ -852,7 +856,6 @@ class EsiDataTest extends TestCase
             $this->om,
             $this->repoFactory,
             new Character($this->om, $this->repoFactory),
-            $this->config,
         );
     }
 }

@@ -65,10 +65,8 @@ class MemberTrackingTest extends TestCase
                 $objectManager,
                 $this->repositoryFactory,
                 new \Neucore\Service\Character($objectManager, $this->repositoryFactory),
-                $config,
             ),
             new OAuthToken($authProvider, $objectManager, $logger),
-            $config,
         );
     }
 

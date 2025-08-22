@@ -63,7 +63,6 @@ class EveMailTest extends TestCase
             Helper::getAuthenticationProvider($this->client),
             $logger,
             $esiFactory,
-            $config,
         );
     }
 

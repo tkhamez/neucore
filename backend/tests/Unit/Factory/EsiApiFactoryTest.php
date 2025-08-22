@@ -7,13 +7,13 @@ namespace Tests\Unit\Factory;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Service\Config;
 use PHPUnit\Framework\TestCase;
-use Swagger\Client\Eve\Api\AllianceApi;
-use Swagger\Client\Eve\Api\CharacterApi;
-use Swagger\Client\Eve\Api\MailApi;
-use Swagger\Client\Eve\Api\UniverseApi;
 use Tests\Client;
 use Tests\HttpClientFactory;
+use Tkhamez\Eve\API\Api\AllianceApi;
+use Tkhamez\Eve\API\Api\CharacterApi;
 use Tkhamez\Eve\API\Api\CorporationApi;
+use Tkhamez\Eve\API\Api\MailApi;
+use Tkhamez\Eve\API\Api\UniverseApi;
 
 class EsiApiFactoryTest extends TestCase
 {

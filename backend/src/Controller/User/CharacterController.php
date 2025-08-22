@@ -12,7 +12,6 @@ use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
 use Neucore\Service\Account;
-use Neucore\Service\Config;
 use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\PluginService;
@@ -21,9 +20,9 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Swagger\Client\Eve\ApiException;
-use Swagger\Client\Eve\Model\GetCharactersCharacterIdNotFound;
-use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
+use Tkhamez\Eve\API\ApiException;
+use Tkhamez\Eve\API\Model\CharactersCharacterIdGet;
+use Tkhamez\Eve\API\Model\Error;
 
 #[OA\Tag(name: 'Character', description: 'Character related functions.')]
 class CharacterController extends BaseController
@@ -301,7 +300,6 @@ class CharacterController extends BaseController
         string $id,
         Account $accountService,
         EsiApiFactory $esiApiFactory,
-        Config $config,
         LoggerInterface $log,
     ): ResponseInterface {
         $charId = (int) $id;
@@ -316,14 +314,14 @@ class CharacterController extends BaseController
             return $this->withJson('Character already exists.', 409);
         }
 
-        // Check if EVE character exists
+        // Check if the EVE character exists
         try {
-            $eveChar = $esiApiFactory
-                ->getCharacterApi()
-                ->getCharactersCharacterId($charId, $config['eve']['datasource']);
+            $eveChar = $esiApiFactory->getCharacterApi()->getCharactersCharacterId($charId);
         } catch (ApiException $e) {
             $body = $e->getResponseBody();
             if ($e->getCode() === 404 && is_string($body) && str_contains($body, 'Character not found')) {
+                // This is probably not necessary any more.
+                // https://github.com/OpenAPITools/openapi-generator/pull/19483
                 return $this->withJson('Character not found.', 404);
             } else {
                 $log->error($e->getMessage());
@@ -334,17 +332,16 @@ class CharacterController extends BaseController
             return $this->withJson('ESI error.', 500);
         }
 
-        // This is currently (tkhamez/swagger-eve-php v10.1.0) not used, but I think that's a bug, see
-        // https://github.com/OpenAPITools/openapi-generator/pull/19483
+        /** @noinspection PhpCastIsUnnecessaryInspection */
         if (
-            $eveChar instanceof GetCharactersCharacterIdNotFound &&
+            $eveChar instanceof Error &&
             str_contains((string) $eveChar->getError(), 'Character not found')
         ) {
             return $this->withJson('Character not found.', 404);
         }
 
-        // Create new account
-        if ($eveChar instanceof GetCharactersCharacterIdOk) {
+        // Create a new account
+        if ($eveChar instanceof CharactersCharacterIdGet) {
             $char = $accountService->createNewPlayerWithMain($charId, $eveChar->getName());
             $char->getPlayer()->addRole($userRole[0]);
             $this->objectManager->persist($char->getPlayer());

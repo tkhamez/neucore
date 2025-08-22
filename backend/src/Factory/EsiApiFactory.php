@@ -6,11 +6,11 @@ namespace Neucore\Factory;
 
 use Neucore\Service\Config;
 use GuzzleHttp\ClientInterface;
-use Swagger\Client\Eve\Api\AllianceApi;
-use Swagger\Client\Eve\Api\CharacterApi;
-use Swagger\Client\Eve\Api\MailApi;
-use Swagger\Client\Eve\Api\UniverseApi;
+use Tkhamez\Eve\API\Api\AllianceApi;
+use Tkhamez\Eve\API\Api\CharacterApi;
 use Tkhamez\Eve\API\Api\CorporationApi;
+use Tkhamez\Eve\API\Api\MailApi;
+use Tkhamez\Eve\API\Api\UniverseApi;
 use Tkhamez\Eve\API\Configuration;
 
 class EsiApiFactory
@@ -25,8 +25,7 @@ class EsiApiFactory
     {
         $this->config = $config;
 
-        // Note: This is only necessary for tkhamez/swagger-eve-php because tkhamez/eve-api-php
-        // sets it for every request.
+        // This header is also set for every request, but in case this changes, add a default value.
         $this->client = $httpClientFactory->getGuzzleClient(requestHeaders: [
             'X-Compatibility-Date' => $this->config['eve']['esi_compatibility_date'],
         ]);
@@ -62,11 +61,7 @@ class EsiApiFactory
         $key = $class . hash('sha256', $token);
 
         if (!isset($this->instances[$key])) {
-            if (str_starts_with($class, 'Tkhamez\Eve\API')) {
-                $configuration = new Configuration();
-            } else {
-                $configuration = new \Swagger\Client\Eve\Configuration();
-            }
+            $configuration = new Configuration();
             if ($token !== '') {
                 $configuration->setAccessToken($token);
             }

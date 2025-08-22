@@ -14,15 +14,15 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Neucore\Service\Character as CharacterService;
 use Psr\Log\LoggerInterface;
-use Swagger\Client\Eve\ApiException;
-use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
-use Swagger\Client\Eve\Model\GetCharactersCharacterIdNotFound;
-use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
-use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;
-use Swagger\Client\Eve\Model\GetUniverseStructuresStructureIdOk;
-use Swagger\Client\Eve\Model\PostCharactersAffiliation200Ok;
-use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
+use Tkhamez\Eve\API\ApiException;
+use Tkhamez\Eve\API\Model\AlliancesAllianceIdGet;
+use Tkhamez\Eve\API\Model\CharactersAffiliationPostInner;
+use Tkhamez\Eve\API\Model\CharactersCharacterIdGet;
+use Tkhamez\Eve\API\Model\CharactersCharacterIdRolesGet;
 use Tkhamez\Eve\API\Model\CorporationsCorporationIdGet;
+use Tkhamez\Eve\API\Model\Error;
+use Tkhamez\Eve\API\Model\UniverseNamesPostInner;
+use Tkhamez\Eve\API\Model\UniverseStructuresStructureIdGet;
 
 /**
  * Fetch and process data from ESI.
@@ -40,8 +40,6 @@ class EsiData
     private RepositoryFactory $repositoryFactory;
 
     private \Neucore\Service\Character $characterService;
-
-    private Config $config;
 
     private ?int $lastErrorCode = null;
 
@@ -61,14 +59,12 @@ class EsiData
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         CharacterService $characterService,
-        Config $config,
     ) {
         $this->log = $log;
         $this->esiApiFactory = $esiApiFactory;
         $this->objectManager = $objectManager;
         $this->repositoryFactory = $repositoryFactory;
         $this->characterService = $characterService;
-        $this->config = $config;
     }
 
     public function getLastErrorCode(): ?int
@@ -143,13 +139,14 @@ class EsiData
         $eveChar = null;
         try {
             // ESI cache = 24 hours.
-            // But maybe faster than /characters/affiliation/ if character was deleted.
-            $eveChar = $this->esiApiFactory->getCharacterApi()
-                ->getCharactersCharacterId($id, $this->config['eve']['datasource']);
+            // But maybe faster than /characters/affiliation/ if th character was deleted.
+            $eveChar = $this->esiApiFactory->getCharacterApi()->getCharactersCharacterId($id);
         } catch (ApiException $e) {
-            // Do not log and continue if character was deleted/biomassed
+            // Do not log and continue if the character was deleted/biomassed
             $body = $e->getResponseBody();
             if ($e->getCode() === 404 && is_string($body) && str_contains($body, 'Character has been deleted')) {
+                // This is probably not necessary any more.
+                // https://github.com/OpenAPITools/openapi-generator/pull/19483
                 $corpId = self::CORPORATION_DOOMHEIM_ID;
             } else {
                 $this->lastErrorCode = $e->getCode();
@@ -161,11 +158,9 @@ class EsiData
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return null;
         }
-
-        // This is currently (tkhamez/swagger-eve-php v10.1.0) not used, but I think that's a bug, see
-        // https://github.com/OpenAPITools/openapi-generator/pull/19483
+        /** @noinspection PhpCastIsUnnecessaryInspection */
         if (
-            $eveChar instanceof GetCharactersCharacterIdNotFound &&
+            $eveChar instanceof Error &&
             str_contains((string) $eveChar->getError(), 'Character has been deleted')
         ) {
             $corpId = self::CORPORATION_DOOMHEIM_ID;
@@ -174,8 +169,7 @@ class EsiData
         $updated = false;
 
         // update char (and player) name
-        if ($eveChar instanceof GetCharactersCharacterIdOk) {
-            /** @noinspection PhpCastIsUnnecessaryInspection */
+        if ($eveChar instanceof CharactersCharacterIdGet) {
             $this->characterService->setCharacterName($char, (string) $eveChar->getName());
             if ($char->getMain()) {
                 $char->getPlayer()->setName($char->getName());
@@ -190,8 +184,7 @@ class EsiData
             if (isset($affiliation[0])) {
                 /** @noinspection PhpCastIsUnnecessaryInspection */
                 $corpId = (int) $affiliation[0]->getCorporationId();
-            } elseif ($eveChar instanceof GetCharactersCharacterIdOk) {
-                /** @noinspection PhpCastIsUnnecessaryInspection */
+            } elseif ($eveChar instanceof CharactersCharacterIdGet) {
                 $corpId = (int) $eveChar->getCorporationId();
             }
         }
@@ -220,7 +213,7 @@ class EsiData
 
     /**
      * @param array $ids Valid IDs
-     * @return PostCharactersAffiliation200Ok[]
+     * @return CharactersAffiliationPostInner[]
      * @see https://developers.eveonline.com/api-explorer#/operations/PostCharactersAffiliation
      */
     public function fetchCharactersAffiliation(array $ids): array
@@ -230,7 +223,7 @@ class EsiData
             $checkIds = array_splice($ids, 0, 1000);
             try {
                 $result = $this->esiApiFactory->getCharacterApi()
-                    ->postCharactersAffiliation($checkIds, $this->config['eve']['datasource']);
+                    ->postCharactersAffiliation(request_body: $checkIds);
                 if (is_array($result)) { // should always be the case here
                     $affiliations = array_merge($affiliations, $result);
                 }
@@ -326,14 +319,13 @@ class EsiData
         // get data from ESI
         $this->lastErrorCode = null;
         try {
-            $eveAlli = $this->esiApiFactory->getAllianceApi()
-                ->getAlliancesAllianceId($id, $this->config['eve']['datasource']);
+            $eveAlli = $this->esiApiFactory->getAllianceApi()->getAlliancesAllianceId($id);
         } catch (\Exception $e) {
             $this->lastErrorCode = $e->getCode();
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return null;
         }
-        if (!$eveAlli instanceof GetAlliancesAllianceIdOk) {
+        if (!$eveAlli instanceof AlliancesAllianceIdGet) {
             return null;
         }
 
@@ -364,7 +356,7 @@ class EsiData
      * Note: All IDs need to be valid, but it seems that ESI sometimes complains about an ID that will work later.
      *
      * @param array $ids Valid IDs
-     * @return PostUniverseNames200Ok[]
+     * @return UniverseNamesPostInner[]
      * @see https://developers.eveonline.com/api-explorer#/operations/PostUniverseNames
      */
     public function fetchUniverseNames(array $ids): array
@@ -375,7 +367,7 @@ class EsiData
             try {
                 // it's possible that postUniverseNames() returns null
                 $result = $this->esiApiFactory->getUniverseApi()
-                    ->postUniverseNames($checkIds, $this->config['eve']['datasource']);
+                    ->postUniverseNames(request_body: $checkIds);
                 if (is_array($result)) {
                     $names = array_merge($names, $result);
                 }
@@ -476,7 +468,7 @@ class EsiData
         $authError = false;
         try {
             $result = $this->esiApiFactory->getUniverseApi($accessToken)
-                ->getUniverseStructuresStructureId($id, $this->config['eve']['datasource']);
+                ->getUniverseStructuresStructureId($id);
         } catch (\Exception $e) {
             if ((int) $e->getCode() === 403) {
                 $this->log->info("EsiData::fetchStructure: " . $e->getCode() . " Unauthorized/Forbidden: $id");
@@ -489,7 +481,7 @@ class EsiData
         }
 
         // Set result
-        if ($result instanceof GetUniverseStructuresStructureIdOk) {
+        if ($result instanceof UniverseStructuresStructureIdGet) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
             $location->setName((string) $result->getName());
             /** @noinspection PhpCastIsUnnecessaryInspection */
@@ -544,14 +536,14 @@ class EsiData
 
         $characterApi = $this->esiApiFactory->getCharacterApi($accessToken);
         try {
-            $charRoles = $characterApi->getCharactersCharacterIdRoles($characterId, $this->config['eve']['datasource']);
+            $charRoles = $characterApi->getCharactersCharacterIdRoles($characterId);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return false;
         }
 
         if (
-            !$charRoles instanceof GetCharactersCharacterIdRolesOk ||
+            !$charRoles instanceof CharactersCharacterIdRolesGet ||
             !is_array($charRoles->getRoles()) ||
             !empty(array_diff($roles, $charRoles->getRoles()))
         ) {
@@ -590,7 +582,7 @@ class EsiData
     }
 
     /**
-     * @return PostUniverseNames200Ok[]
+     * @return UniverseNamesPostInner[]
      */
     private function fetchUniverseNamesChunked(array $names, array $checkIds, int $chunkSize): array
     {

@@ -10,7 +10,7 @@ use Neucore\Entity\EveLogin;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;
+use Tkhamez\Eve\API\Model\CharactersCharacterIdRolesGet;
 
 class SettingsEveLoginController extends BaseController
 {
@@ -242,6 +242,6 @@ class SettingsEveLoginController extends BaseController
     )]
     public function roles(): ResponseInterface
     {
-        return $this->withJson((new GetCharactersCharacterIdRolesOk())->getRolesAllowableValues());
+        return $this->withJson((new CharactersCharacterIdRolesGet())->getRolesAllowableValues());
     }
 }

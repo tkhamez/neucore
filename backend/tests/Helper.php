@@ -226,7 +226,7 @@ class Helper
         $objectManager = new \Neucore\Service\ObjectManager($this->getObjectManager(), $logger);
         $characterService = new \Neucore\Service\Character($objectManager, $repoFactory);
         $esiApiFactory = new EsiApiFactory(new HttpClientFactory($client), $config);
-        $esiData = new EsiData($logger, $esiApiFactory, $objectManager, $repoFactory, $characterService, $config);
+        $esiData = new EsiData($logger, $esiApiFactory, $objectManager, $repoFactory, $characterService);
         $accountGroup = new AccountGroup($repoFactory, $this->getObjectManager());
         $autoGroups = new AutoGroupAssignment($repoFactory, $accountGroup);
         $token = new OAuthToken(self::getAuthenticationProvider($client), $objectManager, $logger);
@@ -261,7 +261,6 @@ class Helper
                 self::getAuthenticationProvider($client),
                 $logger,
                 new EsiApiFactory(new HttpClientFactory($client), $config),
-                $config,
             ),
         );
     }

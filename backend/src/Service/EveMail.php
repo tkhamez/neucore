@@ -16,8 +16,8 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Neucore\Repository\SystemVariableRepository;
 use Psr\Log\LoggerInterface;
-use Swagger\Client\Eve\Model\PostCharactersCharacterIdMailMail;
-use Swagger\Client\Eve\Model\PostCharactersCharacterIdMailRecipient;
+use Tkhamez\Eve\API\Model\PostCharactersCharacterIdMailRequest;
+use Tkhamez\Eve\API\Model\PostCharactersCharacterIdMailRequestRecipientsInner;
 
 class EveMail
 {
@@ -33,15 +33,12 @@ class EveMail
 
     private EsiApiFactory $esiApiFactory;
 
-    private string $datasource;
-
     public function __construct(
         RepositoryFactory $repositoryFactory,
         ObjectManager $objectManager,
         AuthenticationProvider $authenticationProvider,
         LoggerInterface $log,
         EsiApiFactory $esiApiFactory,
-        Config $config,
     ) {
         $this->repositoryFactory = $repositoryFactory;
         $this->objectManager = $objectManager;
@@ -49,7 +46,6 @@ class EveMail
         $this->log = $log;
         $this->esiApiFactory = $esiApiFactory;
 
-        $this->datasource = $config['eve']['datasource'];
         $this->sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
     }
 
@@ -372,12 +368,12 @@ class EveMail
     ): string {
         $recipients = [];
         foreach ($characterRecipients as $characterRecipient) {
-            $recipients[] = new PostCharactersCharacterIdMailRecipient([
+            $recipients[] = new PostCharactersCharacterIdMailRequestRecipientsInner([
                 'recipient_id' => $characterRecipient,
-                'recipient_type' => PostCharactersCharacterIdMailRecipient::RECIPIENT_TYPE_CHARACTER,
+                'recipient_type' => PostCharactersCharacterIdMailRequestRecipientsInner::RECIPIENT_TYPE_CHARACTER,
             ]);
         }
-        $mail = new PostCharactersCharacterIdMailMail([
+        $mail = new PostCharactersCharacterIdMailRequest([
             'recipients'    => $recipients,
             'subject'       => substr($subject, 0, 1000),
             'body'          => substr($body, 0, 10000),
@@ -385,11 +381,12 @@ class EveMail
         ]);
 
         try {
-            $this->esiApiFactory
-                ->getMailApi($token)
-                ->postCharactersCharacterIdMail($senderId, $mail, $this->datasource);
+            $this->esiApiFactory->getMailApi($token)->postCharactersCharacterIdMail(
+                $senderId,
+                post_characters_character_id_mail_request: $mail,
+            );
         } catch (\Exception $e) {
-            return $e->getMessage(); // message includes the status code
+            return $e->getMessage(); // the message includes the status code
         }
 
         return '';
