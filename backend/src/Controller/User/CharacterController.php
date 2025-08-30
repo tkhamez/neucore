@@ -8,9 +8,9 @@ use Neucore\Controller\BaseController;
 use Neucore\Data\SearchResult;
 use Neucore\Entity\Character;
 use Neucore\Entity\Role;
-use Neucore\Exception\RuntimeException;
+use Neucore\Exception\Exception;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Plugin\Exception;
+use Neucore\Plugin\Exception as PluginException;
 use Neucore\Service\Account;
 use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
@@ -311,7 +311,7 @@ class CharacterController extends BaseController
         // Check if the EVE character exists
         try {
             $eveChar = $this->esiData->fetchCharacter($charId);
-        } catch (RuntimeException $e) {
+        } catch (Exception $e) {
             if ($e->getCode() === 404) {
                 return $this->withJson('Character not found.', 404);
             } elseif ($e->getCode() === 410) {
@@ -343,7 +343,7 @@ class CharacterController extends BaseController
 
             try {
                 $pluginResults = $plugin->getServiceImplementation()->search($name);
-            } catch (Exception) {
+            } catch (PluginException) {
                 continue;
             }
 

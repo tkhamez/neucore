@@ -9,7 +9,7 @@ use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\EsiLocation;
 use Neucore\Entity\SystemVariable;
-use Neucore\Exception\RuntimeException;
+use Neucore\Exception\Exception;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
@@ -76,7 +76,7 @@ class EsiData
     /**
      * Fetch character from ESI.
      *
-     * @throws RuntimeException If the character was deleted, not found or any other ESI error.
+     * @throws Exception If the character was deleted, not found or any other ESI error.
      */
     public function fetchCharacter(int $id): CharactersCharacterIdGet
     {
@@ -84,38 +84,37 @@ class EsiData
             $eveChar = $this->esiApiFactory->getCharacterApi()->getCharactersCharacterId($id);
         } catch (ApiException $e) {
             $body = $e->getResponseBody();
+            // The 404 checks are probably no longer necessary when this is merged:
+            // https://github.com/OpenAPITools/openapi-generator/pull/19483
             if (
                 $e->getCode() === 404 &&
                 is_string($body) &&
                 str_contains($body, 'Character not found')
             ) {
-                throw new RuntimeException('Character not found (exception)', 404);
+                throw new Exception('Character not found (exception)', 404);
             } elseif (
                 $e->getCode() === 404 &&
                 is_string($body) &&
                 str_contains($body, 'Character has been deleted')
             ) {
-                throw new RuntimeException('Character has been deleted (exception)', 410);
+                throw new Exception('Character has been deleted (exception)', 410);
             } {
-                throw new RuntimeException(is_string($body) ? $body : $e->getMessage());
+                throw new Exception(is_string($body) ? $body : $e->getMessage());
             }
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());
-            throw new RuntimeException('ESI error.');
+            throw new Exception('ESI error.');
         }
 
-        /** @noinspection PhpCastIsUnnecessaryInspection */
         if ($eveChar instanceof Error) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
-            if (str_contains((string) $eveChar->getError(), 'Character not found')) {
-                throw new RuntimeException('Character not found (error object)', 404);
-            }
-            /** @noinspection PhpCastIsUnnecessaryInspection */
-            elseif (str_contains((string) $eveChar->getError(), 'Character has been deleted')) {
-                throw new RuntimeException('Character has been deleted (error object)', 410);
+            $error = (string) $eveChar->getError();
+            if (str_contains($error, 'Character not found')) {
+                throw new Exception('Character not found (error object)', 404);
+            } elseif (str_contains($error, 'Character has been deleted')) {
+                throw new Exception('Character has been deleted (error object)', 410);
             } else {
-                /** @noinspection PhpCastIsUnnecessaryInspection */
-                throw new RuntimeException((string) $eveChar->getError());
+                throw new Exception($error);
             }
         }
 
@@ -192,7 +191,7 @@ class EsiData
             // ESI cache = 24 hours.
             // But maybe faster than /characters/affiliation/ if the character was deleted.
             $eveChar = $this->fetchCharacter($id);
-        } catch (RuntimeException $e) {
+        } catch (Exception $e) {
             $this->lastErrorCode = $e->getCode();
             if ($e->getCode() === 410) {
                 $corpId = self::CORPORATION_DOOMHEIM_ID;
@@ -205,6 +204,7 @@ class EsiData
 
         // update char (and player) name
         if ($eveChar instanceof CharactersCharacterIdGet) {
+            /** @noinspection PhpCastIsUnnecessaryInspection */
             $this->characterService->setCharacterName($char, (string) $eveChar->getName());
             if ($char->getMain()) {
                 $char->getPlayer()->setName($char->getName());
@@ -213,13 +213,14 @@ class EsiData
         }
 
         // Update char with corp entity - ESI cache = 1 hour.
-        // But maybe slower than /characters/{character_id}/ if character was deleted.
+        // But maybe slower than /characters/{character_id}/ if the character was deleted.
         if (!$corpId) {
             $affiliation = $this->fetchCharactersAffiliation([$id]);
             if (isset($affiliation[0])) {
                 /** @noinspection PhpCastIsUnnecessaryInspection */
                 $corpId = (int) $affiliation[0]->getCorporationId();
             } elseif ($eveChar instanceof CharactersCharacterIdGet) {
+                /** @noinspection PhpCastIsUnnecessaryInspection */
                 $corpId = (int) $eveChar->getCorporationId();
             }
         }
@@ -274,13 +275,13 @@ class EsiData
      *
      * Creates the corporation in the local database if it does not already exist.
      *
-     * If the corporation belongs to an alliance this creates a database entity,
-     * if it does not already exists, but does not fetch it's data from ESI.
+     * If the corporation belongs to an alliance, this creates a database entity
+     * if it does not already exist but does not fetch its data from ESI.
      *
      * Returns null if the ESI requests fails.
      *
      * @param int|null $id EVE corporation ID
-     * @param bool $flush Optional write data to database, defaults to true
+     * @param bool $flush Optional write data to the database, defaults to true
      * @return null|Corporation An instance that is attached to the Doctrine entity manager.
      */
     public function fetchCorporation(?int $id, bool $flush = true): ?Corporation
@@ -342,7 +343,7 @@ class EsiData
      * Returns null if the ESI requests fails.
      *
      * @param int|null $id EVE alliance ID
-     * @param bool $flush Optional write data to database, defaults to true
+     * @param bool $flush Optional write data to the database, defaults to true
      * @return null|Alliance An instance that is attached to the Doctrine entity manager.
      */
     public function fetchAlliance(?int $id, bool $flush = true): ?Alliance
@@ -409,6 +410,9 @@ class EsiData
             } catch (ApiException $e) {
                 $context = [Context::EXCEPTION => $e];
                 $body = $e->getResponseBody();
+                // This will probably change when this is merged:
+                // https://github.com/OpenAPITools/openapi-generator/pull/19483,
+                // see also fetchCharacter().
                 if (
                     $e->getCode() === 404 &&
                     is_string($body) &&
@@ -539,7 +543,7 @@ class EsiData
     /**
      * Needs: esi-corporations.read_corporation_membership.v1
      *
-     * @return int[] List of character IDs, empty array can also be an ESI error
+     * @return int[] List of character IDs, an empty array can also be an ESI error
      */
     public function fetchCorporationMembers(int $id, string $accessToken): array
     {
@@ -596,7 +600,7 @@ class EsiData
             $corp->setId($id);
             $this->objectManager->persist($corp);
 
-            // Flush immediately, so that other processes do not try to add it again.
+            // Flush immediately so that other processes do not try to add it again.
             $this->objectManager->flush();
         }
         return $corp;

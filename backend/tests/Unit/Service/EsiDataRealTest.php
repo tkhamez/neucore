@@ -6,6 +6,7 @@ namespace Tests\Unit\Service;
 
 use Monolog\Handler\TestHandler;
 use Neucore\Application;
+use Neucore\Exception\Exception;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\HttpClientFactory;
 use Neucore\Factory\RepositoryFactory;
@@ -73,6 +74,9 @@ class EsiDataRealTest extends TestCase
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFetchCharacter_NotFound(): void
     {
         $this->expectExceptionCode(404);
@@ -80,6 +84,9 @@ class EsiDataRealTest extends TestCase
         $this->esiData->fetchCharacter(10);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFetchCharacter_Deleted(): void
     {
         $this->expectExceptionCode(410);
@@ -87,6 +94,9 @@ class EsiDataRealTest extends TestCase
         $this->esiData->fetchCharacter(2112148223);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFetchCharacter_Found(): void
     {
         $char = $this->esiData->fetchCharacter(96061222);

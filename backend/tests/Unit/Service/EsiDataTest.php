@@ -11,6 +11,7 @@ use Doctrine\ORM\Events;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\EsiLocation;
 use Neucore\Entity\SystemVariable;
+use Neucore\Exception\Exception;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Entity\Corporation;
@@ -79,6 +80,9 @@ class EsiDataTest extends TestCase
         $this->em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFetchCharacter_NotFound1(): void
     {
         $response = new Response(404, [], '{"error": "Character not found"}');
@@ -95,6 +99,9 @@ class EsiDataTest extends TestCase
         $this->esiData->fetchCharacter(10);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFetchCharacter_NotFound2(): void
     {
         $this->client->setResponse(new Response(404, [], '{"error": "Character not found"}'));
@@ -104,6 +111,9 @@ class EsiDataTest extends TestCase
         $this->esiData->fetchCharacter(10);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFetchCharacter_Deleted1(): void
     {
         $response = new Response(404, [], '{"error": "Character has been deleted"}');
@@ -120,6 +130,9 @@ class EsiDataTest extends TestCase
         $this->esiData->fetchCharacter(10);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFetchCharacter_Deleted2(): void
     {
         $this->client->setResponse(new Response(410, [], '{"error": "Character has been deleted"}'));
@@ -129,6 +142,9 @@ class EsiDataTest extends TestCase
         $this->esiData->fetchCharacter(10);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFetchCharacter_500EsiError1(): void
     {
         $this->client->setResponse(new Response(400, body: 'body'));
@@ -142,6 +158,9 @@ class EsiDataTest extends TestCase
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFetchCharacter_500EsiError2(): void
     {
         $this->expectExceptionMessage('ESI error.');
@@ -153,6 +172,9 @@ class EsiDataTest extends TestCase
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFetchCharacter_Found(): void
     {
         $this->client->setResponse(new Response(200, [], '{"name": "Char 456789"}'));
