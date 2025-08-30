@@ -394,11 +394,11 @@ class EsiData
      * @return UniverseNamesPostInner[]
      * @see https://developers.eveonline.com/api-explorer#/operations/PostUniverseNames
      */
-    public function fetchUniverseNames(array $ids): array
+    public function fetchUniverseNames(array $ids, int $maxItems = 1000): array
     {
         $names = [];
         while (!empty($ids)) {
-            $checkIds = array_splice($ids, 0, 1000);
+            $checkIds = array_splice($ids, 0, $maxItems);
             try {
                 // it's possible that postUniverseNames() returns null
                 $result = $this->esiApiFactory->getUniverseApi()
@@ -610,7 +610,7 @@ class EsiData
             $alliance->setId($id);
             $this->objectManager->persist($alliance);
 
-            // Flush immediately, so that other processes do not try to add it again.
+            // Flush immediately so that other processes do not try to add it again.
             $this->objectManager->flush();
         }
         return $alliance;
@@ -621,7 +621,9 @@ class EsiData
      */
     private function fetchUniverseNamesChunked(array $names, array $checkIds, int $chunkSize): array
     {
-        $this->log->warning("fetchUniverseNames: Invalid ID(s) in request, trying again with max. $chunkSize IDs.");
+        $this->log->warning(
+            "fetchUniverseNames: Invalid ID(s) in request, trying again with max. $chunkSize IDs."
+        );
         $chunkSize = max(1, min($chunkSize, PHP_INT_MAX));
         foreach (array_chunk($checkIds, $chunkSize) as $chunks) {
             $names = array_merge($names, $this->fetchUniverseNames($chunks));
