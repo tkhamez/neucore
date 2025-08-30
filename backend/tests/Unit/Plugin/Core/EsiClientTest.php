@@ -68,7 +68,7 @@ class EsiClientTest extends TestCase
         $this->expectExceptionCode($time + 45);
         $this->expectExceptionMessage(EsiClientInterface::ERROR_ERROR_LIMIT_REACHED);
 
-        $this->esiClient->request('/latest/characters/102003000/', 'GET', null, 20300400);
+        $this->esiClient->request('/characters/102003000/', 'GET', null, 20300400);
     }
 
     public function testRequest_RateLimit(): void
@@ -80,7 +80,7 @@ class EsiClientTest extends TestCase
         $this->expectExceptionCode($time + 20);
         $this->expectExceptionMessage(EsiClientInterface::ERROR_RATE_LIMIT_REACHED);
 
-        $this->esiClient->request('/latest/characters/102003000/', 'GET', null, 20300400);
+        $this->esiClient->request('/characters/102003000/', 'GET', null, 20300400);
     }
 
     public function testRequest_Throttled(): void
@@ -92,7 +92,7 @@ class EsiClientTest extends TestCase
         $this->expectExceptionCode($time + 50);
         $this->expectExceptionMessage(EsiClientInterface::ERROR_TEMPORARILY_THROTTLED);
 
-        $this->esiClient->request('/latest/characters/102003000/', 'GET', null, 20300400);
+        $this->esiClient->request('/characters/102003000/', 'GET', null, 20300400);
     }
 
     public function testRequest_CharNotFound(): void
@@ -101,7 +101,7 @@ class EsiClientTest extends TestCase
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(EsiClientInterface::ERROR_CHARACTER_NOT_FOUND);
 
-        $this->esiClient->request('/latest/characters/102003000/', 'GET', null, 20300400);
+        $this->esiClient->request('/characters/102003000/', 'GET', null, 20300400);
     }
 
     public function testRequest_TokenInvalid(): void
@@ -112,7 +112,7 @@ class EsiClientTest extends TestCase
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(EsiClientInterface::ERROR_INVALID_TOKEN);
 
-        $this->esiClient->request('/latest/characters/102003000/', 'GET', null, 20300400);
+        $this->esiClient->request('/characters/102003000/', 'GET', null, 20300400);
     }
 
     /**
@@ -132,7 +132,7 @@ class EsiClientTest extends TestCase
 
         $this->esiClient->setCompatibilityDate('2025-07-11');
 
-        $response = $this->esiClient->request('/latest/characters/102003000/', 'GET', null, 20300400);
+        $response = $this->esiClient->request('/characters/102003000/', 'GET', null, 20300400);
 
         $this->assertSame(
             ['X-Compatibility-Date' => '2025-07-11', 'Accept-Language' => 'en'],
@@ -162,7 +162,7 @@ class EsiClientTest extends TestCase
         $this->httpClient->setResponse(new Response());
 
         $this->esiClient->request(
-            '/latest/characters/102003000/',
+            '/characters/102003000/',
             'GET',
             null,
             20300400,

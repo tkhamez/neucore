@@ -346,7 +346,7 @@ class EsiControllerTest extends WebTestCase
 
         $response2 = $this->runApp(
             'GET',
-            '/api/app/v2/esi/latest/characters/96061222/stats/',
+            '/api/app/v2/esi/characters/96061222/stats/',
             null,
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
         );
@@ -366,19 +366,24 @@ class EsiControllerTest extends WebTestCase
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY])->getId();
         $headers = ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')];
 
-        // without a slash at the end (new openapi definition)
-        $response1a = $this->runApp('GET', '/api/app/v2/esi/latest/alliances', null, $headers);
+        // without a version or a slash at the end (new openapi definition)
+        $response1a = $this->runApp('GET', '/api/app/v2/esi/alliances', null, $headers);
         $this->assertSame(400, $response1a?->getStatusCode());
         $this->assertSame('"Public ESI routes are not allowed."', $response1a->getBody()->__toString());
 
-        // with a slash at the end (old swagger definition)
-        $response1b = $this->runApp('GET', '/api/app/v2/esi/latest/alliances/', null, $headers);
+        // with a version and a slash at the end (old swagger definition)
+        $response1b = $this->runApp('GET', '/api/app/v2/esi/v1/alliances/', null, $headers);
         $this->assertSame(400, $response1b?->getStatusCode());
         $this->assertSame('"Public ESI routes are not allowed."', $response1b->getBody()->__toString());
 
+        // with /latest and a slash at the end (old swagger definition)
+        $response1c = $this->runApp('GET', '/api/app/v2/esi/latest/alliances/', null, $headers);
+        $this->assertSame(400, $response1c?->getStatusCode());
+        $this->assertSame('"Public ESI routes are not allowed."', $response1c->getBody()->__toString());
+
         $response2 = $this->runApp(
             'GET',
-            '/api/app/v2/esi/latest/alliances/123456/icons/',
+            '/api/app/v2/esi/alliances/123456/icons/',
             null,
             $headers,
         );
@@ -387,7 +392,7 @@ class EsiControllerTest extends WebTestCase
 
         $response3 = $this->runApp(
             'GET',
-            '/api/app/v2/esi/latest/killmails/123456/123abc/',
+            '/api/app/v2/esi/killmails/123456/123abc/',
             null,
             $headers,
         );
@@ -403,7 +408,7 @@ class EsiControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/api/app/v1/esi/latest/characters/96061222/stats/?datasource=96061222',
+            '/api/app/v1/esi/characters/96061222/stats/?datasource=96061222',
             null,
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
         );
@@ -420,7 +425,7 @@ class EsiControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/api/app/v2/esi/latest/characters/96061222/stats/?datasource=96061222',
+            '/api/app/v2/esi/characters/96061222/stats/?datasource=96061222',
             null,
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
         );
@@ -438,7 +443,7 @@ class EsiControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/api/app/v1/esi/latest/characters/96061222/stats/?datasource=123%3Atest-1',
+            '/api/app/v1/esi/characters/96061222/stats/?datasource=123%3Atest-1',
             null,
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
         );
@@ -456,7 +461,7 @@ class EsiControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/api/app/v2/esi/latest/characters/96061222/stats/?datasource=123%3Atest-1',
+            '/api/app/v2/esi/characters/96061222/stats/?datasource=123%3Atest-1',
             null,
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
         );
@@ -645,7 +650,7 @@ class EsiControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/api/app/v2/esi/latest/universe/structures/1/?page=1&datasource=123:core.default',
+            '/api/app/v2/esi/universe/structures/1/?page=1&datasource=123:core.default',
             [],
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
             [
@@ -678,7 +683,7 @@ class EsiControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/api/app/v2/esi/latest/universe/structures/1/?page=1&datasource=123:core.default',
+            '/api/app/v2/esi/universe/structures/1/?page=1&datasource=123:core.default',
             [],
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
             [
@@ -694,7 +699,7 @@ class EsiControllerTest extends WebTestCase
         );
         $this->assertSame(
             'App\EsiController: (application ' . $appId . ' "A1") ' .
-            '/latest/universe/structures/1/?page=1: ' .
+            '/universe/structures/1/?page=1: ' .
             '{"error": "not a potential structure_id (id < 100000000)"}',
             $this->logger->getHandler()?->getRecords()[0]['message'],
         );

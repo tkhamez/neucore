@@ -85,7 +85,7 @@ $config->setAccessToken($coreAppToken);
 $esiApiInstance = new Brave\NeucoreApi\Api\ApplicationESIApi(null, $config);
 try {
     $result = $esiApiInstance->esiPostV2WithHttpInfo(
-        "/latest/characters/$coreCharId/assets/names/",
+        "/characters/$coreCharId/assets/names/",
         $coreCharId, // EVE character to choose the ESI token (from core.default login).
         json_encode([$itemId])
     );

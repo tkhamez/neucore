@@ -24,9 +24,9 @@ function fetchDone(def) {
             continue;
         }
         if (def.paths[path].get) {
-            get.push('/latest' + path);
+            get.push(path);
         } else if (def.paths[path].post) {
-            post.push('/latest' + path);
+            post.push(path);
         }
     }
     writeFiles(get, post);

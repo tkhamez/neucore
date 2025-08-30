@@ -102,7 +102,7 @@ class EsiControllerTest extends WebTestCase
         ], $this->parseJsonBody($response));
     }
 
-    public function testRequestPost200()
+    public function testRequestPost200(): void
     {
         $this->setupDb();
         $this->loginUser(7);
@@ -116,12 +116,12 @@ class EsiControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'POST',
-            '/api/user/esi/request?character=6&route=/latest/characters/affiliation/',
+            '/api/user/esi/request?character=6&route=/characters/affiliation/',
             ['body' => [96061222]],
             null,
             [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)],
         );
-        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(200, $response?->getStatusCode());
         $this->assertSame([
             'headers' => [],
             'body' => [

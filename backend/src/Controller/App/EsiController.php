@@ -664,10 +664,11 @@ class EsiController extends BaseController
             $characterId = $dataSource;
             $eveLoginName = EveLogin::NAME_DEFAULT;
         }
-        if (empty($esiPath) || $this->isPublicPath($esiPath) || empty($characterId)) {
+        $publicPath = $this->isPublicPath($esiPath);
+        if (empty($esiPath) || $publicPath || empty($characterId)) {
             if (empty($esiPath)) {
                 $reason = 'Path cannot be empty.';
-            } elseif ($this->isPublicPath($esiPath)) {
+            } elseif ($publicPath) {
                 $reason = 'Public ESI routes are not allowed.';
             } else { // empty($characterId)
                 $reason = 'The Neucore-EveCharacter header and datasource parameter cannot both be empty, ' .
@@ -810,7 +811,14 @@ class EsiController extends BaseController
 
     private function isPublicPath(string $esiPath): bool
     {
-        $path = substr($esiPath, (int) strpos($esiPath, '/', 1));
+        $path = $esiPath;
+        if (
+            str_starts_with($esiPath, '/latest/') ||
+            preg_match("@^/v([0-9])+/@", $esiPath) === 1
+        ) {
+            // Strip the version from the old paths.
+            $path = substr($esiPath, (int) strpos($esiPath, '/', 1));
+        }
 
         $publicPaths = Application::loadFile('esi-paths-public.php');
 

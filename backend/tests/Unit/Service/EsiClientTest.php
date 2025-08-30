@@ -87,7 +87,7 @@ class EsiClientTest extends TestCase
         $this->expectExceptionCode(568420);
         $this->expectExceptionMessage('Character not found.');
 
-        $this->esiClient->request('/latest/characters/102003000/', 'GET', null, 20300400);
+        $this->esiClient->request('/characters/102003000/', 'GET', null, 20300400);
     }
 
     /**
@@ -101,7 +101,7 @@ class EsiClientTest extends TestCase
         $this->expectExceptionCode(568421);
         $this->expectExceptionMessage('Character has no valid token.');
 
-        $this->esiClient->request('/latest/characters/102003000/', 'GET', null, 20300400);
+        $this->esiClient->request('/characters/102003000/', 'GET', null, 20300400);
     }
 
     /**
@@ -119,7 +119,7 @@ class EsiClientTest extends TestCase
         $this->httpClient->setResponse(new Response(200, [], '{"name": "char name", "corporation_id": 20}'));
 
         $response = $this->esiClient->request(
-            '/latest/characters/102003000/',
+            '/characters/102003000/',
             'GET',
             null,
             20300400,
@@ -151,7 +151,7 @@ class EsiClientTest extends TestCase
         $this->httpClient->setResponse(new Response());
 
         $this->esiClient->request(
-            '/latest/characters/102003000/',
+            '/characters/102003000/',
             'GET',
             null,
             20300400,
