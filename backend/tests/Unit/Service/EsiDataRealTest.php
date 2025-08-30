@@ -91,7 +91,7 @@ class EsiDataRealTest extends TestCase
     {
         $this->expectExceptionCode(410);
         $this->expectExceptionMessage('Character has been deleted (exception)');
-        $this->esiData->fetchCharacter(2112148223);
+        $this->esiData->fetchCharacter(2121766251);
     }
 
     /**
