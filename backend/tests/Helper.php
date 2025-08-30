@@ -595,6 +595,25 @@ class Helper
         return $eveLogin;
     }
 
+    public function deleteDirectory(string $directory): void
+    {
+        $dir = realpath($directory);
+        if (!$dir) {
+            return;
+        }
+
+        $directory = new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS);
+        $iterator = new \RecursiveIteratorIterator($directory, \RecursiveIteratorIterator::CHILD_FIRST);
+        foreach ($iterator as $file) { /* @var $file \SplFileInfo */
+            if ($file->isDir()) {
+                rmdir($file->getRealPath());
+            } else {
+                unlink($file->getRealPath());
+            }
+        }
+        rmdir($dir);
+    }
+
     private static function getConfig(string $compatibilityDate = ''): config
     {
         return new Config(['eve' => [
