@@ -8,7 +8,7 @@ use Neucore\Controller\BaseController;
 use Neucore\Data\SearchResult;
 use Neucore\Entity\Character;
 use Neucore\Entity\Role;
-use Neucore\Factory\EsiApiFactory;
+use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
 use Neucore\Service\Account;
@@ -19,10 +19,6 @@ use Neucore\Service\UserAuth;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Log\LoggerInterface;
-use Tkhamez\Eve\API\ApiException;
-use Tkhamez\Eve\API\Model\CharactersCharacterIdGet;
-use Tkhamez\Eve\API\Model\Error;
 
 #[OA\Tag(name: 'Character', description: 'Character related functions.')]
 class CharacterController extends BaseController
@@ -211,8 +207,8 @@ class CharacterController extends BaseController
     public function update(string $id, Account $accountService): ResponseInterface
     {
         // Note that users with the role tracking or watchlist should only update characters from
-        // accounts from the respective lists, but there's no harm allowing them to update all as long as
-        // this does not return any data, otherwise this would need to check permissions like it's done
+        // accounts from the respective lists. But there's no harm allowing them to update all as long as
+        // this does not return any data. Otherwise this would need to check permissions like it's done
         // for /user/player/{id}/characters.
 
         // get player account
@@ -299,8 +295,6 @@ class CharacterController extends BaseController
     public function add(
         string $id,
         Account $accountService,
-        EsiApiFactory $esiApiFactory,
-        LoggerInterface $log,
     ): ResponseInterface {
         $charId = (int) $id;
 
@@ -316,37 +310,22 @@ class CharacterController extends BaseController
 
         // Check if the EVE character exists
         try {
-            $eveChar = $esiApiFactory->getCharacterApi()->getCharactersCharacterId($charId);
-        } catch (ApiException $e) {
-            $body = $e->getResponseBody();
-            if ($e->getCode() === 404 && is_string($body) && str_contains($body, 'Character not found')) {
-                // This is probably not necessary any more.
-                // https://github.com/OpenAPITools/openapi-generator/pull/19483
+            $eveChar = $this->esiData->fetchCharacter($charId);
+        } catch (RuntimeException $e) {
+            if ($e->getCode() === 404) {
                 return $this->withJson('Character not found.', 404);
-            } else {
-                $log->error($e->getMessage());
+            } elseif ($e->getCode() === 410) {
+                return $this->withJson('Character has been deleted.', 404);
+            } {
                 return $this->withJson('ESI error.', 500);
             }
-        } catch (\Exception $e) {
-            $log->error($e->getMessage());
-            return $this->withJson('ESI error.', 500);
-        }
-
-        /** @noinspection PhpCastIsUnnecessaryInspection */
-        if (
-            $eveChar instanceof Error &&
-            str_contains((string) $eveChar->getError(), 'Character not found')
-        ) {
-            return $this->withJson('Character not found.', 404);
         }
 
         // Create a new account
-        if ($eveChar instanceof CharactersCharacterIdGet) {
-            $char = $accountService->createNewPlayerWithMain($charId, $eveChar->getName());
-            $char->getPlayer()->addRole($userRole[0]);
-            $this->objectManager->persist($char->getPlayer());
-            $this->objectManager->persist($char);
-        }
+        $char = $accountService->createNewPlayerWithMain($charId, $eveChar->getName());
+        $char->getPlayer()->addRole($userRole[0]);
+        $this->objectManager->persist($char->getPlayer());
+        $this->objectManager->persist($char);
 
         return $this->flushAndReturn(201);
     }

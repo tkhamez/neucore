@@ -9,6 +9,7 @@ use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\EsiLocation;
 use Neucore\Entity\SystemVariable;
+use Neucore\Exception\RuntimeException;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
@@ -73,6 +74,55 @@ class EsiData
     }
 
     /**
+     * Fetch character from ESI.
+     *
+     * @throws RuntimeException If the character was deleted, not found or any other ESI error.
+     */
+    public function fetchCharacter(int $id): CharactersCharacterIdGet
+    {
+        try {
+            $eveChar = $this->esiApiFactory->getCharacterApi()->getCharactersCharacterId($id);
+        } catch (ApiException $e) {
+            $body = $e->getResponseBody();
+            if (
+                $e->getCode() === 404 &&
+                is_string($body) &&
+                str_contains($body, 'Character not found')
+            ) {
+                throw new RuntimeException('Character not found (exception)', 404);
+            } elseif (
+                $e->getCode() === 404 &&
+                is_string($body) &&
+                str_contains($body, 'Character has been deleted')
+            ) {
+                throw new RuntimeException('Character has been deleted (exception)', 410);
+            } {
+                throw new RuntimeException(is_string($body) ? $body : $e->getMessage());
+            }
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            throw new RuntimeException('ESI error.');
+        }
+
+        /** @noinspection PhpCastIsUnnecessaryInspection */
+        if ($eveChar instanceof Error) {
+            /** @noinspection PhpCastIsUnnecessaryInspection */
+            if (str_contains((string) $eveChar->getError(), 'Character not found')) {
+                throw new RuntimeException('Character not found (error object)', 404);
+            }
+            /** @noinspection PhpCastIsUnnecessaryInspection */
+            elseif (str_contains((string) $eveChar->getError(), 'Character has been deleted')) {
+                throw new RuntimeException('Character has been deleted (error object)', 410);
+            } else {
+                /** @noinspection PhpCastIsUnnecessaryInspection */
+                throw new RuntimeException((string) $eveChar->getError());
+            }
+        }
+
+        return $eveChar;
+    }
+
+    /**
      * Updates character, corporation and alliance from ESI.
      *
      * Character must already exist in the local database.
@@ -82,8 +132,9 @@ class EsiData
      */
     public function fetchCharacterWithCorporationAndAlliance(?int $id): ?Character
     {
-        $char = $this->fetchCharacter($id, false);
-        if ($char === null || $char->getCorporation() === null) { // corp is never null here, but that's not obvious
+        $char = $this->updateCharacter($id, false);
+        // corp is never null here, but that's not obvious
+        if ($char === null || $char->getCorporation() === null) {
             return null;
         }
 
@@ -111,23 +162,23 @@ class EsiData
      *
      * The character must already exist.
      *
-     * If the character's corporation is not yet in the database it will
-     * be created, but not updated with data from ESI.
+     * If the character's corporation is not yet in the database, it will
+     * be created but not updated with data from ESI.
      *
      * Returns null if the ESI requests fails or if the character
      * does not exist in the local database.
      *
      * @param int|null $id
-     * @param bool $flush Optional write data to database, defaults to true
+     * @param bool $flush Optional write data to a database, defaults to true
      * @return null|Character An instance that is attached to the Doctrine entity manager.
      */
-    public function fetchCharacter(?int $id, bool $flush = true): ?Character
+    public function updateCharacter(?int $id, bool $flush = true): ?Character
     {
         if ($id === null || $id <= 0) {
             return null;
         }
 
-        // get char from local database
+        // get char from the local database
         $char = $this->repositoryFactory->getCharacterRepository()->find($id);
         if ($char === null) {
             return null;
@@ -139,31 +190,15 @@ class EsiData
         $eveChar = null;
         try {
             // ESI cache = 24 hours.
-            // But maybe faster than /characters/affiliation/ if th character was deleted.
-            $eveChar = $this->esiApiFactory->getCharacterApi()->getCharactersCharacterId($id);
-        } catch (ApiException $e) {
-            // Do not log and continue if the character was deleted/biomassed
-            $body = $e->getResponseBody();
-            if ($e->getCode() === 404 && is_string($body) && str_contains($body, 'Character has been deleted')) {
-                // This is probably not necessary any more.
-                // https://github.com/OpenAPITools/openapi-generator/pull/19483
+            // But maybe faster than /characters/affiliation/ if the character was deleted.
+            $eveChar = $this->fetchCharacter($id);
+        } catch (RuntimeException $e) {
+            $this->lastErrorCode = $e->getCode();
+            if ($e->getCode() === 410) {
                 $corpId = self::CORPORATION_DOOMHEIM_ID;
             } else {
-                $this->lastErrorCode = $e->getCode();
-                $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
                 return null;
             }
-        } catch (\Exception $e) {
-            $this->lastErrorCode = $e->getCode();
-            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
-            return null;
-        }
-        /** @noinspection PhpCastIsUnnecessaryInspection */
-        if (
-            $eveChar instanceof Error &&
-            str_contains((string) $eveChar->getError(), 'Character has been deleted')
-        ) {
-            $corpId = self::CORPORATION_DOOMHEIM_ID;
         }
 
         $updated = false;

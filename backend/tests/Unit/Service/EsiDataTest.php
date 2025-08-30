@@ -79,6 +79,89 @@ class EsiDataTest extends TestCase
         $this->em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
+    public function testFetchCharacter_NotFound1(): void
+    {
+        $response = new Response(404, [], '{"error": "Character not found"}');
+        $this->client->setMiddleware(function () use ($response) {
+            throw new ApiException(
+                code: $response->getStatusCode(),
+                responseBody: $response->getBody()->getContents(),
+            );
+        });
+        $this->client->setResponse($response);
+
+        $this->expectExceptionCode(404);
+        $this->expectExceptionMessage('Character not found (exception)');
+        $this->esiData->fetchCharacter(10);
+    }
+
+    public function testFetchCharacter_NotFound2(): void
+    {
+        $this->client->setResponse(new Response(404, [], '{"error": "Character not found"}'));
+
+        $this->expectExceptionCode(404);
+        $this->expectExceptionMessage('Character not found (error object)');
+        $this->esiData->fetchCharacter(10);
+    }
+
+    public function testFetchCharacter_Deleted1(): void
+    {
+        $response = new Response(404, [], '{"error": "Character has been deleted"}');
+        $this->client->setMiddleware(function () use ($response) {
+            throw new ApiException(
+                code: $response->getStatusCode(),
+                responseBody: $response->getBody()->getContents(),
+            );
+        });
+        $this->client->setResponse($response);
+
+        $this->expectExceptionCode(410);
+        $this->expectExceptionMessage('Character has been deleted (exception)');
+        $this->esiData->fetchCharacter(10);
+    }
+
+    public function testFetchCharacter_Deleted2(): void
+    {
+        $this->client->setResponse(new Response(410, [], '{"error": "Character has been deleted"}'));
+
+        $this->expectExceptionCode(410);
+        $this->expectExceptionMessage('Character has been deleted (error object)');
+        $this->esiData->fetchCharacter(10);
+    }
+
+    public function testFetchCharacter_500EsiError1(): void
+    {
+        $this->client->setResponse(new Response(400, body: 'body'));
+
+        $this->expectExceptionMessage('body');
+        $this->esiData->fetchCharacter(456789);
+
+        $this->assertStringStartsWith(
+            'Error JSON decoding server response',
+            $this->log->getMessages()[0]
+        );
+    }
+
+    public function testFetchCharacter_500EsiError2(): void
+    {
+        $this->expectExceptionMessage('ESI error.');
+        $this->esiData->fetchCharacter(0);
+
+        $this->assertStringContainsString(
+            '0 does not meet minimum of 1',
+            $this->log->getMessages()[0]
+        );
+    }
+
+    public function testFetchCharacter_Found(): void
+    {
+        $this->client->setResponse(new Response(200, [], '{"name": "Char 456789"}'));
+
+        $char = $this->esiData->fetchCharacter(456789);
+
+        $this->assertSame('Char 456789', $char->getName());
+    }
+
     public function testFetchCharacterWithCorporationAndAlliance_CharInvalid(): void
     {
         $this->client->setResponse(
@@ -170,33 +253,33 @@ class EsiDataTest extends TestCase
         $this->assertSame('alli name', $char->getCorporation()->getAlliance()?->getName());
     }
 
-    public function testFetchCharacter_InvalidId(): void
+    public function testUpdateCharacter_InvalidId(): void
     {
-        $char = $this->esiData->fetchCharacter(-1);
+        $char = $this->esiData->updateCharacter(-1);
         $this->assertNull($char);
     }
 
-    public function testFetchCharacter_NotInDB(): void
+    public function testUpdateCharacter_NotInDB(): void
     {
         $this->testHelper->emptyDb();
 
-        $char = $this->esiData->fetchCharacter(123);
+        $char = $this->esiData->updateCharacter(123);
         $this->assertNull($char);
     }
 
-    public function testFetchCharacter_404NotFound(): void
+    public function testUpdateCharacter_404NotFound(): void
     {
         $this->testHelper->emptyDb();
         $this->testHelper->addCharacterMain('newChar', 123);
 
-        $this->client->setResponse(new Response(404));
-        $char = $this->esiData->fetchCharacter(123);
+        $this->client->setResponse(new Response(404, body: 'Character not found'));
+        $char = $this->esiData->updateCharacter(123);
 
         $this->assertNull($char);
-        $this->assertStringStartsWith('Error JSON decoding server response', $this->log->getMessages()[0]);
+        $this->assertSame(404, $this->esiData->getLastErrorCode());
     }
 
-    public function testFetchCharacter_404Deleted(): void
+    public function testUpdateCharacter_404Deleted(): void
     {
         $this->testHelper->emptyDb();
         $char = $this->testHelper->addCharacterMain('old char name', 123);
@@ -206,7 +289,7 @@ class EsiDataTest extends TestCase
         $this->client->setResponse(
             new Response(404, [], '{"error":"Character has been deleted!"}'),
         );
-        $char = $this->esiData->fetchCharacter(123);
+        $char = $this->esiData->updateCharacter(123);
 
         $this->assertFalse(isset($this->log->getMessages()[0]));
 
@@ -223,7 +306,7 @@ class EsiDataTest extends TestCase
         $this->assertSame('old char name', $charDb->getName());
     }
 
-    public function testFetchCharacter_AffiliationDeleted(): void
+    public function testUpdateCharacter_AffiliationDeleted(): void
     {
         $this->testHelper->emptyDb();
         $char = $this->testHelper->addCharacterMain('old char name', 123);
@@ -240,7 +323,7 @@ class EsiDataTest extends TestCase
                 "corporation_id": ' . EsiData::CORPORATION_DOOMHEIM_ID . '
             }]'),
         );
-        $char = $this->esiData->fetchCharacter(123);
+        $char = $this->esiData->updateCharacter(123);
         $this->em->flush();
 
         $this->assertFalse(isset($this->log->getHandler()?->getRecords()[0]));
@@ -253,7 +336,7 @@ class EsiDataTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testFetchCharacter_NoFlush(): void
+    public function testUpdateCharacter_NoFlush(): void
     {
         $this->testHelper->emptyDb();
         $char = $this->testHelper->addCharacterMain('newChar', 123);
@@ -271,7 +354,7 @@ class EsiDataTest extends TestCase
             }]'),
         );
 
-        $char = $this->esiData->fetchCharacter(123, false);
+        $char = $this->esiData->updateCharacter(123, false);
         $this->assertSame(123, $char?->getId());
         $this->assertSame('new corp', $char->getName());
         $this->assertSame(234, $char->getCorporation()?->getId());
@@ -285,7 +368,7 @@ class EsiDataTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testFetchCharacter_Ok(): void
+    public function testUpdateCharacter_Ok(): void
     {
         $this->testHelper->emptyDb();
         $char = $this->testHelper->addCharacterMain('old char name', 123);
@@ -303,7 +386,7 @@ class EsiDataTest extends TestCase
             }]'),
         );
 
-        $char = $this->esiData->fetchCharacter(123);
+        $char = $this->esiData->updateCharacter(123);
         $this->assertSame(123, $char?->getId());
         $this->assertSame('new char name', $char->getName());
         $this->assertSame('old char name', $char->getCharacterNameChanges()[0]->getOldName());

@@ -402,7 +402,7 @@ class CharacterControllerTest extends WebTestCase
         $this->assertSame('Character not found.', $this->parseJsonBody($response));
     }
 
-    public function testAdd_500EsiError1(): void
+    public function testAdd_500(): void
     {
         $this->setupDb();
         $this->loginUser(9);
@@ -415,25 +415,6 @@ class CharacterControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(500, $response?->getStatusCode());
-        $this->assertSame('ESI error.', $this->parseJsonBody($response));
-        $this->assertStringStartsWith('Error JSON decoding server response', $this->log->getMessages()[0]);
-    }
-
-    public function testAdd_500EsiError2(): void
-    {
-        $this->setupDb();
-        $this->loginUser(9);
-
-        $response = $this->runApp('POST', '/api/user/character/add/0', [], [], [
-            LoggerInterface::class => $this->log,
-        ]);
-
-        $this->assertSame(500, $response?->getStatusCode());
-        $this->assertSame('ESI error.', $this->parseJsonBody($response));
-        $this->assertStringContainsString(
-            '0 does not meet minimum of 1',
-            $this->log->getMessages()[0]
-        );
     }
 
     public function testAdd_201(): void
