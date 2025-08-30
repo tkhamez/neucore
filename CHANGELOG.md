@@ -10,6 +10,7 @@ dd mm yyyy
 - The ESI client [tkhamez/swagger-eve-php](https://github.com/tkhamez/swagger-eve-php) has been replaced by 
   [tkhamez/eve-api](https://github.com/tkhamez/eve-api-php), which uses the new OpenAPI 3.1 definition.
 - Added the "Accept-Language" header to the ESI proxy.
+- Updated backend dependencies.
 
 ## 2.8.0
 
