@@ -64,7 +64,7 @@ return [
 
         // If the date it changed here, it must also be changed in esi-paths.js and
         // esi-paths-public.php.
-        'esi_compatibility_date' => '2020-01-01',
+        'esi_compatibility_date' => '2025-08-26',
     ],
 
     'guzzle' => [
