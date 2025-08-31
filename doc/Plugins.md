@@ -22,7 +22,7 @@ and/or link them to a Neucore user account (like Mumble or Discord). They can al
 interface.
 
 A plugin can be added multiple times to Neucore with different configuration data (via GUI, it only has to 
-be installed once). For example the [Neucore Discord Plugin](https://github.com/tkhamez/neucore-discord-plugin) 
+be installed once). For example, the [Neucore Discord Plugin](https://github.com/tkhamez/neucore-discord-plugin) 
 is added once for every Discord server that should be available to users.
 
 
@@ -36,17 +36,17 @@ The following steps are the same for all plugins. See the respective plugin docu
 - If the plugin contains frontend files (see the respective plugin documentation), make them available
   below `[Neucore installation directory]/web/plugin/{name}`, e.g. by creating a symlink or by mounting the
   directory in the Docker container. See the documentation of the plugin for the name of the {name} directory.
-- In Neucore, go to _Administration -> Plugins_ and add a new plugin.
-- Configure the plugin, at the very least choose the plugin from the dropdown list. Don't forget to save your changes.
+- In Neucore, go to _Administration → Plugins_ and add a new plugin.
+- Configure the plugin, at the very least choose the plugin from the dropdown list. Remember to save your changes.
 
 
 ## Overview for plugin creators
 
-For each plugin that was created in Neucore there is one distinct URL `/plugin/{plugin_id}/{name}`.
+For each plugin created in Neucore there is one distinct URL `/plugin/{plugin_id}/{name}`.
 The {name} part can be anything and is passed to the method that implements the request. This method will also 
 get information about the logged-in user.
 
-All plugins have access to a couple object from Neucore, e.g. to parse YAML files, get various data like 
+All plugins have access to a couple objects from Neucore, e.g. to parse YAML files, get various data like 
 group members or make ESI requests with tokens from any character that is available on Neucore.
 
 ### General plugins
@@ -58,8 +58,8 @@ See this [example plugin](https://github.com/tkhamez/neucore-example-plugin) for
 
 ### Service plugins
 
-They are available to users from the "Services" menu. They provide configuration data to customize the 
-user interface and implement a couple methods to create and update external service accounts via Neucore.
+They are available to users from the "Services" menu. They provide configuration data to customise the 
+user interface and implement a couple of methods to create and update external service accounts via Neucore.
 
 
 ## Create a plugin

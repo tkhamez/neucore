@@ -1,12 +1,12 @@
 # API
 
-All API endpoints from the backend are protected by roles.
+Roles protect all API endpoints from the backend.
 
 The API is documented with OpenAPI. It is available with every installation at `/api.html`.
 
 Please note that schema properties that are not required and are of the type of another schema can
 also be null. Unfortunately, this cannot be documented in this way. For example, `Character.corporation`
-can be a `Corporation` object, be null, or not exist at all.
+can be a `Corporation` object, be null or not exist at all.
 
 ## Roles Overview
 
@@ -47,7 +47,7 @@ Allows a player to view all characters of an account.
 
 #### group-admin
 
-Allows a player to create groups and add and remove managers or corporation and alliances.
+Allows a player to create groups and add and remove managers or corporations and alliances.
 
 {group-admin}
 
@@ -166,7 +166,7 @@ Allows an app to receive information about tokens for EVE logins.
 
 Allows an app to make ESI requests on behalf of a character from the database.
 
-- Makes an ESI GET or POST request on behalf on an EVE character and returns the result. `/app/v2/esi`  
+- Makes an ESI GET or POST request on behalf of an EVE character and returns the result. `/app/v2/esi`  
   This endpoint can also be used with OpenAPI clients generated for ESI, see [api-examples](api-examples) for more.
 
 #### app-esi-token

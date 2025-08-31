@@ -47,9 +47,9 @@ Main features:
 
 and more:
 
-* Customization of texts, links and images specific to your organization, including themes.
-* Role based permission system.
-* Optional alternative login that does not require any ESI scopes (e.g. for guest account).
+* Customisation of texts, links and images specific to your organisation, including themes.
+* Role-based permission system.
+* Optional alternative login that does not require any ESI scopes (e.g. for a guest account).
 * Ability to add additional ESI tokens per character with configurable OAuth scopes.
 * Advanced group configuration: private, public, default, required and forbidden groups.
 * Member applications for groups, optionally automatically acceptable.
@@ -77,12 +77,12 @@ separate OpenAPI definition file at https://your.domain/application-api-3.yml.
 
 ### Authentication
 
-First an application must be created by an app administrator and assigned to an app manager, 
+First, an application must be created by an app administrator and assigned to an app manager, 
 who can then generate the app secret.
 
-Apps are authenticated using an HTTP authorization header.
+Apps are authenticated using an HTTP authorisation header.
 
-The authorization string is composed of the word Bearer followed by a base64-encoded
+The authorisation string is composed of the word Bearer followed by a base64-encoded
 string containing the app ID and secret separated by a colon (1:my awesome secret).
 
 Example:
@@ -92,8 +92,8 @@ curl --header "Authorization: Bearer MTpteSBhd2Vzb21lIHNlY3JldA==" https://neuco
 
 ### Rate Limits
 
-If the *API rate limit for apps* is enabled (UI: Admin -> Settings -> Features), each response will contain 
-the headers `X-Neucore-Rate-Limit-Remain` and `X-Neucore-Rate-Limit-Reset`. A request results in an error 
+If the *API rate limit for apps* is enabled (UI: Admin → Settings → Features), each response will contain 
+the headers `X-Neucore-Rate-Limit-Remain` and `X-Neucore-Rate-Limit-Reset`. A request results in error 
 429 "Too many requests" if the limit has been exceeded.
 
 If it is configured only, but not active, it is logged when an app exceeds the limit.
@@ -101,7 +101,7 @@ If it is configured only, but not active, it is logged when an app exceeds the l
 If the *IP-based rate limit* is also active (environment variable), the headers contain the values of the rate limit 
 with the lower "remain" value.
 
-Note that IP-based rate limit works without a database connection and needs the APCu PHP extension.
+Note that the IP-based rate limit works without a database connection and needs the APCu PHP extension.
 
 ### ESI Proxy
 
@@ -141,8 +141,8 @@ After a successful login, additional characters (alts) can be added to the accou
 is also done via EVE SSO.
 
 If a character to be added to an account already belongs to another account, the two accounts will 
-be merged by moving all characters from the newer account to the older one, unless the character owner
-hash of the character being added has changed, which happens after a character transfer.
+be merged. This is done by moving all characters from the newer account to the older one, unless the
+character owner hash of the character being added has changed, which happens after a character transfer.
 
 ### Removing Characters
 
@@ -155,7 +155,7 @@ All character removals are recorded and are visible to user admins.
 
 ### Account status
 
-There a two account status: "standard" and "manually managed".
+There are two account statuses: "standard" and "manually managed".
 
 - The status can be changed at any time by a user admin.
 - If the status is changed, all groups are removed. New groups can be added manually in the same way as for normal 
@@ -196,8 +196,8 @@ who can then manually remove all members.
 ### Group Deactivation
 
 If the ESI token of one or more characters on an account is invalid, the account can be disabled. This is done 
-on the settings page, feature "Groups Deactivation". A character without a token (no ESI scopes were requested 
-during login) counts as invalid.
+on the settings page, at the feature "Groups Deactivation". A character without a token (no ESI scopes were  
+requested during login) counts as invalid.
 
 Deactivation means that the API for apps no longer returns groups for that account. The deactivation of the 
 account can be delayed, e.g. by 24 hours after a token became invalid.
@@ -206,7 +206,7 @@ As soon as the token was updated by logging in with the appropriate character, t
 
 ### Prerequisite for roles
 
-Roles can be limited to players with certain groups. If configured, roles will be removed when a player looses
+Roles can be limited to players with certain groups. If configured, roles will be removed when a player loses
 the group(s). This does _not_ take the "Groups Deactivation" feature into account.
 
 ### Required and Forbidden Groups
@@ -216,7 +216,7 @@ these other groups, otherwise they will be automatically removed from the group.
 
 It is also possible to configure groups that an account cannot be a member of to be a member of that group.
 
-Those check is also done for "manually managed" Player accounts (see "Account status" above).
+Those checks are also done for "manually managed" Player accounts (see "Account status" above).
 
 ### Group Applications
 
@@ -237,9 +237,9 @@ The permissions are managed via groups, one for viewing and one for administrati
 
 Corporations can be automatically added to the allowlist (and removed accordingly) if all their members 
 are on the same account using the `auto-allowlist` command. This only works if at least one character in
-that corporation has authorized the `esi-corporations.read_corporation_membership.v1` ESI scope. Note that 
+that corporation has authorised the `esi-corporations.read_corporation_membership.v1` ESI scope. Note that 
 the auto flag of a corporation is the same for all watchlists. This means that automatic additions and 
-removals have priority over manually adding and removing a corporation from the allow list.
+removals have priority over manually adding and removing a corporation from the allowlist.
 
 ## Mail Notifications
 
@@ -250,15 +250,15 @@ relevant should CCP add refresh token rotation for web-based applications. See a
 
 ### Invalid ESI Token
 
-An EVE mail can be sent for accounts with characters with an invalid ESI token.
+An EVE-mail can be sent for accounts with characters with an invalid ESI token.
 
 This mail will only be sent once and only if one of the characters in the account is a member of an alliance 
 that was previously configured. It will be sent to the main character, if any, or to one of the characters that 
-have an invalid token.
+has an invalid token.
 
 ### Missing Character
 
-An EVE mail can be sent to characters that were not added to an account.
+An EVE-mail can be sent to characters not added to an account.
 
 This mail will only be sent to members of configured corporations where member tracking must be enabled. It will 
 only be sent if the character has logged in within a configurable number of days and will be sent again after the 
@@ -267,7 +267,7 @@ same number of days.
 ## Console Application
 
 The console application has commands to:
-- update characters with information from ESI, like corporation etc.
+- update characters with information from ESI, like the corporation etc.
 - check ESI tokens of all characters.
 - perform automatic group assignments.
 - update member tracking data.

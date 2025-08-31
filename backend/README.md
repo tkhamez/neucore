@@ -41,7 +41,7 @@ composer compile:prod
 
 The differences between `dev` and `prod` mode (which is determined by the environment variable 
 `NEUCORE_APP_ENV`) are:
-- Doctrine proxy classes are auto generated in dev mode, the APCu cache is used in prod mode
+- Doctrine proxy classes are auto-generated in dev mode, the APCu cache is used in prod mode
 - PHP-DI uses compilation and the APCu cache in prod mode
 
 ## Style Guide
@@ -58,12 +58,12 @@ composer style:fix
 
 ### Clear Entity Manager
 
-Sometimes it's necessary to clear the Doctrine entity manager. But never do this outside of Command or
+Sometimes it's necessary to clear the Doctrine entity manager. But never do this outside Command or
 Controller classes.
 
 ### Tests
 
-Any new code should be covered by unit tests.
+Unit tests should cover any new code.
 
 ### Libraries and Plugins
 

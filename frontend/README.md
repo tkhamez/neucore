@@ -36,11 +36,11 @@ npm run serve
 ```
 
 Note: The build for the development server does not support switching themes. This can be enabled by setting
-`devModeThemes` to `true` in `vue.config.js`. This will however disable CSS reloading.
+`devModeThemes` to `true` in `vue.config.js`. This will, however, disable CSS reloading.
 
 ## Style Guide
 
-- Use 4 spaces for indenting please.
+- Use four spaces for indenting, please.
 - The maximum line length should not exceed 120 characters.
 
 ## OpenAPI Client

@@ -15,7 +15,7 @@
 - [Overview](#overview)
 - [Getting started](#getting-started)
   * [Installation](#installation)
-  * [First Login and Customization](#first-login-and-customization)
+  * [First Login and Customisation](#first-login-and-customisation)
   * [Setting up Member Tracking and Watchlists](#setting-up-member-tracking-and-watchlists)
 - [Plugins and related Software](#plugins-and-related-software)
 - [Final Notes](#final-notes)
@@ -48,28 +48,28 @@ For more information, see the [doc](doc/README.md) directory, which also contain
 
 See [doc/Install.md](doc/Install.md) for installation instructions.
 
-### First Login and Customization
+### First Login and Customisation
 
 - Login with an EVE character to create an account.
 - Open a console and run `backend/bin/console make-admin 1`.
-- Navigate to *Admin -> Settings* and change texts, links and images that are specific to your installation.
+- Navigate to *Admin → Settings* and change texts, links and images that are specific to your installation.
 
 ### Setting up Member Tracking and Watchlists
 
 Group for permissions
-- Go to Administration -> Groups, create a new group and add yourself as a manager.
-- Go to Management -> Groups, select the new group and add yourself as a member.
+- Go to Administration → Groups, create a new group and add yourself as a manager.
+- Go to Management → Groups, select the new group and add yourself as a member.
 
 Member Tracking
 - Click the "Add additional ESI tokens" button on the home page, and then use the "core.tracking" login button
-  to log in a character with director role for your corporation.
+  to log in a character with the director role for your corporation.
 - Open a console and run `backend/bin/console update-member-tracking`.
-- Go to Administration -> Tracking, select your corporation and add a group you are a member of.
-- Go to Member Data -> Member Tracking and select your corporation.
+- Go to Administration → Tracking, select your corporation and add a group you are a member of.
+- Go to Member Data → Member Tracking and select your corporation.
 
 Watchlist
-- Go to Administration -> Watchlist and add a new watchlist. Open the "View" and "Manage" tabs and add your group.
-- Go to Member Data -> Watchlist -> Settings and add alliances and/or corporations for watching.
+- Go to Administration → Watchlist and add a new watchlist. Open the "View" and "Manage" tabs and add your group.
+- Go to Member Data → Watchlist → Settings and add alliances and/or corporations for watching.
 
 ## Plugins and related Software
 
