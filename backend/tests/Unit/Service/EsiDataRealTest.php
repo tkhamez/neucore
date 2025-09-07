@@ -113,7 +113,7 @@ class EsiDataRealTest extends TestCase
         self::assertSame(2, count($logMessages));
         self::assertSame(
             'fetchUniverseNames: Invalid ID(s) in request, trying again with max. 1 IDs.',
-            $logMessages[0]
+            $logMessages[0],
         );
         self::assertStringStartsWith('[404] Client error', $logMessages[1]);
         self::assertStringContainsString('Ensure all IDs are valid before resolving', $logMessages[1]);

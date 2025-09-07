@@ -352,7 +352,7 @@ class AccountTest extends TestCase
         $updatedCharacter = $this->charRepo->find(12);
         $this->assertSame(
             'at-existing-token',
-            $updatedCharacter?->getEsiToken(EveLogin::NAME_DEFAULT)?->getAccessToken()
+            $updatedCharacter?->getEsiToken(EveLogin::NAME_DEFAULT)?->getAccessToken(),
         );
     }
 

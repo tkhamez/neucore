@@ -196,9 +196,10 @@ class OAuthTokenTest extends TestCase
     public function testUpdateEsiToken_RefreshEsiToken_InvalidData()
     {
         $esiToken = $this->getToken($this->helper->addCharacterMain(
-            'Name', 1,
+            'Name',
+            1,
             tokenExpires: time() - 60,
-            tokenValid: true
+            tokenValid: true,
         ));
         $this->assertNull($esiToken->getLastChecked());
 
@@ -221,9 +222,10 @@ class OAuthTokenTest extends TestCase
     public function testUpdateEsiToken_RefreshEsiToken_FailStore()
     {
         $esiToken = $this->getToken($this->helper->addCharacterMain(
-            'Name', 1,
+            'Name',
+            1,
             tokenExpires: time() - 600,
-            tokenValid: true
+            tokenValid: true,
         ));
 
         $newTokenTime = time() + 60;
@@ -247,7 +249,8 @@ class OAuthTokenTest extends TestCase
     public function testUpdateEsiToken_RefreshEsiToken_Ok_InvalidToken()
     {
         $esiToken = $this->getToken($this->helper->addCharacterMain(
-            'Name', 1,
+            'Name',
+            1,
             tokenExpires: time() - 60,
             tokenValid: true,
         ));

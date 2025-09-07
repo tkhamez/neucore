@@ -750,7 +750,7 @@ class EsiControllerTest extends WebTestCase
             'X-Compatibility-Date' => ['2025-07-11'],
             'X-Pages' => ['3'],
             'warning' => ['199 - This route has an upgrade available',
-                        '199 - This route has an upgrade available'],
+                '199 - This route has an upgrade available'],
             'Retry-After' => ['55'],
         ], $response->getHeaders());
     }

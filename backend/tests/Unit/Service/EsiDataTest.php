@@ -154,7 +154,7 @@ class EsiDataTest extends TestCase
 
         $this->assertStringStartsWith(
             'Error JSON decoding server response',
-            $this->log->getMessages()[0]
+            $this->log->getMessages()[0],
         );
     }
 
@@ -168,7 +168,7 @@ class EsiDataTest extends TestCase
 
         $this->assertStringContainsString(
             '0 does not meet minimum of 1',
-            $this->log->getMessages()[0]
+            $this->log->getMessages()[0],
         );
     }
 

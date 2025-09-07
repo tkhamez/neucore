@@ -136,7 +136,7 @@ class EsiClientTest extends TestCase
 
         $this->assertSame(
             ['X-Compatibility-Date' => '2025-07-11', 'Accept-Language' => 'en'],
-            $this->httpClient->getHeaders()
+            $this->httpClient->getHeaders(),
         );
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame(
