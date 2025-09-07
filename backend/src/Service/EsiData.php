@@ -32,16 +32,6 @@ class EsiData
 {
     public const CORPORATION_DOOMHEIM_ID = 1000001;
 
-    private LoggerInterface $log;
-
-    private EsiApiFactory $esiApiFactory;
-
-    private ObjectManager $objectManager;
-
-    private RepositoryFactory $repositoryFactory;
-
-    private \Neucore\Service\Character $characterService;
-
     private ?int $lastErrorCode = null;
 
     /**
@@ -55,17 +45,12 @@ class EsiData
     private ?string $errorConfiguration = null;
 
     public function __construct(
-        LoggerInterface $log,
-        EsiApiFactory $esiApiFactory,
-        ObjectManager $objectManager,
-        RepositoryFactory $repositoryFactory,
-        CharacterService $characterService,
+        private readonly LoggerInterface   $log,
+        private readonly EsiApiFactory     $esiApiFactory,
+        private readonly ObjectManager     $objectManager,
+        private readonly RepositoryFactory $repositoryFactory,
+        private readonly CharacterService  $characterService,
     ) {
-        $this->log = $log;
-        $this->esiApiFactory = $esiApiFactory;
-        $this->objectManager = $objectManager;
-        $this->repositoryFactory = $repositoryFactory;
-        $this->characterService = $characterService;
     }
 
     public function getLastErrorCode(): ?int
@@ -80,8 +65,9 @@ class EsiData
      */
     public function fetchCharacter(int $id): CharactersCharacterIdGet
     {
+        $characterApi = $this->esiApiFactory->getCharacterApi();
         try {
-            $eveChar = $this->esiApiFactory->getCharacterApi()->getCharactersCharacterId($id);
+            $eveChar = $characterApi->getCharactersCharacterId($id);
         } catch (ApiException $e) {
             $body = $e->getResponseBody();
             // The 404 checks are probably no longer necessary when this is merged:
@@ -254,12 +240,12 @@ class EsiData
      */
     public function fetchCharactersAffiliation(array $ids): array
     {
+        $characterApi = $this->esiApiFactory->getCharacterApi();
         $affiliations = [];
         while (!empty($ids)) {
             $checkIds = array_splice($ids, 0, 1000);
             try {
-                $result = $this->esiApiFactory->getCharacterApi()
-                    ->postCharactersAffiliation(request_body: $checkIds);
+                $result = $characterApi->postCharactersAffiliation($checkIds);
                 if (is_array($result)) { // should always be the case here
                     $affiliations = array_merge($affiliations, $result);
                 }
@@ -291,9 +277,10 @@ class EsiData
         }
 
         // get data from ESI
+        $corporationApi = $this->esiApiFactory->getCorporationApi();
         $this->lastErrorCode = null;
         try {
-            $eveCorp = $this->esiApiFactory->getCorporationApi()->getCorporationsCorporationId($id);
+            $eveCorp = $corporationApi->getCorporationsCorporationId($id);
         } catch (\Exception $e) {
             $this->lastErrorCode = $e->getCode();
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
@@ -353,9 +340,10 @@ class EsiData
         }
 
         // get data from ESI
+        $allianceApi = $this->esiApiFactory->getAllianceApi();
         $this->lastErrorCode = null;
         try {
-            $eveAlli = $this->esiApiFactory->getAllianceApi()->getAlliancesAllianceId($id);
+            $eveAlli = $allianceApi->getAlliancesAllianceId($id);
         } catch (\Exception $e) {
             $this->lastErrorCode = $e->getCode();
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
@@ -397,13 +385,13 @@ class EsiData
      */
     public function fetchUniverseNames(array $ids, int $maxItems = 1000): array
     {
+        $universeApi = $this->esiApiFactory->getUniverseApi();
         $names = [];
         while (!empty($ids)) {
             $checkIds = array_splice($ids, 0, $maxItems);
             try {
                 // it's possible that postUniverseNames() returns null
-                $result = $this->esiApiFactory->getUniverseApi()
-                    ->postUniverseNames(request_body: $checkIds);
+                $result = $universeApi->postUniverseNames($checkIds);
                 if (is_array($result)) {
                     $names = array_merge($names, $result);
                 }
@@ -505,9 +493,9 @@ class EsiData
         // Fetch name
         $result = null;
         $authError = false;
+        $universeApi = $this->esiApiFactory->getUniverseApi($accessToken);
         try {
-            $result = $this->esiApiFactory->getUniverseApi($accessToken)
-                ->getUniverseStructuresStructureId($id);
+            $result = $universeApi->getUniverseStructuresStructureId($id);
         } catch (\Exception $e) {
             if ((int) $e->getCode() === 403) {
                 $this->log->info("EsiData::fetchStructure: " . $e->getCode() . " Unauthorized/Forbidden: $id");
@@ -551,9 +539,9 @@ class EsiData
             return [];
         }
 
+        $corporationApi = $this->esiApiFactory->getCorporationApi($accessToken);
         try {
-            $members = $this->esiApiFactory->getCorporationApi($accessToken)
-                ->getCorporationsCorporationIdMembers($id);
+            $members = $corporationApi->getCorporationsCorporationIdMembers($id);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             $members = [];

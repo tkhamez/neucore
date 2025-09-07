@@ -21,31 +21,15 @@ use Tkhamez\Eve\API\Model\PostCharactersCharacterIdMailRequestRecipientsInner;
 
 class EveMail
 {
-    private RepositoryFactory $repositoryFactory;
-
     private SystemVariableRepository $sysVarRepo;
 
-    private ObjectManager $objectManager;
-
-    private AuthenticationProvider $authenticationProvider;
-
-    private LoggerInterface $log;
-
-    private EsiApiFactory $esiApiFactory;
-
     public function __construct(
-        RepositoryFactory $repositoryFactory,
-        ObjectManager $objectManager,
-        AuthenticationProvider $authenticationProvider,
-        LoggerInterface $log,
-        EsiApiFactory $esiApiFactory,
+        private readonly RepositoryFactory $repositoryFactory,
+        private readonly ObjectManager $objectManager,
+        private readonly AuthenticationProvider $authenticationProvider,
+        private readonly LoggerInterface $log,
+        private readonly EsiApiFactory $esiApiFactory,
     ) {
-        $this->repositoryFactory = $repositoryFactory;
-        $this->objectManager = $objectManager;
-        $this->authenticationProvider = $authenticationProvider;
-        $this->log = $log;
-        $this->esiApiFactory = $esiApiFactory;
-
         $this->sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
     }
 
@@ -380,11 +364,9 @@ class EveMail
             'approved_cost' => 0,
         ]);
 
+        $mailApi = $this->esiApiFactory->getMailApi($token);
         try {
-            $this->esiApiFactory->getMailApi($token)->postCharactersCharacterIdMail(
-                $senderId,
-                post_characters_character_id_mail_request: $mail,
-            );
+            $mailApi->postCharactersCharacterIdMail($senderId, $mail);
         } catch (\Exception $e) {
             return $e->getMessage(); // the message includes the status code
         }

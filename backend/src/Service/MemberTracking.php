@@ -18,32 +18,14 @@ use Tkhamez\Eve\API\Model\UniverseNamesPostInner;
 
 class MemberTracking
 {
-    private LoggerInterface $log;
-
-    private EsiApiFactory $esiApiFactory;
-
-    private RepositoryFactory $repositoryFactory;
-
-    private EntityManager $entityManager;
-
-    private EsiData $esiData;
-
-    private OAuthToken $oauthToken;
-
     public function __construct(
-        LoggerInterface $log,
-        EsiApiFactory $esiApiFactory,
-        RepositoryFactory $repositoryFactory,
-        EntityManager $entityManager,
-        EsiData $esiData,
-        OAuthToken $oauthToken,
+        private readonly LoggerInterface $log,
+        private readonly EsiApiFactory $esiApiFactory,
+        private readonly RepositoryFactory $repositoryFactory,
+        private readonly EntityManager $entityManager,
+        private readonly EsiData $esiData,
+        private readonly OAuthToken $oauthToken,
     ) {
-        $this->log = $log;
-        $this->esiApiFactory = $esiApiFactory;
-        $this->repositoryFactory = $repositoryFactory;
-        $this->entityManager = $entityManager;
-        $this->esiData = $esiData;
-        $this->oauthToken = $oauthToken;
     }
 
     /**
