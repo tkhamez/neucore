@@ -497,7 +497,7 @@ Allows an app to receive information about tokens for EVE logins.
 
 Application - ESI API
 - Returns character IDs of characters that have an ESI token (including invalid) of an EVE login. `GET /app/v1/esi/eve-login/{name}/characters`
-- Returns data for all valid tokens (roles are also checked if applicable) for an EVE login. `GET /app/v1/esi/eve-login/{name}/token-data`
+- Returns data for all valid tokens (roles are also checked if applicable) for an EVE login. This returns cached data, it does not check if the token is still valid. `GET /app/v1/esi/eve-login/{name}/token-data`
 
 #### app-esi-proxy
 

@@ -141,7 +141,8 @@ class EsiController extends BaseController
         path: '/app/v1/esi/eve-login/{name}/token-data',
         operationId: 'esiEveLoginTokenDataV1',
         description: 'Needs role: app-esi-login.',
-        summary: 'Returns data for all valid tokens (roles are also checked if applicable) for an EVE login.',
+        summary: 'Returns data for all valid tokens (roles are also checked if applicable) for an ' .
+            'EVE login. This returns cached data, it does not check if the token is still valid.',
         security: [['BearerAuth' => []]],
         tags: ['Application - ESI'],
         parameters: [
