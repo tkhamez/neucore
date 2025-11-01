@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Updated dependencies.
+
 ## 2.9.0
 
 7 Sep 2025
