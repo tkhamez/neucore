@@ -28,7 +28,7 @@
         "graylog2/gelf-php": "^2.0",
         "guzzlehttp/guzzle": "^7.2",
         "guzzlehttp/psr7": "^2.7",
-        "kevinrob/guzzle-cache-middleware": "^6.0",
+        "kevinrob/guzzle-cache-middleware": "^7.0",
         "league/oauth2-client": "^2.2",
         "monolog/monolog": "^3.8",
         "php-di/php-di": "^7.0",
