@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fb470da452931646aac820ae4ee3c58d",
+    "content-hash": "1cb39a17f6994211b4c4a740ce5b300b",
     "packages": [
         {
             "name": "brick/math",
@@ -4790,16 +4790,16 @@
         },
         {
             "name": "tkhamez/eve-api",
-            "version": "8.20250826.0",
+            "version": "10.20250930.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/eve-api-php.git",
-                "reference": "dfdb0697b27c2e073770b54664ba8b2263122f72"
+                "reference": "c2821d8a9eb00fb843c403efd5941c71b0dca0e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/eve-api-php/zipball/dfdb0697b27c2e073770b54664ba8b2263122f72",
-                "reference": "dfdb0697b27c2e073770b54664ba8b2263122f72",
+                "url": "https://api.github.com/repos/tkhamez/eve-api-php/zipball/c2821d8a9eb00fb843c403efd5941c71b0dca0e1",
+                "reference": "c2821d8a9eb00fb843c403efd5941c71b0dca0e1",
                 "shasum": ""
             },
             "require": {
@@ -4830,7 +4830,7 @@
                     "homepage": "https://openapi-generator.tech"
                 }
             ],
-            "description": "An OpenAPI Client Library for EVE Online (ESI)",
+            "description": "Client library for EVE Online API (ESI)",
             "homepage": "https://github.com/tkhamez/eve-api-php",
             "keywords": [
                 "api",
@@ -4845,9 +4845,9 @@
             ],
             "support": {
                 "issues": "https://github.com/tkhamez/eve-api-php/issues",
-                "source": "https://github.com/tkhamez/eve-api-php/tree/8.20250826.0"
+                "source": "https://github.com/tkhamez/eve-api-php/tree/10.20250930.0"
             },
-            "time": "2025-09-01T15:45:57+00:00"
+            "time": "2025-09-30T16:13:40+00:00"
         },
         {
             "name": "tkhamez/eve-sso",
