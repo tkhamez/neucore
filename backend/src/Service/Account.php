@@ -524,9 +524,13 @@ class Account
         // collect all groups that grant the tracking role
         $groupIds = [];
         $corpIds = $this->repositoryFactory->getCorporationMemberRepository()->fetchCorporationIds();
-        foreach ($this->repositoryFactory->getCorporationRepository()->findBy(['id' => $corpIds]) as $corp) {
+        $corporations = [];
+        if (count($corpIds) > 0) {
+            $corporations = $this->repositoryFactory->getCorporationRepository()->findBy(['id' => $corpIds]);
+        }
+        foreach ($corporations as $corp) {
             if ($changedCorporation && $changedCorporation->getId() === $corp->getId()) {
-                // use groups from changed corporation because that may not be persisted to the database yet.
+                // use groups from changed corporations because that may not be persisted to the database yet.
                 $groupIds = array_merge($groupIds, $changedCorporation->getGroupsTrackingIds());
             } else {
                 $groupIds = array_merge($groupIds, $corp->getGroupsTrackingIds());

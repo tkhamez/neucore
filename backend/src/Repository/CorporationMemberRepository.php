@@ -295,7 +295,7 @@ class CorporationMemberRepository extends EntityRepository
         ?int $dbResultLimit = null,
         int $offset = 0,
     ): array {
-        if (empty($corporationIds)) {
+        if (count($corporationIds) === 0) {
             return [];
         }
         if ($loginDays < 1) {

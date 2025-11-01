@@ -94,7 +94,7 @@ class AllianceController extends BaseController
         if ($ids === null) {
             return $this->response->withStatus(400);
         }
-        if (empty($ids)) {
+        if (count($ids) === 0) {
             return $this->withJson([]);
         }
 

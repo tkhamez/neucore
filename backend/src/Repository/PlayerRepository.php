@@ -68,6 +68,10 @@ class PlayerRepository extends EntityRepository
      */
     public function findInAlliances(array $allianceIds): array
     {
+        if (count($allianceIds) === 0) {
+            return [];
+        }
+
         $qb = $this->createQueryBuilder('p');
         $qb->select('p.id')
             ->distinct()
@@ -87,6 +91,10 @@ class PlayerRepository extends EntityRepository
      */
     public function findInCorporations(array $corporationIds): array
     {
+        if (count($corporationIds) === 0) {
+            return [];
+        }
+
         $qb = $this->createQueryBuilder('p');
         $qb->select('p.id')
             ->distinct()
@@ -121,6 +129,10 @@ class PlayerRepository extends EntityRepository
      */
     public function findWithGroups(array $groupIds): array
     {
+        if (count($groupIds) === 0) {
+            return [];
+        }
+
         $qb = $this->createQueryBuilder('p');
         return $qb
             ->leftJoin('p.groups', 'g')
@@ -156,7 +168,7 @@ class PlayerRepository extends EntityRepository
      */
     public function findInCorporationsWithExcludes(array $corporationIds, array $players): array
     {
-        if (empty($corporationIds)) {
+        if (count($corporationIds) === 0) {
             return [];
         }
 
@@ -313,6 +325,10 @@ class PlayerRepository extends EntityRepository
      */
     public function findPlayersOfCharacters(array $characterIds): array
     {
+        if (count($characterIds) === 0) {
+            return [];
+        }
+
         $qb = $this->createQueryBuilder('p');
         $qb->select('p.id')->distinct()
             ->leftJoin('p.characters', 'c')

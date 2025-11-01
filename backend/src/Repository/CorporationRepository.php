@@ -54,6 +54,10 @@ class CorporationRepository extends EntityRepository
      */
     public function getAllFromAlliances(array $corporationIds): array
     {
+        if (count($corporationIds) === 0) {
+            return [];
+        }
+
         $qb = $this->createQueryBuilder('c');
         return $qb
             ->leftJoin('c.alliance', 'a')

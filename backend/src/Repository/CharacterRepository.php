@@ -63,6 +63,10 @@ class CharacterRepository extends EntityRepository
      */
     public function getAllCharactersFromPlayers(array $playerIds): array
     {
+        if (count($playerIds) === 0) {
+            return [];
+        }
+
         $qb = $this->createQueryBuilder('c');
         $qb->select([
             'c.id',
@@ -85,6 +89,10 @@ class CharacterRepository extends EntityRepository
      */
     public function getCharacterIdsFromPlayers(array $playerIds, ?int $dbResultLimit = null, int $offset = 0): array
     {
+        if (count($playerIds) === 0) {
+            return [];
+        }
+
         $qb = $this->createQueryBuilder('c');
         $qb->select('c.id')
             ->where($qb->expr()->in('c.player', ':ids'))
@@ -115,6 +123,10 @@ class CharacterRepository extends EntityRepository
 
     public function findPlayersByCharacters(array $characterIds): array
     {
+        if (count($characterIds) === 0) {
+            return [];
+        }
+
         $qb = $this->createQueryBuilder('c');
         $qb->select(['c.id AS characterId', 'p.id', 'p.name'])
             ->leftJoin('c.player', 'p')
