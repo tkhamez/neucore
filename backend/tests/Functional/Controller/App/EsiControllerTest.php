@@ -720,6 +720,10 @@ class EsiControllerTest extends WebTestCase
                 'Expires' => ['Sun, 10 Feb 2019 19:22:52 GMT'],
                 'X-Esi-Error-Limit-Remain' => ['100'],
                 'X-Esi-Error-Limit-Reset' => ['60'],
+                'X-Ratelimit-Group' => ['fitting'],
+                'X-Ratelimit-Limit' => ['150/15m'],
+                'X-Ratelimit-Remaining' => ['149'],
+                'X-Ratelimit-Used' => ['1'],
                 'X-Compatibility-Date' => ['2025-07-11'],
                 'X-Pages' => ['3'],
                 'warning' => ['199 - This route has an upgrade available'],
@@ -747,10 +751,16 @@ class EsiControllerTest extends WebTestCase
             'Expires' => ['Sun, 10 Feb 2019 19:22:52 GMT'],
             'X-Esi-Error-Limit-Remain' => ['100'],
             'X-Esi-Error-Limit-Reset' => ['60'],
+            'X-Ratelimit-Group' => ['fitting'],
+            'X-Ratelimit-Limit' => ['150/15m'],
+            'X-Ratelimit-Remaining' => ['149'],
+            'X-Ratelimit-Used' => ['1'],
             'X-Compatibility-Date' => ['2025-07-11'],
             'X-Pages' => ['3'],
-            'warning' => ['199 - This route has an upgrade available',
-                '199 - This route has an upgrade available'],
+            'warning' => [
+                '199 - This route has an upgrade available',
+                '199 - This route has an upgrade available'
+            ],
             'Retry-After' => ['55'],
         ], $response->getHeaders());
     }

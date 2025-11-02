@@ -348,8 +348,9 @@ class EsiController extends BaseController
             "parameter 'datasource' is required.<br> " .
             "Public ESI routes are not allowed.<br>" .
             "The following headers from ESI are passed through to the response if they exist: Content-Type, " .
-            "Expires, X-Esi-Error-Limit-Remain, X-Esi-Error-Limit-Reset, X-Pages, X-Compatibility-Date, " .
-            "warning, Warning.<br>" .
+            "Expires, X-Esi-Error-Limit-Remain, X-Esi-Error-Limit-Reset, X-Ratelimit-Group, X-Ratelimit-Limit, " .
+            "X-Ratelimit-Remaining, X-Ratelimit-Used, X-Pages, X-Compatibility-Date, warning, Warning, " .
+            "Retry-After.<br>" .
             "The HTTP status code from ESI is also passed through, so there may be more than the documented " .
             "ones.<br>" .
             "The ESI path and query parameters can alternatively be appended to the path of this endpoint, this " .
@@ -844,6 +845,10 @@ class EsiController extends BaseController
             'Expires',
             'X-Esi-Error-Limit-Remain',
             'X-Esi-Error-Limit-Reset',
+            'X-Ratelimit-Group',
+            'X-Ratelimit-Limit',
+            'X-Ratelimit-Remaining',
+            'X-Ratelimit-Used',
             'X-Pages',
             'X-Compatibility-Date',
             'warning',

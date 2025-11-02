@@ -4,6 +4,7 @@
 
 dd mm yyyy
 
+- ESI proxy: Added the new rate limit headers to the response.
 - Updated dependencies.
 
 ## 2.9.0
