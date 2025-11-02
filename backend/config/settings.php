@@ -63,8 +63,8 @@ return [
         'oauth_verify_signature' => true,
 
         // If the date it changed here, it must also be changed in esi-paths.js and
-        // esi-paths-public.php.
-        'esi_compatibility_date' => '2025-08-26',
+        // esi-paths-public.php and tkhamez/eve-api must use the same date.
+        'esi_compatibility_date' => '2025-09-30',
     ],
 
     'guzzle' => [

@@ -6,6 +6,7 @@
   "/corporations/{corporation_id}/assets/locations",
   "/corporations/{corporation_id}/assets/names",
   "/fleets/{fleet_id}/wings/{wing_id}/squads",
+  "/route/{origin_system_id}/{destination_system_id}",
   "/ui/autopilot/waypoint",
   "/ui/openwindow/contract",
   "/ui/openwindow/information",
