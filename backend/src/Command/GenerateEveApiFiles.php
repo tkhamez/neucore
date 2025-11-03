@@ -16,6 +16,45 @@ class GenerateEveApiFiles extends Command
 
     private \stdClass $definition;
 
+    private array $pathsInteger = [
+        '{alliance_id}',
+        '{attribute_id}',
+        '{asteroid_belt_id}',
+        '{category_id}',
+        '{character_id}',
+        '{constellation_id}',
+        '{contract_id}',
+        '{corporation_id}',
+        '{destination_system_id}',
+        '{effect_id}',
+        '{fitting_id}',
+        '{fleet_id}',
+        '{graphic_id}',
+        '{group_id}',
+        '{item_id}',
+        '{killmail_id}',
+        '{market_group_id}',
+        '{member_id}',
+        '{moon_id}',
+        '{origin_system_id}',
+        '{planet_id}',
+        '{region_id}',
+        '{schematic_id}',
+        '{squad_id}',
+        '{star_id}',
+        '{stargate_id}',
+        '{station_id}',
+        '{system_id}',
+        '{task_id}',
+        '{type_id}',
+        '{war_id}',
+        '{wing_id}',
+    ];
+
+    private array $pathsHex = [
+        '{killmail_hash}',
+    ];
+
     public function __construct(private readonly Config $config)
     {
         parent::__construct();
@@ -51,6 +90,7 @@ class GenerateEveApiFiles extends Command
 
         $this->generatePublicPaths();
         $this->generateGetPostPaths();
+        $this->generateRateLimits();
 
         $output->writeln('All done.');
 
@@ -69,45 +109,7 @@ class GenerateEveApiFiles extends Command
                 continue;
             }
 
-            // change paths to regular expression
-            // e.g. /alliances/{alliance_id}/corporations/
-            //   =>  /alliances/[0-9]+/corporations/
-            $regExp = str_replace([
-                '{alliance_id}',
-                '{character_id}',
-                '{contract_id}',
-                '{region_id}',
-                '{corporation_id}',
-                '{attribute_id}',
-                '{type_id}',
-                '{item_id}',
-                '{killmail_id}',
-                '{market_group_id}',
-                '{task_id}',
-                '{asteroid_belt_id}',
-                '{category_id}',
-                '{constellation_id}',
-                '{graphic_id}',
-                '{group_id}',
-                '{moon_id}',
-                '{planet_id}',
-                '{schematic_id}',
-                '{stargate_id}',
-                '{star_id}',
-                '{war_id}',
-                '{effect_id}',
-                '{station_id}',
-                '{system_id}',
-                '{fleet_id}',
-                '{wing_id}',
-                '{origin_system_id}',
-                '{destination_system_id}',
-            ], '[0-9]+', $path);
-
-            // It looks like this is a HEX value
-            $regExp2 = str_replace('{killmail_hash}', '[0-9a-fA-F]+', $regExp);
-
-            $public[] = $regExp2;
+            $public[] = $this->replacePlaceholders($path);
         }
 
         $this->writeFile(
@@ -143,7 +145,38 @@ class GenerateEveApiFiles extends Command
             'json',
         );
     }
-    
+
+    private function generateRateLimits(): void
+    {
+        $rateLimits = [];
+        foreach ($this->definition->paths as $path => $data) {
+            $path2 = $this->replacePlaceholders($path);
+            foreach ($data as $method => $endpoint) {
+                if (isset($endpoint->{'x-rate-limit'})) {
+                    $rateLimits[$path2][$method] = [
+                        'group' => $endpoint->{'x-rate-limit'}->group,
+                        'maxTokens' => $endpoint->{'x-rate-limit'}->{'max-tokens'},
+                        'windowSize' => $endpoint->{'x-rate-limit'}->{'window-size'},
+                    ];
+                }
+            }
+        }
+
+        $this->writeFile(
+            realpath(Application::ROOT_DIR . '/..') . '/backend/config/esi-rate-limits.php',
+            $rateLimits,
+            'php',
+        );
+    }
+
+    private function replacePlaceholders(string $path): string
+    {
+        // change paths to regular expression
+        // e.g. /alliances/{alliance_id}/corporations/ =>  /alliances/[0-9]+/corporations/
+        $path2 = str_replace($this->pathsInteger, '[0-9]+', $path);
+        return str_replace($this->pathsHex, '[0-9a-fA-F]+', $path2);
+    }
+
     private function writeFile(string $file, array $content, string $format): void
     {
         if ($format === 'php') {
