@@ -17,6 +17,7 @@ use Neucore\Command\CleanHttpCache;
 use Neucore\Command\ClearCache;
 use Neucore\Command\DBVerifySSL;
 use Neucore\Command\DoctrineFixturesLoad;
+use Neucore\Command\GenerateEveApiFiles;
 use Neucore\Command\MakeAdmin;
 use Neucore\Command\Plugin;
 use Neucore\Command\RevokeToken;
@@ -452,6 +453,7 @@ class Application
         $console->add($this->getFromContainer(AutoAllowlist::class));
         $console->add($this->getFromContainer(AssureMain::class));
         $console->add($this->getFromContainer(UpdateServiceAccounts::class));
+        $console->add($this->getFromContainer(GenerateEveApiFiles::class));
     }
 
     private function logException(Throwable $e): void

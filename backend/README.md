@@ -85,15 +85,6 @@ the route and security configuration from the `config` directory and `web/openap
 bin/doc-api-gen.php
 ```
 
-### ESI routes
-
-The `/api/app/v2/esi` endpoint uses a denylist to block requests to publicly accessible ESI routes. 
-This list is stored in `config/esi-paths-public.php` and can be regenerated with:
-
-```
-bin/esi-paths-public.php
-```
-
 ## Console Commands
 
 ### Console application

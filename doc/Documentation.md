@@ -267,6 +267,7 @@ same number of days.
 ## Console Application
 
 The console application has commands to:
+
 - update characters with information from ESI, like the corporation etc.
 - check ESI tokens of all characters.
 - perform automatic group assignments.
@@ -277,6 +278,11 @@ The console application has commands to:
 - delete expired HTTP cache entries.
 
 See `backend/bin/run-jobs.sh` for a script that runs them all in a sensible order.
+
+### EVE API Files
+
+The application uses several files with information from ESI. Those can be generated with 
+`bin/console generate-eve-api-files`.
 
 ## Data Structure (Backend)
 
