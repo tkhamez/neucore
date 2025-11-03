@@ -13,9 +13,7 @@ class GenerateEveApiFiles extends Command
 {
     private OutputInterface $output;
 
-    private string $esiCompatibilityDate = '';
-
-    private string $esiHost = '';
+    private \stdClass $definition;
 
     public function __construct(private readonly Config $config)
     {
@@ -32,30 +30,36 @@ class GenerateEveApiFiles extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
-        $this->esiCompatibilityDate = $this->config['eve']['esi_compatibility_date'];
-        $this->esiHost = $this->config['eve']['esi_host'];
 
-        $this->publicEsiPaths();
+        $esiHost = $this->config['eve']['esi_host'];
+        $esiCompatibilityDate = $this->config['eve']['esi_compatibility_date'];
+        $openapi = file_get_contents(
+            "$esiHost/meta/openapi.json?compatibility_date=$esiCompatibilityDate"
+        );
+        if (!$openapi) {
+            $this->output->writeln('Error reading openapi.json.');
+            return 1;
+        }
+
+        $definition = json_decode($openapi);
+        if (!$definition instanceof \stdClass) {
+            $this->output->writeln('Error decoding openapi.json.');
+            return 1;
+        }
+        $this->definition = $definition;
+
+        $this->generatePublicPaths();
+        $this->generateGetPostPaths();
 
         $output->writeln('All done.');
 
         return 0;
     }
 
-    private function publicEsiPaths(): void
+    private function generatePublicPaths(): void
     {
-        $openapi = file_get_contents(
-            "$this->esiHost/meta/openapi.json?compatibility_date=$this->esiCompatibilityDate"
-        );
-        if (!$openapi) {
-            $this->output->writeln("Error reading openapi.json.");
-            return;
-        }
-
-        $def = json_decode($openapi);
-
         $public = [];
-        foreach ($def->paths as $path => $data) {
+        foreach ($this->definition->paths as $path => $data) {
             if (
                 (!isset($data->get) && !isset($data->post)) ||
                 (isset($data->get->security)) ||
@@ -112,5 +116,10 @@ class GenerateEveApiFiles extends Command
         );
 
         $this->output->writeln("Wrote config/esi-paths-public.php.");
+    }
+
+    private function generateGetPostPaths(): void
+    {
+
     }
 }
