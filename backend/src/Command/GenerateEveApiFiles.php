@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Command;
 
+use Neucore\Application;
 use Neucore\Service\Config;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -111,7 +112,7 @@ class GenerateEveApiFiles extends Command
 
         $result = var_export($public, true);
         file_put_contents(
-            __DIR__ . '/../config/esi-paths-public.php',
+            Application::ROOT_DIR . '/config/esi-paths-public.php',
             "<?php\nreturn " . $result . ';',
         );
 
@@ -120,6 +121,26 @@ class GenerateEveApiFiles extends Command
 
     private function generateGetPostPaths(): void
     {
+        $get = [];
+        $post = [];
 
+        foreach ($this->definition->paths as $path => $data) {
+            if (isset($data->get)) {
+                $get[] = $path;
+            }
+            if (isset($data->post)) {
+                $post[] = $path;
+            }
+        }
+
+        file_put_contents(
+            Application::ROOT_DIR . '/../web/esi-paths-http-get.json',
+            json_encode($get, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
+        );
+
+        file_put_contents(
+            Application::ROOT_DIR . '/../web/esi-paths-http-post.json',
+            json_encode($post, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
+        );
     }
 }

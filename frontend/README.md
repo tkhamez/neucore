@@ -55,13 +55,3 @@ cd neucore-js-client
 npm install
 npm run build
 ```
-
-## Console Commands
-
-### ESI routes
-
-The UI for ESI requests requires a list of all ESI GET and POST routes. This list can be regenerated with:
-
-```
-bin/esi-paths.js
-```
