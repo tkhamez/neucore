@@ -27,6 +27,7 @@
   * [Invalid ESI Token](#invalid-esi-token)
   * [Missing Character](#missing-character)
 - [Console Application](#console-application)
+  * [EVE API Files](#eve-api-files)
 - [Data Structure (Backend)](#data-structure-backend)
 
 <!-- tocstop -->
@@ -281,8 +282,10 @@ See `backend/bin/run-jobs.sh` for a script that runs them all in a sensible orde
 
 ### EVE API Files
 
-The application uses several files with information from ESI. Those can be generated with 
-`bin/console generate-eve-api-files`.
+The application uses several files with information from ESI. Those are included in the release, 
+but can also be regenerated with the `bin/console generate-eve-api-files` command should there
+are relevant ESI changes with the same compatibility date (e.g. new endpoints or changes to
+the rate limits).
 
 ## Data Structure (Backend)
 

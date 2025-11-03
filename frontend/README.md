@@ -11,8 +11,6 @@ The frontend is based on [Vue.js](https://vuejs.org) and
 - [Development Server](#development-server)
 - [Style Guide](#style-guide)
 - [OpenAPI Client](#openapi-client)
-- [Console Commands](#console-commands)
-  * [ESI routes](#esi-routes)
 
 <!-- tocstop -->
 

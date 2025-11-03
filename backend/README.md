@@ -12,12 +12,13 @@ with the [PHP-DI container](http://php-di.org/).
 - [Guidelines](#guidelines)
   * [Clear Entity Manager](#clear-entity-manager)
   * [Tests](#tests)
+  * [Libraries and Plugins](#libraries-and-plugins)
 - [API](#api)
   * [operationId](#operationid)
   * [Documentation](#documentation)
-  * [ESI routes](#esi-routes)
 - [Console Commands](#console-commands)
   * [Console application](#console-application)
+  * [EVE API Files](#eve-api-files)
   * [Commands via Composer](#commands-via-composer)
   * [Doctrine](#doctrine)
 
@@ -99,6 +100,12 @@ To debug, start like this:
 ```sh
 php -dxdebug.start_with_request=yes bin/console
 ```
+
+### EVE API Files
+
+There are files with data from the EVE API that need to be regenerated at least after the 
+compatibility date was changed. See 
+[Documentation.md - EVE API Files](../doc/Documentation.md#eve-api-files).
 
 ### Commands via Composer
 

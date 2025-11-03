@@ -12,6 +12,7 @@
   * [Customization](#customization)
   * [Security](#security)
 - [Build Distribution](#build-distribution)
+- [Generate TOC](#generate-toc)
 
 <!-- tocstop -->
 
@@ -357,3 +358,18 @@ X-Content-Type-Options "nosniff"
 
 There are scripts that build the distribution package, `setup/dist.sh` or `setup/dist-docker.sh`. They need a 
 working development environment.
+
+## Generate TOC
+
+(This is not part of the installation process, but I have no better place for it.)
+
+To generate the table of contents for various files, use the following commands in the node container:
+
+```
+markdown-toc ../README.md -i
+markdown-toc ../doc/Install.md -i --maxdepth 3
+markdown-toc ../doc/Documentation.md -i --maxdepth 3
+markdown-toc ../doc/API.md -i
+markdown-toc ../backend/README.md -i
+markdown-toc ../frontend/README.md -i
+```
