@@ -208,11 +208,11 @@ function getEveLogin(vm) {
 }
 
 function getPaths(vm) {
-    vm.h.fetch(`${Data.envVars.baseUrl}esi-paths-http-get.json`).then(async response => {
+    vm.h.fetch(`${Data.envVars.backendHost}/esi-paths-http-get.json`).then(async response => {
         vm.pathsGet = await response.json();
         result();
     });
-    vm.h.fetch(`${Data.envVars.baseUrl}esi-paths-http-post.json`).then(async response => {
+    vm.h.fetch(`${Data.envVars.backendHost}/esi-paths-http-post.json`).then(async response => {
         vm.pathsPost = await response.json();
         result();
     });

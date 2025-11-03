@@ -34,17 +34,17 @@ function fetchDone(def) {
 
 function writeFiles(get, post) {
     fs.writeFile(
-        __dirname + "/../../frontend/public/esi-paths-http-get.json",
+        __dirname + "/../../web/esi-paths-http-get.json",
         JSON.stringify(get, null, 2),
         function(err) {
-            result(err, 'frontend/public/esi-paths-http-get.json');
+            result(err, 'web/esi-paths-http-get.json');
         }
     );
     fs.writeFile(
-        __dirname + "/../../frontend/public/esi-paths-http-post.json",
+        __dirname + "/../../web/esi-paths-http-post.json",
         JSON.stringify(post, null, 2),
         function(err) {
-            result(err, 'frontend/public/esi-paths-http-post.json');
+            result(err, 'web/esi-paths-http-post.json');
         }
     );
     function result(err, file) {
