@@ -110,13 +110,11 @@ class GenerateEveApiFiles extends Command
             $public[] = $regExp2;
         }
 
-        $result = var_export($public, true);
-        file_put_contents(
-            Application::ROOT_DIR . '/config/esi-paths-public.php',
-            "<?php\nreturn " . $result . ';',
+        $this->writeFile(
+            realpath(Application::ROOT_DIR . '/..') . '/backend/config/esi-paths-public.php',
+            $public,
+            'php',
         );
-
-        $this->output->writeln("Wrote config/esi-paths-public.php.");
     }
 
     private function generateGetPostPaths(): void
@@ -133,14 +131,35 @@ class GenerateEveApiFiles extends Command
             }
         }
 
-        file_put_contents(
-            Application::ROOT_DIR . '/../web/esi-paths-http-get.json',
-            json_encode($get, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
+        $this->writeFile(
+            realpath(Application::ROOT_DIR . '/..') . '/web/esi-paths-http-get.json',
+            $get,
+            'json',
         );
 
-        file_put_contents(
-            Application::ROOT_DIR . '/../web/esi-paths-http-post.json',
-            json_encode($post, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
+        $this->writeFile(
+            realpath(Application::ROOT_DIR . '/..') . '/web/esi-paths-http-post.json',
+            $post,
+            'json',
         );
+    }
+    
+    private function writeFile(string $file, array $content, string $format): void
+    {
+        if ($format === 'php') {
+            $data = "<?php\nreturn " . var_export($content, true) . ';';
+        } else {
+            $data = json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+            if ($data === false) {
+                $this->output->writeln("Failed to encode $file.");
+                return;
+            }
+        }
+
+        if (file_put_contents($file, $data) === false) {
+            $this->output->writeln("Failed to write $file.");
+        } else {
+            $this->output->writeln("Wrote $file.");
+        }
     }
 }
