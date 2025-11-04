@@ -19,6 +19,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Character;
 use Neucore\Service\Config;
 use Neucore\Service\EsiData;
+use Neucore\Service\EveMailToken;
 use Neucore\Service\ObjectManager;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;
@@ -64,10 +65,7 @@ class EsiDataTest extends TestCase
         $this->log = new Logger();
         $this->log->pushHandler(new TestHandler());
 
-        $this->config = new Config(['eve' => [
-            'esi_host' => '',
-            'esi_compatibility_date' => '',
-        ]]);
+        $this->config = Helper::getConfig();
         $this->client = new Client();
         $this->repoFactory = new RepositoryFactory($this->em);
 
@@ -954,9 +952,15 @@ class EsiDataTest extends TestCase
 
     private function createESIData(): EsiData
     {
+        $eveMailToken = new EveMailToken(
+            $this->repoFactory,
+            $this->om,
+            Helper::getAuthenticationProvider($this->client),
+            $this->log,
+        );
         return new EsiData(
             $this->log,
-            new EsiApiFactory(new HttpClientFactory($this->client), $this->config),
+            new EsiApiFactory(new HttpClientFactory($this->client), $this->config, $eveMailToken),
             $this->om,
             $this->repoFactory,
             new Character($this->om, $this->repoFactory),

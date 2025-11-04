@@ -13,9 +13,9 @@ use Neucore\Entity\EsiToken;
 use Neucore\Entity\EsiType;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Service\Config;
 use Neucore\Service\EntityManager;
 use Neucore\Service\EsiData;
+use Neucore\Service\EveMailToken;
 use Neucore\Service\MemberTracking;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
@@ -47,12 +47,13 @@ class MemberTrackingTest extends TestCase
         $this->client = new Client();
         $objectManager = new ObjectManager($this->om, $logger);
         $this->repositoryFactory = new RepositoryFactory($this->om);
-        $config = new Config(['eve' => [
-            'esi_host' => '',
-            'esi_compatibility_date' => '',
-        ]]);
-        $esiApiFactory = new EsiApiFactory(new HttpClientFactory($this->client), $config);
+        $config = Helper::getConfig();
         $authProvider = Helper::getAuthenticationProvider($this->client);
+        $esiApiFactory = new EsiApiFactory(
+            new HttpClientFactory($this->client),
+            $config,
+            new EveMailToken($this->repositoryFactory, $objectManager, $authProvider, $logger)
+        );
         $this->memberTracking = new MemberTracking(
             $logger,
             $esiApiFactory,

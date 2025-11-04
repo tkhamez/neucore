@@ -42,7 +42,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $this->repoFactory = new RepositoryFactory($this->om);
     }
 
-    public function testExecuteNotActive()
+    public function testExecuteNotActive(): void
     {
         $output = $this->runConsoleApp('send-invalid-token-mail', ['--sleep' => 0]);
 
@@ -54,7 +54,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $this->assertSame('', $actual[3]);
     }
 
-    public function testExecuteMisconfiguration()
+    public function testExecuteMisconfiguration(): void
     {
         $deactivateAccounts = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $active = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
@@ -79,12 +79,12 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
         $this->assertStringEndsWith('Started "send-invalid-token-mail"', $actual[0]);
-        $this->assertStringEndsWith('  Missing character that can send mails or missing token data.', $actual[1]);
+        $this->assertStringEndsWith('  Missing character that can send mails.', $actual[1]);
         $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);
         $this->assertSame('', $actual[3]);
     }
 
-    public function testExecuteRequestException()
+    public function testExecuteRequestException(): void
     {
         $this->setupData();
 
@@ -110,14 +110,14 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);
         $this->assertSame('', $actual[3]);
 
-        $this->assertSame(0, count($log->getHandler()->getRecords()));
+        $this->assertSame(0, count($log->getMessages()));
 
         $this->om->clear();
         $player = $this->repoFactory->getPlayerRepository()->find($this->playerId);
-        $this->assertTrue($player->getDeactivationMailSent());
+        $this->assertTrue($player?->getDeactivationMailSent());
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $this->setupData();
 
@@ -136,7 +136,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
 
         $this->om->clear();
         $player = $this->repoFactory->getPlayerRepository()->find($this->playerId);
-        $this->assertTrue($player->getDeactivationMailSent());
+        $this->assertTrue($player?->getDeactivationMailSent());
     }
 
     private function setupData(): void

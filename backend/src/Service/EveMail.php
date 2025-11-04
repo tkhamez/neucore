@@ -4,18 +4,14 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
-use Eve\Sso\AuthenticationProvider;
 use Eve\Sso\EveAuthentication;
-use Eve\Sso\InvalidGrantException;
-use League\OAuth2\Client\Token\AccessTokenInterface;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use Neucore\Entity\SystemVariable;
+use Neucore\Exception\Exception;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Log\Context;
 use Neucore\Repository\SystemVariableRepository;
-use Psr\Log\LoggerInterface;
 use Tkhamez\Eve\API\Model\PostCharactersCharacterIdMailRequest;
 use Tkhamez\Eve\API\Model\PostCharactersCharacterIdMailRequestRecipientsInner;
 
@@ -26,9 +22,8 @@ class EveMail
     public function __construct(
         private readonly RepositoryFactory $repositoryFactory,
         private readonly ObjectManager $objectManager,
-        private readonly AuthenticationProvider $authenticationProvider,
-        private readonly LoggerInterface $log,
         private readonly EsiApiFactory $esiApiFactory,
+        private readonly EveMailToken $eveMailToken,
     ) {
         $this->sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
     }
@@ -54,15 +49,6 @@ class EveMail
         ]));
 
         return $this->objectManager->flush2();
-    }
-
-    public function deleteToken(): void
-    {
-        $token = $this->sysVarRepo->find(SystemVariable::MAIL_TOKEN);
-        if ($token) {
-            $token->setValue('');
-            $this->objectManager->flush();
-        }
     }
 
     /**
@@ -294,41 +280,30 @@ class EveMail
 
     private function prepareAndSendMail(int $recipient, ?SystemVariable $subject, ?SystemVariable $body): string
     {
-        $tokenValues = $this->getToken();
-        if ($tokenValues === null) {
-            return 'Missing character that can send mails or missing token data.';
+        try {
+            $storedToken = $this->eveMailToken->getStoredToken();
+        } catch (Exception $e) {
+            return $e->getMessage();
         }
 
         if (
-            $subject === null || trim($subject->getValue()) === '' ||
-            $body === null || trim($body->getValue()) === ''
+            $subject === null ||
+            trim($subject->getValue()) === '' ||
+            $body === null ||
+            trim($body->getValue()) === ''
         ) {
             return 'Missing subject or body text.';
         }
 
-        $existingToken = OAuthToken::newAccessToken(
-            $tokenValues[SystemVariable::TOKEN_ACCESS],
-            $tokenValues[SystemVariable::TOKEN_REFRESH],
-            (int) $tokenValues[SystemVariable::TOKEN_EXPIRES],
-        );
         try {
-            $accessToken = $this->authenticationProvider->refreshAccessToken($existingToken);
-        } catch (InvalidGrantException) {
-            // Delete the invalid refresh token so that it cannot be used again.
-            $this->deleteToken();
-            return 'Invalid token.';
-        } catch (\RuntimeException $e) {
-            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
-            $accessToken = $existingToken;
-        }
-
-        if ($tokenValues[SystemVariable::TOKEN_REFRESH] !== $accessToken->getExpires()) {
-            $this->updateToken($accessToken, (int) $tokenValues[SystemVariable::TOKEN_ID]);
+            $validToken = $this->eveMailToken->getValidToken($storedToken);
+        } catch (Exception $e) {
+            return $e->getMessage();
         }
 
         return $this->sendMail(
-            $tokenValues[SystemVariable::TOKEN_ID],
-            $accessToken->getToken(),
+            $storedToken[SystemVariable::TOKEN_ID],
+            $validToken->getToken(),
             $subject->getValue(),
             $body->getValue(),
             [$recipient],
@@ -372,48 +347,5 @@ class EveMail
         }
 
         return '';
-    }
-
-    private function getToken(): ?array
-    {
-        $token = $this->sysVarRepo->find(SystemVariable::MAIL_TOKEN);
-        if ($token === null || $token->getValue() === '') {
-            return null;
-        }
-
-        $tokenValues = json_decode($token->getValue(), true);
-
-        if (
-            !is_array($tokenValues) ||
-            !isset($tokenValues[SystemVariable::TOKEN_ID]) ||
-            !isset($tokenValues[SystemVariable::TOKEN_ACCESS]) ||
-            !isset($tokenValues[SystemVariable::TOKEN_REFRESH]) ||
-            !isset($tokenValues[SystemVariable::TOKEN_EXPIRES])
-
-        ) {
-            return null;
-        }
-
-        return $tokenValues;
-    }
-
-    /**
-     * @see EveMail::storeMailCharacter();
-     */
-    private function updateToken(AccessTokenInterface $accessToken, int $characterId): void
-    {
-        $token = $this->sysVarRepo->find(SystemVariable::MAIL_TOKEN);
-        if ($token === null) {
-            return;
-        }
-
-        $token->setValue((string) json_encode([
-            SystemVariable::TOKEN_ID => $characterId,
-            SystemVariable::TOKEN_ACCESS => $accessToken->getToken(),
-            SystemVariable::TOKEN_REFRESH => $accessToken->getRefreshToken(),
-            SystemVariable::TOKEN_EXPIRES => $accessToken->getExpires(),
-        ]));
-
-        $this->objectManager->flush();
     }
 }

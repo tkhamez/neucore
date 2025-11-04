@@ -129,7 +129,7 @@ class AccountTest extends TestCase
         $repoFactory = new RepositoryFactory($this->om);
 
         $config = new Config([
-            'eve' => ['esi_host' => '', 'esi_compatibility_date' => ''],
+            'eve' => Helper::getEveConfig(),
             'plugins_install_dir' => __DIR__ . '/Account',
         ]);
         $this->service = $this->helper->getAccountService($this->log, $this->client, $config);
@@ -142,7 +142,7 @@ class AccountTest extends TestCase
         TestService::$updateAccount = [];
     }
 
-    public function testCreateNewPlayerWithMain()
+    public function testCreateNewPlayerWithMain(): void
     {
         $character = $this->service->createNewPlayerWithMain(234, 'bcd');
 
@@ -154,7 +154,7 @@ class AccountTest extends TestCase
         $this->assertLessThanOrEqual(time(), $character->getCreated()->getTimestamp());
     }
 
-    public function testMoveCharacterToNewPlayer()
+    public function testMoveCharacterToNewPlayer(): void
     {
         // this also updates groups now
         (new Helper())->emptyDb();
@@ -196,7 +196,7 @@ class AccountTest extends TestCase
         $this->assertSame(100, $newPlayerLoaded->getIncomingCharacters()[0]->getCharacterId());
     }
 
-    public function testMoveCharacter()
+    public function testMoveCharacter(): void
     {
         (new Helper())->emptyDb();
 
@@ -237,7 +237,7 @@ class AccountTest extends TestCase
         $this->assertSame(100, $newPlayerLoaded->getIncomingCharacters()[0]->getCharacterId());
     }
 
-    public function testUpdateAndStoreCharacterWithPlayer_NoEveLogin()
+    public function testUpdateAndStoreCharacterWithPlayer_NoEveLogin(): void
     {
         $result = $this->service->updateAndStoreCharacterWithPlayer(
             new Character(),
@@ -254,7 +254,7 @@ class AccountTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testUpdateAndStoreCharacterWithPlayer_Success()
+    public function testUpdateAndStoreCharacterWithPlayer_Success(): void
     {
         $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         $this->om->persist($eveLogin);
@@ -310,7 +310,7 @@ class AccountTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testUpdateAndStoreCharacterWithPlayer_DoesNotReplaceValidTokenWithNoScopesToken()
+    public function testUpdateAndStoreCharacterWithPlayer_DoesNotReplaceValidTokenWithNoScopesToken(): void
     {
         $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         // Test against valid token (i.e. it would have scopes)
@@ -356,7 +356,7 @@ class AccountTest extends TestCase
         );
     }
 
-    public function testUpdateAndStoreCharacterWithPlayer_NoToken()
+    public function testUpdateAndStoreCharacterWithPlayer_NoToken(): void
     {
         $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         $this->om->persist($eveLogin);
@@ -386,7 +386,7 @@ class AccountTest extends TestCase
         $this->assertSame(0, count($character->getCharacterNameChanges()));
     }
 
-    public function testUpdateAndStoreCharacterWithPlayer_NoToken_RemovesExistingToken()
+    public function testUpdateAndStoreCharacterWithPlayer_NoToken_RemovesExistingToken(): void
     {
         $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         $defaultEsiToken = (new EsiToken())->setEveLogin($eveLogin)
@@ -417,7 +417,7 @@ class AccountTest extends TestCase
         $this->assertNull($character->getEsiToken(EveLogin::NAME_DEFAULT));
     }
 
-    public function testIncreaseLoginCount()
+    public function testIncreaseLoginCount(): void
     {
         $player = (new PLayer())->setName('p');
         $this->om->persist($player);
@@ -435,7 +435,7 @@ class AccountTest extends TestCase
         $this->assertSame((int) date('m'), $logins[0]->getMonth());
     }
 
-    public function testCheckCharacter_DeletesBiomassedChar()
+    public function testCheckCharacter_DeletesBiomassedChar(): void
     {
         $corp = (new Corporation())->setId(EsiData::CORPORATION_DOOMHEIM_ID);
         $player = (new Player())->setName('p');
@@ -457,7 +457,7 @@ class AccountTest extends TestCase
         $this->assertSame(RemovedCharacter::REASON_DELETED_BIOMASSED, $removedChar->getReason());
     }
 
-    public function testCheckCharacter_NoToken()
+    public function testCheckCharacter_NoToken(): void
     {
         $char = (new Character())->setId(100)->setName('name');
         $this->helper->addNewPlayerToCharacterAndFlush($char);
@@ -470,7 +470,7 @@ class AccountTest extends TestCase
         $this->assertNull($charLoaded->getEsiToken(EveLogin::NAME_DEFAULT));
     }
 
-    public function testCheckCharacter_InvalidToken()
+    public function testCheckCharacter_InvalidToken(): void
     {
         $expires = time() - 1000;
         $char = $this->setUpCharacterWithToken($expires, true);
@@ -490,7 +490,7 @@ class AccountTest extends TestCase
         $this->assertFalse($charLoaded->getEsiToken(EveLogin::NAME_DEFAULT)->getValidToken());
     }
 
-    public function testCheckCharacter_RequestError()
+    public function testCheckCharacter_RequestError(): void
     {
         $this->client->setResponse(
             // for refreshAccessToken()
@@ -508,7 +508,7 @@ class AccountTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testCheckCharacter_ValidTokenNoScopes()
+    public function testCheckCharacter_ValidTokenNoScopes(): void
     {
         list($token) = Helper::generateToken([]);
         $newExpires = time() + 60;
@@ -538,7 +538,7 @@ class AccountTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testCheckCharacter_InvalidJwtData()
+    public function testCheckCharacter_InvalidJwtData(): void
     {
         list($token) = Helper::generateToken(['Scope1'], 'Char Name', ''); // with empty character owner hash
         $this->client->setResponse(
@@ -560,7 +560,7 @@ class AccountTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testCheckCharacter_ValidWithScopes_UpdateOtherTokens_CheckRoles()
+    public function testCheckCharacter_ValidWithScopes_UpdateOtherTokens_CheckRoles(): void
     {
         list($token) = Helper::generateToken(['scope1', 'scope2'], 'Old Name');
         $this->client->setResponse(
@@ -625,7 +625,7 @@ class AccountTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testCheckCharacter_DeletesMovedChar()
+    public function testCheckCharacter_DeletesMovedChar(): void
     {
         list($token) = Helper::generateToken();
         $this->client->setResponse(
@@ -651,7 +651,7 @@ class AccountTest extends TestCase
         $this->assertSame(RemovedCharacter::REASON_DELETED_OWNER_CHANGED, $removedChar->getReason());
     }
 
-    public function testMergeAccounts_MoveCharacter()
+    public function testMergeAccounts_MoveCharacter(): void
     {
         $player = (new Player())->setName('player 1');
         $newPlayer = (new Player())->setName('player 2');
@@ -697,7 +697,7 @@ class AccountTest extends TestCase
         $this->assertSame(12, $removedChars[1]->getCharacterId());
     }
 
-    public function testMergeAccounts_AddsAndUpdatesGroups()
+    public function testMergeAccounts_AddsAndUpdatesGroups(): void
     {
         $player1 = (new Player())->setName('player 1');
         $player2 = (new Player())->setName('player 2');
@@ -741,7 +741,7 @@ class AccountTest extends TestCase
         $this->assertSame([$group2->getId()], $players[1]->getGroupIds());
     }
 
-    public function testMergeAccounts_UpdatesServices()
+    public function testMergeAccounts_UpdatesServices(): void
     {
         $conf1 = new PluginConfigurationDatabase();
         $conf1->directoryName = 'plugin';
@@ -772,7 +772,7 @@ class AccountTest extends TestCase
         $this->assertSame([10, 11], TestService::$updateAccount);
     }
 
-    public function testDeleteCharacter()
+    public function testDeleteCharacter(): void
     {
         $player = (new Player())->setName('player 1');
         $char = (new Character())->setId(10)->setName('char')->setPlayer($player)->setMain(true);
@@ -810,7 +810,7 @@ class AccountTest extends TestCase
         $this->assertTrue($player->getCharacters()[0]->getMain());
     }
 
-    public function testDeleteCharacterByAdmin()
+    public function testDeleteCharacterByAdmin(): void
     {
         $player = (new Player())->setName('player 1');
         $char = (new Character())->setId(10)->setName('char')->setPlayer($player);
@@ -837,7 +837,7 @@ class AccountTest extends TestCase
         );
     }
 
-    public function testAssureMain()
+    public function testAssureMain(): void
     {
         $main = $this->helper->addCharacterMain('Test main', 112);
         $player = $main->getPlayer();
@@ -866,7 +866,7 @@ class AccountTest extends TestCase
         $this->assertTrue($alt2->getMain());
     }
 
-    public function testUpdateGroups()
+    public function testUpdateGroups(): void
     {
         $this->setUpUpdateGroupsData(); // adds 2 default groups, one with a required group
 
@@ -882,7 +882,7 @@ class AccountTest extends TestCase
         $this->assertSame([$this->group2->getId()], $player->getGroupIds());
     }
 
-    public function testUpdateGroups_guestGroupIsAssignedIfCorporationIsNotInAlliance()
+    public function testUpdateGroups_guestGroupIsAssignedIfCorporationIsNotInAlliance(): void
     {
         // Setup:
         // - Player is in corporation A.
@@ -915,7 +915,7 @@ class AccountTest extends TestCase
         $this->assertSame([$group3->getId()], $playerAfter->getGroupIds());
     }
 
-    public function testCheckRoles()
+    public function testCheckRoles(): void
     {
         $app = (new App())->setName('app')->setSecret('abc');
         $group1 = (new Group())->setName('group 1');
@@ -950,7 +950,7 @@ class AccountTest extends TestCase
         $this->assertSame([], $playerLoaded->getManagerGroups());
     }
 
-    public function testMayHaveRole()
+    public function testMayHaveRole(): void
     {
         $group1 = (new Group())->setName('group 1');
         $group2 = (new Group())->setName('group 2');
@@ -971,7 +971,7 @@ class AccountTest extends TestCase
         $this->assertFalse($this->service->mayHaveRole($player, Role::USER_CHARS));
     }
 
-    public function testSyncTrackingRoleInvalidCall()
+    public function testSyncTrackingRoleInvalidCall(): void
     {
         $this->service->syncTrackingRole();
         $this->service->syncTrackingRole(new Player(), new Corporation());
@@ -985,7 +985,7 @@ class AccountTest extends TestCase
         );
     }
 
-    public function testSyncTrackingRoleNoRole()
+    public function testSyncTrackingRoleNoRole(): void
     {
         $this->helper->emptyDb();
         $this->service->syncTrackingRole(new Player());
@@ -996,7 +996,7 @@ class AccountTest extends TestCase
         );
     }
 
-    public function testSyncTrackingRoleNoChanged()
+    public function testSyncTrackingRoleNoChanged(): void
     {
         $this->setUpTrackingData();
 
@@ -1011,7 +1011,7 @@ class AccountTest extends TestCase
         $this->assertFalse($players[1]->hasRole(Role::TRACKING));
     }
 
-    public function testSyncTrackingRolePlayerChanged()
+    public function testSyncTrackingRolePlayerChanged(): void
     {
         $this->setUpTrackingData();
 
@@ -1028,7 +1028,7 @@ class AccountTest extends TestCase
         $this->assertTrue($players[1]->hasRole(Role::TRACKING));
     }
 
-    public function testSyncTrackingRoleCorporationChanged()
+    public function testSyncTrackingRoleCorporationChanged(): void
     {
         $this->setUpTrackingData();
 
@@ -1045,7 +1045,7 @@ class AccountTest extends TestCase
         $this->assertTrue($players[1]->hasRole(Role::TRACKING));
     }
 
-    public function testSyncWatchlistRole_NoChange()
+    public function testSyncWatchlistRole_NoChange(): void
     {
         $this->setUpWatchlistData();
 
@@ -1060,7 +1060,7 @@ class AccountTest extends TestCase
         $this->assertFalse($players[1]->hasRole(Role::WATCHLIST));
     }
 
-    public function testSyncWatchlistRole_PlayerChanged()
+    public function testSyncWatchlistRole_PlayerChanged(): void
     {
         $this->setUpWatchlistData();
 
@@ -1077,7 +1077,7 @@ class AccountTest extends TestCase
         $this->assertTrue($players[1]->hasRole(Role::WATCHLIST));
     }
 
-    public function testSyncWatchlistRole_GroupChanged()
+    public function testSyncWatchlistRole_GroupChanged(): void
     {
         $this->setUpWatchlistData();
 
@@ -1095,7 +1095,7 @@ class AccountTest extends TestCase
         $this->assertTrue($players[1]->hasRole(Role::WATCHLIST));
     }
 
-    public function testSyncWatchlistManagerRole_PlayerChanged()
+    public function testSyncWatchlistManagerRole_PlayerChanged(): void
     {
         $this->setUpWatchlistData();
         $this->player2->addGroup($this->group1);
@@ -1109,7 +1109,7 @@ class AccountTest extends TestCase
         $this->assertTrue($players[0]->hasRole(Role::WATCHLIST_MANAGER));
     }
 
-    public function testSyncWatchlistManagerRole_AddsMissingRole()
+    public function testSyncWatchlistManagerRole_AddsMissingRole(): void
     {
         $this->setUpWatchlistData();
 
@@ -1124,7 +1124,7 @@ class AccountTest extends TestCase
         $this->assertFalse($players[1]->hasRole(Role::WATCHLIST_MANAGER));
     }
 
-    public function testSyncManagerRole_RoleNotFound()
+    public function testSyncManagerRole_RoleNotFound(): void
     {
         $this->service->syncManagerRole(new Player(), 'name');
 
@@ -1134,7 +1134,7 @@ class AccountTest extends TestCase
         );
     }
 
-    public function testSyncManagerRole()
+    public function testSyncManagerRole(): void
     {
         $role1 = $this->role0;
         $player1 = (new Player())->setName('P1');

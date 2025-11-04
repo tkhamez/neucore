@@ -49,6 +49,7 @@ use Neucore\Service\Config;
 use Neucore\Service\EsiClient;
 use Neucore\Service\EsiData;
 use Neucore\Service\EveMail;
+use Neucore\Service\EveMailToken;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\PluginService;
 use Neucore\Service\SessionData;
@@ -225,7 +226,13 @@ class Helper
         $repoFactory = RepositoryFactory::getInstance($this->getObjectManager());
         $objectManager = new \Neucore\Service\ObjectManager($this->getObjectManager(), $logger);
         $characterService = new \Neucore\Service\Character($objectManager, $repoFactory);
-        $esiApiFactory = new EsiApiFactory(new HttpClientFactory($client), $config);
+        $eveMailToken = new EveMailToken(
+            $repoFactory,
+            $objectManager,
+            self::getAuthenticationProvider($client),
+            $logger,
+        );
+        $esiApiFactory = new EsiApiFactory(new HttpClientFactory($client), $config, $eveMailToken);
         $esiData = new EsiData($logger, $esiApiFactory, $objectManager, $repoFactory, $characterService);
         $accountGroup = new AccountGroup($repoFactory, $this->getObjectManager());
         $autoGroups = new AutoGroupAssignment($repoFactory, $accountGroup);
@@ -248,6 +255,12 @@ class Helper
         $objectManager = new \Neucore\Service\ObjectManager($this->getObjectManager(), $logger);
         $accountService = $this->getAccountService($logger, $client, $config);
         $accountGroupService = new AccountGroup($repoFactory, $this->getObjectManager());
+        $eveMailToken = new EveMailToken(
+            $repoFactory,
+            $objectManager,
+            self::getAuthenticationProvider($client),
+            $logger,
+        );
         return new UserAuth(
             new SessionData(),
             $accountService,
@@ -258,9 +271,8 @@ class Helper
             new EveMail(
                 $repoFactory,
                 $objectManager,
-                self::getAuthenticationProvider($client),
-                $logger,
-                new EsiApiFactory(new HttpClientFactory($client), $config),
+                new EsiApiFactory(new HttpClientFactory($client), $config, $eveMailToken),
+                $eveMailToken,
             ),
         );
     }
@@ -614,11 +626,17 @@ class Helper
         rmdir($dir);
     }
 
-    private static function getConfig(string $compatibilityDate = ''): config
+    public static function getEveConfig(string $compatibilityDate = ''): array
     {
-        return new Config(['eve' => [
+        return [
             'esi_host' => '',
             'esi_compatibility_date' => $compatibilityDate,
-        ]]);
+            'use_mail_token_for_unauthorised_requests' => '0',
+        ];
+    }
+
+    public static function getConfig(string $compatibilityDate = ''): Config
+    {
+        return new Config(['eve' => self::getEveConfig($compatibilityDate)]);
     }
 }

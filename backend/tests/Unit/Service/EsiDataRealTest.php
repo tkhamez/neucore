@@ -17,9 +17,11 @@ use Neucore\Middleware\Guzzle\EsiWarnings;
 use Neucore\Service\Character;
 use Neucore\Service\Config;
 use Neucore\Service\EsiData;
+use Neucore\Service\EveMailToken;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\SystemVariableStorage;
 use PHPUnit\Framework\TestCase;
+use Tests\Client;
 use Tests\Helper;
 use Tests\Logger;
 
@@ -43,6 +45,7 @@ class EsiDataRealTest extends TestCase
             'eve' => [
                 'esi_host' => $settings['eve']['esi_host'],
                 'esi_compatibility_date' => $settings['eve']['esi_compatibility_date'],
+                'use_mail_token_for_unauthorised_requests' => '0',
             ],
             'guzzle' => [
                 'cache' => ['dir' => $cacheDir],
@@ -71,6 +74,12 @@ class EsiDataRealTest extends TestCase
                     $this->log,
                 ),
                 $config,
+                new EveMailToken(
+                    $repoFactory,
+                    $om,
+                    Helper::getAuthenticationProvider(new Client()),
+                    $this->log,
+                ),
             ),
             $om,
             $repoFactory,

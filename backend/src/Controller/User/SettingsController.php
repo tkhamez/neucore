@@ -13,6 +13,7 @@ use Neucore\Plugin\Data\NavigationItem;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\Config;
 use Neucore\Service\EveMail;
+use Neucore\Service\EveMailToken;
 use Neucore\Service\PluginService;
 use Neucore\Service\UserAuth;
 use OpenApi\Attributes as OA;
@@ -106,7 +107,7 @@ class SettingsController extends BaseController
     }
 
     /**
-     * @see EveMail::deleteToken();
+     * @see EveMailToken::deleteToken();
      */
     #[OA\Put(
         path: '/user/settings/system/change/{name}',
@@ -150,8 +151,11 @@ class SettingsController extends BaseController
             new OA\Response(response: '404', description: 'Variable not found.'),
         ],
     )]
-    public function systemChange(string $name, ServerRequestInterface $request, EveMail $eveMail): ResponseInterface
-    {
+    public function systemChange(
+        string $name,
+        ServerRequestInterface $request,
+        EveMailToken $eveMailToken,
+    ): ResponseInterface {
         $variable = $this->repositoryFactory->getSystemVariableRepository()->find($name);
 
         if ($variable === null || !in_array($variable->getScope(), self::VALID_SCOPES)) {
@@ -161,7 +165,7 @@ class SettingsController extends BaseController
         if ($variable->getName() === SystemVariable::MAIL_CHARACTER) {
             // if the mail character has been removed, delete the corresponding token as well
             $variable->setValue(''); // only removal is allowed here
-            $eveMail->deleteToken();
+            $eveMailToken->deleteToken();
         } else {
             $variable->setValue((string) $this->getBodyParam($request, self::COLUMN_VALUE));
         }

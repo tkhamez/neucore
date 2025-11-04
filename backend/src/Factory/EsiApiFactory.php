@@ -6,6 +6,7 @@ namespace Neucore\Factory;
 
 use Neucore\Service\Config;
 use GuzzleHttp\ClientInterface;
+use Neucore\Service\EveMailToken;
 use Tkhamez\Eve\API\Api\AllianceApi;
 use Tkhamez\Eve\API\Api\CharacterApi;
 use Tkhamez\Eve\API\Api\CorporationApi;
@@ -19,12 +20,11 @@ class EsiApiFactory
 
     private ClientInterface $client;
 
-    private Config $config;
-
-    public function __construct(HttpClientFactoryInterface $httpClientFactory, Config $config)
-    {
-        $this->config = $config;
-
+    public function __construct(
+        HttpClientFactoryInterface $httpClientFactory,
+        private readonly Config $config,
+        private readonly EveMailToken $eveMailToken,
+    ) {
         // This header is also set for every request, but in case this changes, add a default value.
         $this->client = $httpClientFactory->getGuzzleClient(requestHeaders: [
             'X-Compatibility-Date' => $this->config['eve']['esi_compatibility_date'],
@@ -62,7 +62,7 @@ class EsiApiFactory
 
         if (!isset($this->instances[$key])) {
             $configuration = new Configuration();
-            if ($token !== '') {
+            if ($this->getToken($token) !== '') {
                 $configuration->setAccessToken($token);
             }
             $configuration->setHost($this->config['eve']['esi_host']);
@@ -73,5 +73,22 @@ class EsiApiFactory
         }
 
         return $this->instances[$key];
+    }
+
+    private function getToken(string $token): string
+    {
+        if ($token !== '') {
+            return $token;
+        }
+
+        if ($this->config['eve']['use_mail_token_for_unauthorised_requests'] !== '1') {
+            return $token;
+        }
+
+        // Use the mail token for unauthorised requests to get better error limits.
+        // See also https://developers.eveonline.com/docs/services/esi/rate-limiting/#bucket-system.
+        # TODO get access token
+
+        return $token;
     }
 }
