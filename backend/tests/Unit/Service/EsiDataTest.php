@@ -13,7 +13,7 @@ use Neucore\Entity\EsiLocation;
 use Neucore\Entity\SystemVariable;
 use Neucore\Exception\Exception;
 use Neucore\Exception\RuntimeException;
-use Neucore\Factory\EsiApiFactory;
+use Neucore\Factory\EveApiFactory;
 use Neucore\Entity\Corporation;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Character;
@@ -960,7 +960,7 @@ class EsiDataTest extends TestCase
         );
         return new EsiData(
             $this->log,
-            new EsiApiFactory(new HttpClientFactory($this->client), $this->config, $eveMailToken),
+            new EveApiFactory(new HttpClientFactory($this->client), $this->config, $eveMailToken),
             $this->om,
             $this->repoFactory,
             new Character($this->om, $this->repoFactory),

@@ -15,7 +15,7 @@ use Tkhamez\Eve\API\Api\MailApi;
 use Tkhamez\Eve\API\Api\UniverseApi;
 use Tkhamez\Eve\API\Configuration;
 
-class EsiApiFactory
+class EveApiFactory
 {
     private array $instances = [];
 

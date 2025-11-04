@@ -9,7 +9,7 @@ use Neucore\Entity\EsiLocation;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EsiType;
 use Neucore\Entity\EveLogin;
-use Neucore\Factory\EsiApiFactory;
+use Neucore\Factory\EveApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Psr\Log\LoggerInterface;
@@ -20,7 +20,7 @@ class MemberTracking
 {
     public function __construct(
         private readonly LoggerInterface $log,
-        private readonly EsiApiFactory $esiApiFactory,
+        private readonly EveApiFactory $esiApiFactory,
         private readonly RepositoryFactory $repositoryFactory,
         private readonly EntityManager $entityManager,
         private readonly EsiData $esiData,

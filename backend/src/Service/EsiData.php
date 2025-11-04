@@ -10,7 +10,7 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\EsiLocation;
 use Neucore\Entity\SystemVariable;
 use Neucore\Exception\Exception;
-use Neucore\Factory\EsiApiFactory;
+use Neucore\Factory\EveApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Neucore\Service\Character as CharacterService;
@@ -46,7 +46,7 @@ class EsiData
 
     public function __construct(
         private readonly LoggerInterface   $log,
-        private readonly EsiApiFactory     $esiApiFactory,
+        private readonly EveApiFactory     $esiApiFactory,
         private readonly ObjectManager     $objectManager,
         private readonly RepositoryFactory $repositoryFactory,
         private readonly CharacterService  $characterService,

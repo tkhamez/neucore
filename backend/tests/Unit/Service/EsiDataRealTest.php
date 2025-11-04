@@ -7,7 +7,7 @@ namespace Tests\Unit\Service;
 use Monolog\Handler\TestHandler;
 use Neucore\Application;
 use Neucore\Exception\Exception;
-use Neucore\Factory\EsiApiFactory;
+use Neucore\Factory\EveApiFactory;
 use Neucore\Factory\HttpClientFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Guzzle\EsiRateLimits;
@@ -64,7 +64,7 @@ class EsiDataRealTest extends TestCase
 
         $this->esiData = new EsiData(
             $this->log,
-            new EsiApiFactory(
+            new EveApiFactory(
                 new HttpClientFactory(
                     $config,
                     new EsiErrorLimit($storage),

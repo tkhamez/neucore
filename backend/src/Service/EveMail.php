@@ -9,7 +9,7 @@ use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use Neucore\Entity\SystemVariable;
 use Neucore\Exception\Exception;
-use Neucore\Factory\EsiApiFactory;
+use Neucore\Factory\EveApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\SystemVariableRepository;
 use Tkhamez\Eve\API\Model\PostCharactersCharacterIdMailRequest;
@@ -22,7 +22,7 @@ class EveMail
     public function __construct(
         private readonly RepositoryFactory $repositoryFactory,
         private readonly ObjectManager $objectManager,
-        private readonly EsiApiFactory $esiApiFactory,
+        private readonly EveApiFactory $esiApiFactory,
         private readonly EveMailToken $eveMailToken,
     ) {
         $this->sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();

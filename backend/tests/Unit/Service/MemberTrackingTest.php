@@ -11,7 +11,7 @@ use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EsiType;
-use Neucore\Factory\EsiApiFactory;
+use Neucore\Factory\EveApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EntityManager;
 use Neucore\Service\EsiData;
@@ -49,7 +49,7 @@ class MemberTrackingTest extends TestCase
         $this->repositoryFactory = new RepositoryFactory($this->om);
         $config = Helper::getConfig();
         $authProvider = Helper::getAuthenticationProvider($this->client);
-        $esiApiFactory = new EsiApiFactory(
+        $esiApiFactory = new EveApiFactory(
             new HttpClientFactory($this->client),
             $config,
             new EveMailToken($this->repositoryFactory, $objectManager, $authProvider, $logger)

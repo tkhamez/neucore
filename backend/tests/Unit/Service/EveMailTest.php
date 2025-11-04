@@ -14,7 +14,7 @@ use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use Neucore\Entity\SystemVariable;
-use Neucore\Factory\EsiApiFactory;
+use Neucore\Factory\EveApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EveMail;
 use Neucore\Service\EveMailToken;
@@ -53,7 +53,7 @@ class EveMailTest extends TestCase
             Helper::getAuthenticationProvider($this->client),
             $logger,
         );
-        $esiFactory = new EsiApiFactory(new HttpClientFactory($this->client), $config, $eveMailToken);
+        $esiFactory = new EveApiFactory(new HttpClientFactory($this->client), $config, $eveMailToken);
         $this->eveMail = new EveMail($this->repoFactory, $objManager, $esiFactory, $eveMailToken);
     }
 

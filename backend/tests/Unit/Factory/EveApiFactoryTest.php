@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Factory;
 
-use Neucore\Factory\EsiApiFactory;
+use Neucore\Factory\EveApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Config;
 use Neucore\Service\EveMailToken;
@@ -20,7 +20,7 @@ use Tkhamez\Eve\API\Api\CorporationApi;
 use Tkhamez\Eve\API\Api\MailApi;
 use Tkhamez\Eve\API\Api\UniverseApi;
 
-class EsiApiFactoryTest extends TestCase
+class EveApiFactoryTest extends TestCase
 {
     private Config $config;
 
@@ -42,7 +42,7 @@ class EsiApiFactoryTest extends TestCase
 
     public function testGetAllianceApi(): void
     {
-        $factory = new EsiApiFactory(
+        $factory = new EveApiFactory(
             new HttpClientFactory(new Client()), $this->config, $this->eveMailToken
         );
         $api = $factory->getAllianceApi();
@@ -52,7 +52,7 @@ class EsiApiFactoryTest extends TestCase
 
     public function testGetCorporationApi(): void
     {
-        $factory = new EsiApiFactory(
+        $factory = new EveApiFactory(
             new HttpClientFactory(new Client()), $this->config, $this->eveMailToken
         );
         $api1 = $factory->getCorporationApi();
@@ -69,7 +69,7 @@ class EsiApiFactoryTest extends TestCase
 
     public function testGetCharacterApi(): void
     {
-        $factory = new EsiApiFactory(
+        $factory = new EveApiFactory(
             new HttpClientFactory(new Client()), $this->config, $this->eveMailToken
         );
         $api1 = $factory->getCharacterApi();
@@ -83,7 +83,7 @@ class EsiApiFactoryTest extends TestCase
 
     public function testGetMailApi(): void
     {
-        $factory = new EsiApiFactory(
+        $factory = new EveApiFactory(
             new HttpClientFactory(new Client()), $this->config, $this->eveMailToken
         );
         $api1 = $factory->getMailApi('token');
@@ -106,7 +106,7 @@ class EsiApiFactoryTest extends TestCase
 
     public function testGetUniverseApi(): void
     {
-        $factory = new EsiApiFactory(
+        $factory = new EveApiFactory(
             new HttpClientFactory(new Client()), $this->config, $this->eveMailToken
         );
         $api = $factory->getUniverseApi();

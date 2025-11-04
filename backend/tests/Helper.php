@@ -38,7 +38,7 @@ use Neucore\Entity\Plugin;
 use Neucore\Entity\Session;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
-use Neucore\Factory\EsiApiFactory;
+use Neucore\Factory\EveApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Core\Data;
 use Neucore\Plugin\Core\Factory;
@@ -232,7 +232,7 @@ class Helper
             self::getAuthenticationProvider($client),
             $logger,
         );
-        $esiApiFactory = new EsiApiFactory(new HttpClientFactory($client), $config, $eveMailToken);
+        $esiApiFactory = new EveApiFactory(new HttpClientFactory($client), $config, $eveMailToken);
         $esiData = new EsiData($logger, $esiApiFactory, $objectManager, $repoFactory, $characterService);
         $accountGroup = new AccountGroup($repoFactory, $this->getObjectManager());
         $autoGroups = new AutoGroupAssignment($repoFactory, $accountGroup);
@@ -271,7 +271,7 @@ class Helper
             new EveMail(
                 $repoFactory,
                 $objectManager,
-                new EsiApiFactory(new HttpClientFactory($client), $config, $eveMailToken),
+                new EveApiFactory(new HttpClientFactory($client), $config, $eveMailToken),
                 $eveMailToken,
             ),
         );
