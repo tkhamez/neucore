@@ -5,6 +5,8 @@
 dd mm yyyy
 
 - ESI proxy: Added the new rate limit headers to the response.
+- Added the new command `generate-eve-api-files` to regenerate ESI files.
+- Fixed the external link icon.
 - Updated dependencies.
 
 ## 2.9.0
