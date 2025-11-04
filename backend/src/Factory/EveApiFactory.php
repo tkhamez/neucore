@@ -19,19 +19,34 @@ class EveApiFactory
 {
     private array $instances = [];
 
-    private ClientInterface $client;
+    private ClientInterface $clientAuthorised;
 
-    private string $mailToken = '';
+    private ClientInterface $clientUnauthorised;
 
     public function __construct(
         HttpClientFactoryInterface $httpClientFactory,
         private readonly Config $config,
         private readonly EveMailToken $eveMailToken,
     ) {
-        // This header is also set for every request, but in case this changes, add a default value.
-        $this->client = $httpClientFactory->getGuzzleClient(requestHeaders: [
+        $headersAuthorised = [
+            // This header is also set for every request, but in case this changes, add a default value.
             'X-Compatibility-Date' => $this->config['eve']['esi_compatibility_date'],
-        ]);
+        ];
+        $this->clientAuthorised = $httpClientFactory->getGuzzleClient(
+            requestHeaders: $headersAuthorised,
+        );
+
+        // Use a token for unauthorised requests to get better error limits. See also
+        // https://developers.eveonline.com/docs/services/esi/rate-limiting/#bucket-system.
+        if (($token = $this->getToken()) !== null) {
+            $headersUnauthorised = $headersAuthorised;
+            $headersUnauthorised['Authorization'] = "Bearer $token";
+            $this->clientUnauthorised = $httpClientFactory->getGuzzleClient(
+                requestHeaders: $headersUnauthorised,
+            );
+        } else {
+            $this->clientUnauthorised = $this->clientAuthorised;
+        }
     }
 
     public function getAllianceApi(): AllianceApi
@@ -65,50 +80,39 @@ class EveApiFactory
 
         if (!isset($this->instances[$key])) {
             $configuration = new Configuration();
-            if ($this->getToken($token) !== '') {
+            $client = $this->clientUnauthorised;
+            if ($token !== '') {
                 $configuration->setAccessToken($token);
+                $client = $this->clientAuthorised;
             }
             $configuration->setHost($this->config['eve']['esi_host']);
             // Remove the library default so that it does not use it for its requests but instead uses
             // the user agent from $this->client.
             $configuration->setUserAgent('');
-            $this->instances[$key] = new $class($this->client, $configuration);
+            $this->instances[$key] = new $class($client, $configuration);
         }
 
         return $this->instances[$key];
     }
 
-    private function getToken(string $token): string
+    private function getToken(): ?string
     {
-        if ($token !== '') {
-            return $token;
-        }
-
         if ($this->config['eve']['use_mail_token_for_unauthorised_requests'] !== '1') {
-            return $token;
-        }
-
-        // Use the mail token for unauthorised requests to get better error limits.
-        // See also https://developers.eveonline.com/docs/services/esi/rate-limiting/#bucket-system.
-
-        if ($this->mailToken !== '') {
-            return $this->mailToken;
+            return null;
         }
 
         try {
             $storedToken = $this->eveMailToken->getStoredToken();
         } catch (Exception) {
-            return $token;
+            return null;
         }
 
         try {
             $validToken = $this->eveMailToken->getValidToken($storedToken);
         } catch (Exception) {
-            return $token;
+            return null;
         }
 
-        $this->mailToken = $validToken->getToken();
-
-        return $this->mailToken;
+        return $validToken->getToken();
     }
 }

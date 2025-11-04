@@ -5,6 +5,8 @@
 dd mm yyyy
 
 - ESI proxy: Added the new rate limit headers to the response.
+- Added `NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS` environment variable, 
+  see [.env.dist](backend/.env.dist) for details.
 - Added the new command `generate-eve-api-files` to regenerate ESI files.
 - Fixed the external link icon.
 - Updated dependencies.

@@ -41,7 +41,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $this->repoFactory = new RepositoryFactory($this->om);
     }
 
-    public function testExecuteNotActive()
+    public function testExecuteNotActive(): void
     {
         $output = $this->runConsoleApp('send-missing-character-mail', ['--sleep' => 0]);
 
@@ -53,7 +53,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $this->assertSame('', $actual[3]);
     }
 
-    public function testExecuteInvalidConfig()
+    public function testExecuteInvalidConfig(): void
     {
         $active = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_ACTIVE))->setValue('1');
         $this->om->persist($active);
@@ -69,11 +69,15 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $this->assertSame('', $actual[3]);
     }
 
-    public function testExecuteMisconfiguration()
+    public function testExecuteMisconfiguration(): void
     {
         $this->setupData(true);
 
-        $output = $this->runConsoleApp('send-missing-character-mail', ['--sleep' => 0]);
+        $output = $this->runConsoleApp(
+            'send-missing-character-mail',
+            ['--sleep' => 0],
+            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS', '0']]
+        );
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
@@ -83,7 +87,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $this->assertSame('', $actual[3]);
     }
 
-    public function testExecuteRequestException()
+    public function testExecuteRequestException(): void
     {
         $this->setupData();
 
@@ -97,7 +101,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $output = $this->runConsoleApp('send-missing-character-mail', ['--sleep' => 0], [
             HttpClientFactoryInterface::class => new HttpClientFactory($client),
             LoggerInterface::class => $log,
-        ]);
+        ], [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS', '0']]);
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
@@ -116,7 +120,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $this->assertLessThanOrEqual(new \DateTime(), $member4->getMissingCharacterMailSentDate());
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $this->setupData();
 
@@ -124,7 +128,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('send-missing-character-mail', ['--sleep' => 0], [
             HttpClientFactoryInterface::class => new HttpClientFactory($this->client),
-        ]);
+        ], [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS', '0']]);
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
