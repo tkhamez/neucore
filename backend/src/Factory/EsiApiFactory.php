@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Factory;
 
+use Neucore\Exception\Exception;
 use Neucore\Service\Config;
 use GuzzleHttp\ClientInterface;
 use Neucore\Service\EveMailToken;
@@ -19,6 +20,8 @@ class EsiApiFactory
     private array $instances = [];
 
     private ClientInterface $client;
+
+    private string $mailToken = '';
 
     public function __construct(
         HttpClientFactoryInterface $httpClientFactory,
@@ -87,8 +90,25 @@ class EsiApiFactory
 
         // Use the mail token for unauthorised requests to get better error limits.
         // See also https://developers.eveonline.com/docs/services/esi/rate-limiting/#bucket-system.
-        # TODO get access token
 
-        return $token;
+        if ($this->mailToken !== '') {
+            return $this->mailToken;
+        }
+
+        try {
+            $storedToken = $this->eveMailToken->getStoredToken();
+        } catch (Exception) {
+            return $token;
+        }
+
+        try {
+            $validToken = $this->eveMailToken->getValidToken($storedToken);
+        } catch (Exception) {
+            return $token;
+        }
+
+        $this->mailToken = $validToken->getToken();
+
+        return $this->mailToken;
     }
 }
