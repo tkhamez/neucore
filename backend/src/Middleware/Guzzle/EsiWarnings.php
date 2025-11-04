@@ -4,23 +4,17 @@ declare(strict_types=1);
 
 namespace Neucore\Middleware\Guzzle;
 
-use Neucore\Data\EsiErrorLimit;
-use Neucore\Storage\StorageInterface;
-use Neucore\Storage\Variables;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
-class EsiHeaders
+/**
+ * Logs deprecated warnings
+ */
+class EsiWarnings
 {
-    private LoggerInterface $logger;
-
-    private StorageInterface $storage;
-
-    public function __construct(LoggerInterface $logger, StorageInterface $storage)
+    public function __construct(private readonly LoggerInterface $logger)
     {
-        $this->logger = $logger;
-        $this->storage = $storage;
     }
 
     public function __invoke(callable $handler): \Closure
@@ -39,16 +33,6 @@ class EsiHeaders
 
     private function handleResponseHeaders(string $requestUri, ResponseInterface $response): void
     {
-        // Update ESI error limit
-        if ($response->hasHeader('X-Esi-Error-Limit-Remain') && $response->hasHeader('X-Esi-Error-Limit-Reset')) {
-            $remain = (int) $response->getHeader('X-Esi-Error-Limit-Remain')[0];
-            $reset = (int) $response->getHeader('X-Esi-Error-Limit-Reset')[0];
-            $this->storage->set(Variables::ESI_ERROR_LIMIT, (string) \json_encode(
-                new EsiErrorLimit(time(), $remain, $reset),
-            ));
-        }
-
-        // Log deprecated warnings
         foreach (['warning', 'Warning'] as $headerName) {
             if ($response->hasHeader($headerName)) {
                 $warning = $response->getHeader($headerName)[0];

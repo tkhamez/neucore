@@ -30,7 +30,7 @@ class EsiClient
      *
      * @param int $limitRemain Number of errors that should remain.
      * @return int Unix timestamp up to which must be waited.
-     * @see https://developers.eveonline.com/blog/article/esi-error-limits-go-live
+     * @see https://developers.eveonline.com/docs/services/esi/best-practices/#error-limit
      */
     public static function getErrorLimitWaitTime(StorageInterface $storage, int $limitRemain): int
     {

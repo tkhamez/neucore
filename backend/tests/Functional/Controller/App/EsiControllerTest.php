@@ -7,13 +7,12 @@ declare(strict_types=1);
 namespace Tests\Functional\Controller\App;
 
 use GuzzleHttp\Exception\TransferException;
-use Neucore\Data\EsiErrorLimit;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
 use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Middleware\Guzzle\EsiHeaders;
+use Neucore\Middleware\Guzzle\EsiErrorLimit;
 use GuzzleHttp\Psr7\Response;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\StorageInterface;
@@ -479,7 +478,7 @@ class EsiControllerTest extends WebTestCase
         // add var
         $this->storage->set(
             Variables::ESI_ERROR_LIMIT,
-            (string) \json_encode(new EsiErrorLimit(time(), 20, 86)),
+            (string) \json_encode(new \Neucore\Data\EsiErrorLimit(time(), 20, 86)),
         );
 
         $response = $this->runApp(
@@ -502,7 +501,7 @@ class EsiControllerTest extends WebTestCase
         // add var
         $this->storage->set(
             Variables::ESI_ERROR_LIMIT,
-            (string) \json_encode(new EsiErrorLimit(time(), 20, 86)),
+            (string) \json_encode(new \Neucore\Data\EsiErrorLimit(time(), 20, 86)),
         );
 
         $response = $this->runApp(
@@ -534,7 +533,7 @@ class EsiControllerTest extends WebTestCase
         // add var
         $this->storage->set(
             Variables::ESI_ERROR_LIMIT,
-            (string) \json_encode(new EsiErrorLimit(time(), 21, 86)),
+            (string) \json_encode(new \Neucore\Data\EsiErrorLimit(time(), 21, 86)),
         );
 
         $response = $this->runApp(
@@ -555,7 +554,7 @@ class EsiControllerTest extends WebTestCase
         // add var
         $this->storage->set(
             Variables::ESI_ERROR_LIMIT,
-            (string) \json_encode(new EsiErrorLimit(time() - 87, 20, 86)),
+            (string) \json_encode(new \Neucore\Data\EsiErrorLimit(time() - 87, 20, 86)),
         );
 
         $response = $this->runApp(
@@ -774,9 +773,7 @@ class EsiControllerTest extends WebTestCase
 
         // create the client with middleware
         $httpClient = new Client();
-        $httpClient->setMiddleware(
-            new EsiHeaders(new Logger(), $this->storage),
-        );
+        $httpClient->setMiddleware(new EsiErrorLimit($this->storage));
         $httpClient->setResponse(new Response(
             200,
             ['X-Esi-Error-Limit-Remain' => ['100'], 'X-Esi-Error-Limit-Reset' => ['60']],
@@ -799,7 +796,7 @@ class EsiControllerTest extends WebTestCase
             'X-Esi-Error-Limit-Reset' => ['60'],
         ], $response->getHeaders());
 
-        $esiErrorValues = EsiErrorLimit::fromJson(
+        $esiErrorValues = \Neucore\Data\EsiErrorLimit::fromJson(
             (string) $this->storage->get(Variables::ESI_ERROR_LIMIT),
         );
         $this->assertLessThanOrEqual(time(), $esiErrorValues->updated);

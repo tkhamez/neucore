@@ -7,8 +7,9 @@ namespace Tests\Unit\Factory;
 use Monolog\Logger;
 use Neucore\Factory\HttpClientFactory;
 use Neucore\Middleware\Guzzle\EsiRateLimits;
-use Neucore\Middleware\Guzzle\EsiHeaders;
+use Neucore\Middleware\Guzzle\EsiErrorLimit;
 use Neucore\Middleware\Guzzle\EsiThrottled;
+use Neucore\Middleware\Guzzle\EsiWarnings;
 use Neucore\Service\Config;
 use Neucore\Storage\ApcuStorage;
 use PHPUnit\Framework\TestCase;
@@ -28,7 +29,8 @@ class HttpClientFactoryTest extends TestCase
         $logger = new Logger('test');
         $this->factory = new HttpClientFactory(
             new Config(['guzzle' => ['cache' => ['dir' => __DIR__], 'user_agent' => 'Test']]),
-            new EsiHeaders($logger, new ApcuStorage()),
+            new EsiErrorLimit(new ApcuStorage()),
+            new EsiWarnings($logger),
             new EsiRateLimits($logger, new ApcuStorage()),
             new EsiThrottled(new ApcuStorage()),
             $logger,

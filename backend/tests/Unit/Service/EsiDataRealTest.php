@@ -11,7 +11,9 @@ use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\HttpClientFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Guzzle\EsiRateLimits;
-use Neucore\Middleware\Guzzle\EsiHeaders;
+use Neucore\Middleware\Guzzle\EsiErrorLimit;
+use Neucore\Middleware\Guzzle\EsiThrottled;
+use Neucore\Middleware\Guzzle\EsiWarnings;
 use Neucore\Service\Character;
 use Neucore\Service\Config;
 use Neucore\Service\EsiData;
@@ -62,8 +64,10 @@ class EsiDataRealTest extends TestCase
             new EsiApiFactory(
                 new HttpClientFactory(
                     $config,
-                    new EsiHeaders($this->log, $storage),
+                    new EsiErrorLimit($storage),
+                    new EsiWarnings($this->log),
                     new EsiRateLimits($this->log, $storage),
+                    new EsiThrottled($storage),
                     $this->log,
                 ),
                 $config,

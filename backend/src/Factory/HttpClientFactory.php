@@ -12,8 +12,9 @@ use Kevinrob\GuzzleCache\CacheMiddleware;
 use Kevinrob\GuzzleCache\Storage\Psr6CacheStorage;
 use Kevinrob\GuzzleCache\Strategy\PrivateCacheStrategy;
 use Neucore\Middleware\Guzzle\EsiRateLimits;
-use Neucore\Middleware\Guzzle\EsiHeaders;
+use Neucore\Middleware\Guzzle\EsiErrorLimit;
 use Neucore\Middleware\Guzzle\EsiThrottled;
+use Neucore\Middleware\Guzzle\EsiWarnings;
 use Neucore\Service\Config;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\MessageInterface;
@@ -26,7 +27,8 @@ class HttpClientFactory implements HttpClientFactoryInterface
 {
     public function __construct(
         private readonly Config $config,
-        private readonly EsiHeaders $esiHeaders,
+        private readonly EsiErrorLimit $esiHeaders,
+        private readonly EsiWarnings $esiWarnings,
         private readonly EsiRateLimits $esiRateLimits,
         private readonly EsiThrottled $esiThrottled,
         private readonly LoggerInterface $logger,
@@ -104,6 +106,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
         }
 
         $stack->push($this->esiHeaders);
+        $stack->push($this->esiWarnings);
         $stack->push($this->esiRateLimits);
         $stack->push($this->esiThrottled);
         #$stack->push(\GuzzleHttp\Middleware::mapResponse($debugFunc));
