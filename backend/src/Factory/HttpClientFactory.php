@@ -81,6 +81,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
                 return $val[0];
             }, $r->getHeaders());
             $this->logger->debug($r->getBody()->getContents());
+            $r->getBody()->rewind();
             $this->logger->debug(print_r($headers, true));
             return $r;
         };
