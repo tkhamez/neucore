@@ -6,8 +6,9 @@ namespace Tests\Unit\Factory;
 
 use Monolog\Logger;
 use Neucore\Factory\HttpClientFactory;
-use Neucore\Middleware\Guzzle\Esi429Response;
+use Neucore\Middleware\Guzzle\EsiRateLimits;
 use Neucore\Middleware\Guzzle\EsiHeaders;
+use Neucore\Middleware\Guzzle\EsiThrottled;
 use Neucore\Service\Config;
 use Neucore\Storage\ApcuStorage;
 use PHPUnit\Framework\TestCase;
@@ -28,32 +29,29 @@ class HttpClientFactoryTest extends TestCase
         $this->factory = new HttpClientFactory(
             new Config(['guzzle' => ['cache' => ['dir' => __DIR__], 'user_agent' => 'Test']]),
             new EsiHeaders($logger, new ApcuStorage()),
-            new Esi429Response($logger, new ApcuStorage()),
+            new EsiRateLimits($logger, new ApcuStorage()),
+            new EsiThrottled(new ApcuStorage()),
             $logger,
         );
     }
 
-    public function testGet()
+    public function testGet(): void
     {
         $this->assertFalse(is_dir(__DIR__ . '/cache-key'));
 
-        $actual = $this->factory->get('cache-key');
-
-        $this->assertInstanceOf(ClientInterface::class, $actual);
+        $this->factory->get('cache-key');
         $this->assertTrue(is_dir(__DIR__ . '/cache-key'));
     }
 
-    public function testGetGuzzleClient()
+    public function testGetGuzzleClient(): void
     {
-        $actual = $this->factory->getGuzzleClient(null);
-        $this->assertInstanceOf(\GuzzleHttp\ClientInterface::class, $actual);
+        $this->factory->getGuzzleClient(null);
         $this->assertFalse(is_dir(__DIR__ . '/cache-key'));
     }
 
-    public function testCreateRequest()
+    public function testCreateRequest(): void
     {
         $actual = $this->factory->createRequest('GET', 'http://localhost', ['X-Header-Name' => 'value'], 'body');
-        $this->assertInstanceOf(RequestInterface::class, $actual);
         $this->assertSame('GET', $actual->getMethod());
         $this->assertSame('http://localhost', $actual->getUri()->__toString());
         $this->assertSame(['value'], $actual->getHeader('X-Header-Name'));

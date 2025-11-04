@@ -10,7 +10,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
-class Esi429Response
+class EsiRateLimits
 {
     private LoggerInterface $logger;
 
@@ -36,25 +36,13 @@ class Esi429Response
 
     private function handleResponseHeaders(ResponseInterface $response): void
     {
-        // See also https://github.com/esi/esi-issues/issues/1227
-        if ($response->getStatusCode() === 500) {
-            $body = $response->getBody()->__toString();
-            if (
-                str_contains($body, 'Undefined 429 response.') &&
-                str_contains($body, 'Original message:') &&
-                str_contains($body, 'Too many errors.') &&
-                str_contains($body, 'You have been temporarily throttled.')
-            ) {
-                $this->storage->set(Variables::ESI_THROTTLED, (string) (time() + 60));
-            }
-        }
-
-        // SSO rate limit, see also https://developers.eveonline.com/blog/article/sso-endpoint-deprecations-2
+        // SSO rate limit, see also
+        // https://developers.eveonline.com/blog/article/sso-endpoint-deprecations-2
         if ($response->getStatusCode() === 429) {
             $waitUntil = time() + 60;
             if ($response->hasHeader('Retry-After')) {
                 $retryAfter = $response->getHeader('Retry-After')[0];
-                $this->logger->warning("Esi429Response Retry-After: $retryAfter");
+                $this->logger->warning("EsiRateLimits Retry-After: $retryAfter");
                 if (is_numeric($retryAfter)) {
                     // e.g.: 120
                     $waitUntil = time() + ceil((float) $retryAfter);

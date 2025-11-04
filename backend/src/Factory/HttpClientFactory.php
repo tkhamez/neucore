@@ -11,8 +11,9 @@ use GuzzleHttp\Psr7\Response;
 use Kevinrob\GuzzleCache\CacheMiddleware;
 use Kevinrob\GuzzleCache\Storage\Psr6CacheStorage;
 use Kevinrob\GuzzleCache\Strategy\PrivateCacheStrategy;
-use Neucore\Middleware\Guzzle\Esi429Response;
+use Neucore\Middleware\Guzzle\EsiRateLimits;
 use Neucore\Middleware\Guzzle\EsiHeaders;
+use Neucore\Middleware\Guzzle\EsiThrottled;
 use Neucore\Service\Config;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\MessageInterface;
@@ -23,24 +24,13 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class HttpClientFactory implements HttpClientFactoryInterface
 {
-    private Config $config;
-
-    private EsiHeaders $esiHeaders;
-
-    private Esi429Response $esi429Response;
-
-    private LoggerInterface $logger;
-
     public function __construct(
-        Config $config,
-        EsiHeaders $esiHeaders,
-        Esi429Response $esi429Response,
-        LoggerInterface $logger,
+        private readonly Config $config,
+        private readonly EsiHeaders $esiHeaders,
+        private readonly EsiRateLimits $esiRateLimits,
+        private readonly EsiThrottled $esiThrottled,
+        private readonly LoggerInterface $logger,
     ) {
-        $this->config = $config;
-        $this->esiHeaders = $esiHeaders;
-        $this->esi429Response = $esi429Response;
-        $this->logger = $logger;
     }
 
     public function get(?string $cacheKey = 'default', array $requestHeaders = []): ClientInterface
@@ -85,10 +75,9 @@ class HttpClientFactory implements HttpClientFactoryInterface
             } elseif ($r instanceof ResponseInterface) {
                 $this->logger->debug('Status Code: ' . $r->getStatusCode());
             }
-            $headers = [];
-            foreach ($r->getHeaders() as $name => $val) {
-                $headers[$name] = $val[0];
-            }
+            $headers = array_map(function ($val) {
+                return $val[0];
+            }, $r->getHeaders());
             $this->logger->debug($r->getBody()->getContents());
             $this->logger->debug(print_r($headers, true));
             return $r;
@@ -105,7 +94,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
             }
             if ($dirExists && is_writable($dir)) {
                 $cache = new CacheMiddleware(new PrivateCacheStrategy(new Psr6CacheStorage(
-                    // 86400 = one day lifetime
+                    // 86400 = one-day lifetime
                     new FilesystemAdapter('', 86400, $dir),
                 )));
                 $stack->push($cache, 'cache');
@@ -115,7 +104,8 @@ class HttpClientFactory implements HttpClientFactoryInterface
         }
 
         $stack->push($this->esiHeaders);
-        $stack->push($this->esi429Response);
+        $stack->push($this->esiRateLimits);
+        $stack->push($this->esiThrottled);
         #$stack->push(\GuzzleHttp\Middleware::mapResponse($debugFunc));
 
         return new Client([

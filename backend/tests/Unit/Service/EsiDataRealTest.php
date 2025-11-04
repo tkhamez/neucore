@@ -10,7 +10,7 @@ use Neucore\Exception\Exception;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\HttpClientFactory;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Middleware\Guzzle\Esi429Response;
+use Neucore\Middleware\Guzzle\EsiRateLimits;
 use Neucore\Middleware\Guzzle\EsiHeaders;
 use Neucore\Service\Character;
 use Neucore\Service\Config;
@@ -63,7 +63,7 @@ class EsiDataRealTest extends TestCase
                 new HttpClientFactory(
                     $config,
                     new EsiHeaders($this->log, $storage),
-                    new Esi429Response($this->log, $storage),
+                    new EsiRateLimits($this->log, $storage),
                     $this->log,
                 ),
                 $config,
