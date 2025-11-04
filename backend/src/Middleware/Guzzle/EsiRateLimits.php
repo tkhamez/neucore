@@ -10,6 +10,12 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Handles headers related to ESI rate limits.
+ *
+ * For SSO rate limit see https://developers.eveonline.com/blog/article/sso-endpoint-deprecations-2.
+ * For ESI rate limit see https://developers.eveonline.com/docs/services/esi/rate-limiting/.
+ */
 class EsiRateLimits
 {
     private LoggerInterface $logger;
@@ -36,15 +42,14 @@ class EsiRateLimits
 
     private function handleResponseHeaders(ResponseInterface $response): void
     {
-        // SSO rate limit, see also
-        // https://developers.eveonline.com/blog/article/sso-endpoint-deprecations-2
+        # TODO handle the new headers.
+
         if ($response->getStatusCode() === 429) {
             $waitUntil = time() + 60;
             if ($response->hasHeader('Retry-After')) {
                 $retryAfter = $response->getHeader('Retry-After')[0];
                 $this->logger->warning("EsiRateLimits Retry-After: $retryAfter");
-                if (is_numeric($retryAfter)) {
-                    // e.g.: 120
+                if (is_numeric($retryAfter)) { // number of seconds to wait
                     $waitUntil = time() + ceil((float) $retryAfter);
                 } else {
                     // e.g.: Wed, 21 Oct 2015 07:28:00 GMT

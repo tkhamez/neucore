@@ -67,6 +67,8 @@ trait EsiRateLimited
      */
     private function checkErrorLimit(): void
     {
+        # TODO handle the new headers
+
         $retryAt = EsiClient::getErrorLimitWaitTime($this->storage, $this->errorLimitRemaining);
         if ($retryAt > 0) {
             $sleep = (int) min(60, $retryAt - time());
