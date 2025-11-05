@@ -312,7 +312,7 @@ class EveMail
 
     /**
      * @param int $senderId EVE character ID
-     * @param string $token A valid access token
+     * @param string $token A valid access token from the sender.
      * @param string $subject max length 1000
      * @param string $body max length 10000
      * @param int[] $characterRecipients EVE character IDs
@@ -339,7 +339,7 @@ class EveMail
             'approved_cost' => 0,
         ]);
 
-        $mailApi = $this->esiApiFactory->getMailApi($token);
+        $mailApi = $this->esiApiFactory->getMailApi($token, $senderId);
         try {
             $mailApi->postCharactersCharacterIdMail($senderId, $mail);
         } catch (\Exception $e) {

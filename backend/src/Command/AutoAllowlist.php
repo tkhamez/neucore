@@ -226,7 +226,7 @@ class AutoAllowlist extends Command
 
                 $tokenId = $characters[self::KEY_TOKEN_ID];
                 $esiToken = $this->repositoryFactory->getEsiTokenRepository()->find($tokenId);
-                if (!$esiToken) {
+                if (!$esiToken || !$esiToken->getCharacter()) {
                     continue;
                 }
                 $token = $this->tokenService->updateEsiToken($esiToken);
@@ -234,10 +234,14 @@ class AutoAllowlist extends Command
                     continue;
                 }
 
-                $members = $this->esiData->fetchCorporationMembers($corporationId, $token->getToken());
+                $members = $this->esiData->fetchCorporationMembers(
+                    $corporationId,
+                    $token->getToken(),
+                    $esiToken->getCharacter()->getId()
+                );
                 if (empty($members)) { // ESI error
                     $this->writeLine(
-                        "    Invalid token for $corporationId from " . $esiToken->getCharacter()?->getId(),
+                        "    Invalid token for $corporationId from " . $esiToken->getCharacter()->getId(),
                     );
                 } else {
                     $this->numCorporationsChecked++;

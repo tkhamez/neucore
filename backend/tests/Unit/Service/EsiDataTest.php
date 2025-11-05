@@ -739,7 +739,7 @@ class EsiDataTest extends TestCase
     {
         $this->testHelper->emptyDb();
 
-        $location = $this->esiData->fetchStructure(1023100200300, '');
+        $location = $this->esiData->fetchStructure(1023100200300, '', 123456);
 
         $this->assertSame(1023100200300, $location->getId());
         $this->assertSame(EsiLocation::CATEGORY_STRUCTURE, $location->getCategory());
@@ -772,7 +772,7 @@ class EsiDataTest extends TestCase
         $this->em->flush();
         $this->em->clear();
 
-        $this->createESIData()->fetchStructure(1023100200300, '2F65A4');
+        $this->createESIData()->fetchStructure(1023100200300, '2F65A4', 123456);
         $this->em->clear();
 
         $location2 = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
@@ -787,7 +787,7 @@ class EsiDataTest extends TestCase
         $this->em->clear();
 
         $this->client->setResponse(new Response(200, [], '{"name": "update 1"}'));
-        $this->createESIData()->fetchStructure(1023100200300, '2F65A4');
+        $this->createESIData()->fetchStructure(1023100200300, '2F65A4', 123456);
         $this->em->clear();
 
         $location3 = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
@@ -802,7 +802,7 @@ class EsiDataTest extends TestCase
         $this->em->flush();
         $this->em->clear();
 
-        $this->createESIData()->fetchStructure(1023100200300, '2F65A4');
+        $this->createESIData()->fetchStructure(1023100200300, '2F65A4', 123456);
         $this->em->clear();
 
         $location4 = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
@@ -820,7 +820,7 @@ class EsiDataTest extends TestCase
             "solar_system_id": 30000142
         }'));
 
-        $location = $this->esiData->fetchStructure(1023100200300, 'access-token');
+        $location = $this->esiData->fetchStructure(1023100200300, 'access-token', 123456);
 
         $this->assertSame(1023100200300, $location->getId());
         $this->assertSame('V-3YG7 VI - The Capital', $location->getName());
@@ -850,11 +850,11 @@ class EsiDataTest extends TestCase
             new Response(200, [], '{ "name": "Name Update 2" }'),
         );
 
-        $location1 = $this->esiData->fetchStructure(1023100200300, 'access-token');
+        $location1 = $this->esiData->fetchStructure(1023100200300, 'access-token', 123456);
         $this->assertLessThanOrEqual(time(), $location1->getLastUpdate()?->getTimestamp());
         $this->assertSame('Name Update 1', $location1->getName());
 
-        $location2 = $this->esiData->fetchStructure(1023100200300, 'access-token');
+        $location2 = $this->esiData->fetchStructure(1023100200300, 'access-token', 123456);
         $this->assertSame(
             $location1->getLastUpdate()?->getTimestamp(),
             $location2->getLastUpdate()?->getTimestamp(),
@@ -868,7 +868,7 @@ class EsiDataTest extends TestCase
 
         $this->client->setResponse(new Response(403));
 
-        $location = $this->esiData->fetchStructure(1023100200300, 'access-token', true, false);
+        $location = $this->esiData->fetchStructure(1023100200300, 'access-token', 123456, true, false);
 
         $this->em->clear();
         $this->assertNull($this->repoFactory->getEsiLocationRepository()->find(1023100200300));
@@ -883,7 +883,10 @@ class EsiDataTest extends TestCase
 
     public function testFetchCorporationMembersNoToken(): void
     {
-        $this->assertSame([], $this->esiData->fetchCorporationMembers(100200300, ''));
+        $this->assertSame(
+            [],
+            $this->esiData->fetchCorporationMembers(100200300, '', 123456),
+        );
     }
 
     public function testFetchCorporationMembersEsiError(): void
@@ -893,7 +896,10 @@ class EsiDataTest extends TestCase
         });
         $this->client->setResponse(new Response(200, [], '[100, 200]'));
 
-        $this->assertSame([], $this->esiData->fetchCorporationMembers(100200300, 'access-token'));
+        $this->assertSame(
+            [],
+            $this->esiData->fetchCorporationMembers(100200300, 'access-token', 123456),
+        );
     }
 
     public function testVerifyRoles_NoRoleToVerify(): void
@@ -934,7 +940,10 @@ class EsiDataTest extends TestCase
     {
         $this->client->setResponse(new Response(200, [], '[100, 200]'));
 
-        $this->assertSame([100, 200], $this->esiData->fetchCorporationMembers(100200300, 'access-token'));
+        $this->assertSame(
+            [100, 200],
+            $this->esiData->fetchCorporationMembers(100200300, 'access-token', 123456),
+        );
     }
 
     public function testGetCorporationEntity(): void

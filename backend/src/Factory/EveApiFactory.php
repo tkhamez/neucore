@@ -6,7 +6,6 @@ namespace Neucore\Factory;
 
 use Neucore\Exception\Exception;
 use Neucore\Service\Config;
-use GuzzleHttp\ClientInterface;
 use Neucore\Service\EveMailToken;
 use Tkhamez\Eve\API\Api\AllianceApi;
 use Tkhamez\Eve\API\Api\CharacterApi;
@@ -17,38 +16,16 @@ use Tkhamez\Eve\API\Configuration;
 
 class EveApiFactory
 {
+    /**
+     * @var array<string, object>
+     */
     private array $instances = [];
 
-    private ClientInterface $clientAuthenticated;
-
-    private ClientInterface $clientUnauthenticated;
-
     public function __construct(
-        HttpClientFactoryInterface $httpClientFactory,
+        private readonly HttpClientFactoryInterface $httpClientFactory,
         private readonly Config $config,
         private readonly EveMailToken $eveMailToken,
     ) {
-        $headersAuthenticated = [
-            // This header is also set for every request, but in case this changes, add a default value.
-            'X-Compatibility-Date' => $this->config['eve']['esi_compatibility_date'],
-        ];
-        $this->clientAuthenticated = $httpClientFactory->getGuzzleClient(
-            requestHeaders: $headersAuthenticated,
-        );
-
-        // Use a token for unauthenticated requests to get better error limits. See also
-        // https://developers.eveonline.com/docs/services/esi/rate-limiting/#bucket-system.
-        // This needs to be a header for the HTTP client because the API library will not set
-        // it for requests that do not need it.
-        if (($token = $this->getToken()) !== null) {
-            $headersUnauthenticated = $headersAuthenticated;
-            $headersUnauthenticated['Authorization'] = "Bearer $token";
-            $this->clientUnauthenticated = $httpClientFactory->getGuzzleClient(
-                requestHeaders: $headersUnauthenticated,
-            );
-        } else {
-            $this->clientUnauthenticated = $this->clientAuthenticated;
-        }
     }
 
     public function getAllianceApi(): AllianceApi
@@ -56,43 +33,70 @@ class EveApiFactory
         return $this->getInstance(AllianceApi::class);
     }
 
-    public function getCorporationApi(string $accessToken = ''): CorporationApi
+    /**
+     * $accessToken and $characterId must both be provided or not at all.
+     */
+    public function getCorporationApi(?string $accessToken = null, ?int $characterId = null): CorporationApi
     {
-        return $this->getInstance(CorporationApi::class, $accessToken);
+        return $this->getInstance(CorporationApi::class, $accessToken, $characterId);
     }
 
-    public function getCharacterApi(string $accessToken = ''): CharacterApi
+    /**
+     * $accessToken and $characterId must both be provided or not at all.
+     */
+    public function getCharacterApi(?string $accessToken = null, ?int $characterId = null): CharacterApi
     {
-        return $this->getInstance(CharacterApi::class, $accessToken);
+        return $this->getInstance(CharacterApi::class, $accessToken, $characterId);
     }
 
-    public function getMailApi(string $accessToken): MailApi
+    /**
+     * $accessToken and $characterId must both be provided or not at all.
+     */
+    public function getMailApi(string $accessToken, int $characterId): MailApi
     {
-        return $this->getInstance(MailApi::class, $accessToken);
+        return $this->getInstance(MailApi::class, $accessToken, $characterId);
     }
 
-    public function getUniverseApi(string $accessToken = ''): UniverseApi
+    /**
+     * $accessToken and $characterId must both be provided or not at all.
+     */
+    public function getUniverseApi(?string $accessToken = null, ?int $characterId = null): UniverseApi
     {
-        return $this->getInstance(UniverseApi::class, $accessToken);
+        return $this->getInstance(UniverseApi::class, $accessToken, $characterId);
     }
 
-    private function getInstance(string $class, string $token = ''): mixed
+    private function getInstance(string $class, ?string $token = null, ?int $characterId = null): mixed
     {
-        $key = $class . hash('sha256', $token);
+        $key = $class . "$characterId" . hash('sha256', "$token");
 
-        if (!isset($this->instances[$key])) {
-            $configuration = new Configuration();
-            $client = $this->clientUnauthenticated;
-            if ($token !== '') {
-                $configuration->setAccessToken($token);
-                $client = $this->clientAuthenticated;
-            }
-            $configuration->setHost($this->config['eve']['esi_host']);
-            // Remove the library default so that it does not use it for its requests but instead uses
-            // the user agent from $this->client.
-            $configuration->setUserAgent('');
-            $this->instances[$key] = new $class($client, $configuration);
+        if (isset($this->instances[$key])) {
+            return $this->instances[$key];
         }
+
+        $configuration = new Configuration();
+        $configuration->setHost($this->config['eve']['esi_host']);
+        // Remove the library default so that it does not use it for its requests but instead uses
+        // the user agent from $this->client.
+        $configuration->setUserAgent('');
+
+        $authenticated = false;
+        if ($token !== null && $characterId !== null) {
+            $authenticated = true;
+            $configuration->setAccessToken($token);
+        }
+
+        $headers = [
+            // This header is also set for every request, but in case this changes, add a default value.
+            'X-Compatibility-Date' => $this->config['eve']['esi_compatibility_date'],
+        ];
+        if (!$authenticated && ($tokenUnauthenticated = $this->getToken()) !== null) {
+            $headers['Authorization'] = "Bearer $tokenUnauthenticated";
+        }
+
+        # TODO Rate-Limits: pass $authenticated and $characterId to getGuzzleClient()
+        $client = $this->httpClientFactory->getGuzzleClient(requestHeaders: $headers);
+
+        $this->instances[$key] = new $class($client, $configuration);
 
         return $this->instances[$key];
     }

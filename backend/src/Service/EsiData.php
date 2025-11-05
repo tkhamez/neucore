@@ -430,10 +430,13 @@ class EsiData
      * Fetch structure info from ESI and create/update DB entry.
      *
      * Always returns a location object, even if the update failed or was skipped.
+     *
+     * @param int $characterId The ID of the character to which the token belongs.
      */
     public function fetchStructure(
         int $id,
         string $accessToken,
+        int $characterId,
         bool $increaseErrorCount = true,
         bool $flush = true,
     ): EsiLocation {
@@ -492,7 +495,7 @@ class EsiData
         // Fetch name
         $result = null;
         $authError = false;
-        $universeApi = $this->esiApiFactory->getUniverseApi($accessToken);
+        $universeApi = $this->esiApiFactory->getUniverseApi($accessToken, $characterId);
         try {
             $result = $universeApi->getUniverseStructuresStructureId($id);
         } catch (\Exception $e) {
@@ -530,15 +533,16 @@ class EsiData
     /**
      * Needs: esi-corporations.read_corporation_membership.v1
      *
+     * @param int $characterId The ID of the character to which the token belongs.
      * @return int[] List of character IDs, an empty array can also be an ESI error
      */
-    public function fetchCorporationMembers(int $id, string $accessToken): array
+    public function fetchCorporationMembers(int $id, string $accessToken, int $characterId): array
     {
         if ($accessToken === '') {
             return [];
         }
 
-        $corporationApi = $this->esiApiFactory->getCorporationApi($accessToken);
+        $corporationApi = $this->esiApiFactory->getCorporationApi($accessToken, $characterId);
         try {
             $members = $corporationApi->getCorporationsCorporationIdMembers($id);
         } catch (\Exception $e) {
@@ -560,7 +564,7 @@ class EsiData
             return true;
         }
 
-        $characterApi = $this->esiApiFactory->getCharacterApi($accessToken);
+        $characterApi = $this->esiApiFactory->getCharacterApi($accessToken, $characterId);
         try {
             $charRoles = $characterApi->getCharactersCharacterIdRoles($characterId);
         } catch (\Exception $e) {

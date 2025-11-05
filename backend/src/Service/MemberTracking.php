@@ -28,11 +28,12 @@ class MemberTracking
     ) {}
 
     /**
+     * @param int $characterId The ID of the character to which the token belongs.
      * @return CorporationsCorporationIdMembertrackingGetInner[]|null Null if ESI request failed
      */
-    public function fetchData(string $accessToken, int $corporationId): ?array
+    public function fetchData(string $accessToken, int $characterId, int $corporationId): ?array
     {
-        $corpApi = $this->esiApiFactory->getCorporationApi($accessToken);
+        $corpApi = $this->esiApiFactory->getCorporationApi($accessToken, $characterId);
         try {
             $memberTracking = $corpApi->getCorporationsCorporationIdMembertracking($corporationId);
         } catch (\Exception $e) {
@@ -146,12 +147,13 @@ class MemberTracking
 
         // fetch ESI data, try director token first, then character's token if available
         $location = null;
-        if ($esiToken) {
+        if ($esiToken && $esiToken->getCharacter()) {
             $directorAccessToken = $this->oauthToken->updateEsiToken($esiToken);
             if ($directorAccessToken !== null) {
                 $location = $this->esiData->fetchStructure(
                     $structureId,
                     $directorAccessToken->getToken(),
+                    $esiToken->getCharacter()->getId(),
                     false,
                     false,
                 );
@@ -161,7 +163,13 @@ class MemberTracking
             $character = $this->repositoryFactory->getCharacterRepository()->find($memberData->getCharacterId());
             if ($character !== null) {
                 $characterAccessToken = $this->oauthToken->getToken($character, EveLogin::NAME_DEFAULT);
-                $this->esiData->fetchStructure($structureId, $characterAccessToken, true, false);
+                $this->esiData->fetchStructure(
+                    $structureId,
+                    $characterAccessToken,
+                    $character->getId(),
+                    true,
+                    false,
+                );
             }
         }
     }

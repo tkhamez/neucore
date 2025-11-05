@@ -70,24 +70,24 @@ class MemberTrackingTest extends TestCase
         );
     }
 
-    public function testFetchDataCorpNotFound()
+    public function testFetchDataCorpNotFound(): void
     {
         $this->client->setResponse(new Response(404, [], ''));
-        $this->assertNull($this->memberTracking->fetchData('access-token', 10));
+        $this->assertNull($this->memberTracking->fetchData('access-token', 123456, 10));
     }
 
-    public function testFetchDataOK()
+    public function testFetchDataOK(): void
     {
         $this->client->setResponse(new Response(200, [], '[{"character_id": 100}, {"character_id": 101}]'));
 
-        $actual = (array) $this->memberTracking->fetchData('access-token', 10);
+        $actual = (array) $this->memberTracking->fetchData('access-token', 123456, 10);
 
         $this->assertSame(2, count($actual));
         $this->assertSame(100, $actual[0]->getCharacterId());
         $this->assertSame(101, $actual[1]->getCharacterId());
     }
 
-    public function testUpdateNames()
+    public function testUpdateNames(): void
     {
         $this->client->setResponse(
             new Response(200, [], '[
@@ -116,7 +116,7 @@ class MemberTrackingTest extends TestCase
         $this->assertLessThanOrEqual(time(), $resultLocations[1]->getLastUpdate()->getTimestamp());
     }
 
-    public function testUpdateStructure_DirectorSuccess()
+    public function testUpdateStructure_DirectorSuccess(): void
     {
         $data =  new CorporationsCorporationIdMembertrackingGetInner([
             'character_id' => 102,
@@ -131,11 +131,14 @@ class MemberTrackingTest extends TestCase
             }'), // structure
         );
 
+        $char = new Character();
+        $char->setId(102);
         $esiToken = new EsiToken();
         $esiToken->setValidToken(true);
         $esiToken->setAccessToken('at');
         $esiToken->setRefreshToken('rf');
         $esiToken->setExpires(time() + 600);
+        $esiToken->setCharacter($char);
 
         $this->memberTracking->updateStructure($data, $esiToken);
         $this->om->flush();
@@ -147,11 +150,11 @@ class MemberTrackingTest extends TestCase
         $this->assertSame('the structure name', $resultLocations[0]->getName());
         $this->assertSame(123, $resultLocations[0]->getOwnerId());
         $this->assertSame(456, $resultLocations[0]->getSystemId());
-        $this->assertLessThanOrEqual(time(), $resultLocations[0]->getLastUpdate()->getTimestamp());
+        $this->assertLessThanOrEqual(time(), $resultLocations[0]->getLastUpdate()?->getTimestamp());
         $this->assertSame(0, $resultLocations[0]->getErrorCount());
     }
 
-    public function testUpdateStructure_DoubleError()
+    public function testUpdateStructure_DoubleError(): void
     {
         $char = $this->helper->addCharacterMain('C1', 102204, [], [], false);
         $this->helper->createOrUpdateEsiToken($char, time() + 1000, 'at', true);
@@ -179,7 +182,7 @@ class MemberTrackingTest extends TestCase
         $this->assertSame(1, $resultLocations[0]->getErrorCount());
     }
 
-    public function testFetchCharacterNames()
+    public function testFetchCharacterNames(): void
     {
         $this->client->setResponse(
             new Response(200, [], '[
@@ -194,7 +197,7 @@ class MemberTrackingTest extends TestCase
         $this->assertSame([101 => 'char 1', 102 => 'char 2', 103 => 'char 3'], $names);
     }
 
-    public function testStoreMemberData()
+    public function testStoreMemberData(): void
     {
         $corp = (new Corporation())->setId(10)->setName('corp')->setTicker('C');
         $char = (new Character())->setId(102)->setName('char 2');

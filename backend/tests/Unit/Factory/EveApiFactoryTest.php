@@ -55,7 +55,7 @@ class EveApiFactoryTest extends TestCase
     {
         $api1 = $this->eveApiFactory->getCorporationApi();
         $api2 = $this->eveApiFactory->getCorporationApi();
-        $api3 = $this->eveApiFactory->getCorporationApi('access-token');
+        $api3 = $this->eveApiFactory->getCorporationApi('access-token', 123456);
 
         self::assertSame($api1, $api2);
         self::assertNotSame($api1, $api3);
@@ -66,7 +66,7 @@ class EveApiFactoryTest extends TestCase
     public function testGetCharacterApi(): void
     {
         $api1 = $this->eveApiFactory->getCharacterApi();
-        $api2 = $this->eveApiFactory->getCharacterApi('access-token');
+        $api2 = $this->eveApiFactory->getCharacterApi('access-token', 123456);
 
         self::assertNotSame($api1, $api2);
         self::assertNotSame($api1->getConfig(), $api2->getConfig());
@@ -74,9 +74,9 @@ class EveApiFactoryTest extends TestCase
 
     public function testGetMailApi(): void
     {
-        $api1 = $this->eveApiFactory->getMailApi('token');
-        $api2 = $this->eveApiFactory->getMailApi('token');
-        $api3 = $this->eveApiFactory->getMailApi('token2');
+        $api1 = $this->eveApiFactory->getMailApi('token', 123456);
+        $api2 = $this->eveApiFactory->getMailApi('token', 123456);
+        $api3 = $this->eveApiFactory->getMailApi('token2', 123456);
 
         self::assertSame($api1, $api2);
         self::assertNotSame($api1, $api3);

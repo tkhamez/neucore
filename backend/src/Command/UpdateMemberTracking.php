@@ -117,7 +117,11 @@ class UpdateMemberTracking extends Command
 
             $this->writeLine('  Start updating ' . $corporation->getName(), false);
 
-            $trackingData = $this->memberTracking->fetchData($token->getToken(), $corporation->getId());
+            $trackingData = $this->memberTracking->fetchData(
+                $token->getToken(),
+                $character->getId(),
+                $corporation->getId(),
+            );
             if (!is_array($trackingData)) {
                 $this->writeLine(
                     '  Error getting member tracking data from ESI for ' . $character->getName(),
