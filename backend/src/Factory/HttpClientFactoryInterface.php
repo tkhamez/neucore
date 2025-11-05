@@ -19,10 +19,12 @@ interface HttpClientFactoryInterface
      * @param ?string $cacheKey Optional subdirectory for file system cache (defaults to "default") or null
      *         to disable cache.
      * @param array<string, string> $requestHeaders
+     * @param ?int $characterId For authenticated requests, the character ID to which the token belongs.
      */
     public function getGuzzleClient(
         ?string $cacheKey = 'default',
         array $requestHeaders = [],
+        ?int $characterId = null,
     ): \GuzzleHttp\ClientInterface;
 
     public function createRequest(

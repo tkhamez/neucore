@@ -237,7 +237,7 @@ class AutoAllowlist extends Command
                 $members = $this->esiData->fetchCorporationMembers(
                     $corporationId,
                     $token->getToken(),
-                    $esiToken->getCharacter()->getId()
+                    $esiToken->getCharacter()->getId(),
                 );
                 if (empty($members)) { // ESI error
                     $this->writeLine(

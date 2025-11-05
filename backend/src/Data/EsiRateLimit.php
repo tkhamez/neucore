@@ -37,13 +37,21 @@ class EsiRateLimit
             foreach (get_object_vars($data) as $group => $values) {
                 if (
                     (string) $group === '' ||
+                    !isset($values->group) ||
                     !isset($values->limit) ||
                     !isset($values->remaining) ||
-                    !isset($values->used)
+                    !isset($values->used) ||
+                    !isset($values->characterId)
                 ) {
                     continue;
                 }
-                $result[$group] = new self($values->limit, $values->remaining, $values->used);
+                $result[$group] = new self(
+                    $values->group,
+                    $values->limit,
+                    $values->remaining,
+                    $values->used,
+                    $values->characterId,
+                );
             }
         }
 
@@ -51,8 +59,10 @@ class EsiRateLimit
     }
 
     public function __construct(
+        public readonly string $group,
         public readonly string $limit,
         public readonly int $remaining,
         public readonly int $used,
+        public readonly ?int $characterId,
     ) {}
 }

@@ -42,8 +42,9 @@ class HttpClientFactory implements HttpClientFactoryInterface
     public function getGuzzleClient(
         ?string $cacheKey = 'default',
         array $requestHeaders = [],
+        ?int $characterId = null,
     ): \GuzzleHttp\ClientInterface {
-        return $this->getClient($cacheKey, $requestHeaders);
+        return $this->getClient($cacheKey, $requestHeaders, $characterId);
     }
 
     public function createRequest(
@@ -65,10 +66,14 @@ class HttpClientFactory implements HttpClientFactoryInterface
     }
 
     /**
+     * @param array<string, string> $requestHeaders
      * @see \Neucore\Command\CleanHttpCache::execute()
      */
-    private function getClient(?string $cacheKey, array $requestHeaders = []): Client
-    {
+    private function getClient(
+        ?string $cacheKey,
+        array $requestHeaders = [],
+        ?int $characterId = null,
+    ): Client {
         /** @noinspection PhpUnusedLocalVariableInspection */
         $debugFunc = function (MessageInterface $r): MessageInterface {
             if ($r instanceof RequestInterface) {
@@ -119,6 +124,9 @@ class HttpClientFactory implements HttpClientFactoryInterface
                     'User-Agent' => $this->config['guzzle']['user_agent'],
                 ],
             ),
+            'x-neucore' => [
+                'character_id' => $characterId,
+            ],
         ]);
     }
 }

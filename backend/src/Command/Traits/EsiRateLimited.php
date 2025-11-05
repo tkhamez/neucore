@@ -67,8 +67,10 @@ trait EsiRateLimited
      */
     private function checkErrorLimit(): void
     {
-        # TODO Rate-Limits: The Guzzle middleware needs to set a variable that
-        #  can be checked here.
+        # TODO Rate-Limits: For a proper implementation this needs the endpoint(s)
+        #  and character ID(s) for the next request(s).
+        #  Why max 60 sec. wait time? This may not be enough for the new rate limits.
+        #  Max windows size is 15 minutes at the moment, see esi-rate-limits.php.
 
         $retryAt = EsiClient::getErrorLimitWaitTime($this->storage, $this->errorLimitRemaining);
         if ($retryAt > 0) {

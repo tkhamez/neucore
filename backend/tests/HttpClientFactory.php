@@ -29,6 +29,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
     public function getGuzzleClient(
         ?string $cacheKey = 'default',
         array $requestHeaders = [],
+        ?int $characterId = null,
     ): \GuzzleHttp\ClientInterface {
         $this->client->setHeaders($requestHeaders);
         return $this->client;

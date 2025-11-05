@@ -14,37 +14,38 @@ class EsiRateLimitTest extends TestCase
      */
     private array $rateLimits = [];
 
-    private string $json = '';
+    private string $jsonFitting = '';
 
     protected function setUp(): void
     {
         $this->rateLimits = [
-            'fitting' => new EsiRateLimit('150/15m', 148, 2),
+            'fitting,123456' => new EsiRateLimit('fitting', '150/15m', 148, 2, 123456),
         ];
-        $this->json = '{"fitting":{"limit":"150/15m","remaining":148,"used":2}}';
+        $this->jsonFitting = '"fitting,123456":' .
+            '{"group":"fitting","limit":"150/15m","remaining":148,"used":2,"characterId":123456}';
     }
 
     public function testToJson(): void
     {
         $actual = EsiRateLimit::toJson($this->rateLimits);
-        $this->assertSame($this->json, $actual);
+        $this->assertSame('{' . $this->jsonFitting . '}', $actual);
     }
 
     public function testToJson_Invalid(): void
     {
         $rateLimits = $this->rateLimits;
-        $rateLimits['fatigue'] = [];
-        $rateLimits[''] = new EsiRateLimit('1200/15m', 1198, 2);
+        $rateLimits['fatigue,123456'] = [];
+        $rateLimits[''] = new EsiRateLimit('fatigue', '1200/15m', 1198, 2, null);
 
         // @phpstan-ignore argument.type
         $actual = EsiRateLimit::toJson($rateLimits);
 
-        $this->assertSame($this->json, $actual);
+        $this->assertSame('{' . $this->jsonFitting . '}', $actual);
     }
 
     public function testFromJson(): void
     {
-        $actual = EsiRateLimit::fromJson($this->json);
+        $actual = EsiRateLimit::fromJson('{' . $this->jsonFitting . '}');
 
         $this->assertEquals($this->rateLimits, $actual);
     }
@@ -53,8 +54,8 @@ class EsiRateLimitTest extends TestCase
     {
         $actual = EsiRateLimit::fromJson(
             '{
-                "fitting":{"limit":"150/15m","remaining":148,"used":2},
-                "fatigue":{"used":2}
+                ' . $this->jsonFitting . ',
+                "fatigue,123456":{"used":2}
             }',
         );
         $this->assertEquals($this->rateLimits, $actual);

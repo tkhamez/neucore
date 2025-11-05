@@ -51,10 +51,11 @@ class EsiRateLimitsTest extends TestCase
         ]);
         $function = $this->obj->__invoke($this->helper->getGuzzleHandler($response));
 
-        $function(new Request('GET', 'http://localhost/path'), []);
+        $function(new Request('GET', 'http://localhost/path'), ['x-neucore' => ['character_id' => 123456]]);
 
         $this->assertSame(
-            '{"char-location":{"limit":"1200/15m","remaining":1198,"used":2}}',
+            '{"char-location,123456":' .
+            '{"group":"char-location","limit":"1200/15m","remaining":1198,"used":2,"characterId":123456}}',
             $this->storage->get(Variables::ESI_RATE_LIMIT),
         );
     }

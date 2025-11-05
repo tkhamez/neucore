@@ -25,8 +25,7 @@ class EveApiFactory
         private readonly HttpClientFactoryInterface $httpClientFactory,
         private readonly Config $config,
         private readonly EveMailToken $eveMailToken,
-    ) {
-    }
+    ) {}
 
     public function getAllianceApi(): AllianceApi
     {
@@ -34,7 +33,9 @@ class EveApiFactory
     }
 
     /**
-     * $accessToken and $characterId must both be provided or not at all.
+     * For optimal use of ESI rate limits, create separate instances for authenticated and
+     * unauthenticated requests.
+     * Provide both $accessToken and $characterId for authenticated requests.
      */
     public function getCorporationApi(?string $accessToken = null, ?int $characterId = null): CorporationApi
     {
@@ -42,23 +43,24 @@ class EveApiFactory
     }
 
     /**
-     * $accessToken and $characterId must both be provided or not at all.
+     * For optimal use of ESI rate limits, create separate instances for authenticated and
+     * unauthenticated requests.
+     * Provide both $accessToken and $characterId for authenticated requests.
      */
     public function getCharacterApi(?string $accessToken = null, ?int $characterId = null): CharacterApi
     {
         return $this->getInstance(CharacterApi::class, $accessToken, $characterId);
     }
 
-    /**
-     * $accessToken and $characterId must both be provided or not at all.
-     */
     public function getMailApi(string $accessToken, int $characterId): MailApi
     {
         return $this->getInstance(MailApi::class, $accessToken, $characterId);
     }
 
     /**
-     * $accessToken and $characterId must both be provided or not at all.
+     * For optimal use of ESI rate limits, create separate instances for authenticated and
+     * unauthenticated requests.
+     * Provide both $accessToken and $characterId for authenticated requests.
      */
     public function getUniverseApi(?string $accessToken = null, ?int $characterId = null): UniverseApi
     {
@@ -93,8 +95,10 @@ class EveApiFactory
             $headers['Authorization'] = "Bearer $tokenUnauthenticated";
         }
 
-        # TODO Rate-Limits: pass $authenticated and $characterId to getGuzzleClient()
-        $client = $this->httpClientFactory->getGuzzleClient(requestHeaders: $headers);
+        $client = $this->httpClientFactory->getGuzzleClient(
+            requestHeaders: $headers,
+            characterId: $authenticated ? $characterId : null,
+        );
 
         $this->instances[$key] = new $class($client, $configuration);
 
