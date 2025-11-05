@@ -13,6 +13,7 @@ class EsiRateLimit
     {
         $valid = [];
         foreach ($rateLimits as $group => $values) {
+            /** @noinspection PhpCastIsUnnecessaryInspection */
             if (
                 (string) $group === '' ||
                 !$values instanceof self

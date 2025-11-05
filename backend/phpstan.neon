@@ -4,9 +4,11 @@ parameters:
     inferPrivatePropertyTypeFromConstructor: true
     treatPhpDocTypesAsCertain: false
     ignoreErrors:
-        - identifier: missingType.iterableValue
         - identifier: missingType.generics
         - identifier: offsetAccess.notFound
+        -
+            message: '#(.*) no value type specified in iterable type (.*)#'
+            path: %currentWorkingDirectory%/*
         -
             message: '#Method (.*) has no return type specified.#'
             path: %currentWorkingDirectory%/tests/*

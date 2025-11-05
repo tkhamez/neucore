@@ -9,6 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 class EsiRateLimitTest extends TestCase
 {
+    /**
+     * @var array<string, EsiRateLimit>
+     */
     private array $rateLimits = [];
 
     private string $json = '';
@@ -29,10 +32,12 @@ class EsiRateLimitTest extends TestCase
 
     public function testToJson_Invalid(): void
     {
-        $this->rateLimits['fatigue'] = [];
-        $this->rateLimits[''] = new EsiRateLimit('1200/15m', 1198, 2);
+        $rateLimits = $this->rateLimits;
+        $rateLimits['fatigue'] = [];
+        $rateLimits[''] = new EsiRateLimit('1200/15m', 1198, 2);
 
-        $actual = EsiRateLimit::toJson($this->rateLimits);
+        // @phpstan-ignore argument.type
+        $actual = EsiRateLimit::toJson($rateLimits);
 
         $this->assertSame($this->json, $actual);
     }
