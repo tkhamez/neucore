@@ -88,7 +88,7 @@ class EveMailTokenTest extends TestCase
                 'refresh' => 'refresh-token',
                 'expires' => 1542546430,
             ],
-            $this->eveMailToken->getStoredToken()
+            $this->eveMailToken->getStoredToken(),
         );
     }
 
@@ -117,7 +117,7 @@ class EveMailTokenTest extends TestCase
 
         self::assertInstanceOf(
             AccessTokenInterface::class,
-            $this->eveMailToken->getValidToken($storedToken)
+            $this->eveMailToken->getValidToken($storedToken),
         );
     }
 }

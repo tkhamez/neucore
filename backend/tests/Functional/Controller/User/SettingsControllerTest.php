@@ -465,7 +465,7 @@ class SettingsControllerTest extends WebTestCase
         $response3 = $this->runApp(
             'POST',
             '/api/user/settings/system/send-missing-character-mail',
-            mocks:  [HttpClientFactoryInterface::class => new HttpClientFactory($client)],
+            mocks: [HttpClientFactoryInterface::class => new HttpClientFactory($client)],
             envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' , '0']],
         );
         $this->assertEquals(200, $response3?->getStatusCode());

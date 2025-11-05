@@ -32,8 +32,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
         private readonly EsiRateLimits $esiRateLimits,
         private readonly EsiThrottled $esiThrottled,
         private readonly LoggerInterface $logger,
-    ) {
-    }
+    ) {}
 
     public function get(?string $cacheKey = 'default', array $requestHeaders = []): ClientInterface
     {

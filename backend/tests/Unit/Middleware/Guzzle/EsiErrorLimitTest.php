@@ -52,7 +52,7 @@ class EsiErrorLimitTest extends TestCase
         $function(new Request('GET', 'https://local.host/esi/path'), []);
 
         $val = \Neucore\Data\EsiErrorLimit::fromJson(
-            (string) $this->storage->get(Variables::ESI_ERROR_LIMIT)
+            (string) $this->storage->get(Variables::ESI_ERROR_LIMIT),
         );
 
         $this->assertSame(100, $val->remain);

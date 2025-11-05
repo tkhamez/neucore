@@ -52,7 +52,7 @@ class MemberTrackingTest extends TestCase
         $esiApiFactory = new EveApiFactory(
             new HttpClientFactory($this->client),
             $config,
-            new EveMailToken($this->repositoryFactory, $objectManager, $authProvider, $logger)
+            new EveMailToken($this->repositoryFactory, $objectManager, $authProvider, $logger),
         );
         $this->memberTracking = new MemberTracking(
             $logger,

@@ -50,8 +50,7 @@ class EsiData
         private readonly ObjectManager     $objectManager,
         private readonly RepositoryFactory $repositoryFactory,
         private readonly CharacterService  $characterService,
-    ) {
-    }
+    ) {}
 
     public function getLastErrorCode(): ?int
     {

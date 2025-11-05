@@ -758,7 +758,7 @@ class EsiControllerTest extends WebTestCase
             'X-Pages' => ['3'],
             'warning' => [
                 '199 - This route has an upgrade available',
-                '199 - This route has an upgrade available'
+                '199 - This route has an upgrade available',
             ],
             'Retry-After' => ['55'],
         ], $response->getHeaders());

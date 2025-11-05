@@ -55,7 +55,7 @@ class EsiRateLimitTest extends TestCase
             '{
                 "fitting":{"limit":"150/15m","remaining":148,"used":2},
                 "fatigue":{"used":2}
-            }'
+            }',
         );
         $this->assertEquals($this->rateLimits, $actual);
     }

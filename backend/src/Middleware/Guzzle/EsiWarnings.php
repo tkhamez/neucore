@@ -13,9 +13,7 @@ use Psr\Log\LoggerInterface;
  */
 class EsiWarnings
 {
-    public function __construct(private readonly LoggerInterface $logger)
-    {
-    }
+    public function __construct(private readonly LoggerInterface $logger) {}
 
     public function __invoke(callable $handler): \Closure
     {

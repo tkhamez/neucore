@@ -76,7 +76,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $output = $this->runConsoleApp(
             'send-missing-character-mail',
             ['--sleep' => 0],
-            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS', '0']]
+            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS', '0']],
         );
 
         $actual = explode("\n", $output);

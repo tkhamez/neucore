@@ -14,9 +14,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 class EsiErrorLimit
 {
-    public function __construct(private readonly StorageInterface $storage)
-    {
-    }
+    public function __construct(private readonly StorageInterface $storage) {}
 
     public function __invoke(callable $handler): \Closure
     {

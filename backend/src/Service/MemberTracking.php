@@ -25,8 +25,7 @@ class MemberTracking
         private readonly EntityManager $entityManager,
         private readonly EsiData $esiData,
         private readonly OAuthToken $oauthToken,
-    ) {
-    }
+    ) {}
 
     /**
      * @return CorporationsCorporationIdMembertrackingGetInner[]|null Null if ESI request failed

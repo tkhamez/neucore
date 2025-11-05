@@ -74,7 +74,7 @@ class GenerateEveApiFiles extends Command
         $esiHost = $this->config['eve']['esi_host'];
         $esiCompatibilityDate = $this->config['eve']['esi_compatibility_date'];
         $openapi = file_get_contents(
-            "$esiHost/meta/openapi.json?compatibility_date=$esiCompatibilityDate"
+            "$esiHost/meta/openapi.json?compatibility_date=$esiCompatibilityDate",
         );
         if (!$openapi) {
             $this->output->writeln('Error reading openapi.json.');

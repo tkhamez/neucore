@@ -14,9 +14,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 class EsiThrottled
 {
-    public function __construct(private readonly StorageInterface $storage)
-    {
-    }
+    public function __construct(private readonly StorageInterface $storage) {}
 
     public function __invoke(callable $handler): \Closure
     {

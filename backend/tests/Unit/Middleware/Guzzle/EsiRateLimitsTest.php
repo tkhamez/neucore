@@ -55,7 +55,7 @@ class EsiRateLimitsTest extends TestCase
 
         $this->assertSame(
             '{"char-location":{"limit":"1200/15m","remaining":1198,"used":2}}',
-            $this->storage->get(Variables::ESI_RATE_LIMIT)
+            $this->storage->get(Variables::ESI_RATE_LIMIT),
         );
     }
 
