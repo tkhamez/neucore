@@ -59,7 +59,7 @@ class EsiRateLimits
                     }
                 }
             }
-            $this->storage->set(Variables::ESI_RATE_LIMIT, (string) $waitUntil);
+            $this->storage->set(Variables::ESI_RATE_LIMITED, (string) $waitUntil);
         }
     }
 }

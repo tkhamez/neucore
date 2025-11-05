@@ -64,7 +64,7 @@ class EsiClientTest extends TestCase
 
         $this->assertSame(0, EsiClient::getRateLimitWaitTime($this->storage));
 
-        $this->storage->set(Variables::ESI_RATE_LIMIT, (string) ($time + 50));
+        $this->storage->set(Variables::ESI_RATE_LIMITED, (string) ($time + 50));
         $this->assertSame($time + 50, EsiClient::getRateLimitWaitTime($this->storage));
     }
 

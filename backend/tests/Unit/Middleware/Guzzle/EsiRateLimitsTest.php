@@ -47,12 +47,12 @@ class EsiRateLimitsTest extends TestCase
         $response1 = new Response(429, ['Retry-After' => [date('D, d M Y H:i:s \G\M\T', $waitUntil)]]);
         $function1 = $this->obj->__invoke($this->helper->getGuzzleHandler($response1));
         $function1(new Request('GET', 'https://local.host/esi/path'), []);
-        $this->assertSame("$waitUntil", $this->storage->get(Variables::ESI_RATE_LIMIT));
+        $this->assertSame("$waitUntil", $this->storage->get(Variables::ESI_RATE_LIMITED));
 
         $response2 = new Response(429, ['Retry-After' => ['60']]);
         $function2 = $this->obj->__invoke($this->helper->getGuzzleHandler($response2));
         $function2(new Request('GET', 'https://local.host/esi/path'), []);
-        $this->assertIsString($this->storage->get(Variables::ESI_RATE_LIMIT));
-        $this->assertLessThanOrEqual(time() + 60, $this->storage->get(Variables::ESI_RATE_LIMIT));
+        $this->assertIsString($this->storage->get(Variables::ESI_RATE_LIMITED));
+        $this->assertLessThanOrEqual(time() + 60, $this->storage->get(Variables::ESI_RATE_LIMITED));
     }
 }

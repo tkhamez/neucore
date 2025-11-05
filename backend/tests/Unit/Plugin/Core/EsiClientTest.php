@@ -71,10 +71,10 @@ class EsiClientTest extends TestCase
         $this->esiClient->request('/characters/102003000/', 'GET', null, 20300400);
     }
 
-    public function testRequest_RateLimit(): void
+    public function testRequest_RateLimited(): void
     {
         $time = time();
-        $this->storage->set(Variables::ESI_RATE_LIMIT, (string) ($time + 20));
+        $this->storage->set(Variables::ESI_RATE_LIMITED, (string) ($time + 20));
 
         $this->expectException(Exception::class);
         $this->expectExceptionCode($time + 20);

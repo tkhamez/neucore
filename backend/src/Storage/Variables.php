@@ -21,7 +21,7 @@ class Variables
     /**
      * Time to wait until when a 429 error occurred (unix timestamp).
      */
-    public const ESI_RATE_LIMIT = 'esi_rate_limit';
+    public const ESI_RATE_LIMITED = 'esi_rate_limited';
 
     /**
      * Value: 1 or 0

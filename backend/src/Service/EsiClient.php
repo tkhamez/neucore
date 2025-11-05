@@ -58,7 +58,7 @@ class EsiClient
      */
     public static function getRateLimitWaitTime(StorageInterface $storage): int
     {
-        return (int) $storage->get(Variables::ESI_RATE_LIMIT);
+        return (int) $storage->get(Variables::ESI_RATE_LIMITED);
     }
 
     /**

@@ -568,11 +568,11 @@ class EsiControllerTest extends WebTestCase
         $this->assertNotEquals(429, $response?->getStatusCode());
     }
 
-    public function testEsiV2429_RateLimit(): void
+    public function testEsiV2429_RateLimited(): void
     {
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY])->getId();
 
-        $this->storage->set(Variables::ESI_RATE_LIMIT, (string) (time() - 10));
+        $this->storage->set(Variables::ESI_RATE_LIMITED, (string) (time() - 10));
         $response1 = $this->runApp(
             'GET',
             '/api/app/v2/esi',
@@ -581,7 +581,7 @@ class EsiControllerTest extends WebTestCase
         );
         $this->assertNotEquals(429, $response1?->getStatusCode());
 
-        $this->storage->set(Variables::ESI_RATE_LIMIT, (string) (time() + 20));
+        $this->storage->set(Variables::ESI_RATE_LIMITED, (string) (time() + 20));
         $response2 = $this->runApp(
             'GET',
             '/api/app/v2/esi',

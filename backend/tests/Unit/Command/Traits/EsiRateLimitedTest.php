@@ -37,16 +37,16 @@ class EsiRateLimitedTest extends TestCase
         #self::$testStorage = new \Neucore\Storage\ApcuStorage();
     }
 
-    public function testCheckForErrors_RateLimit()
+    public function testCheckForErrors_RateLimited()
     {
         $this->esiRateLimited($this->testStorage, $this->testLogger, true);
 
-        $this->testStorage->set(Variables::ESI_RATE_LIMIT, (string) (time() - 1));
+        $this->testStorage->set(Variables::ESI_RATE_LIMITED, (string) (time() - 1));
         $this->checkForErrors();
         $this->assertNull($this->getSleepInSeconds());
         $this->assertSame(0, count($this->testLogger->getHandler()->getRecords()));
 
-        $this->testStorage->set(Variables::ESI_RATE_LIMIT, (string) (time() + 10));
+        $this->testStorage->set(Variables::ESI_RATE_LIMITED, (string) (time() + 10));
         $this->checkForErrors();
         $this->assertLessThanOrEqual(10, $this->getSleepInSeconds());
         $this->assertSame(1, count($this->testLogger->getHandler()->getRecords()));
