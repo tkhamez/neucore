@@ -32,6 +32,10 @@ class EsiRateLimits
     public function __invoke(callable $handler): \Closure
     {
         return function (RequestInterface $request, array $options) use ($handler) {
+
+            # TODO Rate-Limits: Check stored values for the current request, set a variable that
+            #  can be checked by the cronjobs.
+
             return $handler($request, $options)->then(
                 function (ResponseInterface $response) {
                     $this->handleResponseHeaders($response);
@@ -44,6 +48,10 @@ class EsiRateLimits
     private function handleResponseHeaders(ResponseInterface $response): void
     {
         if ($response->hasHeader('X-Ratelimit-Group')) {
+
+            # TODO Rate-Limits: This also needs to store the character ID if a token is
+            #  used for this request and it is a request that needs authentication.
+
             $rateLimits = EsiRateLimit::fromJson((string) $this->storage->get(Variables::ESI_RATE_LIMIT));
 
             $group = $response->getHeader('X-Ratelimit-Group')[0];

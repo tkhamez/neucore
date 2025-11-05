@@ -67,7 +67,8 @@ trait EsiRateLimited
      */
     private function checkErrorLimit(): void
     {
-        # TODO handle the new headers
+        # TODO Rate-Limits: The Guzzle middleware needs to set a variable that
+        #  can be checked here.
 
         $retryAt = EsiClient::getErrorLimitWaitTime($this->storage, $this->errorLimitRemaining);
         if ($retryAt > 0) {

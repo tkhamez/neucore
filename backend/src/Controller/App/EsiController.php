@@ -748,6 +748,8 @@ class EsiController extends BaseController
             return true;
         }
 
+        # TODO Rate-Limits: Check the stored values for the new rate limit here.
+
         // Check 429 rate limit.
         if (($retryAt2 = EsiClient::getRateLimitWaitTime($this->storage)) > time()) {
             $this->build429Response('ESI rate limit reached.', $retryAt2, $version);
