@@ -54,8 +54,7 @@ class EsiRateLimitsTest extends TestCase
         $function(new Request('GET', 'http://localhost/path'), ['x-neucore' => ['character_id' => 123456]]);
 
         $this->assertSame(
-            '{"char-location,123456":' .
-            '{"group":"char-location","limit":"1200/15m","remaining":1198,"used":2,"characterId":123456}}',
+            '{"char-location,123456":{"g":"char-location","l":"1200/15m","r":1198,"u":2,"c":123456}}',
             $this->storage->get(Variables::ESI_RATE_LIMIT),
         );
     }

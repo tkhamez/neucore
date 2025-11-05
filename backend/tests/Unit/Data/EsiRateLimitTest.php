@@ -21,8 +21,7 @@ class EsiRateLimitTest extends TestCase
         $this->rateLimits = [
             'fitting,123456' => new EsiRateLimit('fitting', '150/15m', 148, 2, 123456),
         ];
-        $this->jsonFitting = '"fitting,123456":' .
-            '{"group":"fitting","limit":"150/15m","remaining":148,"used":2,"characterId":123456}';
+        $this->jsonFitting = '"fitting,123456":{"g":"fitting","l":"150/15m","r":148,"u":2,"c":123456}';
     }
 
     public function testToJson(): void
@@ -55,7 +54,7 @@ class EsiRateLimitTest extends TestCase
         $actual = EsiRateLimit::fromJson(
             '{
                 ' . $this->jsonFitting . ',
-                "fatigue,123456":{"used":2}
+                "fatigue,123456":{"u":2}
             }',
         );
         $this->assertEquals($this->rateLimits, $actual);
@@ -72,7 +71,7 @@ class EsiRateLimitTest extends TestCase
         $actual3 = EsiRateLimit::fromJson('{"fitting":{}}');
         $this->assertEquals([], $actual3);
 
-        $actual4 = EsiRateLimit::fromJson('{"fitting":{"limit":"150/15m","remaining":148}}');
+        $actual4 = EsiRateLimit::fromJson('{"fitting":{"l":"150/15m","r":148}}');
         $this->assertEquals([], $actual4);
     }
 }

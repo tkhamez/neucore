@@ -37,20 +37,20 @@ class EsiRateLimit
             foreach (get_object_vars($data) as $group => $values) {
                 if (
                     (string) $group === '' ||
-                    !isset($values->group) ||
-                    !isset($values->limit) ||
-                    !isset($values->remaining) ||
-                    !isset($values->used) ||
-                    !isset($values->characterId)
+                    !isset($values->g) ||
+                    !isset($values->l) ||
+                    !isset($values->r) ||
+                    !isset($values->u) ||
+                    !isset($values->c)
                 ) {
                     continue;
                 }
                 $result[$group] = new self(
-                    $values->group,
-                    $values->limit,
-                    $values->remaining,
-                    $values->used,
-                    $values->characterId,
+                    $values->g,
+                    $values->l,
+                    $values->r,
+                    $values->u,
+                    $values->c,
                 );
             }
         }
@@ -58,11 +58,18 @@ class EsiRateLimit
         return $result;
     }
 
+    /**
+     * @param string $g Group name, e.g. "fitting"
+     * @param string $l Limit, e.g. "150/15m", "15/1h"
+     * @param int $r Remaining, e.g. 148
+     * @param int $u Used, e.g. 2
+     * @param int|null $c Character ID for authenticated requests.
+     */
     public function __construct(
-        public readonly string $group,
-        public readonly string $limit,
-        public readonly int $remaining,
-        public readonly int $used,
-        public readonly ?int $characterId,
+        public readonly string $g,
+        public readonly string $l,
+        public readonly int $r,
+        public readonly int $u,
+        public readonly ?int $c,
     ) {}
 }
