@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Middleware\Guzzle;
 
+use Neucore\Data\EsiRateLimit;
 use Neucore\Storage\StorageInterface;
 use Neucore\Storage\Variables;
 use Psr\Http\Message\RequestInterface;
@@ -42,7 +43,21 @@ class EsiRateLimits
 
     private function handleResponseHeaders(ResponseInterface $response): void
     {
-        # TODO handle the new headers.
+        if ($response->hasHeader('X-Ratelimit-Group')) {
+            $rateLimits = EsiRateLimit::fromJson((string) $this->storage->get(Variables::ESI_RATE_LIMIT));
+
+            $group = $response->getHeader('X-Ratelimit-Group')[0];
+            $rateLimits[$group] = new EsiRateLimit(
+                $response->getHeader('X-Ratelimit-Limit')[0] ?? '',
+                (int) ($response->getHeader('X-Ratelimit-Remaining')[0] ?? -1),
+                (int) ($response->getHeader('X-Ratelimit-Used')[0] ?? -1),
+            );
+
+            $this->storage->set(
+                Variables::ESI_RATE_LIMIT,
+                EsiRateLimit::toJson($rateLimits),
+            );
+        }
 
         if ($response->getStatusCode() === 429) {
             $waitUntil = time() + 60;

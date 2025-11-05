@@ -41,6 +41,24 @@ class EsiRateLimitsTest extends TestCase
         $this->obj = new EsiRateLimits($logger, $this->storage);
     }
 
+    public function testInvoke_RateLimits(): void
+    {
+        $response = new Response(200, [
+            'X-Ratelimit-Group' => ['char-location'],
+            'X-Ratelimit-Limit' => ['1200/15m'],
+            'X-Ratelimit-Remaining' => ['1198'],
+            'X-Ratelimit-Used' => ['2'],
+        ]);
+        $function = $this->obj->__invoke($this->helper->getGuzzleHandler($response));
+
+        $function(new Request('GET', 'http://localhost/path'), []);
+
+        $this->assertSame(
+            '{"char-location":{"limit":"1200/15m","remaining":1198,"used":2}}',
+            $this->storage->get(Variables::ESI_RATE_LIMIT)
+        );
+    }
+
     public function testInvoke_429(): void
     {
         $waitUntil = time() + 60;

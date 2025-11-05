@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class EsiErrorLimitTest extends TestCase
 {
-    public function testJsonEncode()
+    public function testJsonEncode(): void
     {
         $obj = new EsiErrorLimit(1673009940, 10, 50);
 
@@ -19,7 +19,7 @@ class EsiErrorLimitTest extends TestCase
         );
     }
 
-    public function testFromJson()
+    public function testFromJson(): void
     {
         $obj1 = EsiErrorLimit::fromJson('invalid');
         $this->assertNull($obj1->updated);
@@ -30,6 +30,5 @@ class EsiErrorLimitTest extends TestCase
         $this->assertSame(1673009940, $obj2->updated);
         $this->assertSame(10, $obj2->remain);
         $this->assertSame(50, $obj2->reset);
-
     }
 }

@@ -19,6 +19,11 @@ class Variables
     public const ESI_ERROR_LIMIT = 'esi_error_limit';
 
     /**
+     * Values from X-Ratelimit-* HTTP headers for each group.
+     */
+    public const ESI_RATE_LIMIT = 'esi_rate_limit';
+
+    /**
      * Time to wait until when a 429 error occurred (unix timestamp).
      */
     public const ESI_RATE_LIMITED = 'esi_rate_limited';
