@@ -38,6 +38,8 @@ class EveApiFactory
 
         // Use a token for unauthorised requests to get better error limits. See also
         // https://developers.eveonline.com/docs/services/esi/rate-limiting/#bucket-system.
+        // This needs to be a header for the HTTP client because the API library will not set
+        // it for requests that do not need it.
         if (($token = $this->getToken()) !== null) {
             $headersUnauthorised = $headersAuthorised;
             $headersUnauthorised['Authorization'] = "Bearer $token";

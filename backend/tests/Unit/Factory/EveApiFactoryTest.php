@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Factory;
 
+use Neucore\Entity\SystemVariable;
 use Neucore\Factory\EveApiFactory;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Service\Config;
 use Neucore\Service\EveMailToken;
 use Neucore\Service\ObjectManager;
 use PHPUnit\Framework\TestCase;
@@ -14,103 +14,104 @@ use Tests\Client;
 use Tests\Helper;
 use Tests\HttpClientFactory;
 use Tests\Logger;
-use Tkhamez\Eve\API\Api\AllianceApi;
-use Tkhamez\Eve\API\Api\CharacterApi;
-use Tkhamez\Eve\API\Api\CorporationApi;
-use Tkhamez\Eve\API\Api\MailApi;
-use Tkhamez\Eve\API\Api\UniverseApi;
 
 class EveApiFactoryTest extends TestCase
 {
-    private Config $config;
+    private \Doctrine\Persistence\ObjectManager $om;
 
     private EveMailToken $eveMailToken;
 
+    private Client $client;
+
+    private EveApiFactory $eveApiFactory;
+
     protected function setUp(): void
     {
-        $this->config = Helper::getConfig();
-
         $helper = new Helper();
         $logger = new Logger();
+        $this->om = $helper->getObjectManager();
         $this->eveMailToken = new EveMailToken(
-            new RepositoryFactory($helper->getObjectManager()),
-            new ObjectManager($helper->getObjectManager(), $logger),
+            new RepositoryFactory($this->om),
+            new ObjectManager($this->om, $logger),
             Helper::getAuthenticationProvider(new Client()),
             $logger,
+        );
+        $this->client = new Client();
+        $this->eveApiFactory = new EveApiFactory(
+            new HttpClientFactory($this->client),
+            Helper::getConfig('2025-09-30'),
+            $this->eveMailToken,
         );
     }
 
     public function testGetAllianceApi(): void
     {
-        $factory = new EveApiFactory(
-            new HttpClientFactory(new Client()), $this->config, $this->eveMailToken
-        );
-        $api = $factory->getAllianceApi();
-        /** @noinspection PhpConditionAlreadyCheckedInspection */
-        $this->assertInstanceOf(AllianceApi::class, $api);
+        $api = $this->eveApiFactory->getAllianceApi();
+        self::assertSame('http://localhost', $api->getConfig()->getHost());
+        self::assertSame(['X-Compatibility-Date' => '2025-09-30'], $this->client->getHeaders());
     }
 
     public function testGetCorporationApi(): void
     {
-        $factory = new EveApiFactory(
-            new HttpClientFactory(new Client()), $this->config, $this->eveMailToken
-        );
-        $api1 = $factory->getCorporationApi();
-        $api2 = $factory->getCorporationApi();
-        $api3 = $factory->getCorporationApi('access-token');
+        $api1 = $this->eveApiFactory->getCorporationApi();
+        $api2 = $this->eveApiFactory->getCorporationApi();
+        $api3 = $this->eveApiFactory->getCorporationApi('access-token');
 
-        /** @noinspection PhpConditionAlreadyCheckedInspection */
-        $this->assertInstanceOf(CorporationApi::class, $api1);
-        $this->assertSame($api1, $api2);
-        $this->assertNotSame($api1, $api3);
-        $this->assertSame($api1->getConfig(), $api2->getConfig());
-        $this->assertNotSame($api1->getConfig(), $api3->getConfig());
+        self::assertSame($api1, $api2);
+        self::assertNotSame($api1, $api3);
+        self::assertSame($api1->getConfig(), $api2->getConfig());
+        self::assertNotSame($api1->getConfig(), $api3->getConfig());
     }
 
     public function testGetCharacterApi(): void
     {
-        $factory = new EveApiFactory(
-            new HttpClientFactory(new Client()), $this->config, $this->eveMailToken
-        );
-        $api1 = $factory->getCharacterApi();
-        $api2 = $factory->getCharacterApi('access-token');
+        $api1 = $this->eveApiFactory->getCharacterApi();
+        $api2 = $this->eveApiFactory->getCharacterApi('access-token');
 
-        /** @noinspection PhpConditionAlreadyCheckedInspection */
-        $this->assertInstanceOf(CharacterApi::class, $api1);
-        $this->assertNotSame($api1, $api2);
-        $this->assertNotSame($api1->getConfig(), $api2->getConfig());
+        self::assertNotSame($api1, $api2);
+        self::assertNotSame($api1->getConfig(), $api2->getConfig());
     }
 
     public function testGetMailApi(): void
     {
-        $factory = new EveApiFactory(
-            new HttpClientFactory(new Client()), $this->config, $this->eveMailToken
-        );
-        $api1 = $factory->getMailApi('token');
-        $api2 = $factory->getMailApi('token');
-        $api3 = $factory->getMailApi('token2');
+        $api1 = $this->eveApiFactory->getMailApi('token');
+        $api2 = $this->eveApiFactory->getMailApi('token');
+        $api3 = $this->eveApiFactory->getMailApi('token2');
 
-        /** @noinspection PhpConditionAlreadyCheckedInspection */
-        $this->assertInstanceOf(MailApi::class, $api1);
-        /** @noinspection PhpConditionAlreadyCheckedInspection */
-        $this->assertInstanceOf(MailApi::class, $api2);
-        /** @noinspection PhpConditionAlreadyCheckedInspection */
-        $this->assertInstanceOf(MailApi::class, $api3);
+        self::assertSame($api1, $api2);
+        self::assertNotSame($api1, $api3);
 
-        $this->assertSame($api1, $api2);
-        $this->assertNotSame($api1, $api3);
-
-        $this->assertSame($api1->getConfig(), $api2->getConfig());
-        $this->assertNotSame($api1->getConfig(), $api3->getConfig());
+        self::assertSame($api1->getConfig(), $api2->getConfig());
+        self::assertNotSame($api1->getConfig(), $api3->getConfig());
     }
 
-    public function testGetUniverseApi(): void
+    public function testGetUniverseApi_NoToken(): void
     {
-        $factory = new EveApiFactory(
-            new HttpClientFactory(new Client()), $this->config, $this->eveMailToken
+        $api = $this->eveApiFactory->getUniverseApi();
+        self::assertSame('', $api->getConfig()->getAccessToken());
+        self::assertArrayNotHasKey('Authorization', $this->client->getHeaders());
+    }
+
+    public function testGetUniverseApi_WithToken(): void
+    {
+        $mailToken = (new SystemVariable(SystemVariable::MAIL_TOKEN))
+            ->setValue((string) \json_encode([
+                'id' => 123,
+                'access' => 'access-token',
+                'refresh' => 'refresh-token',
+                'expires' => time() + 10000,
+            ]));
+        $this->om->persist($mailToken);
+
+        $eveApiFactory = new EveApiFactory(
+            new HttpClientFactory($this->client),
+            Helper::getConfig('', '1'),
+            $this->eveMailToken,
         );
-        $api = $factory->getUniverseApi();
-        /** @noinspection PhpConditionAlreadyCheckedInspection */
-        $this->assertInstanceOf(UniverseApi::class, $api);
+
+        $api = $eveApiFactory->getUniverseApi();
+
+        self::assertSame('', $api->getConfig()->getAccessToken());
+        self::assertSame('Bearer access-token', $this->client->getHeaders()['Authorization']);
     }
 }

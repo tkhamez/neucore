@@ -626,17 +626,23 @@ class Helper
         rmdir($dir);
     }
 
-    public static function getEveConfig(string $compatibilityDate = ''): array
-    {
+    public static function getEveConfig(
+        string $compatibilityDate = '',
+        string $useMailTokenForUnauthorisedRequests = '0',
+    ): array {
         return [
-            'esi_host' => '',
+            'esi_host' => 'http://localhost',
             'esi_compatibility_date' => $compatibilityDate,
-            'use_mail_token_for_unauthorised_requests' => '0',
+            'use_mail_token_for_unauthorised_requests' => $useMailTokenForUnauthorisedRequests,
         ];
     }
 
-    public static function getConfig(string $compatibilityDate = ''): Config
-    {
-        return new Config(['eve' => self::getEveConfig($compatibilityDate)]);
+    public static function getConfig(
+        string $compatibilityDate = '',
+        string $useMailTokenForUnauthorisedRequests = '0',
+    ): Config {
+        return new Config([
+            'eve' => self::getEveConfig($compatibilityDate, $useMailTokenForUnauthorisedRequests),
+        ]);
     }
 }
