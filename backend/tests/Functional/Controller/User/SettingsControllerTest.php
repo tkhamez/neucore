@@ -82,7 +82,7 @@ class SettingsControllerTest extends WebTestCase
                 'esi_host' => 'https://esi.evetech.net',
                 'oauth_verify_signature' => true,
                 'esi_compatibility_date' => '2025-07-11',
-                'use_mail_token_for_unauthorised_requests' => '0',
+                'use_mail_token_for_unauthenticated_requests' => '0',
             ],
             'guzzle' => [
                 'cache' => ['dir' => Application::ROOT_DIR . '/var/cache'],
@@ -190,7 +190,7 @@ class SettingsControllerTest extends WebTestCase
             [LoggerInterface::class => $this->logger],
             [
                 ['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/SettingsController'],
-                ['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS' , '0'],
+                ['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' , '0'],
             ],
         );
         $this->assertEquals(200, $response?->getStatusCode());
@@ -252,7 +252,7 @@ class SettingsControllerTest extends WebTestCase
             'PUT',
             '/api/user/settings/system/change/' . SystemVariable::ALLOW_CHARACTER_DELETION,
             ['value' => '1'],
-            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS' , '0']],
+            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' , '0']],
         );
         $this->assertEquals(403, $response2?->getStatusCode());
     }
@@ -266,7 +266,7 @@ class SettingsControllerTest extends WebTestCase
             'PUT',
             '/api/user/settings/system/change/' . SystemVariable::MAIL_TOKEN,
             ['value' => ''],
-            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS' , '0']],
+            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' , '0']],
         );
         $this->assertEquals(404, $response?->getStatusCode());
     }
@@ -280,7 +280,7 @@ class SettingsControllerTest extends WebTestCase
             'PUT',
             '/api/user/settings/system/change/invalid-name',
             ['value' => '1'],
-            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS' , '0']],
+            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' , '0']],
         );
         $this->assertEquals(404, $response2?->getStatusCode());
     }
@@ -298,7 +298,7 @@ class SettingsControllerTest extends WebTestCase
             ['value' => '1'],
             null,
             [ObjectManager::class => $this->em, LoggerInterface::class => $this->logger],
-            [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS' , '0']],
+            [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' , '0']],
         );
         $this->assertEquals(500, $response?->getStatusCode());
     }
@@ -313,7 +313,7 @@ class SettingsControllerTest extends WebTestCase
             '/api/user/settings/system/change/' . SystemVariable::ALLOW_CHARACTER_DELETION,
             ['value' => '1'],
             ['Content-Type' => 'application/x-www-form-urlencoded'],
-            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS' , '0']],
+            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' , '0']],
         );
         $this->assertEquals(200, $response?->getStatusCode());
 
@@ -336,7 +336,7 @@ class SettingsControllerTest extends WebTestCase
             'PUT',
             '/api/user/settings/system/change/' . SystemVariable::MAIL_CHARACTER,
             ['value' => 'does-not-matter'],
-            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS' , '0']],
+            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' , '0']],
         );
         $this->assertEquals(200, $response?->getStatusCode());
 
@@ -353,7 +353,7 @@ class SettingsControllerTest extends WebTestCase
         $response = $this->runApp(
             'POST',
             '/api/user/settings/system/send-invalid-token-mail',
-            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS' , '0']],
+            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' , '0']],
         );
         $this->assertEquals(403, $response?->getStatusCode());
     }
@@ -366,7 +366,7 @@ class SettingsControllerTest extends WebTestCase
         $response = $this->runApp(
             'POST',
             '/api/user/settings/system/send-invalid-token-mail',
-            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS' , '0']],
+            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' , '0']],
         );
         $this->assertEquals(200, $response?->getStatusCode());
 
@@ -384,7 +384,7 @@ class SettingsControllerTest extends WebTestCase
         $response = $this->runApp(
             'POST',
             '/api/user/settings/system/send-invalid-token-mail',
-            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS' , '0']],
+            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' , '0']],
         );
         $this->assertEquals(200, $response?->getStatusCode());
 
@@ -406,7 +406,7 @@ class SettingsControllerTest extends WebTestCase
         $response = $this->runApp(
             'POST',
             '/api/user/settings/system/send-invalid-token-mail',
-            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS' , '0']],
+            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' , '0']],
         );
         $this->assertEquals(200, $response?->getStatusCode());
 
@@ -418,7 +418,7 @@ class SettingsControllerTest extends WebTestCase
         $response = $this->runApp(
             'POST',
             '/api/user/settings/system/send-missing-character-mail',
-            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS' , '0']],
+            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' , '0']],
         );
         $this->assertEquals(403, $response?->getStatusCode());
     }
@@ -431,7 +431,7 @@ class SettingsControllerTest extends WebTestCase
         $response1 = $this->runApp(
             'POST',
             '/api/user/settings/system/send-missing-character-mail',
-            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS' , '0']],
+            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' , '0']],
         );
         $this->assertEquals(200, $response1?->getStatusCode());
         $this->assertSame('Mail is deactivated.', $this->parseJsonBody($response1));
@@ -444,7 +444,7 @@ class SettingsControllerTest extends WebTestCase
         $response2 = $this->runApp(
             'POST',
             '/api/user/settings/system/send-missing-character-mail',
-            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS' , '0']],
+            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' , '0']],
         );
         $this->assertEquals(200, $response2?->getStatusCode());
         $this->assertSame('Invalid config.', $this->parseJsonBody($response2));
@@ -466,7 +466,7 @@ class SettingsControllerTest extends WebTestCase
             'POST',
             '/api/user/settings/system/send-missing-character-mail',
             mocks:  [HttpClientFactoryInterface::class => new HttpClientFactory($client)],
-            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS' , '0']],
+            envVars: [['NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' , '0']],
         );
         $this->assertEquals(200, $response3?->getStatusCode());
         $this->assertSame('', $this->parseJsonBody($response3)); // success

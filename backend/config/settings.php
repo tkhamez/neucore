@@ -16,7 +16,7 @@ return [
         'NEUCORE_ERROR_REPORTING'   => (string)(E_ALL & ~E_DEPRECATED),
         'NEUCORE_RATE_LIMIT_MAX'   => '0',
         'NEUCORE_RATE_LIMIT_TIME'   => '0',
-        'NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS' => '0',
+        'NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' => '0',
     ],
 
     'monolog' => [
@@ -62,7 +62,7 @@ return [
         'esi_host'     => 'https://esi.evetech.net',
         'oauth_urls'   => [], // only used for tests
         'oauth_verify_signature' => true,
-        'use_mail_token_for_unauthorised_requests' => '${NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHORISED_REQUESTS}',
+        'use_mail_token_for_unauthenticated_requests' => '${NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS}',
 
         // tkhamez/eve-api must use the same date.
         'esi_compatibility_date' => '2025-09-30',

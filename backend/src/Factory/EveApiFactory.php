@@ -19,35 +19,35 @@ class EveApiFactory
 {
     private array $instances = [];
 
-    private ClientInterface $clientAuthorised;
+    private ClientInterface $clientAuthenticated;
 
-    private ClientInterface $clientUnauthorised;
+    private ClientInterface $clientUnauthenticated;
 
     public function __construct(
         HttpClientFactoryInterface $httpClientFactory,
         private readonly Config $config,
         private readonly EveMailToken $eveMailToken,
     ) {
-        $headersAuthorised = [
+        $headersAuthenticated = [
             // This header is also set for every request, but in case this changes, add a default value.
             'X-Compatibility-Date' => $this->config['eve']['esi_compatibility_date'],
         ];
-        $this->clientAuthorised = $httpClientFactory->getGuzzleClient(
-            requestHeaders: $headersAuthorised,
+        $this->clientAuthenticated = $httpClientFactory->getGuzzleClient(
+            requestHeaders: $headersAuthenticated,
         );
 
-        // Use a token for unauthorised requests to get better error limits. See also
+        // Use a token for unauthenticated requests to get better error limits. See also
         // https://developers.eveonline.com/docs/services/esi/rate-limiting/#bucket-system.
         // This needs to be a header for the HTTP client because the API library will not set
         // it for requests that do not need it.
         if (($token = $this->getToken()) !== null) {
-            $headersUnauthorised = $headersAuthorised;
-            $headersUnauthorised['Authorization'] = "Bearer $token";
-            $this->clientUnauthorised = $httpClientFactory->getGuzzleClient(
-                requestHeaders: $headersUnauthorised,
+            $headersUnauthenticated = $headersAuthenticated;
+            $headersUnauthenticated['Authorization'] = "Bearer $token";
+            $this->clientUnauthenticated = $httpClientFactory->getGuzzleClient(
+                requestHeaders: $headersUnauthenticated,
             );
         } else {
-            $this->clientUnauthorised = $this->clientAuthorised;
+            $this->clientUnauthenticated = $this->clientAuthenticated;
         }
     }
 
@@ -82,10 +82,10 @@ class EveApiFactory
 
         if (!isset($this->instances[$key])) {
             $configuration = new Configuration();
-            $client = $this->clientUnauthorised;
+            $client = $this->clientUnauthenticated;
             if ($token !== '') {
                 $configuration->setAccessToken($token);
-                $client = $this->clientAuthorised;
+                $client = $this->clientAuthenticated;
             }
             $configuration->setHost($this->config['eve']['esi_host']);
             // Remove the library default so that it does not use it for its requests but instead uses
@@ -99,7 +99,7 @@ class EveApiFactory
 
     private function getToken(): ?string
     {
-        if ($this->config['eve']['use_mail_token_for_unauthorised_requests'] !== '1') {
+        if ($this->config['eve']['use_mail_token_for_unauthenticated_requests'] !== '1') {
             return null;
         }
 

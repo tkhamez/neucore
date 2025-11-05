@@ -628,21 +628,21 @@ class Helper
 
     public static function getEveConfig(
         string $compatibilityDate = '',
-        string $useMailTokenForUnauthorisedRequests = '0',
+        string $useMailTokenForUnauthenticatedRequests = '0',
     ): array {
         return [
             'esi_host' => 'http://localhost',
             'esi_compatibility_date' => $compatibilityDate,
-            'use_mail_token_for_unauthorised_requests' => $useMailTokenForUnauthorisedRequests,
+            'use_mail_token_for_unauthenticated_requests' => $useMailTokenForUnauthenticatedRequests,
         ];
     }
 
     public static function getConfig(
         string $compatibilityDate = '',
-        string $useMailTokenForUnauthorisedRequests = '0',
+        string $useMailTokenForUnauthenticatedRequests = '0',
     ): Config {
         return new Config([
-            'eve' => self::getEveConfig($compatibilityDate, $useMailTokenForUnauthorisedRequests),
+            'eve' => self::getEveConfig($compatibilityDate, $useMailTokenForUnauthenticatedRequests),
         ]);
     }
 }

@@ -45,7 +45,7 @@ class EsiDataRealTest extends TestCase
             'eve' => [
                 'esi_host' => $settings['eve']['esi_host'],
                 'esi_compatibility_date' => $settings['eve']['esi_compatibility_date'],
-                'use_mail_token_for_unauthorised_requests' => '0',
+                'use_mail_token_for_unauthenticated_requests' => '0',
             ],
             'guzzle' => [
                 'cache' => ['dir' => $cacheDir],
