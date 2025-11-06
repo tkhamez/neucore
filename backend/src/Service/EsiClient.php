@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Service;
 
 use Neucore\Data\EsiErrorLimit;
+use Neucore\Data\EsiRateLimit;
 use Neucore\Entity\EveLogin;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\HttpClientFactoryInterface;
@@ -108,7 +109,10 @@ class EsiClient
         if ($debug) {
             $httpClient = $this->httpClientFactory->get(null, $requestHeaders);
         } else {
-            $httpClient = $this->httpClientFactory->get($eveLoginName, $requestHeaders);
+            $httpClient = $this->httpClientFactory->get(
+                $characterId ? "$eveLoginName.$characterId" : $eveLoginName,
+                $requestHeaders,
+            );
         }
 
         return $httpClient->sendRequest($request);

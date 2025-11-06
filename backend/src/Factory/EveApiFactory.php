@@ -96,8 +96,9 @@ class EveApiFactory
         }
 
         $client = $this->httpClientFactory->getGuzzleClient(
-            requestHeaders: $headers,
-            characterId: $authenticated ? $characterId : null,
+            $characterId ? "eve.api.$characterId" : "eve.api",
+            $headers,
+            $authenticated ? $characterId : null,
         );
 
         $this->instances[$key] = new $class($client, $configuration);
