@@ -104,7 +104,6 @@
                           v-on:click="openAddCharacter()"></span>
                 </h4>
                 <div class="card-body">
-                    <!--suppress HtmlUnknownTag -->
                     <character-search v-on:result="onSearchResult($event)" :admin="true"></character-search>
                     <span class="text-muted small">
                         Select a character to show it's player account.

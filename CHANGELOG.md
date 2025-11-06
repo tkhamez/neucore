@@ -9,6 +9,8 @@ dd mm yyyy
   see [.env.dist](backend/.env.dist) for details.
 - Added the new command `generate-eve-api-files` to regenerate ESI files.
 - Fixed the external link icon.
+- Fix: Changed the label for the search box back to "Search Player/Character" because it is used
+  in several places where "Add" doesn't make sense.
 - Updated dependencies.
 
 ## 2.9.0

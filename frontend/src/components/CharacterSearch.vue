@@ -5,7 +5,7 @@ Input element to search for characters
 <template>
     <div class="input-group input-group-sm mb-1">
         <label class="input-group-text" for="characterSearchInput">
-            Add {{ admin ? 'Character' : 'Player' }}
+            Search {{ admin ? 'Character' : 'Player' }}
         </label>
         <input type="text" class="form-control" id="characterSearchInput" ref="searchInput"
                placeholder="Name (min. 3 characters)" title="Name (min. 3 characters)"
