@@ -34,9 +34,13 @@ class HttpClientFactory implements HttpClientFactoryInterface
         private readonly LoggerInterface $logger,
     ) {}
 
-    public function get(?string $cacheKey = 'default', array $requestHeaders = []): ClientInterface
+    public function get(
+        ?string $cacheKey = 'default',
+        array $requestHeaders = [],
+        ?int $characterId = null,
+    ): ClientInterface
     {
-        return $this->getClient($cacheKey, $requestHeaders);
+        return $this->getClient($cacheKey, $requestHeaders, $characterId);
     }
 
     public function getGuzzleClient(

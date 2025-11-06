@@ -71,6 +71,14 @@ class EsiClient
     }
 
     /**
+     * @return array<string, EsiRateLimit>
+     */
+    public static function getRateLimits(StorageInterface $storage): array
+    {
+        return EsiRateLimit::fromJson((string) $storage->get(Variables::ESI_RATE_LIMIT));
+    }
+
+    /**
      * @throws RuntimeException If character or a valid token could not be found.
      * @throws ClientExceptionInterface On request error.
      */
@@ -112,6 +120,7 @@ class EsiClient
             $httpClient = $this->httpClientFactory->get(
                 $characterId ? "$eveLoginName.$characterId" : $eveLoginName,
                 $requestHeaders,
+                $characterId,
             );
         }
 

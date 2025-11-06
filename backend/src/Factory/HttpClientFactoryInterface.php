@@ -13,7 +13,11 @@ interface HttpClientFactoryInterface
      *         to disable cache.
      * @param array<string, string> $requestHeaders
      */
-    public function get(?string $cacheKey = 'default', array $requestHeaders = []): ClientInterface;
+    public function get(
+        ?string $cacheKey = 'default',
+        array $requestHeaders = [],
+        ?int $characterId = null,
+    ): ClientInterface;
 
     /**
      * @param ?string $cacheKey Optional subdirectory for file system cache (defaults to "default") or null

@@ -8,6 +8,7 @@ namespace Tests\Unit\Service;
 
 use GuzzleHttp\Psr7\Response;
 use Neucore\Data\EsiErrorLimit;
+use Neucore\Data\EsiRateLimit;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EsiClient;
@@ -42,46 +43,58 @@ class EsiClientTest extends TestCase
         $this->helper->emptyDb();
     }
 
-    public function testGetErrorLimitWaitTime()
+    public function testGetErrorLimitWaitTime(): void
     {
         $time = time();
 
-        $this->assertSame(0, EsiClient::getErrorLimitWaitTime($this->storage, 15));
+        self::assertSame(0, EsiClient::getErrorLimitWaitTime($this->storage, 15));
 
         $this->storage->set(Variables::ESI_ERROR_LIMIT, (string) json_encode(new EsiErrorLimit($time - 100, 16, 50)));
-        $this->assertSame(0, EsiClient::getErrorLimitWaitTime($this->storage, 15));
+        self::assertSame(0, EsiClient::getErrorLimitWaitTime($this->storage, 15));
 
         $this->storage->set(Variables::ESI_ERROR_LIMIT, (string) json_encode(new EsiErrorLimit($time, 15, 50)));
-        $this->assertSame($time + 50, EsiClient::getErrorLimitWaitTime($this->storage, 15));
+        self::assertSame($time + 50, EsiClient::getErrorLimitWaitTime($this->storage, 15));
 
         $this->storage->set(Variables::ESI_ERROR_LIMIT, (string) json_encode(new EsiErrorLimit($time, 16, 50)));
-        $this->assertSame(0, EsiClient::getErrorLimitWaitTime($this->storage, 15));
+        self::assertSame(0, EsiClient::getErrorLimitWaitTime($this->storage, 15));
     }
 
-    public function testGetRateLimitWaitTime()
+    public function testGetRateLimitWaitTime(): void
     {
         $time = time();
 
-        $this->assertSame(0, EsiClient::getRateLimitWaitTime($this->storage));
+        self::assertSame(0, EsiClient::getRateLimitWaitTime($this->storage));
 
         $this->storage->set(Variables::ESI_RATE_LIMITED, (string) ($time + 50));
-        $this->assertSame($time + 50, EsiClient::getRateLimitWaitTime($this->storage));
+        self::assertSame($time + 50, EsiClient::getRateLimitWaitTime($this->storage));
     }
 
-    public function testGetThrottledWaitTime()
+    public function testGetThrottledWaitTime(): void
     {
         $time = time();
 
-        $this->assertSame(0, EsiClient::getThrottledWaitTime($this->storage));
+        self::assertSame(0, EsiClient::getThrottledWaitTime($this->storage));
 
         $this->storage->set(Variables::ESI_THROTTLED, (string) ($time + 60));
-        $this->assertSame($time + 60, EsiClient::getThrottledWaitTime($this->storage));
+        self::assertSame($time + 60, EsiClient::getThrottledWaitTime($this->storage));
+    }
+
+    public function testGetRateLimits(): void
+    {
+        self::assertSame([], EsiClient::getRateLimits($this->storage));
+
+        $rateLimits = ['test,123' => new EsiRateLimit('fitting', '150/15m', 148, 2, 123)];
+        $this->storage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson($rateLimits));
+        self::assertEquals(
+            $rateLimits,
+            EsiClient::getRateLimits($this->storage)
+        );
     }
 
     /**
      * @throws \Throwable
      */
-    public function testRequest_NoCharacter()
+    public function testRequest_NoCharacter(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(568420);
@@ -93,7 +106,7 @@ class EsiClientTest extends TestCase
     /**
      * @throws \Throwable
      */
-    public function testRequest_NoToken()
+    public function testRequest_NoToken(): void
     {
         $this->helper->addCharacterMain('char name', 20300400, [], [], false);
 
@@ -107,7 +120,7 @@ class EsiClientTest extends TestCase
     /**
      * @throws \Throwable
      */
-    public function testRequest_Ok()
+    public function testRequest_Ok(): void
     {
         // Create char with valid, not expired, ESI token.
         $this->helper->addCharacterMain(
@@ -126,12 +139,12 @@ class EsiClientTest extends TestCase
             20300400,
         );
 
-        $this->assertSame(
+        self::assertSame(
             ['X-Compatibility-Date' => '2025-07-11', 'Accept-Language' => 'en'],
             $this->httpClient->getHeaders(),
         );
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertSame(
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(
             ['name' => 'char name', 'corporation_id' => 20],
             json_decode($response->getBody()->__toString(), true),
         );
@@ -140,7 +153,7 @@ class EsiClientTest extends TestCase
     /**
      * @throws \Throwable
      */
-    public function testRequest_OptionalHeaders()
+    public function testRequest_OptionalHeaders(): void
     {
         $this->helper->addCharacterMain(
             'char name',
@@ -160,7 +173,7 @@ class EsiClientTest extends TestCase
             acceptLanguage: 'de',
         );
 
-        $this->assertSame(
+        self::assertSame(
             [
                 'X-Compatibility-Date' => '2025-07-12',
                 'Accept-Language' => 'de',

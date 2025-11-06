@@ -37,11 +37,11 @@ class EsiRateLimit
             foreach (get_object_vars($data) as $group => $values) {
                 if (
                     (string) $group === '' ||
-                    !isset($values->g) ||
-                    !isset($values->l) ||
-                    !isset($values->r) ||
-                    !isset($values->u) ||
-                    !isset($values->c)
+                    !property_exists($values, 'g') ||
+                    !property_exists($values, 'l') ||
+                    !property_exists($values, 'r') ||
+                    !property_exists($values, 'u') ||
+                    !property_exists($values, 'c')
                 ) {
                     continue;
                 }

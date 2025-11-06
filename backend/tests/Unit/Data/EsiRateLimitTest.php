@@ -49,6 +49,16 @@ class EsiRateLimitTest extends TestCase
         $this->assertEquals($this->rateLimits, $actual);
     }
 
+    public function testFromJson_WithoutCharacterId(): void
+    {
+        $actual = EsiRateLimit::fromJson(
+            '{"fitting,123456":{"g":"fitting","l":"150/15m","r":148,"u":2,"c":null}}'
+        );
+
+        $rateLimits['fitting,123456'] = new EsiRateLimit('fitting', '150/15m', 148, 2, null);
+        $this->assertEquals($rateLimits, $actual);
+    }
+
     public function testFromJson_PartialInvalid(): void
     {
         $actual = EsiRateLimit::fromJson(
