@@ -12,15 +12,15 @@ class EsiRateLimit
     public static function toJson(array $rateLimits): string
     {
         $valid = [];
-        foreach ($rateLimits as $group => $values) {
+        foreach ($rateLimits as $bucket => $values) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
             if (
-                (string) $group === '' ||
+                (string) $bucket === '' ||
                 !$values instanceof self
             ) {
                 continue;
             }
-            $valid[$group] = $values;
+            $valid[$bucket] = $values;
         }
         return (string) \json_encode($valid, JSON_UNESCAPED_SLASHES);
     }
@@ -72,4 +72,9 @@ class EsiRateLimit
         public readonly int $u,
         public readonly ?int $c,
     ) {}
+
+    public function getBucket(): string
+    {
+        return $this->c ? "$this->g:$this->c" : $this->g;
+    }
 }

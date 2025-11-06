@@ -184,11 +184,18 @@ class Helper
         string $compatibilityDate = '',
     ): EsiClient {
         $objectManager = new \Neucore\Service\ObjectManager(self::getOm(), $logger);
+        $repoFactory = RepositoryFactory::getInstance(self::getOm());
         return new EsiClient(
-            RepositoryFactory::getInstance(self::getOm()),
+            $repoFactory,
             self::getConfig($compatibilityDate),
             new OAuthToken(self::getAuthenticationProvider($client), $objectManager, $logger),
             new HttpClientFactory($client),
+            new EveMailToken(
+                $repoFactory,
+                $objectManager,
+                self::getAuthenticationProvider($client),
+                $logger,
+            ),
         );
     }
 

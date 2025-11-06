@@ -98,7 +98,7 @@ class Container
                         'urlRevoke'      => $conf['oauth_urls']['revoke'] ?? null,
                         'issuer'         => $conf['oauth_urls']['issuer'] ?? null,
                     ],
-                    httpClient: $factory->getGuzzleClient(),
+                    httpClient: $factory->getGuzzleClient('sso'),
                     logger: $c->get(LoggerInterface::class),
                 );
                 if (!$conf['oauth_verify_signature']) {

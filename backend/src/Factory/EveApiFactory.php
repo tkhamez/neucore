@@ -33,9 +33,9 @@ class EveApiFactory
     }
 
     /**
-     * For optimal use of ESI rate limits, create separate instances for authenticated and
-     * unauthenticated requests.
-     * Provide both $accessToken and $characterId for authenticated requests.
+     * Due to the way rate limit buckets work, you must create separate instances for
+     * authenticated and unauthenticated requests.
+     * For authenticated requests, specify both $accessToken and $characterId.
      */
     public function getCorporationApi(?string $accessToken = null, ?int $characterId = null): CorporationApi
     {
@@ -43,9 +43,9 @@ class EveApiFactory
     }
 
     /**
-     * For optimal use of ESI rate limits, create separate instances for authenticated and
-     * unauthenticated requests.
-     * Provide both $accessToken and $characterId for authenticated requests.
+     * Due to the way rate limit buckets work, you must create separate instances for
+     * authenticated and unauthenticated requests.
+     * For authenticated requests, specify both $accessToken and $characterId.
      */
     public function getCharacterApi(?string $accessToken = null, ?int $characterId = null): CharacterApi
     {
@@ -58,9 +58,9 @@ class EveApiFactory
     }
 
     /**
-     * For optimal use of ESI rate limits, create separate instances for authenticated and
-     * unauthenticated requests.
-     * Provide both $accessToken and $characterId for authenticated requests.
+     * Due to the way rate limit buckets work, you must create separate instances for
+     * authenticated and unauthenticated requests.
+     * For authenticated requests, specify both $accessToken and $characterId.
      */
     public function getUniverseApi(?string $accessToken = null, ?int $characterId = null): UniverseApi
     {
@@ -112,18 +112,6 @@ class EveApiFactory
             return null;
         }
 
-        try {
-            $storedToken = $this->eveMailToken->getStoredToken();
-        } catch (Exception) {
-            return null;
-        }
-
-        try {
-            $validToken = $this->eveMailToken->getValidToken($storedToken);
-        } catch (Exception) {
-            return null;
-        }
-
-        return $validToken->getToken();
+        return $this->eveMailToken->getAccessToken();
     }
 }

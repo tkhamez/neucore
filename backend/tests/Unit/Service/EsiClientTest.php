@@ -83,12 +83,19 @@ class EsiClientTest extends TestCase
     {
         self::assertSame([], EsiClient::getRateLimits($this->storage));
 
-        $rateLimits = ['test,123' => new EsiRateLimit('fitting', '150/15m', 148, 2, 123)];
+        $rateLimits = ['test:123' => new EsiRateLimit('fitting', '150/15m', 148, 2, 123)];
         $this->storage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson($rateLimits));
         self::assertEquals(
             $rateLimits,
             EsiClient::getRateLimits($this->storage)
         );
+    }
+
+    public function testIsPublicPath(): void
+    {
+        self::assertTrue(EsiClient::isPublicPath('/alliances'));
+        self::assertFalse(EsiClient::isPublicPath('/characters/123456789/assets'));
+        self::assertFalse(EsiClient::isPublicPath('/invalid'));
     }
 
     /**

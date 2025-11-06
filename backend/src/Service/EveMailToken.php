@@ -37,6 +37,26 @@ class EveMailToken
     }
 
     /**
+     * Returns a valid access token or null.
+     */
+    public function getAccessToken(): ?string
+    {
+        try {
+            $storedToken = $this->getStoredToken();
+        } catch (Exception) {
+            return null;
+        }
+
+        try {
+            $validToken = $this->getValidToken($storedToken);
+        } catch (Exception) {
+            return null;
+        }
+
+        return $validToken->getToken();
+    }
+
+    /**
      * @throws Exception
      */
     public function getStoredToken(): array

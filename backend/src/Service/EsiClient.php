@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
+use Neucore\Application;
 use Neucore\Data\EsiErrorLimit;
 use Neucore\Data\EsiRateLimit;
 use Neucore\Entity\EveLogin;
@@ -22,6 +23,7 @@ class EsiClient
         private readonly Config                     $config,
         private readonly OAuthToken                 $tokenService,
         private readonly HttpClientFactoryInterface $httpClientFactory,
+        private readonly EveMailToken               $eveMailToken,
     ) {}
 
     /**
@@ -78,6 +80,28 @@ class EsiClient
         return EsiRateLimit::fromJson((string) $storage->get(Variables::ESI_RATE_LIMIT));
     }
 
+    public static function isPublicPath(string $esiPath): bool
+    {
+        $path = $esiPath;
+        if (
+            str_starts_with($esiPath, '/latest/') ||
+            preg_match("@^/v([0-9])+/@", $esiPath) === 1
+        ) {
+            // Strip the version from the old paths.
+            $path = substr($esiPath, (int) strpos($esiPath, '/', 1));
+        }
+
+        $publicPaths = Application::loadFile('esi-paths-public.php');
+
+        foreach ($publicPaths as $pattern) {
+            if (preg_match("@^$pattern(/)?$@", $path) === 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @throws RuntimeException If character or a valid token could not be found.
      * @throws ClientExceptionInterface On request error.
@@ -92,9 +116,9 @@ class EsiClient
         ?string $compatibilityDate = null,
         ?string $acceptLanguage = null,
     ): ResponseInterface {
-        $url = $this->config['eve']['esi_host'] . $esiPath;
+        $isPublicPath = self::isPublicPath($esiPath);
 
-        $header = [];
+        $token = null;
         if ($characterId) {
             $character = $this->repositoryFactory->getCharacterRepository()->find($characterId);
             if ($character === null) {
@@ -105,9 +129,19 @@ class EsiClient
             if ($token === '') {
                 throw new RuntimeException('Character has no valid token.', 568421);
             }
+        } elseif ($isPublicPath) {
+            // This is currently only relevant for requests from plugins.
+            if ($this->config['eve']['use_mail_token_for_unauthenticated_requests'] === '1') {
+                $token = $this->eveMailToken->getAccessToken();
+            }
+        }
+
+        $header = [];
+        if ($token !== null) {
             $header = ['Authorization' => 'Bearer ' . $token];
         }
 
+        $url = $this->config['eve']['esi_host'] . $esiPath;
         $request = $this->httpClientFactory->createRequest($method, $url, $header, $body);
 
         $requestHeaders = [
@@ -117,10 +151,11 @@ class EsiClient
         if ($debug) {
             $httpClient = $this->httpClientFactory->get(null, $requestHeaders);
         } else {
+            $charId = $isPublicPath ? null : $characterId;
             $httpClient = $this->httpClientFactory->get(
-                $characterId ? "$eveLoginName.$characterId" : $eveLoginName,
+                $charId ? "$eveLoginName.$charId" : $eveLoginName,
                 $requestHeaders,
-                $characterId,
+                $charId,
             );
         }
 

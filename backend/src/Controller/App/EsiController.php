@@ -666,7 +666,7 @@ class EsiController extends BaseController
             $characterId = $dataSource;
             $eveLoginName = EveLogin::NAME_DEFAULT;
         }
-        $publicPath = $this->isPublicPath($esiPath);
+        $publicPath = EsiClient::isPublicPath($esiPath);
         if (empty($esiPath) || $publicPath || empty($characterId)) {
             if (empty($esiPath)) {
                 $reason = 'Path cannot be empty.';
@@ -812,28 +812,6 @@ class EsiController extends BaseController
         }
 
         return $this->getQueryParam($request, self::PARAM_DATASOURCE, '');
-    }
-
-    private function isPublicPath(string $esiPath): bool
-    {
-        $path = $esiPath;
-        if (
-            str_starts_with($esiPath, '/latest/') ||
-            preg_match("@^/v([0-9])+/@", $esiPath) === 1
-        ) {
-            // Strip the version from the old paths.
-            $path = substr($esiPath, (int) strpos($esiPath, '/', 1));
-        }
-
-        $publicPaths = Application::loadFile('esi-paths-public.php');
-
-        foreach ($publicPaths as $pattern) {
-            if (preg_match("@^$pattern(/)?$@", $path) === 1) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private function buildResponse(ResponseInterface $esiResponse): ResponseInterface

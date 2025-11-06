@@ -48,7 +48,8 @@ class EsiRateLimits
             $rateLimits = EsiRateLimit::fromJson((string) $this->storage->get(Variables::ESI_RATE_LIMIT));
 
             $group = $response->getHeader('X-Ratelimit-Group')[0];
-            $rateLimits["$group,$characterId"] = new EsiRateLimit(
+            $bucket = $characterId ? "$group:$characterId" : $group;
+            $rateLimits[$bucket] = new EsiRateLimit(
                 $group,
                 $response->getHeader('X-Ratelimit-Limit')[0] ?? '',
                 (int) ($response->getHeader('X-Ratelimit-Remaining')[0] ?? -1),
@@ -56,10 +57,7 @@ class EsiRateLimits
                 $characterId,
             );
 
-            $this->storage->set(
-                Variables::ESI_RATE_LIMIT,
-                EsiRateLimit::toJson($rateLimits),
-            );
+            $this->storage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson($rateLimits));
         }
 
         if ($response->getStatusCode() === 429) {

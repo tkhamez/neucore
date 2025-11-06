@@ -84,4 +84,16 @@ class EsiRateLimitTest extends TestCase
         $actual4 = EsiRateLimit::fromJson('{"fitting":{"l":"150/15m","r":148}}');
         $this->assertEquals([], $actual4);
     }
+
+    public function testGetBucket(): void
+    {
+        self::assertSame(
+            'fitting',
+            (new EsiRateLimit('fitting', '150/15m', 148, 2, null))->getBucket(),
+        );
+        self::assertSame(
+            'fitting:123456',
+            (new EsiRateLimit('fitting', '150/15m', 148, 2, 123456))->getBucket(),
+        );
+    }
 }
