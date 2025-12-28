@@ -224,8 +224,8 @@ A Linux server (others may work but were not tested).
 To run the application:
 * PHP 8.1.0–8.4 (64bit version), see [backend/composer.json](../backend/composer.json) for
   necessary and suggested extensions (APCu highly recommended).
-* MariaDB or MySQL Server (tested with MariaDB 10.5.1, 10.11, 11.4 and MySQL 8.0.22, 8.4). Unit
-  tests can also be run with an SQLite in-memory database.
+* MariaDB or MySQL Server (tested with MariaDB 10.5.1, 10.11, 11.4, 11.8 and MySQL 8.0.22, 8.4).
+  Unit tests can also be run with an SQLite in-memory database.
 * An HTTP Server with support for PHP and URL rewriting.
   * Set the document root to the `web` directory.
   * Configure URL rewriting to `app.php`:
