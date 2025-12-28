@@ -101,7 +101,6 @@ class AllianceTest extends TestCase
         $group2 = new Group();
 
         $rp = new \ReflectionProperty(Group::class, 'id');
-        $rp->setAccessible(true);
         $rp->setValue($group1, 1);
         $rp->setValue($group2, 2);
 

@@ -430,7 +430,6 @@ class PlayerTest extends TestCase
         $group2 = new Group();
 
         $rp = new \ReflectionProperty(Group::class, 'id');
-        $rp->setAccessible(true);
         $rp->setValue($group1, 1);
         $rp->setValue($group2, 2);
 
@@ -448,7 +447,6 @@ class PlayerTest extends TestCase
         $group2 = new Group();
 
         $rp = new \ReflectionProperty(Group::class, 'id');
-        $rp->setAccessible(true);
         $rp->setValue($group1, 1);
         $rp->setValue($group2, 2);
 
@@ -465,7 +463,6 @@ class PlayerTest extends TestCase
         $group2 = new Group();
 
         $rp = new \ReflectionProperty(Group::class, 'id');
-        $rp->setAccessible(true);
         $rp->setValue($group1, 1);
         $rp->setValue($group2, 2);
 
@@ -482,7 +479,6 @@ class PlayerTest extends TestCase
         $group2 = new Group();
 
         $rp = new \ReflectionProperty(Group::class, 'id');
-        $rp->setAccessible(true);
         $rp->setValue($group1, 1);
         $rp->setValue($group2, 2);
 
@@ -502,7 +498,6 @@ class PlayerTest extends TestCase
         $group4 = new Group();
 
         $rp = new \ReflectionProperty(Group::class, 'id');
-        $rp->setAccessible(true);
         $rp->setValue($group1, 1);
         $rp->setValue($group2, 2);
         $rp->setValue($group3, 3);
@@ -561,7 +556,6 @@ class PlayerTest extends TestCase
         $group2 = new Group();
 
         $rp = new \ReflectionProperty(Group::class, 'id');
-        $rp->setAccessible(true);
         $rp->setValue($group1, 1);
         $rp->setValue($group2, 2);
 
@@ -577,7 +571,6 @@ class PlayerTest extends TestCase
         $group1 = (new Group())->setName('g1');
         $group2 = (new Group())->setName('g2');
         $rp = new \ReflectionProperty(Group::class, 'id');
-        $rp->setAccessible(true);
         $rp->setValue($group1, 1);
         $rp->setValue($group2, 2);
 

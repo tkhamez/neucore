@@ -127,12 +127,10 @@ class AppTest extends TestCase
 
         $c1 = new \ReflectionClass($pl1);
         $p1 = $c1->getProperty("id");
-        $p1->setAccessible(true);
         $p1->setValue($pl1, 1);
 
         $c2 = new \ReflectionClass($pl2);
         $p2 = $c2->getProperty("id");
-        $p2->setAccessible(true);
         $p2->setValue($pl2, 2);
 
         $app->addManager($pl1);
