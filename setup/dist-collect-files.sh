@@ -20,7 +20,6 @@ rm    "${DIR}"/../../neucore/backend/var/logs/.gitkeep
 mv    "${DIR}"/../doc "${DIR}"/../../neucore/doc
 rm -r "${DIR}"/../../neucore/doc/screenshots
 rm    "${DIR}"/../../neucore/doc/api-examples/php/.gitignore
-rm    "${DIR}"/../../neucore/doc/api-examples/python/.gitignore
 rm    "${DIR}"/../../neucore/doc/API.tpl.md
 rm    "${DIR}"/../../neucore/doc/er-model.mwb
 
