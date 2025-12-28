@@ -6,11 +6,13 @@ services:
     #image: mariadb:10.5.1
     image: mariadb:10.11 # LTS
     #image: mariadb:11.4 # LTS
+    #image: mariadb:11.8 # LTS
     #image: mysql:8.0.22
     #image: mysql:8.4 # LTS
     #volumes: ["./.db/10.5:/var/lib/mysql"]
     volumes: ["./.db/10.11:/var/lib/mysql"]
     #volumes: ["./.db/11.4:/var/lib/mysql"]
+    #volumes: ["./.db/11.8:/var/lib/mysql"]
     #volumes: ["./.db/8.0.22:/var/lib/mysql"]
     #volumes: ["./.db/8.4:/var/lib/mysql"]
     environment:
