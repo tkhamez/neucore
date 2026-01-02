@@ -24,8 +24,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
         ?string $cacheKey = 'default',
         array $requestHeaders = [],
         ?int $characterId = null,
-    ): ClientInterface
-    {
+    ): ClientInterface {
         $this->client->setHeaders($requestHeaders);
         return $this->client;
     }

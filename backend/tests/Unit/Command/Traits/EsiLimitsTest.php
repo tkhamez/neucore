@@ -84,7 +84,7 @@ class EsiLimitsTest extends TestCase
     {
         $this->testStorage->set(
             Variables::ESI_ERROR_LIMIT,
-            (string) json_encode(new EsiErrorLimit(time(), 9, 20))
+            (string) json_encode(new EsiErrorLimit(time(), 9, 20)),
         );
 
         $this->esiLimits($this->testStorage, $this->testLogger, true);

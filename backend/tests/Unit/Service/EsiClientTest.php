@@ -87,7 +87,7 @@ class EsiClientTest extends TestCase
         $this->storage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson($rateLimits));
         self::assertEquals(
             $rateLimits,
-            EsiClient::getRateLimits($this->storage)
+            EsiClient::getRateLimits($this->storage),
         );
     }
 

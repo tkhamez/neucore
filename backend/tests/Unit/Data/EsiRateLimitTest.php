@@ -52,7 +52,7 @@ class EsiRateLimitTest extends TestCase
     public function testFromJson_WithoutCharacterId(): void
     {
         $actual = EsiRateLimit::fromJson(
-            '{"fitting,123456":{"g":"fitting","l":"150/15m","r":148,"u":2,"c":null}}'
+            '{"fitting,123456":{"g":"fitting","l":"150/15m","r":148,"u":2,"c":null}}',
         );
 
         $rateLimits['fitting,123456'] = new EsiRateLimit('fitting', '150/15m', 148, 2, null);

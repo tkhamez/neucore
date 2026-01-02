@@ -38,8 +38,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
         ?string $cacheKey = 'default',
         array $requestHeaders = [],
         ?int $characterId = null,
-    ): ClientInterface
-    {
+    ): ClientInterface {
         return $this->getClient($cacheKey, $requestHeaders, $characterId);
     }
 
