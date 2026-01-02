@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Neucore\Command\Traits;
 
 use Neucore\Service\EsiClient;
-use Neucore\Storage\StorageInterface;
+use Neucore\Storage\StorageDatabaseInterface;
 use Psr\Log\LoggerInterface;
 
 trait EsiLimits
 {
-    private StorageInterface $storage;
+    private StorageDatabaseInterface $storage;
 
     private LoggerInterface $logger;
 
@@ -24,8 +24,11 @@ trait EsiLimits
      */
     private int $errorLimitRemaining = 10;
 
-    protected function esiLimits(StorageInterface $storage, LoggerInterface $logger, bool $simulate = false): void
-    {
+    protected function esiLimits(
+        StorageDatabaseInterface $storage,
+        LoggerInterface $logger,
+        bool $simulate = false,
+    ): void {
         $this->storage = $storage;
         $this->logger = $logger;
         $this->simulate = $simulate;

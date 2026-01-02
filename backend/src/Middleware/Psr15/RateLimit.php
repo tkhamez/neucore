@@ -13,6 +13,9 @@ abstract class RateLimit
 
     public const HEADER_RESET = 'X-Neucore-Rate-Limit-Reset';
 
+    /**
+     * @return array{int, float, int, float}
+     */
     protected function checkLimit(string $key, StorageInterface $storage, int $maxRequests, int $resetTime): array
     {
         $value = $storage->get($key);

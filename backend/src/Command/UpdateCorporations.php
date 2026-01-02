@@ -13,7 +13,7 @@ use Neucore\Repository\AllianceRepository;
 use Neucore\Repository\CorporationRepository;
 use Neucore\Service\EntityManager;
 use Neucore\Service\EsiData;
-use Neucore\Storage\StorageInterface;
+use Neucore\Storage\StorageDatabaseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -47,7 +47,7 @@ class UpdateCorporations extends Command
         EsiData $esiData,
         EntityManager $entityManager,
         LoggerInterface $logger,
-        StorageInterface $storage,
+        StorageDatabaseInterface $storage,
     ) {
         parent::__construct();
         $this->logOutput($logger);

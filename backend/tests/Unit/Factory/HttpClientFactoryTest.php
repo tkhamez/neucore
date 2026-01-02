@@ -6,15 +6,16 @@ namespace Tests\Unit\Factory;
 
 use Monolog\Logger;
 use Neucore\Factory\HttpClientFactory;
+use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Guzzle\EsiRateLimits;
 use Neucore\Middleware\Guzzle\EsiErrorLimit;
 use Neucore\Middleware\Guzzle\EsiThrottled;
 use Neucore\Middleware\Guzzle\EsiWarnings;
 use Neucore\Service\Config;
-use Neucore\Storage\ApcuStorage;
+use Neucore\Service\ObjectManager;
+use Neucore\Storage\SystemVariableStorage;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestInterface;
+use Tests\Helper;
 
 class HttpClientFactoryTest extends TestCase
 {
@@ -27,12 +28,17 @@ class HttpClientFactoryTest extends TestCase
             rmdir(__DIR__ . '/cache-key');
         }
         $logger = new Logger('test');
+        $om = (new Helper())->getObjectManager();
+        $storage = new SystemVariableStorage(
+            new RepositoryFactory($om),
+            new ObjectManager($om, $logger),
+        );
         $this->factory = new HttpClientFactory(
             new Config(['guzzle' => ['cache' => ['dir' => __DIR__], 'user_agent' => 'Test']]),
-            new EsiErrorLimit(new ApcuStorage()),
+            new EsiErrorLimit($storage),
             new EsiWarnings($logger),
-            new EsiRateLimits($logger, new ApcuStorage()),
-            new EsiThrottled(new ApcuStorage()),
+            new EsiRateLimits($logger, $storage),
+            new EsiThrottled($storage),
             $logger,
         );
     }

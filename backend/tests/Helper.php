@@ -54,7 +54,7 @@ use Neucore\Service\OAuthToken;
 use Neucore\Service\PluginService;
 use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
-use Neucore\Storage\StorageInterface;
+use Neucore\Storage\StorageDatabaseInterface;
 use Neucore\Storage\SystemVariableStorage;
 use Neucore\Util\Crypto;
 use Neucore\Util\Database;
@@ -149,7 +149,7 @@ class Helper
     public static function getPluginFactory(
         ?Client $client = null,
         ?Logger $logger = null,
-        ?StorageInterface $storage = null,
+        ?StorageDatabaseInterface $storage = null,
     ): Factory {
         if (!$client) {
             $client = new Client();
