@@ -11,7 +11,8 @@ dd mm yyyy
   see [.env.dist](backend/.env.dist) for details.
 - New: Added a command `generate-eve-api-files` to regenerate ESI files.
 - Change: The HTTP cache for ESI is now per character.
-- Change: The CLI now uses the database to cache data instead of the APCu cache.
+- Change: All ESI-related variables are now cached in the database.
+- Change: The CLI now always uses the database to cache data instead of the APCu cache.
 - Fix: Fixed the external link icon.
 - Fix: Changed the label for the search box back to "Search Player/Character" because it is used
   in several places where "Add" doesn't make sense.
