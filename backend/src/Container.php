@@ -37,6 +37,9 @@ use Slim\Psr7\Factory\ResponseFactory;
 
 class Container
 {
+    /**
+     * @return array<string, callable>
+     */
     public static function getDefinitions(): array
     {
         return [
@@ -165,13 +168,7 @@ class Container
 
             // Storage
             StorageInterface::class => function (ContainerInterface $c) {
-                if (
-                    function_exists('apcu_store') &&
-                    (
-                        (php_sapi_name() === 'cli' && ini_get('apc.enable_cli') === '1') ||
-                        (php_sapi_name() !== 'cli' && ini_get('apc.enabled') === '1')
-                    )
-                ) {
+                if (function_exists('apcu_store') && php_sapi_name() !== 'cli') {
                     $storage = new ApcuStorage();
                 } else {
                     $storage = new SystemVariableStorage(

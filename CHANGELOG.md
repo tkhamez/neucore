@@ -4,13 +4,14 @@
 
 dd mm yyyy
 
-- New: Compatible with PHP 8.5.
-- New: Compatible with MariaDB 11.8.
-- New: Added the new rate limit headers to the response for the ESI proxy.
+- New: Compatible with PHP 8.5
+- New: Compatible with MariaDB 11.8
+- New: Added the new rate limit headers to the response of the ESI proxy.
 - New: Added `NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS` environment variable, 
   see [.env.dist](backend/.env.dist) for details.
 - New: Added a command `generate-eve-api-files` to regenerate ESI files.
 - Change: The HTTP cache for ESI is now per character.
+- Change: The CLI now uses the database to cache data instead of the APCu cache.
 - Fix: Fixed the external link icon.
 - Fix: Changed the label for the search box back to "Search Player/Character" because it is used
   in several places where "Add" doesn't make sense.

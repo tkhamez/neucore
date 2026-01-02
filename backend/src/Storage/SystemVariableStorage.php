@@ -24,8 +24,8 @@ class SystemVariableStorage implements StorageInterface
 
     public function set(string $key, string $value): bool
     {
-        if (mb_strlen($key) > 112 || mb_strlen($value) > 255) {
-            throw new RuntimeException('String too long.');
+        if (mb_strlen($key) > 112) {
+            throw new RuntimeException('Key too long.');
         }
 
         $variable = $this->systemVariableRepository->find(self::PREFIX . $key);

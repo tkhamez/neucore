@@ -26,19 +26,13 @@ class ApcuStorageTest extends TestCase
         $this->storage = new ApcuStorage();
     }
 
-    public function testSetException1()
+    public function testSetException1(): void
     {
         $this->expectException(RuntimeException::class);
         $this->storage->set('key' . str_repeat('1', 110), 'value');
     }
 
-    public function testSetException2()
-    {
-        $this->expectException(RuntimeException::class);
-        $this->storage->set('key', 'value' . str_repeat('1', 251));
-    }
-
-    public function testSet()
+    public function testSet(): void
     {
         $this->assertTrue($this->storage->set('key', 'value'));
 
@@ -46,7 +40,7 @@ class ApcuStorageTest extends TestCase
         $this->assertSame('value', apcu_fetch(ApcuStorage::PREFIX . 'key'));
     }
 
-    public function testGet()
+    public function testGet(): void
     {
         $this->assertNull($this->storage->get('key'));
 

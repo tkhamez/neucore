@@ -28,28 +28,22 @@ class SystemVariableStorageTest extends TestCase
         $this->storage = new SystemVariableStorage($this->repoFactory, new ObjectManager($om, new Logger()));
     }
 
-    public function testSetException1()
+    public function testSetException1(): void
     {
         $this->expectException(RuntimeException::class);
         $this->storage->set('key' . str_repeat('1', 110), 'value');
     }
 
-    public function testSetException2()
-    {
-        $this->expectException(RuntimeException::class);
-        $this->storage->set('key', 'value' . str_repeat('1', 251));
-    }
-
-    public function testSet()
+    public function testSet(): void
     {
         $this->assertTrue($this->storage->set('key', 'value'));
 
         $var = $this->repoFactory->getSystemVariableRepository()->find(SystemVariableStorage::PREFIX . 'key');
-        $this->assertSame('value', $var->getValue());
+        $this->assertSame('value', $var?->getValue());
         $this->assertSame(SystemVariable::SCOPE_BACKEND, $var->getScope());
     }
 
-    public function testGet()
+    public function testGet(): void
     {
         $this->assertNull($this->storage->get('key'));
 
