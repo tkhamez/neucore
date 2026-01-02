@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Command;
 
-use Neucore\Command\Traits\EsiRateLimited;
+use Neucore\Command\Traits\EsiLimits;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Corporation;
@@ -24,7 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class UpdateCorporations extends Command
 {
     use LogOutput;
-    use EsiRateLimited;
+    use EsiLimits;
 
     public const UPDATE_OK = 'update OK';
 
@@ -51,7 +51,7 @@ class UpdateCorporations extends Command
     ) {
         parent::__construct();
         $this->logOutput($logger);
-        $this->esiRateLimited($storage, $logger);
+        $this->esiLimits($storage, $logger);
 
         $this->corpRepo = $repositoryFactory->getCorporationRepository();
         $this->alliRepo = $repositoryFactory->getAllianceRepository();
@@ -111,7 +111,7 @@ class UpdateCorporations extends Command
                     break;
                 }
                 $this->entityManager->clear();
-                $this->checkForErrors();
+                $this->checkLimits();
 
                 $updatedCorp = $this->esiData->fetchCorporation($corpId);
                 if ($updatedCorp === null) {
@@ -137,7 +137,7 @@ class UpdateCorporations extends Command
                 break;
             }
             $this->entityManager->clear();
-            $this->checkForErrors();
+            $this->checkLimits();
 
             $updatedAlli = $this->esiData->fetchAlliance($alliId);
             if ($updatedAlli === null) {

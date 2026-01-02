@@ -15,7 +15,7 @@ class EsiClient implements EsiClientInterface
 {
     /**
      * @see \Neucore\Controller\App\EsiController::$errorLimitRemain
-     * @see \Neucore\Command\Traits\EsiRateLimited::$errorLimitRemaining
+     * @see \Neucore\Command\Traits\EsiLimits::$errorLimitRemaining
      */
     private int $errorLimitRemaining = 15;
 

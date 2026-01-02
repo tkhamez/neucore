@@ -65,7 +65,7 @@ class EsiController extends BaseController
 
     /**
      * @see \Neucore\Plugin\Core\EsiClient::$errorLimitRemaining
-     * @see \Neucore\Command\Traits\EsiRateLimited::$errorLimitRemaining
+     * @see \Neucore\Command\Traits\EsiLimits::$errorLimitRemaining
      */
     private int $errorLimitRemain = 20;
 

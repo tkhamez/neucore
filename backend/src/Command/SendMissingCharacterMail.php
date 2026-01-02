@@ -10,7 +10,7 @@ use Neucore\Entity\CorporationMember;
 use Neucore\Entity\SystemVariable;
 use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Repository\SystemVariableRepository;
-use Neucore\Command\Traits\EsiRateLimited;
+use Neucore\Command\Traits\EsiLimits;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EveMail;
@@ -24,7 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class SendMissingCharacterMail extends Command
 {
     use LogOutput;
-    use EsiRateLimited;
+    use EsiLimits;
 
     private EveMail $eveMail;
 
@@ -45,7 +45,7 @@ class SendMissingCharacterMail extends Command
     ) {
         parent::__construct();
         $this->logOutput($logger);
-        $this->esiRateLimited($storage, $logger);
+        $this->esiLimits($storage, $logger);
 
         $this->eveMail = $eveMail;
         $this->corporationMemberRepository = $repositoryFactory->getCorporationMemberRepository();
@@ -114,7 +114,7 @@ class SendMissingCharacterMail extends Command
                     $this->logger->critical('SendInvalidTokenMail: cannot continue without an open entity manager.');
                     break;
                 }
-                $this->checkForErrors();
+                $this->checkLimits();
 
                 $mayNotSendReason = $this->eveMail->missingCharacterMaySend($memberId);
                 if ($mayNotSendReason !== '') {

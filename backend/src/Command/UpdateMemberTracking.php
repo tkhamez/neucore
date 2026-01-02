@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Neucore\Command\Traits\EsiRateLimited;
+use Neucore\Command\Traits\EsiLimits;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
@@ -24,7 +24,7 @@ use Tkhamez\Eve\API\Model\CorporationsCorporationIdMembertrackingGetInner;
 class UpdateMemberTracking extends Command
 {
     use LogOutput;
-    use EsiRateLimited;
+    use EsiLimits;
 
     private RepositoryFactory $repositoryFactory;
 
@@ -49,7 +49,7 @@ class UpdateMemberTracking extends Command
     ) {
         parent::__construct();
         $this->logOutput($logger);
-        $this->esiRateLimited($storage, $logger);
+        $this->esiLimits($storage, $logger);
 
         $this->repositoryFactory = $repositoryFactory;
         $this->memberTracking = $memberTracking;
@@ -88,7 +88,7 @@ class UpdateMemberTracking extends Command
             // Note: the previous loop may have cleared the object manager
             $esiToken = $this->repositoryFactory->getEsiTokenRepository()->find($esiTokenId);
 
-            $this->checkForErrors();
+            $this->checkLimits();
 
             $character = $esiToken?->getCharacter();
             if ($character === null) { // Should not be possible
@@ -246,7 +246,7 @@ class UpdateMemberTracking extends Command
                 $this->logger->critical('UpdateCharacters: cannot continue without an open entity manager.');
                 break;
             }
-            $this->checkForErrors();
+            $this->checkLimits();
 
             $this->memberTracking->updateStructure($memberData, $esiToken);
 

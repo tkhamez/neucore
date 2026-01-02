@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Neucore\Command\Traits\EsiRateLimited;
+use Neucore\Command\Traits\EsiLimits;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
@@ -21,7 +21,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class SendInvalidTokenMail extends Command
 {
     use LogOutput;
-    use EsiRateLimited;
+    use EsiLimits;
 
     private EveMail $eveMail;
 
@@ -40,7 +40,7 @@ class SendInvalidTokenMail extends Command
     ) {
         parent::__construct();
         $this->logOutput($logger);
-        $this->esiRateLimited($storage, $logger);
+        $this->esiLimits($storage, $logger);
 
         $this->eveMail = $eveMail;
         $this->playerRepository = $repositoryFactory->getPlayerRepository();
@@ -100,7 +100,7 @@ class SendInvalidTokenMail extends Command
                     $this->logger->critical('SendInvalidTokenMail: cannot continue without an open entity manager.');
                     break;
                 }
-                $this->checkForErrors();
+                $this->checkLimits();
 
                 $characterId = $this->eveMail->invalidTokenFindCharacter($playerId);
                 if ($characterId === null) {

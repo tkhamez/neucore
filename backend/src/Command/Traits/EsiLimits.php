@@ -8,7 +8,7 @@ use Neucore\Service\EsiClient;
 use Neucore\Storage\StorageInterface;
 use Psr\Log\LoggerInterface;
 
-trait EsiRateLimited
+trait EsiLimits
 {
     private StorageInterface $storage;
 
@@ -24,7 +24,7 @@ trait EsiRateLimited
      */
     private int $errorLimitRemaining = 10;
 
-    protected function esiRateLimited(StorageInterface $storage, LoggerInterface $logger, bool $simulate = false): void
+    protected function esiLimits(StorageInterface $storage, LoggerInterface $logger, bool $simulate = false): void
     {
         $this->storage = $storage;
         $this->logger = $logger;
@@ -36,20 +36,29 @@ trait EsiRateLimited
         return $this->sleepInSeconds;
     }
 
-    protected function checkForErrors(): void
+    protected function checkLimits(): void
     {
+        $this->checkRateLimited();
         $this->checkRateLimit();
         $this->checkThrottled();
         $this->checkErrorLimit();
     }
 
-    protected function checkRateLimit(): void
+    private function checkRateLimited(): void
     {
         if (($retryAt = EsiClient::getRateLimitWaitTime($this->storage)) > time()) {
             $sleep = (int) max(1, $retryAt - time());
             $this->logger->info("EsiRateLimited: rate limit hit, sleeping $sleep second(s).");
             $this->sleep($sleep);
         }
+    }
+
+    private function checkRateLimit(): void
+    {
+        # TODO Rate-Limits: For a proper implementation this needs the endpoint
+        #  and character ID for the next request.
+
+        #EsiClient::getRateLimits($this->storage);
     }
 
     private function checkThrottled(): void
@@ -67,11 +76,6 @@ trait EsiRateLimited
      */
     private function checkErrorLimit(): void
     {
-        # TODO Rate-Limits: For a proper implementation this needs the endpoint(s)
-        #  and character ID(s) for the next request(s).
-        #  Why max 60 sec. wait time? This may not be enough for the new rate limits.
-        #  Max windows size is 15 minutes at the moment, see esi-rate-limits.php.
-
         $retryAt = EsiClient::getErrorLimitWaitTime($this->storage, $this->errorLimitRemaining);
         if ($retryAt > 0) {
             $sleep = (int) min(60, $retryAt - time());

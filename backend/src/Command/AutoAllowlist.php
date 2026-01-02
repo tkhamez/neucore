@@ -12,7 +12,7 @@ use Neucore\Service\EsiData;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\Watchlist;
-use Neucore\Command\Traits\EsiRateLimited;
+use Neucore\Command\Traits\EsiLimits;
 use Neucore\Storage\StorageInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -24,7 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class AutoAllowlist extends Command
 {
     use LogOutput;
-    use EsiRateLimited;
+    use EsiLimits;
 
     private const KEY_TOKEN_ID = 'token_id';
 
@@ -59,7 +59,7 @@ class AutoAllowlist extends Command
     ) {
         parent::__construct();
         $this->logOutput($logger);
-        $this->esiRateLimited($storage, $logger);
+        $this->esiLimits($storage, $logger);
 
         $this->watchlistService = $watchlist;
         $this->esiData = $esiData;
@@ -222,7 +222,7 @@ class AutoAllowlist extends Command
                     continue;
                 }
 
-                $this->checkForErrors();
+                $this->checkLimits();
 
                 $tokenId = $characters[self::KEY_TOKEN_ID];
                 $esiToken = $this->repositoryFactory->getEsiTokenRepository()->find($tokenId);

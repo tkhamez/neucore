@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Neucore\Command\Traits\EsiRateLimited;
+use Neucore\Command\Traits\EsiLimits;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\Character;
 use Neucore\Entity\SystemVariable;
@@ -25,7 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CheckTokens extends Command
 {
     use LogOutput;
-    use EsiRateLimited;
+    use EsiLimits;
 
     private const CHARACTER = '  Character ';
 
@@ -54,7 +54,7 @@ class CheckTokens extends Command
     ) {
         parent::__construct();
         $this->logOutput($logger);
-        $this->esiRateLimited($storage, $logger);
+        $this->esiLimits($storage, $logger);
 
         $this->charRepo = $repositoryFactory->getCharacterRepository();
         $this->playerRepo = $repositoryFactory->getPlayerRepository();
@@ -123,7 +123,7 @@ class CheckTokens extends Command
                     break;
                 }
                 $this->entityManager->clear(); // detaches all objects from Doctrine
-                $this->checkForErrors();
+                $this->checkLimits();
 
                 $char = $this->charRepo->find($charId);
                 if ($char === null) {
