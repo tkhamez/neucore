@@ -7,6 +7,8 @@ declare(strict_types=1);
 namespace Tests\Functional\Controller\App;
 
 use GuzzleHttp\Exception\TransferException;
+use Neucore\Controller\App\EsiController;
+use Neucore\Data\EsiRateLimit;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
@@ -352,8 +354,8 @@ class EsiControllerTest extends WebTestCase
         );
         $this->assertSame(400, $response2?->getStatusCode());
         $this->assertSame(
-            '"The Neucore-EveCharacter header and datasource parameter cannot both be empty, ' .
-            'one of them must contain an EVE character ID"',
+            '"The ' . EsiController::HEADER_NEUCORE_EVE_CHARACTER . ' header and datasource ' .
+            'parameter cannot both be empty, one of them must contain an EVE character ID"',
             $response2->getBody()->__toString(),
         );
     }
@@ -528,7 +530,7 @@ class EsiControllerTest extends WebTestCase
         );
     }
 
-    public function testEsiV2429_NotReached(): void
+    public function testEsiV2429_ErrorLimitNotReached(): void
     {
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY])->getId();
 
@@ -549,7 +551,7 @@ class EsiControllerTest extends WebTestCase
         $this->assertNotEquals(429, $response?->getStatusCode());
     }
 
-    public function testEsiV2429_ReachedAndReset(): void
+    public function testEsiV2429_ErrorLimitReachedAndReset(): void
     {
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY])->getId();
 
@@ -632,6 +634,47 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame(json_encode($errorMessage), $response2->getBody()->__toString());
         $this->assertSame(
             "App\EsiController: application $appId \"A1\": $errorMessage",
+            $this->logger->getHandler()?->getRecords()[0]['message'],
+        );
+    }
+
+    public function testEsiV2429_RateLimits(): void
+    {
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY])->getId();
+
+        $time = time();
+        $charId = 1234;
+        $group = 'char-detail';
+
+        // add var
+        $this->storage->set(
+            Variables::ESI_RATE_LIMIT,
+            EsiRateLimit::toJson(["$group:$charId" => new EsiRateLimit(
+                'char-detail', '600/15m', 100, 2, $time - 54, $charId,
+            )]),
+        );
+
+        $response = $this->runApp(
+            'GET',
+            "/api/app/v2/esi/characters/$charId/roles",
+            [],
+            [
+                'Authorization' => 'Bearer ' . base64_encode($appId . ':s1'),
+                'Neucore-EveCharacter' => $charId,
+            ],
+            [LoggerInterface::class => $this->logger, StorageDatabaseInterface::class => $this->storage],
+        );
+
+        $this->assertSame(429, $response?->getStatusCode());
+        $this->assertGreaterThanOrEqual('54', $response->getHeaderLine('Retry-After'));
+        $this->assertLessThanOrEqual('56', $response->getHeaderLine('Retry-After'));
+        $this->assertSame(
+            "\"Maximum permissible ESI rate limit reached for group '$group'.\"",
+            $response->getBody()->__toString(),
+        );
+        $this->assertSame(
+            'App\EsiController: application ' . $appId .
+            " \"A1\": Maximum permissible ESI rate limit reached for group '$group'.",
             $this->logger->getHandler()?->getRecords()[0]['message'],
         );
     }
@@ -881,7 +924,7 @@ class EsiControllerTest extends WebTestCase
             null,
             [
                 'Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s1'),
-                'Neucore-EveCharacter' => '123',
+                EsiController::HEADER_NEUCORE_EVE_CHARACTER => '123',
             ],
             [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)],
         );
@@ -894,8 +937,8 @@ class EsiControllerTest extends WebTestCase
             null,
             [
                 'Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s1'),
-                'Neucore-EveCharacter' => '123',
-                'Neucore-EveLogin' => 'login2',
+                EsiController::HEADER_NEUCORE_EVE_CHARACTER => '123',
+                EsiController::HEADER_NEUCORE_EVE_LOGIN => 'login2',
             ],
             [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)],
         );

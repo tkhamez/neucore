@@ -61,10 +61,10 @@ class EsiRateLimit
     }
 
     /**
-     * @param string $g Group name, e.g. "fitting"
-     * @param string $l Limit, e.g. "150/15m", "15/1h"
-     * @param int $r Remaining, e.g. 148
-     * @param int $u Used, e.g. 2
+     * @param string $g Route group identifier, e.g. "fitting"
+     * @param string $l Total tokens per window, e.g. "150/15m", "15/1h"
+     * @param int $r Available tokens remaining, e.g. 148
+     * @param int $u Tokens consumed by the request, e.g. 2
      * @param int $t Time of the response, e.g. 1767448553
      * @param int|null $c Character ID for authenticated requests.
      */

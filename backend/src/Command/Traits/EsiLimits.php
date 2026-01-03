@@ -24,6 +24,12 @@ trait EsiLimits
      */
     private int $errorLimitRemaining = 10;
 
+    /**
+     * @see EsiController::$rateLimitRemainPercent
+     * @see \Neucore\Plugin\Core\EsiClient::$rateLimitRemainPercent
+     */
+    private int $rateLimitRemainPercent = 10; # TODO Rate Limits
+
     protected function esiLimits(
         StorageDatabaseInterface $storage,
         LoggerInterface $logger,

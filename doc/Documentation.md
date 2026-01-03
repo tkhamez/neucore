@@ -113,17 +113,20 @@ also implements refresh token rotation.
 
 The API respects the ESI cache headers and will return a cached response if it is still valid.
 
+#### ESI Limits
+
+The [ESI error limit](https://developers.eveonline.com/docs/services/esi/best-practices/#error-limit) of 100 errors every 60 seconds is reduced to 80 errors every 60 seconds. It is  
+shared between all applications that use the ESI API endpoint. The `X-Esi-Error-Limit-Remain` header is
+*not* modified to reflect this. The API will return a 429 status code if it gets below 21, including
+a `Retry-After` header.
+
+The [ESI rate limit](https://developers.eveonline.com/docs/services/esi/rate-limiting/) is reduced 
+to 80% of the actual ESI rate limit.
+
 ### Access Token
 
 As an alternative to the ESI proxy, applications can also request an ESI token from 
 `/app/v1/esi/access-token/{characterId}`.
-
-#### ESI Error Limit
-
-The ESI error limit of 100 errors every 60 seconds is reduced to 80 errors every 60 seconds. It is  
-shared between all applications that use the ESI API endpoint. The `X-Esi-Error-Limit-Remain` header is
-*not* modified to reflect this. The API will return a 429 status code if it gets below 21, including 
-a `Retry-After` header.
 
 ## Service Registration Plugins
 

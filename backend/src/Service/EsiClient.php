@@ -75,6 +75,48 @@ class EsiClient
     }
 
     /**
+     * Returns the earliest time at which another attempt can be made.
+     *
+     * Due to different values for $limitRemainPercent, the time may be later.
+     *
+     * Returns 0 if the limit has not yet been reached.
+     *
+     * @see https://developers.eveonline.com/docs/services/esi/rate-limiting/
+     */
+    public static function getRateLimitWaitTime(
+        StorageDatabaseInterface $storage,
+        string $pathQuery,
+        string $httpMethod,
+        ?int $characterId,
+        int $limitRemainPercent,
+    ): int {
+        $group = self::getRateLimitGroup($pathQuery, $httpMethod);
+        foreach (self::getRateLimits($storage) as $bucket => $limit) {
+            if (
+                ($characterId === null && $bucket === $group) ||
+                ($characterId !== null && $bucket === "$group:$characterId")
+            ) {
+                $numTokens = $limit->getTokensPerWindow();
+                if ($numTokens === 0) { // This should not happen.
+                    continue;
+                }
+                $tokensShouldRemain = floor($numTokens / 100 * $limitRemainPercent);
+                if ($limit->r < $limit->u) {
+                    // There were no tokens left after the last request
+                   return time() + 60;
+                }
+                if ($limit->r < $tokensShouldRemain) {
+                    // The last request was successful, wait for the number of seconds that have
+                    // passed since then.
+                    return time() + (time() - $limit->t);
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    /**
      * Returns the time (Unix timestamp) to wait until when the ESI rate limit was reached.
      */
     public static function getRateLimitedWaitTime(StorageDatabaseInterface $storage): int

@@ -19,6 +19,12 @@ class EsiClient implements EsiClientInterface
      */
     private int $errorLimitRemaining = 15;
 
+    /**
+     * @see \Neucore\Controller\App\EsiController::$rateLimitRemainPercent
+     * @see \Neucore\Command\Traits\EsiLimits::$rateLimitRemainPercent
+     */
+    private int $rateLimitRemainPercent = 15; # TODO Rate Limits
+
     private ?string $compatibilityDate = null;
 
     public function __construct(

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Neucore\Controller\App;
 
-use Neucore\Application;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\App;
 use Neucore\Entity\EveLogin;
@@ -45,6 +44,10 @@ use Psr\Log\LoggerInterface;
 )]
 class EsiController extends BaseController
 {
+    public const HEADER_NEUCORE_EVE_LOGIN = 'Neucore-EveLogin';
+
+    public const HEADER_NEUCORE_EVE_CHARACTER = 'Neucore-EveCharacter';
+
     private const ERROR_MESSAGE_PREFIX = 'App\EsiController: ';
 
     private const PARAM_DATASOURCE = 'datasource';
@@ -68,6 +71,12 @@ class EsiController extends BaseController
      * @see \Neucore\Command\Traits\EsiLimits::$errorLimitRemaining
      */
     private int $errorLimitRemain = 20;
+
+    /**
+     * @see \Neucore\Plugin\Core\EsiClient::$rateLimitRemainPercent
+     * @see \Neucore\Command\Traits\EsiLimits::$rateLimitRemainPercent
+     */
+    private int $rateLimitRemainPercent = 20;
 
     public function __construct(
         ResponseInterface $response,
@@ -279,14 +288,14 @@ class EsiController extends BaseController
         tags: ['Application - ESI'],
         parameters: [
             new OA\Parameter(
-                name: 'Neucore-EveCharacter',
+                name: self::HEADER_NEUCORE_EVE_CHARACTER,
                 description: "The EVE character ID those token should be used. Has priority over the query " .
                     "parameter 'datasource'",
                 in: 'header',
                 schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
-                name: 'Neucore-EveLogin',
+                name: self::HEADER_NEUCORE_EVE_LOGIN,
                 description: 'The EVE login name from which the token should be used, defaults to core.default.',
                 in: 'header',
                 schema: new OA\Schema(type: 'string'),
@@ -344,8 +353,8 @@ class EsiController extends BaseController
         path: '/app/v2/esi',
         operationId: 'esiV2',
         description: "Needs role: app-esi-proxy<br>" .
-            "Either the header 'Neucore-EveCharacter' and optionally 'Neucore-EveLogin' or the query " .
-            "parameter 'datasource' is required.<br> " .
+            "Either the header '" . self::HEADER_NEUCORE_EVE_CHARACTER . "' and optionally '" .
+            self::HEADER_NEUCORE_EVE_LOGIN . "' or the query parameter 'datasource' is required.<br> " .
             "Public ESI routes are not allowed.<br>" .
             "The following headers from ESI are passed through to the response if they exist: Content-Type, " .
             "Expires, X-Esi-Error-Limit-Remain, X-Esi-Error-Limit-Reset, X-Ratelimit-Group, X-Ratelimit-Limit, " .
@@ -360,14 +369,14 @@ class EsiController extends BaseController
         tags: ['Application - ESI'],
         parameters: [
             new OA\Parameter(
-                name: 'Neucore-EveCharacter',
+                name: self::HEADER_NEUCORE_EVE_CHARACTER,
                 description: "The EVE character ID those token should be used. Has priority over the query " .
                     "parameter 'datasource'",
                 in: 'header',
                 schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
-                name: 'Neucore-EveLogin',
+                name: self::HEADER_NEUCORE_EVE_LOGIN,
                 description: 'The EVE login name from which the token should be used, defaults to core.default.',
                 in: 'header',
                 schema: new OA\Schema(type: 'string'),
@@ -446,7 +455,7 @@ class EsiController extends BaseController
             ),
             new OA\Response(
                 response: '429',
-                description: 'Too many errors, see body for more.',
+                description: 'An ESI limit was reached, see body for details. The minimum of seconds to try again.',
                 headers: [
                     new OA\Header(
                         header: 'Retry-After',
@@ -491,14 +500,14 @@ class EsiController extends BaseController
         tags: ['Application - ESI'],
         parameters: [
             new OA\Parameter(
-                name: 'Neucore-EveCharacter',
+                name: self::HEADER_NEUCORE_EVE_CHARACTER,
                 description: "The EVE character ID those token should be used. Has priority over the query " .
                     "parameter 'datasource'",
                 in: 'header',
                 schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
-                name: 'Neucore-EveLogin',
+                name: self::HEADER_NEUCORE_EVE_LOGIN,
                 description: 'The EVE login name from which the token should be used, defaults to core.default.',
                 in: 'header',
                 schema: new OA\Schema(type: 'string'),
@@ -565,14 +574,14 @@ class EsiController extends BaseController
         tags: ['Application - ESI'],
         parameters: [
             new OA\Parameter(
-                name: 'Neucore-EveCharacter',
+                name: self::HEADER_NEUCORE_EVE_CHARACTER,
                 description: "The EVE character ID those token should be used. Has priority over the query " .
                     "parameter 'datasource'",
                 in: 'header',
                 schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
-                name: 'Neucore-EveLogin',
+                name: self::HEADER_NEUCORE_EVE_LOGIN,
                 description: 'The EVE login name from which the token should be used, defaults to core.default.',
                 in: 'header',
                 schema: new OA\Schema(type: 'string'),
@@ -651,30 +660,33 @@ class EsiController extends BaseController
     ): ResponseInterface {
         $this->app = $this->appAuth->getApp($request);
 
-        if ($this->checkErrors($version)) {
-            return $this->response;
-        }
-
-        // get/validate input
-        $esiPath = $this->getEsiPathWithQueryParams($request, $path);
+        // get input
+        $esiPathQuery = $this->getEsiPathWithQueryParams($request, $path);
         $dataSource = $this->getDataSource($request);
         if (str_contains($dataSource, ':')) {
             $dataSourceTmp = explode(':', $dataSource);
-            $characterId = $dataSourceTmp[0];
+            $characterId = (int) $dataSourceTmp[0];
             $eveLoginName = !empty($dataSourceTmp[1]) ? $dataSourceTmp[1] : EveLogin::NAME_DEFAULT;
         } else {
-            $characterId = $dataSource;
+            $characterId = (int) $dataSource;
             $eveLoginName = EveLogin::NAME_DEFAULT;
         }
-        $publicPath = EsiClient::isPublicPath($esiPath);
-        if (empty($esiPath) || $publicPath || empty($characterId)) {
-            if (empty($esiPath)) {
+
+        // Check ESI limits
+        if ($this->checkLimits($version, $esiPathQuery, $method, $characterId)) {
+            return $this->response;
+        }
+
+        // validate input
+        $publicPath = EsiClient::isPublicPath($esiPathQuery);
+        if (empty($esiPathQuery) || $publicPath || $characterId === 0) {
+            if (empty($esiPathQuery)) {
                 $reason = 'Path cannot be empty.';
             } elseif ($publicPath) {
                 $reason = 'Public ESI routes are not allowed.';
-            } else { // empty($characterId)
-                $reason = 'The Neucore-EveCharacter header and datasource parameter cannot both be empty, ' .
-                    'one of them must contain an EVE character ID';
+            } else { // $characterId === 0
+                $reason = 'The ' . self::HEADER_NEUCORE_EVE_CHARACTER . ' header and datasource ' .
+                    'parameter cannot both be empty, one of them must contain an EVE character ID';
             }
             if ($version === 1) {
                 return $this->response->withStatus(400, $reason);
@@ -692,10 +704,10 @@ class EsiController extends BaseController
         // Send request and handle errors.
         try {
             $esiResponse = $this->esiClient->request(
-                $esiPath,
+                $esiPathQuery,
                 $method,
                 $body,
-                (int) $characterId,
+                $characterId,
                 $eveLoginName,
                 compatibilityDate: $request->getHeader('X-Compatibility-Date')[0] ?? null,
                 acceptLanguage: $request->getHeader('Accept-Language')[0] ?? null,
@@ -728,14 +740,18 @@ class EsiController extends BaseController
 
         if ($esiResponse->getStatusCode() < 200 || $esiResponse->getStatusCode() > 299) {
             $message = $esiResponse->getBody()->getContents();
-            $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . ') ' . "$esiPath: $message");
+            $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . ') ' . "$esiPathQuery: $message");
         }
 
         return $this->buildResponse($esiResponse);
     }
 
-    private function checkErrors(int $version): bool
-    {
+    private function checkLimits(
+        int $version,
+        string $pathQuery,
+        string $httpMethod,
+        int $characterId,
+    ): bool {
         // Check error limit.
         if (($retryAt1 = EsiClient::getErrorLimitWaitTime($this->storage, $this->errorLimitRemain)) > 0) {
             $errorMessage = 'Maximum permissible ESI error limit reached';
@@ -765,8 +781,23 @@ class EsiController extends BaseController
             return true;
         }
 
-        # TODO Rate-Limits: Check the stored values for the new rate limit here.
-        #dump(EsiClient::getRateLimits($this->storage));
+        // Check rate limits
+        $retryAt4 = EsiClient::getRateLimitWaitTime(
+            $this->storage,
+            $pathQuery,
+            $httpMethod,
+            $characterId,
+            $this->rateLimitRemainPercent,
+        );
+        if ($retryAt4 > time()) {
+            $group = EsiClient::getRateLimitGroup($pathQuery, $httpMethod);
+            $this->build429Response(
+                "Maximum permissible ESI rate limit reached for group '$group'.",
+                $retryAt4,
+                $version,
+            );
+            return true;
+        }
 
         return false;
     }
@@ -806,8 +837,8 @@ class EsiController extends BaseController
 
     private function getDataSource(ServerRequestInterface $request): string
     {
-        $character = $request->getHeader('Neucore-EveCharacter')[0] ?? '';
-        $login = $request->getHeader('Neucore-EveLogin')[0] ?? '';
+        $character = $request->getHeader(self::HEADER_NEUCORE_EVE_CHARACTER)[0] ?? '';
+        $login = $request->getHeader(self::HEADER_NEUCORE_EVE_LOGIN)[0] ?? '';
         if ($character !== '') {
             return "$character:$login";
         }
