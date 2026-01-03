@@ -23,7 +23,7 @@ class EsiClient implements EsiClientInterface
      * @see \Neucore\Controller\App\EsiController::$rateLimitRemainPercent
      * @see \Neucore\Command\Traits\EsiLimits::$rateLimitRemainPercent
      */
-    private int $rateLimitRemainPercent = 15; # TODO Rate Limits
+    private int $rateLimitRemainPercent = 15; # TODO Rate-Limits
 
     private ?string $compatibilityDate = null;
 
@@ -62,6 +62,7 @@ class EsiClient implements EsiClientInterface
         if (($retryAt3 = EsiClientService::getThrottledWaitTime($this->storage)) > time()) {
             throw new Exception(EsiClientInterface::ERROR_TEMPORARILY_THROTTLED, $retryAt3);
         }
+        # TODO Rate-Limits
 
         try {
             $response = $this->esiClient->request(

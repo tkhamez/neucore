@@ -28,7 +28,7 @@ trait EsiLimits
      * @see EsiController::$rateLimitRemainPercent
      * @see \Neucore\Plugin\Core\EsiClient::$rateLimitRemainPercent
      */
-    private int $rateLimitRemainPercent = 10; # TODO Rate Limits
+    private int $rateLimitRemainPercent = 10; # TODO Rate-Limits
 
     protected function esiLimits(
         StorageDatabaseInterface $storage,
@@ -62,12 +62,13 @@ trait EsiLimits
         }
     }
 
+    /**
+     * TODO Rate-Limits: For a proper implementation this needs the endpoint
+     *   and character ID for the next request.
+     * @see EsiClient::getRateLimitWaitTime()
+     */
     private function checkRateLimit(): void
     {
-        # TODO Rate-Limits: For a proper implementation this needs the endpoint
-        #  and character ID for the next request.
-
-        #EsiClient::getRateLimits($this->storage);
     }
 
     private function checkThrottled(): void
