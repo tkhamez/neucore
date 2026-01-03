@@ -54,10 +54,14 @@ class EsiRateLimitsTest extends TestCase
 
         $function(new Request('GET', 'http://localhost/path'), ['x-neucore' => ['character_id' => 123456]]);
 
-        $this->assertSame(
-            '{"char-location:123456":{"g":"char-location","l":"1200/15m","r":1198,"u":2,"c":123456}}',
-            $this->storage->get(Variables::ESI_RATE_LIMIT),
+        $actual = (string) $this->storage->get(Variables::ESI_RATE_LIMIT);
+        self::assertSame(
+            '{"char-location:123456":' .
+            '{"g":"char-location","l":"1200/15m","r":1198,"u":2,"t":1767448553,"c":123456}}',
+            preg_replace('/"t":\d+/', '"t":1767448553', $actual),
         );
+        preg_match('/"t":(\d+)/', $actual, $actualTime);
+        self::assertLessThanOrEqual(time(), $actualTime[1]);
     }
 
     public function testInvoke_429(): void
@@ -66,12 +70,12 @@ class EsiRateLimitsTest extends TestCase
         $response1 = new Response(429, ['Retry-After' => [date('D, d M Y H:i:s \G\M\T', $waitUntil)]]);
         $function1 = $this->obj->__invoke($this->helper->getGuzzleHandler($response1));
         $function1(new Request('GET', 'https://local.host/esi/path'), []);
-        $this->assertSame("$waitUntil", $this->storage->get(Variables::ESI_RATE_LIMITED));
+        self::assertSame("$waitUntil", $this->storage->get(Variables::ESI_RATE_LIMITED));
 
         $response2 = new Response(429, ['Retry-After' => ['60']]);
         $function2 = $this->obj->__invoke($this->helper->getGuzzleHandler($response2));
         $function2(new Request('GET', 'https://local.host/esi/path'), []);
-        $this->assertIsString($this->storage->get(Variables::ESI_RATE_LIMITED));
-        $this->assertLessThanOrEqual(time() + 60, $this->storage->get(Variables::ESI_RATE_LIMITED));
+        self::assertIsString($this->storage->get(Variables::ESI_RATE_LIMITED));
+        self::assertLessThanOrEqual(time() + 60, $this->storage->get(Variables::ESI_RATE_LIMITED));
     }
 }

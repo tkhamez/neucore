@@ -19,9 +19,10 @@ class EsiRateLimitTest extends TestCase
     protected function setUp(): void
     {
         $this->rateLimits = [
-            'fitting,123456' => new EsiRateLimit('fitting', '150/15m', 148, 2, 123456),
+            'fitting,123456' => new EsiRateLimit('fitting', '150/15m', 148, 2, 1767448553, 123456),
         ];
-        $this->jsonFitting = '"fitting,123456":{"g":"fitting","l":"150/15m","r":148,"u":2,"c":123456}';
+        $this->jsonFitting =
+            '"fitting,123456":{"g":"fitting","l":"150/15m","r":148,"u":2,"t":1767448553,"c":123456}';
     }
 
     public function testToJson(): void
@@ -34,7 +35,7 @@ class EsiRateLimitTest extends TestCase
     {
         $rateLimits = $this->rateLimits;
         $rateLimits['fatigue,123456'] = [];
-        $rateLimits[''] = new EsiRateLimit('fatigue', '1200/15m', 1198, 2, null);
+        $rateLimits[''] = new EsiRateLimit('fatigue', '1200/15m', 1198, 2, 1767448553, null);
 
         // @phpstan-ignore argument.type
         $actual = EsiRateLimit::toJson($rateLimits);
@@ -52,10 +53,10 @@ class EsiRateLimitTest extends TestCase
     public function testFromJson_WithoutCharacterId(): void
     {
         $actual = EsiRateLimit::fromJson(
-            '{"fitting,123456":{"g":"fitting","l":"150/15m","r":148,"u":2,"c":null}}',
+            '{"fitting,123456":{"g":"fitting","l":"150/15m","r":148,"u":2,"t":1767448553,"c":null}}',
         );
 
-        $rateLimits['fitting,123456'] = new EsiRateLimit('fitting', '150/15m', 148, 2, null);
+        $rateLimits['fitting,123456'] = new EsiRateLimit('fitting', '150/15m', 148, 2, 1767448553, null);
         $this->assertEquals($rateLimits, $actual);
     }
 
@@ -89,11 +90,43 @@ class EsiRateLimitTest extends TestCase
     {
         self::assertSame(
             'fitting',
-            (new EsiRateLimit('fitting', '150/15m', 148, 2, null))->getBucket(),
+            (new EsiRateLimit('fitting', '150/15m', 148, 2, 1767448553, null))->getBucket(),
         );
         self::assertSame(
             'fitting:123456',
-            (new EsiRateLimit('fitting', '150/15m', 148, 2, 123456))->getBucket(),
+            (new EsiRateLimit('fitting', '150/15m', 148, 2, 1767448553, 123456))->getBucket(),
+        );
+    }
+
+    public function testGetTokensPerWindow(): void
+    {
+        self::assertSame(
+            0,
+            (new EsiRateLimit('grp', '', 148, 2, 123123, null))->getTokensPerWindow(),
+        );
+        self::assertSame(
+            150,
+            (new EsiRateLimit('grp', '150/15m', 148, 2, 123123, null))->getTokensPerWindow(),
+        );
+    }
+
+    public function testGetWindowInSeconds(): void
+    {
+        self::assertSame(
+            0,
+            (new EsiRateLimit('grp', '', 148, 2, 123123, null))->getWindowInSeconds(),
+        );
+        self::assertSame(
+            0,
+            (new EsiRateLimit('grp', '150/', 148, 2, 123123, null))->getWindowInSeconds(),
+        );
+        self::assertSame(
+            0,
+            (new EsiRateLimit('grp', '150/15x', 148, 2, 123123, null))->getWindowInSeconds(),
+        );
+        self::assertSame(
+            15 * 60,
+            (new EsiRateLimit('grp', '150/15m', 148, 2, 123123, null))->getWindowInSeconds(),
         );
     }
 }

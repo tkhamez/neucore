@@ -55,6 +55,7 @@ class EsiRateLimits
                 $response->getHeader(EsiClient::HEADER_RATE_LIMIT_LIMIT)[0] ?? '',
                 (int) ($response->getHeader(EsiClient::HEADER_RATE_LIMIT_REMAINING)[0] ?? -1),
                 (int) ($response->getHeader(EsiClient::HEADER_RATE_LIMIT_USED)[0] ?? -1),
+                time(),
                 $characterId,
             );
 
