@@ -50,7 +50,7 @@ class EsiClient implements EsiClientInterface
         if (($retryAt1 = EsiClientService::getErrorLimitWaitTime($this->storage, $this->errorLimitRemaining)) > 0) {
             throw new Exception(EsiClientInterface::ERROR_ERROR_LIMIT_REACHED, $retryAt1);
         }
-        if (($retryAt2 = EsiClientService::getRateLimitWaitTime($this->storage)) > time()) {
+        if (($retryAt2 = EsiClientService::getRateLimitedWaitTime($this->storage)) > time()) {
             throw new Exception(EsiClientInterface::ERROR_RATE_LIMIT_REACHED, $retryAt2);
         }
         if (($retryAt3 = EsiClientService::getThrottledWaitTime($this->storage)) > time()) {

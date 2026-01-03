@@ -59,14 +59,14 @@ class EsiClientTest extends TestCase
         self::assertSame(0, EsiClient::getErrorLimitWaitTime($this->storage, 15));
     }
 
-    public function testGetRateLimitWaitTime(): void
+    public function testGetRateLimitedWaitTime(): void
     {
         $time = time();
 
-        self::assertSame(0, EsiClient::getRateLimitWaitTime($this->storage));
+        self::assertSame(0, EsiClient::getRateLimitedWaitTime($this->storage));
 
         $this->storage->set(Variables::ESI_RATE_LIMITED, (string) ($time + 50));
-        self::assertSame($time + 50, EsiClient::getRateLimitWaitTime($this->storage));
+        self::assertSame($time + 50, EsiClient::getRateLimitedWaitTime($this->storage));
     }
 
     public function testGetThrottledWaitTime(): void

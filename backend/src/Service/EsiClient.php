@@ -59,7 +59,7 @@ class EsiClient
     /**
      * Returns the time (Unix timestamp) to wait until when the ESI rate limit was reached.
      */
-    public static function getRateLimitWaitTime(StorageDatabaseInterface $storage): int
+    public static function getRateLimitedWaitTime(StorageDatabaseInterface $storage): int
     {
         return (int) $storage->get(Variables::ESI_RATE_LIMITED);
     }

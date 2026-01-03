@@ -49,7 +49,7 @@ trait EsiLimits
 
     private function checkRateLimited(): void
     {
-        if (($retryAt = EsiClient::getRateLimitWaitTime($this->storage)) > time()) {
+        if (($retryAt = EsiClient::getRateLimitedWaitTime($this->storage)) > time()) {
             $sleep = (int) max(1, $retryAt - time());
             $this->logger->info("EsiRateLimited: rate limit hit, sleeping $sleep second(s).");
             $this->sleep($sleep);
