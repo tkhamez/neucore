@@ -41,8 +41,7 @@ class EsiRateLimit
                     !property_exists($values, 'l') ||
                     !property_exists($values, 'r') ||
                     !property_exists($values, 'u') ||
-                    !property_exists($values, 't') ||
-                    !property_exists($values, 'c')
+                    !property_exists($values, 't')
                 ) {
                     continue;
                 }
@@ -52,7 +51,6 @@ class EsiRateLimit
                     $values->r,
                     $values->u,
                     $values->t,
-                    $values->c,
                 );
             }
         }
@@ -66,7 +64,6 @@ class EsiRateLimit
      * @param int $r Available tokens remaining, e.g. 148
      * @param int $u Tokens consumed by the request, e.g. 2
      * @param int $t Time of the response, e.g. 1767448553
-     * @param int|null $c Character ID for authenticated requests.
      */
     public function __construct(
         public readonly string $g,
@@ -74,13 +71,7 @@ class EsiRateLimit
         public readonly int $r,
         public readonly int $u,
         public readonly int $t,
-        public readonly ?int $c,
     ) {}
-
-    public function getBucket(): string
-    {
-        return $this->c ? "$this->g:$this->c" : $this->g;
-    }
 
     /**
      * Returns 0 on error.

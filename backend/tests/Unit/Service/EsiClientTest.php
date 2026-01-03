@@ -70,7 +70,7 @@ class EsiClientTest extends TestCase
         ));
 
         $this->storage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson([
-            "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 148, 2, $time, $charId)
+            "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 148, 2, $time)
         ]));
         self::assertSame(0, EsiClient::getRateLimitWaitTime(
             $this->storage, "/characters/$charId/roles", 'GET', $charId, 20
@@ -78,7 +78,7 @@ class EsiClientTest extends TestCase
 
         // All tokens used
         $this->storage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson([
-            "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 1, 2, $time, $charId)
+            "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 1, 2, $time)
         ]));
         $actual1 = EsiClient::getRateLimitWaitTime(
             $this->storage, "/characters/$charId/roles", 'GET', $charId, 20
@@ -88,7 +88,7 @@ class EsiClientTest extends TestCase
 
         // All allowed tokens for the proxy used.
         $this->storage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson([
-            "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 100, 2, $time, $charId)
+            "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 100, 2, $time)
         ]));
         $actual2 = EsiClient::getRateLimitWaitTime(
             $this->storage, "/characters/$charId/roles", 'GET', $charId, 20
@@ -121,7 +121,7 @@ class EsiClientTest extends TestCase
     {
         self::assertSame([], EsiClient::getRateLimits($this->storage));
 
-        $rateLimits = ['test:123' => new EsiRateLimit('fitting', '150/15m', 148, 2, 1767448553, 123)];
+        $rateLimits = ['test:123' => new EsiRateLimit('fitting', '150/15m', 148, 2, 1767448553)];
         $this->storage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson($rateLimits));
         self::assertEquals(
             $rateLimits,

@@ -19,7 +19,7 @@ class EsiRateLimitTest extends TestCase
     protected function setUp(): void
     {
         $this->rateLimits = [
-            'fitting,123456' => new EsiRateLimit('fitting', '150/15m', 148, 2, 1767448553, 123456),
+            'fitting,123456' => new EsiRateLimit('fitting', '150/15m', 148, 2, 1767448553),
         ];
         $this->jsonFitting =
             '"fitting,123456":{"g":"fitting","l":"150/15m","r":148,"u":2,"t":1767448553,"c":123456}';
@@ -35,7 +35,7 @@ class EsiRateLimitTest extends TestCase
     {
         $rateLimits = $this->rateLimits;
         $rateLimits['fatigue,123456'] = [];
-        $rateLimits[''] = new EsiRateLimit('fatigue', '1200/15m', 1198, 2, 1767448553, null);
+        $rateLimits[''] = new EsiRateLimit('fatigue', '1200/15m', 1198, 2, 1767448553);
 
         // @phpstan-ignore argument.type
         $actual = EsiRateLimit::toJson($rateLimits);
@@ -56,7 +56,7 @@ class EsiRateLimitTest extends TestCase
             '{"fitting,123456":{"g":"fitting","l":"150/15m","r":148,"u":2,"t":1767448553,"c":null}}',
         );
 
-        $rateLimits['fitting,123456'] = new EsiRateLimit('fitting', '150/15m', 148, 2, 1767448553, null);
+        $rateLimits['fitting,123456'] = new EsiRateLimit('fitting', '150/15m', 148, 2, 1767448553);
         $this->assertEquals($rateLimits, $actual);
     }
 
@@ -86,27 +86,15 @@ class EsiRateLimitTest extends TestCase
         $this->assertEquals([], $actual4);
     }
 
-    public function testGetBucket(): void
-    {
-        self::assertSame(
-            'fitting',
-            (new EsiRateLimit('fitting', '150/15m', 148, 2, 1767448553, null))->getBucket(),
-        );
-        self::assertSame(
-            'fitting:123456',
-            (new EsiRateLimit('fitting', '150/15m', 148, 2, 1767448553, 123456))->getBucket(),
-        );
-    }
-
     public function testGetTokensPerWindow(): void
     {
         self::assertSame(
             0,
-            (new EsiRateLimit('grp', '', 148, 2, 123123, null))->getTokensPerWindow(),
+            (new EsiRateLimit('grp', '', 148, 2, 123123))->getTokensPerWindow(),
         );
         self::assertSame(
             150,
-            (new EsiRateLimit('grp', '150/15m', 148, 2, 123123, null))->getTokensPerWindow(),
+            (new EsiRateLimit('grp', '150/15m', 148, 2, 123123))->getTokensPerWindow(),
         );
     }
 
@@ -114,19 +102,19 @@ class EsiRateLimitTest extends TestCase
     {
         self::assertSame(
             0,
-            (new EsiRateLimit('grp', '', 148, 2, 123123, null))->getWindowInSeconds(),
+            (new EsiRateLimit('grp', '', 148, 2, 123123))->getWindowInSeconds(),
         );
         self::assertSame(
             0,
-            (new EsiRateLimit('grp', '150/', 148, 2, 123123, null))->getWindowInSeconds(),
+            (new EsiRateLimit('grp', '150/', 148, 2, 123123))->getWindowInSeconds(),
         );
         self::assertSame(
             0,
-            (new EsiRateLimit('grp', '150/15x', 148, 2, 123123, null))->getWindowInSeconds(),
+            (new EsiRateLimit('grp', '150/15x', 148, 2, 123123))->getWindowInSeconds(),
         );
         self::assertSame(
             15 * 60,
-            (new EsiRateLimit('grp', '150/15m', 148, 2, 123123, null))->getWindowInSeconds(),
+            (new EsiRateLimit('grp', '150/15m', 148, 2, 123123))->getWindowInSeconds(),
         );
     }
 }
