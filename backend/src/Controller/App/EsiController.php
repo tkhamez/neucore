@@ -357,8 +357,10 @@ class EsiController extends BaseController
             self::HEADER_NEUCORE_EVE_LOGIN . "' or the query parameter 'datasource' is required.<br> " .
             "Public ESI routes are not allowed.<br>" .
             "The following headers from ESI are passed through to the response if they exist: Content-Type, " .
-            "Expires, X-Esi-Error-Limit-Remain, X-Esi-Error-Limit-Reset, X-Ratelimit-Group, X-Ratelimit-Limit, " .
-            "X-Ratelimit-Remaining, X-Ratelimit-Used, X-Pages, X-Compatibility-Date, warning, Warning, " .
+            "Expires, " . EsiClient::HEADER_ERROR_LIMIT_REMAIN . ", " . EsiClient::HEADER_ERROR_LIMIT_RESET .
+            ", " . EsiClient::HEADER_RATE_LIMIT_GROUP . ", " . EsiClient::HEADER_RATE_LIMIT_LIMIT . ", " .
+            "" . EsiClient::HEADER_RATE_LIMIT_REMAINING . ", " . EsiClient::HEADER_RATE_LIMIT_USED .
+            ", X-Pages, X-Compatibility-Date, warning, Warning, " .
             "Retry-After.<br>" .
             "The HTTP status code from ESI is also passed through, so there may be more than the documented " .
             "ones.<br>" .
