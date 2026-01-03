@@ -67,9 +67,7 @@ trait EsiLimits
      *   and character ID for the next request.
      * @see EsiClient::getRateLimitWaitTime()
      */
-    private function checkRateLimit(): void
-    {
-    }
+    private function checkRateLimit(): void {}
 
     private function checkThrottled(): void
     {

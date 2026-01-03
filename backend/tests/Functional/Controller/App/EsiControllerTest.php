@@ -650,7 +650,11 @@ class EsiControllerTest extends WebTestCase
         $this->storage->set(
             Variables::ESI_RATE_LIMIT,
             EsiRateLimit::toJson(["$group:$charId" => new EsiRateLimit(
-                'char-detail', '600/15m', 100, 2, $time - 54
+                'char-detail',
+                '600/15m',
+                100,
+                2,
+                $time - 54,
             )]),
         );
 
@@ -824,7 +828,7 @@ class EsiControllerTest extends WebTestCase
             [
                 EsiClient::HEADER_ERROR_LIMIT_REMAIN => ['100'],
                 EsiClient::HEADER_ERROR_LIMIT_RESET => ['60'],
-                ],
+            ],
         ));
 
         $response = $this->runApp(

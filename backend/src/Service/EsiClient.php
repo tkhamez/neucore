@@ -103,7 +103,7 @@ class EsiClient
                 $tokensShouldRemain = floor($numTokens / 100 * $limitRemainPercent);
                 if ($limit->r < $limit->u) {
                     // There were no tokens left after the last request
-                   return time() + 60;
+                    return time() + 60;
                 }
                 if ($limit->r < $tokensShouldRemain) {
                     // The last request was successful, wait for the number of seconds that have

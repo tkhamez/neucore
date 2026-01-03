@@ -57,7 +57,7 @@ class EsiRateLimitsTest extends TestCase
         $actual = (string) $this->storage->get(Variables::ESI_RATE_LIMIT);
         self::assertSame(
             '{"char-location:123456":' .
-            '{"g":"char-location","l":"1200/15m","r":1198,"u":2,"t":1767448553,"c":123456}}',
+            '{"g":"char-location","l":"1200/15m","r":1198,"u":2,"t":1767448553}}',
             preg_replace('/"t":\d+/', '"t":1767448553', $actual),
         );
         preg_match('/"t":(\d+)/', $actual, $actualTime);

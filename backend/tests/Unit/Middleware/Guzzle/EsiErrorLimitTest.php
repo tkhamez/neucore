@@ -49,7 +49,7 @@ class EsiErrorLimitTest extends TestCase
             [
                 EsiClient::HEADER_ERROR_LIMIT_REMAIN => ['100'],
                 EsiClient::HEADER_ERROR_LIMIT_RESET => ['60'],
-                ],
+            ],
         );
 
         $function = $this->obj->__invoke($this->helper->getGuzzleHandler($response));

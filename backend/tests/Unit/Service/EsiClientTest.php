@@ -66,32 +66,48 @@ class EsiClientTest extends TestCase
         $charId = 1234;
 
         self::assertSame(0, EsiClient::getRateLimitWaitTime(
-            $this->storage, "/characters/$charId/roles", 'GET', $charId, 20
+            $this->storage,
+            "/characters/$charId/roles",
+            'GET',
+            $charId,
+            20,
         ));
 
         $this->storage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson([
-            "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 148, 2, $time)
+            "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 148, 2, $time),
         ]));
         self::assertSame(0, EsiClient::getRateLimitWaitTime(
-            $this->storage, "/characters/$charId/roles", 'GET', $charId, 20
+            $this->storage,
+            "/characters/$charId/roles",
+            'GET',
+            $charId,
+            20,
         ));
 
         // All tokens used
         $this->storage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson([
-            "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 1, 2, $time)
+            "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 1, 2, $time),
         ]));
         $actual1 = EsiClient::getRateLimitWaitTime(
-            $this->storage, "/characters/$charId/roles", 'GET', $charId, 20
+            $this->storage,
+            "/characters/$charId/roles",
+            'GET',
+            $charId,
+            20,
         );
         self::assertGreaterThanOrEqual(time() + 60, $actual1);
         self::assertLessThan(time() + 60 + 2, $actual1);
 
         // All allowed tokens for the proxy used.
         $this->storage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson([
-            "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 100, 2, $time)
+            "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 100, 2, $time),
         ]));
         $actual2 = EsiClient::getRateLimitWaitTime(
-            $this->storage, "/characters/$charId/roles", 'GET', $charId, 20
+            $this->storage,
+            "/characters/$charId/roles",
+            'GET',
+            $charId,
+            20,
         );
         self::assertGreaterThanOrEqual(time() + $timeOffset, $actual2);
         self::assertLessThan(time() + $timeOffset + 2, $actual2);
