@@ -123,6 +123,7 @@ class Application
             'settings_tests.php',
             'routes.php',
             'esi-paths-public.php',
+            'esi-rate-limits.php',
         ];
         if (in_array($name, $allowed)) {
             if (!array_key_exists($name, self::$loadedFiles)) {

@@ -6,6 +6,7 @@ namespace Neucore\Command;
 
 use Neucore\Application;
 use Neucore\Service\Config;
+use Neucore\Service\EsiClient;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,6 +17,9 @@ class GenerateEveApiFiles extends Command
 
     private \stdClass $definition;
 
+    /**
+     * @var string[]
+     */
     private array $pathsInteger = [
         '{alliance_id}',
         '{attribute_id}',
@@ -51,6 +55,9 @@ class GenerateEveApiFiles extends Command
         '{wing_id}',
     ];
 
+    /**
+     * @var string[]
+     */
     private array $pathsHex = [
         '{killmail_hash}',
     ];
@@ -153,7 +160,7 @@ class GenerateEveApiFiles extends Command
             $path2 = $this->replacePlaceholders($path);
             foreach ($data as $method => $endpoint) {
                 if (isset($endpoint->{'x-rate-limit'})) {
-                    $rateLimits[$path2][$method] = [
+                    $rateLimits[$path2][strtolower($method)] = [
                         'group' => $endpoint->{'x-rate-limit'}->group,
                         'maxTokens' => $endpoint->{'x-rate-limit'}->{'max-tokens'},
                         'windowSize' => $endpoint->{'x-rate-limit'}->{'window-size'},
@@ -169,14 +176,20 @@ class GenerateEveApiFiles extends Command
         );
     }
 
+    /**
+     * @see EsiClient::PATH_PATTERN
+     */
     private function replacePlaceholders(string $path): string
     {
         // change paths to regular expression
-        // e.g. /alliances/{alliance_id}/corporations/ =>  /alliances/[0-9]+/corporations/
+        // e.g. /alliances/{alliance_id}/corporations/ => /alliances/[0-9]+/corporations/
         $path2 = str_replace($this->pathsInteger, '[0-9]+', $path);
         return str_replace($this->pathsHex, '[0-9a-fA-F]+', $path2);
     }
 
+    /**
+     * @param array<int|string, mixed> $content
+     */
     private function writeFile(string $file, array $content, string $format): void
     {
         if ($format === 'php') {

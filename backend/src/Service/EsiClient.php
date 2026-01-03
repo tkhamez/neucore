@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Service;
 
 use Neucore\Application;
+use Neucore\Command\GenerateEveApiFiles;
 use Neucore\Data\EsiErrorLimit;
 use Neucore\Data\EsiRateLimit;
 use Neucore\Entity\EveLogin;
@@ -29,6 +30,11 @@ class EsiClient
     public const HEADER_RATE_LIMIT_REMAINING = 'X-Ratelimit-Remaining';
 
     public const HEADER_RATE_LIMIT_USED = 'X-Ratelimit-Used';
+
+    /**
+     * @see GenerateEveApiFiles::replacePlaceholders()
+     */
+    private const PATH_PATTERN = "@^{REG_EXP}(/)?([?].*)?$@";
 
     public function __construct(
         private readonly RepositoryFactory          $repositoryFactory,
@@ -92,21 +98,22 @@ class EsiClient
         return EsiRateLimit::fromJson((string) $storage->get(Variables::ESI_RATE_LIMIT));
     }
 
-    public static function isPublicPath(string $esiPath): bool
+    public static function isPublicPath(string $esiPathQuery): bool
     {
-        $path = $esiPath;
+        $path = $esiPathQuery;
         if (
-            str_starts_with($esiPath, '/latest/') ||
-            preg_match("@^/v([0-9])+/@", $esiPath) === 1
+            str_starts_with($esiPathQuery, '/latest/') ||
+            preg_match("@^/v([0-9])+/@", $esiPathQuery) === 1
         ) {
             // Strip the version from the old paths.
-            $path = substr($esiPath, (int) strpos($esiPath, '/', 1));
+            $path = substr($esiPathQuery, (int) strpos($esiPathQuery, '/', 1));
         }
 
         $publicPaths = Application::loadFile('esi-paths-public.php');
 
-        foreach ($publicPaths as $pattern) {
-            if (preg_match("@^$pattern(/)?$@", $path) === 1) {
+        foreach ($publicPaths as $regExp) {
+            $pattern = str_replace('{REG_EXP}', $regExp, self::PATH_PATTERN);
+            if (preg_match($pattern, $path) === 1) {
                 return true;
             }
         }
@@ -114,12 +121,28 @@ class EsiClient
         return false;
     }
 
+    public static function getRateLimitGroup(string $pathQuery, string $httpMethod): ?string
+    {
+        $rateLimits = Application::loadFile('esi-rate-limits.php');
+
+        foreach ($rateLimits as $regExp => $data) {
+            $pattern = str_replace('{REG_EXP}', $regExp, self::PATH_PATTERN);
+            if (preg_match($pattern, $pathQuery) === 1) {
+                if (isset($data[strtolower($httpMethod)])) {
+                    return $data[strtolower($httpMethod)]['group'];
+                }
+            }
+        }
+
+        return null;
+    }
+
     /**
      * @throws RuntimeException If character or a valid token could not be found.
      * @throws ClientExceptionInterface On request error.
      */
     public function request(
-        string $esiPath,
+        string $esiPathQuery,
         string $method,
         ?string $body,
         ?int $characterId,
@@ -128,7 +151,7 @@ class EsiClient
         ?string $compatibilityDate = null,
         ?string $acceptLanguage = null,
     ): ResponseInterface {
-        $isPublicPath = self::isPublicPath($esiPath);
+        $isPublicPath = self::isPublicPath($esiPathQuery);
 
         $token = null;
         if ($characterId) {
@@ -153,7 +176,7 @@ class EsiClient
             $header = ['Authorization' => 'Bearer ' . $token];
         }
 
-        $url = $this->config['eve']['esi_host'] . $esiPath;
+        $url = $this->config['eve']['esi_host'] . $esiPathQuery;
         $request = $this->httpClientFactory->createRequest($method, $url, $header, $body);
 
         $requestHeaders = [

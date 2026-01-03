@@ -93,9 +93,23 @@ class EsiClientTest extends TestCase
 
     public function testIsPublicPath(): void
     {
-        self::assertTrue(EsiClient::isPublicPath('/alliances'));
+        self::assertTrue(EsiClient::isPublicPath('/characters/123456789'));
+        self::assertTrue(EsiClient::isPublicPath('/characters/123456789/'));
+        self::assertTrue(EsiClient::isPublicPath('/characters/123456789?'));
+        self::assertTrue(EsiClient::isPublicPath('/characters/123456789/?'));
+        self::assertTrue(EsiClient::isPublicPath('/characters/123456789?a=b'));
+        self::assertTrue(EsiClient::isPublicPath('/characters/123456789/?a=b'));
         self::assertFalse(EsiClient::isPublicPath('/characters/123456789/assets'));
         self::assertFalse(EsiClient::isPublicPath('/invalid'));
+    }
+
+    public function testGetRateLimitGroup(): void
+    {
+        self::assertNull(EsiClient::getRateLimitGroup('/invalid', 'GET'));
+        self::assertSame(
+            'char-detail',
+            EsiClient::getRateLimitGroup('/characters/2120311950/roles?a=b', 'GET'),
+        );
     }
 
     /**
