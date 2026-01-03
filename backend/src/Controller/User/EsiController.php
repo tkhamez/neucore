@@ -235,12 +235,12 @@ class EsiController extends BaseController
         } else {
             $headers = [
                 'Expires',
-                'X-Esi-Error-Limit-Remain',
-                'X-Esi-Error-Limit-Reset',
-                'X-Ratelimit-Group',
-                'X-Ratelimit-Limit',
-                'X-Ratelimit-Remaining',
-                'X-Ratelimit-Used',
+                EsiClient::HEADER_ERROR_LIMIT_REMAIN,
+                EsiClient::HEADER_ERROR_LIMIT_RESET,
+                EsiClient::HEADER_RATE_LIMIT_GROUP,
+                EsiClient::HEADER_RATE_LIMIT_LIMIT,
+                EsiClient::HEADER_RATE_LIMIT_REMAINING,
+                EsiClient::HEADER_RATE_LIMIT_USED,
                 'X-Pages',
                 'warning',
                 'Warning',

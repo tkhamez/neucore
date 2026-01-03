@@ -14,6 +14,7 @@ use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Guzzle\EsiErrorLimit;
 use GuzzleHttp\Psr7\Response;
+use Neucore\Service\EsiClient;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\StorageDatabaseInterface;
 use Neucore\Storage\Variables;
@@ -515,13 +516,14 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame(429, $response?->getStatusCode());
         $this->assertGreaterThan('84', $response->getHeaderLine('Retry-After'));
         $this->assertLessThanOrEqual('86', $response->getHeaderLine('Retry-After'));
+        $headerRemain = EsiClient::HEADER_ERROR_LIMIT_REMAIN;
         $this->assertSame(
-            '"Maximum permissible ESI error limit reached (X-Esi-Error-Limit-Remain <= 20)."',
+            "\"Maximum permissible ESI error limit reached ($headerRemain <= 20).\"",
             $response->getBody()->__toString(),
         );
         $this->assertSame(
             'App\EsiController: application ' . $appId .
-            ' "A1": Maximum permissible ESI error limit reached (X-Esi-Error-Limit-Remain <= 20).',
+            " \"A1\": Maximum permissible ESI error limit reached ($headerRemain <= 20).",
             $this->logger->getHandler()?->getRecords()[0]['message'],
         );
     }
@@ -717,12 +719,12 @@ class EsiControllerTest extends WebTestCase
             [
                 'Content-Type' => ['application/json; charset=UTF-8'],
                 'Expires' => ['Sun, 10 Feb 2019 19:22:52 GMT'],
-                'X-Esi-Error-Limit-Remain' => ['100'],
-                'X-Esi-Error-Limit-Reset' => ['60'],
-                'X-Ratelimit-Group' => ['fitting'],
-                'X-Ratelimit-Limit' => ['150/15m'],
-                'X-Ratelimit-Remaining' => ['149'],
-                'X-Ratelimit-Used' => ['1'],
+                EsiClient::HEADER_ERROR_LIMIT_REMAIN => ['100'],
+                EsiClient::HEADER_ERROR_LIMIT_RESET => ['60'],
+                EsiClient::HEADER_RATE_LIMIT_GROUP => ['fitting'],
+                EsiClient::HEADER_RATE_LIMIT_LIMIT => ['150/15m'],
+                EsiClient::HEADER_RATE_LIMIT_REMAINING => ['149'],
+                EsiClient::HEADER_RATE_LIMIT_USED => ['1'],
                 'X-Compatibility-Date' => ['2025-07-11'],
                 'X-Pages' => ['3'],
                 'warning' => ['199 - This route has an upgrade available'],
@@ -748,12 +750,12 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame([
             'Content-Type' => ['application/json; charset=UTF-8'],
             'Expires' => ['Sun, 10 Feb 2019 19:22:52 GMT'],
-            'X-Esi-Error-Limit-Remain' => ['100'],
-            'X-Esi-Error-Limit-Reset' => ['60'],
-            'X-Ratelimit-Group' => ['fitting'],
-            'X-Ratelimit-Limit' => ['150/15m'],
-            'X-Ratelimit-Remaining' => ['149'],
-            'X-Ratelimit-Used' => ['1'],
+            EsiClient::HEADER_ERROR_LIMIT_REMAIN => ['100'],
+            EsiClient::HEADER_ERROR_LIMIT_RESET => ['60'],
+            EsiClient::HEADER_RATE_LIMIT_GROUP => ['fitting'],
+            EsiClient::HEADER_RATE_LIMIT_LIMIT => ['150/15m'],
+            EsiClient::HEADER_RATE_LIMIT_REMAINING => ['149'],
+            EsiClient::HEADER_RATE_LIMIT_USED => ['1'],
             'X-Compatibility-Date' => ['2025-07-11'],
             'X-Pages' => ['3'],
             'warning' => [
@@ -776,7 +778,10 @@ class EsiControllerTest extends WebTestCase
         $httpClient->setMiddleware(new EsiErrorLimit($this->storage));
         $httpClient->setResponse(new Response(
             200,
-            ['X-Esi-Error-Limit-Remain' => ['100'], 'X-Esi-Error-Limit-Reset' => ['60']],
+            [
+                EsiClient::HEADER_ERROR_LIMIT_REMAIN => ['100'],
+                EsiClient::HEADER_ERROR_LIMIT_RESET => ['60'],
+                ],
         ));
 
         $response = $this->runApp(
@@ -792,8 +797,8 @@ class EsiControllerTest extends WebTestCase
 
         $this->assertSame(200, $response?->getStatusCode());
         $this->assertSame([
-            'X-Esi-Error-Limit-Remain' => ['100'],
-            'X-Esi-Error-Limit-Reset' => ['60'],
+            EsiClient::HEADER_ERROR_LIMIT_REMAIN => ['100'],
+            EsiClient::HEADER_ERROR_LIMIT_RESET => ['60'],
         ], $response->getHeaders());
 
         $esiErrorValues = \Neucore\Data\EsiErrorLimit::fromJson(

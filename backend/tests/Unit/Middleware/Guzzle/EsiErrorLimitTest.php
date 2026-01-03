@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Guzzle\EsiErrorLimit;
+use Neucore\Service\EsiClient;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\Variables;
 use Neucore\Storage\SystemVariableStorage;
@@ -45,7 +46,10 @@ class EsiErrorLimitTest extends TestCase
     {
         $response = new Response(
             200,
-            ['X-Esi-Error-Limit-Remain' => ['100'], 'X-Esi-Error-Limit-Reset' => ['60']],
+            [
+                EsiClient::HEADER_ERROR_LIMIT_REMAIN => ['100'],
+                EsiClient::HEADER_ERROR_LIMIT_RESET => ['60'],
+                ],
         );
 
         $function = $this->obj->__invoke($this->helper->getGuzzleHandler($response));

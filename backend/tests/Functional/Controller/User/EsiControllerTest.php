@@ -7,6 +7,7 @@ namespace Tests\Functional\Controller\User;
 use GuzzleHttp\Psr7\Response;
 use Neucore\Entity\Role;
 use Neucore\Factory\HttpClientFactoryInterface;
+use Neucore\Service\EsiClient;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\Client;
@@ -77,8 +78,8 @@ class EsiControllerTest extends WebTestCase
         $httpClient->setResponse(new Response(
             200,
             [
-                'X-Esi-Error-Limit-Remain' => ['100'],
-                'X-Esi-Error-Limit-Reset' => ['60'],
+                EsiClient::HEADER_ERROR_LIMIT_REMAIN => ['100'],
+                EsiClient::HEADER_ERROR_LIMIT_RESET => ['60'],
                 'Expires' => ['Sat, 02 Mar 2019 12:26:53 GMT'],
             ],
             '{"key": "value"}',
@@ -95,8 +96,8 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame([
             'headers' => [
                 ['Expires', 'Sat, 02 Mar 2019 12:26:53 GMT'],
-                ['X-Esi-Error-Limit-Remain', '100'],
-                ['X-Esi-Error-Limit-Reset', '60'],
+                [EsiClient::HEADER_ERROR_LIMIT_REMAIN, '100'],
+                [EsiClient::HEADER_ERROR_LIMIT_RESET, '60'],
             ],
             'body' => ['key' => 'value'],
         ], $this->parseJsonBody($response));

@@ -739,8 +739,9 @@ class EsiController extends BaseController
         // Check error limit.
         if (($retryAt1 = EsiClient::getErrorLimitWaitTime($this->storage, $this->errorLimitRemain)) > 0) {
             $errorMessage = 'Maximum permissible ESI error limit reached';
+            $headerRemain = EsiClient::HEADER_ERROR_LIMIT_REMAIN;
             $this->build429Response(
-                "$errorMessage (X-Esi-Error-Limit-Remain <= $this->errorLimitRemain).",
+                "$errorMessage ($headerRemain <= $this->errorLimitRemain).",
                 $retryAt1,
                 $version,
                 "$errorMessage.",
@@ -824,12 +825,12 @@ class EsiController extends BaseController
         $headerAllowList = [
             'Content-Type',
             'Expires',
-            'X-Esi-Error-Limit-Remain',
-            'X-Esi-Error-Limit-Reset',
-            'X-Ratelimit-Group',
-            'X-Ratelimit-Limit',
-            'X-Ratelimit-Remaining',
-            'X-Ratelimit-Used',
+            EsiClient::HEADER_ERROR_LIMIT_REMAIN,
+            EsiClient::HEADER_ERROR_LIMIT_RESET,
+            EsiClient::HEADER_RATE_LIMIT_GROUP,
+            EsiClient::HEADER_RATE_LIMIT_LIMIT,
+            EsiClient::HEADER_RATE_LIMIT_REMAINING,
+            EsiClient::HEADER_RATE_LIMIT_USED,
             'X-Pages',
             'X-Compatibility-Date',
             'warning',

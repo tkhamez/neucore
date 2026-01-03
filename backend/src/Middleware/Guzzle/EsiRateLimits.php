@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Middleware\Guzzle;
 
 use Neucore\Data\EsiRateLimit;
+use Neucore\Service\EsiClient;
 use Neucore\Storage\StorageDatabaseInterface;
 use Neucore\Storage\Variables;
 use Psr\Http\Message\RequestInterface;
@@ -44,16 +45,16 @@ class EsiRateLimits
 
     private function handleResponseHeaders(ResponseInterface $response, ?int $characterId): void
     {
-        if ($response->hasHeader('X-Ratelimit-Group')) {
+        if ($response->hasHeader(EsiClient::HEADER_RATE_LIMIT_GROUP)) {
             $rateLimits = EsiRateLimit::fromJson((string) $this->storage->get(Variables::ESI_RATE_LIMIT));
 
-            $group = $response->getHeader('X-Ratelimit-Group')[0];
+            $group = $response->getHeader(EsiClient::HEADER_RATE_LIMIT_GROUP)[0];
             $bucket = $characterId ? "$group:$characterId" : $group;
             $rateLimits[$bucket] = new EsiRateLimit(
                 $group,
-                $response->getHeader('X-Ratelimit-Limit')[0] ?? '',
-                (int) ($response->getHeader('X-Ratelimit-Remaining')[0] ?? -1),
-                (int) ($response->getHeader('X-Ratelimit-Used')[0] ?? -1),
+                $response->getHeader(EsiClient::HEADER_RATE_LIMIT_LIMIT)[0] ?? '',
+                (int) ($response->getHeader(EsiClient::HEADER_RATE_LIMIT_REMAINING)[0] ?? -1),
+                (int) ($response->getHeader(EsiClient::HEADER_RATE_LIMIT_USED)[0] ?? -1),
                 $characterId,
             );
 

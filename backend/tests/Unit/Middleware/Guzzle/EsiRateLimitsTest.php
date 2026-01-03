@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Guzzle\EsiRateLimits;
+use Neucore\Service\EsiClient;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\SystemVariableStorage;
 use Neucore\Storage\Variables;
@@ -44,10 +45,10 @@ class EsiRateLimitsTest extends TestCase
     public function testInvoke_RateLimits(): void
     {
         $response = new Response(200, [
-            'X-Ratelimit-Group' => ['char-location'],
-            'X-Ratelimit-Limit' => ['1200/15m'],
-            'X-Ratelimit-Remaining' => ['1198'],
-            'X-Ratelimit-Used' => ['2'],
+            EsiClient::HEADER_RATE_LIMIT_GROUP => ['char-location'],
+            EsiClient::HEADER_RATE_LIMIT_LIMIT => ['1200/15m'],
+            EsiClient::HEADER_RATE_LIMIT_REMAINING => ['1198'],
+            EsiClient::HEADER_RATE_LIMIT_USED => ['2'],
         ]);
         $function = $this->obj->__invoke($this->helper->getGuzzleHandler($response));
 

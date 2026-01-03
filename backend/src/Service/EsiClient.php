@@ -18,6 +18,18 @@ use Psr\Http\Message\ResponseInterface;
 
 class EsiClient
 {
+    public const HEADER_ERROR_LIMIT_REMAIN = 'X-Esi-Error-Limit-Remain';
+
+    public const HEADER_ERROR_LIMIT_RESET = 'X-Esi-Error-Limit-Reset';
+
+    public const HEADER_RATE_LIMIT_GROUP = 'X-Ratelimit-Group';
+
+    public const HEADER_RATE_LIMIT_LIMIT = 'X-Ratelimit-Limit';
+
+    public const HEADER_RATE_LIMIT_REMAINING = 'X-Ratelimit-Remaining';
+
+    public const HEADER_RATE_LIMIT_USED = 'X-Ratelimit-Used';
+
     public function __construct(
         private readonly RepositoryFactory          $repositoryFactory,
         private readonly Config                     $config,
