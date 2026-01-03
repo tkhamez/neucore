@@ -18,12 +18,171 @@ return array (
       'windowSize' => '15m',
     ),
   ),
+  '/characters/[0-9]+/agents_research' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-industry',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/assets' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-asset',
+      'maxTokens' => 1800,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/assets/locations' => 
+  array (
+    'post' => 
+    array (
+      'group' => 'char-asset',
+      'maxTokens' => 1800,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/assets/names' => 
+  array (
+    'post' => 
+    array (
+      'group' => 'char-asset',
+      'maxTokens' => 1800,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/attributes' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-detail',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/blueprints' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-industry',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/calendar' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/calendar/{event_id}' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+    'put' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/calendar/{event_id}/attendees' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
   '/characters/[0-9]+/clones' => 
   array (
     'get' => 
     array (
       'group' => 'char-location',
       'maxTokens' => 1200,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/contacts' => 
+  array (
+    'delete' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+    'get' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+    'post' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+    'put' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/contacts/labels' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/contracts' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-contract',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/contracts/[0-9]+/bids' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-contract',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/contracts/[0-9]+/items' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-contract',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/cspa' => 
+  array (
+    'post' => 
+    array (
+      'group' => 'char-detail',
+      'maxTokens' => 600,
       'windowSize' => '15m',
     ),
   ),
@@ -78,6 +237,24 @@ return array (
       'windowSize' => '15m',
     ),
   ),
+  '/characters/[0-9]+/implants' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-detail',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/industry/jobs' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-industry',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
   '/characters/[0-9]+/killmails/recent' => 
   array (
     'get' => 
@@ -96,12 +273,117 @@ return array (
       'windowSize' => '15m',
     ),
   ),
+  '/characters/[0-9]+/loyalty/points' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-wallet',
+      'maxTokens' => 150,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/mail' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+    'post' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/mail/labels' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+    'post' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/mail/labels/{label_id}' => 
+  array (
+    'delete' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/mail/lists' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/mail/{mail_id}' => 
+  array (
+    'delete' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+    'get' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+    'put' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/medals' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-detail',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/mining' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-industry',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
   '/characters/[0-9]+/notifications' => 
   array (
     'get' => 
     array (
       'group' => 'char-notification',
       'maxTokens' => 15,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/notifications/contacts' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
       'windowSize' => '15m',
     ),
   ),
@@ -114,12 +396,111 @@ return array (
       'windowSize' => '15m',
     ),
   ),
+  '/characters/[0-9]+/planets' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-industry',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/planets/[0-9]+' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-industry',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/portrait' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-detail',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/roles' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-detail',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
   '/characters/[0-9]+/ship' => 
   array (
     'get' => 
     array (
       'group' => 'char-location',
       'maxTokens' => 1200,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/skillqueue' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-detail',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/skills' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-detail',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/standings' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-social',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/titles' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-detail',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/wallet' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-wallet',
+      'maxTokens' => 150,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/wallet/journal' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-wallet',
+      'maxTokens' => 150,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/wallet/transactions' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-wallet',
+      'maxTokens' => 150,
       'windowSize' => '15m',
     ),
   ),
@@ -147,6 +528,33 @@ return array (
     array (
       'group' => 'corp-industry',
       'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/corporations/[0-9]+/assets' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'corp-asset',
+      'maxTokens' => 1800,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/corporations/[0-9]+/assets/locations' => 
+  array (
+    'post' => 
+    array (
+      'group' => 'corp-asset',
+      'maxTokens' => 1800,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/corporations/[0-9]+/assets/names' => 
+  array (
+    'post' => 
+    array (
+      'group' => 'corp-asset',
+      'maxTokens' => 1800,
       'windowSize' => '15m',
     ),
   ),
@@ -300,6 +708,42 @@ return array (
     array (
       'group' => 'corp-member',
       'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/corporations/[0-9]+/projects' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'corp-project',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/corporations/[0-9]+/projects/{project_id}' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'corp-project',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/corporations/[0-9]+/projects/{project_id}/contribution/[0-9]+' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'corp-project',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/corporations/[0-9]+/projects/{project_id}/contributors' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'corp-project',
+      'maxTokens' => 600,
       'windowSize' => '15m',
     ),
   ),
@@ -569,6 +1013,33 @@ return array (
     'get' => 
     array (
       'group' => 'killmail',
+      'maxTokens' => 3600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/meta/changelog' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'meta',
+      'maxTokens' => 150,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/meta/compatibility-dates' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'meta',
+      'maxTokens' => 150,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/route/[0-9]+/[0-9]+' => 
+  array (
+    'post' => 
+    array (
+      'group' => 'routes',
       'maxTokens' => 3600,
       'windowSize' => '15m',
     ),
