@@ -49,7 +49,7 @@
         "symfony/yaml": "^6.0",
         "tkhamez/eve-api": "^11.20251106",
         "tkhamez/eve-sso": "^6.0",
-        "tkhamez/neucore-plugin": "^6.0",
+        "tkhamez/neucore-plugin": "^6.1",
         "tkhamez/slim-role-auth": "^6.0",
         "zircote/swagger-php": "^5.0"
     },

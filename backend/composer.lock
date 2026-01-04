@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fe5ad57455801c6a72f7bd1129e386a1",
+    "content-hash": "545ad6e9a9889905deea0f85936031f1",
     "packages": [
         {
             "name": "brick/math",
@@ -4810,24 +4810,24 @@
         },
         {
             "name": "tkhamez/neucore-plugin",
-            "version": "6.0.0",
+            "version": "6.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/neucore-plugin.git",
-                "reference": "73f0e5d33a0716571d4aad6ef093c439d876d5bd"
+                "reference": "99ca52d274934a6a3cd0d16e903f00a5433d8eff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/neucore-plugin/zipball/73f0e5d33a0716571d4aad6ef093c439d876d5bd",
-                "reference": "73f0e5d33a0716571d4aad6ef093c439d876d5bd",
+                "url": "https://api.github.com/repos/tkhamez/neucore-plugin/zipball/99ca52d274934a6a3cd0d16e903f00a5433d8eff",
+                "reference": "99ca52d274934a6a3cd0d16e903f00a5433d8eff",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "php": "^8.1",
                 "psr/http-client": "^1.0",
-                "psr/http-message": "^1.1 || ^2.0",
-                "psr/log": "^1.1 || ^2.0 || ^3.0",
+                "psr/http-message": "^2.0",
+                "psr/log": "^3.0",
                 "symfony/yaml": "^6.0"
             },
             "require-dev": {
@@ -4836,8 +4836,8 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Tests\\": "tests/",
-                    "Neucore\\Plugin\\": "src/"
+                    "Neucore\\Plugin\\": "src/",
+                    "Neucore\\Plugin\\Tests\\": "tests/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -4847,9 +4847,9 @@
             "description": "Necessary classes to write a Neucore plugin.",
             "support": {
                 "issues": "https://github.com/tkhamez/neucore-plugin/issues",
-                "source": "https://github.com/tkhamez/neucore-plugin/tree/6.0.0"
+                "source": "https://github.com/tkhamez/neucore-plugin/tree/6.1.0"
             },
-            "time": "2025-08-02T15:20:56+00:00"
+            "time": "2026-01-04T13:49:29+00:00"
         },
         {
             "name": "tkhamez/slim-role-auth",
