@@ -61,9 +61,10 @@ class EsiClientTest extends TestCase
 
     public function testGetRateLimitWaitTime(): void
     {
-        $timeOffset = 34;
+        $timeOffset = 3;
         $time = time() - $timeOffset;
         $charId = 1234;
+        $tokensPerSecond = 1.5;
 
         self::assertSame(0, EsiClient::getRateLimitWaitTime(
             $this->storage,
@@ -84,33 +85,38 @@ class EsiClientTest extends TestCase
             20,
         ));
 
-        // All tokens used
-        $this->storage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson([
-            "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 1, 2, $time),
-        ]));
-        $actual1 = EsiClient::getRateLimitWaitTime(
-            $this->storage,
-            "/characters/$charId/roles",
-            'GET',
-            $charId,
-            20,
-        );
-        self::assertGreaterThanOrEqual(time() + 60, $actual1);
-        self::assertLessThan(time() + 60 + 2, $actual1);
-
-        // All allowed tokens for the proxy used.
+        // All allowed tokens used.
         $this->storage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson([
             "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 100, 2, $time),
         ]));
-        $actual2 = EsiClient::getRateLimitWaitTime(
+        $actual = EsiClient::getRateLimitWaitTime(
             $this->storage,
             "/characters/$charId/roles",
             'GET',
             $charId,
             20,
         );
-        self::assertGreaterThanOrEqual(time() + $timeOffset, $actual2);
-        self::assertLessThan(time() + $timeOffset + 2, $actual2);
+
+        self::assertGreaterThanOrEqual(time(), $actual);
+        self::assertLessThan(time() + 10 + $tokensPerSecond - $timeOffset + 1, $actual);
+    }
+
+    public function testCalculateRateLimitWaitTime(): void
+    {
+        $tokensPerSecond = 1.5;
+
+        $actual1 = EsiClient::calculateRateLimitWaitTime(
+            new EsiRateLimit('char-detail', '600/15m', 60, 2, time()),
+            10,
+        );
+        self::assertSame(0, $actual1);
+
+        $actual2 = EsiClient::calculateRateLimitWaitTime(
+            new EsiRateLimit('char-detail', '600/15m', 59, 2, time()),
+            10,
+        );
+        self::assertGreaterThanOrEqual(10 + $tokensPerSecond - 2, $actual2);
+        self::assertLessThan(10 + $tokensPerSecond + 1, $actual2);
     }
 
     public function testGetRateLimitedWaitTime(): void

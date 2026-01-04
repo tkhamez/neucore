@@ -101,9 +101,10 @@ class EsiClientTest extends TestCase
 
     public function testRequest_RateLimit(): void
     {
-        $timeOffset = 34;
+        $timeOffset = 3;
         $time = time() - $timeOffset;
         $charId = 1234;
+        $tokensPerSecond = 1.5;
 
         $this->storage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson([
             "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 89, 2, $time),
@@ -120,8 +121,8 @@ class EsiClientTest extends TestCase
 
         self::assertInstanceOf(Exception::class, $e);
         self::assertSame(EsiClientInterface::ERROR_PERMISSIBLE_RATE_LIMIT_REACHED, $e->getMessage());
-        self::assertGreaterThanOrEqual(time() + $timeOffset, $e->getCode());
-        self::assertLessThan(time() + $timeOffset + 2, $e->getCode());
+        self::assertGreaterThanOrEqual(time(), $e->getCode());
+        self::assertLessThan(time() + 10 + $tokensPerSecond - $timeOffset + 1, $e->getCode());
     }
 
     public function testRequest_CharNotFound(): void

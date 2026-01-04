@@ -122,7 +122,9 @@ shared between all applications that use the ESI API endpoint. The `X-Esi-Error-
 a `Retry-After` header.
 
 The [ESI rate limit](https://developers.eveonline.com/docs/services/esi/rate-limiting/) is reduced 
-to 80% of the actual ESI rate limit.
+to 80% of the actual ESI rate limit. The seconds from the `Retry-After` header that is added after reaching
+the permissible rate limit is only a suggestion for a minimum delay. The current implementation does not 
+know when tokens will be returned.
 
 ### Access Token
 

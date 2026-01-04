@@ -62,6 +62,9 @@ Both the [ESI error limit](https://developers.eveonline.com/docs/services/esi/be
 and the [ESI rate limit](https://developers.eveonline.com/docs/services/esi/rate-limiting/) are 
 reduced to 85% of the actual ESI limits.
 
+The time returned after reaching the permissible rate limit is only a suggestion for a 
+minimum delay. The current implementation does not know when tokens will be returned.
+
 ### Service plugins
 
 They are available to users from the "Services" menu. They provide configuration data to customise the 

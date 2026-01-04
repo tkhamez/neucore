@@ -80,8 +80,6 @@ class EsiClient
      * Due to different values for $limitRemainPercent, the time may be later.
      *
      * Returns 0 if the limit has not yet been reached.
-     *
-     * @see https://developers.eveonline.com/docs/services/esi/rate-limiting/
      */
     public static function getRateLimitWaitTime(
         StorageDatabaseInterface $storage,
@@ -96,24 +94,44 @@ class EsiClient
                 ($characterId === null && $bucket === $group) ||
                 ($characterId !== null && $bucket === "$group:$characterId")
             ) {
-                $numTokens = $limit->getTokensPerWindow();
-                if ($numTokens === 0) { // This should not happen.
-                    continue;
-                }
-                $tokensShouldRemain = floor($numTokens / 100 * $limitRemainPercent);
-                if ($limit->r < $limit->u) {
-                    // There were no tokens left after the last request
-                    return time() + 60;
-                }
-                if ($limit->r < $tokensShouldRemain) {
-                    // The last request was successful, wait for the number of seconds that have
-                    // passed since then.
-                    return time() + (time() - $limit->t);
+                $wait = self::calculateRateLimitWaitTime($limit, $limitRemainPercent);
+                if ($wait > 0) {
+                    return time() + $wait;
                 }
             }
         }
 
         return 0;
+    }
+
+    /**
+     *
+     * We only have the time of the last request, so it is unknown when tokens will be returned.
+     * This calculation is based on the assumption that the tokens were used evenly across the window.
+     * Then 10 seconds are added to the result.
+     *
+     * @return int Number of seconds to wait.
+     * @see https://developers.eveonline.com/docs/services/esi/rate-limiting/
+     */
+    public static function calculateRateLimitWaitTime(EsiRateLimit $limit, int $limitRemainPercent): int
+    {
+        $windowSeconds = $limit->getWindowInSeconds();
+        $numTokens = $limit->getTokensPerWindow();
+        if ($windowSeconds === 0 || $numTokens === 0) { // That shouldn't happen.
+            return 0;
+        }
+
+        $wait = 0;
+        $tokensShouldRemain = floor($numTokens / 100 * $limitRemainPercent);
+        if ($limit->r < $tokensShouldRemain) {
+            $tokensPerSecond = $numTokens / $windowSeconds;
+            $minWaitTime = $limit->u * $tokensPerSecond;
+            $secondsSinceLastRequest = time() - $limit->t;
+            $wait = (int) ceil(max(0, $minWaitTime + 10 - $secondsSinceLastRequest));
+        }
+
+        // Do not wait longer than the window duration.
+        return min($wait, $windowSeconds);
     }
 
     /**

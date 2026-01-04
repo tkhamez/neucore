@@ -28,7 +28,7 @@ trait EsiLimits
      * @see EsiController::$rateLimitRemainPercent
      * @see \Neucore\Plugin\Core\EsiClient::$rateLimitRemainPercent
      */
-    private int $rateLimitRemainPercent = 10; # TODO Rate-Limits
+    private int $rateLimitRemainPercent = 10;
 
     protected function esiLimits(
         StorageDatabaseInterface $storage,
@@ -57,24 +57,51 @@ trait EsiLimits
     {
         if (($retryAt = EsiClient::getRateLimitedWaitTime($this->storage)) > time()) {
             $sleep = (int) max(1, $retryAt - time());
-            $this->logger->info("EsiRateLimited: rate limit hit, sleeping $sleep second(s).");
+            $this->logger->info("EsiLimits: rate limit hit, sleeping $sleep second(s).");
             $this->sleep($sleep);
         }
     }
 
     /**
-     * TODO Rate-Limits: For a proper implementation this needs the endpoint
-     *   and character ID for the next request.
-     * @see EsiClient::getRateLimitWaitTime()
+     * Simple implementation of the rate limit.
+     *
+     * For a proper implementation this needs the endpoint and character for the next requests.
+     * But we do not have that information here.
+     *
+     * It is also not possible to wait in Neucore\Middleware\Guzzle\EsiRateLimits
+     * because the API token may expire before the request is sent.
+     *
+     * For things that are done with commands, it should not be possible to reach a limit for a
+     * single character. So we skip those buckets.
+     *
+     * A simple solution is therefore to wait if a limit for a public endpoint is approaching.
      */
-    private function checkRateLimit(): void {}
+    private function checkRateLimit(): void
+    {
+        $sleep = 0;
+
+        foreach (EsiClient::getRateLimits($this->storage) as $bucket => $limit) {
+            if (str_contains($bucket, ':')) {
+                continue;
+            }
+            $sleep = max(
+                $sleep,
+                EsiClient::calculateRateLimitWaitTime($limit, $this->rateLimitRemainPercent),
+            );
+        }
+
+        if ($sleep > 0) {
+            $this->logger->info("EsiLimits: hit error limit, sleeping $sleep seconds");
+            $this->sleep($sleep);
+        }
+    }
 
     private function checkThrottled(): void
     {
         $now = time();
         if (($retryAt = EsiClient::getThrottledWaitTime($this->storage)) > $now) {
             $sleep = (int) max(1, $retryAt - $now);
-            $this->logger->info("EsiRateLimited: hit 'throttled', sleeping $sleep seconds");
+            $this->logger->info("EsiLimits: hit 'throttled', sleeping $sleep seconds");
             $this->sleep($sleep);
         }
     }
@@ -87,7 +114,7 @@ trait EsiLimits
         $retryAt = EsiClient::getErrorLimitWaitTime($this->storage, $this->errorLimitRemaining);
         if ($retryAt > 0) {
             $sleep = (int) min(60, $retryAt - time());
-            $this->logger->info("EsiRateLimited: hit error limit, sleeping $sleep seconds");
+            $this->logger->info("EsiLimits: hit error limit, sleeping $sleep seconds");
             $this->sleep($sleep);
         }
     }

@@ -7,6 +7,7 @@ namespace Tests\Unit\Command\Traits;
 use Monolog\Handler\TestHandler;
 use Neucore\Command\Traits\EsiLimits;
 use Neucore\Data\EsiErrorLimit;
+use Neucore\Data\EsiRateLimit;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\Variables;
@@ -40,7 +41,6 @@ class EsiLimitsTest extends TestCase
 
     public function testCheckForErrors_RateLimited(): void
     {
-
         $this->esiLimits($this->testStorage, $this->testLogger, true);
 
         $this->testStorage->set(Variables::ESI_RATE_LIMITED, (string) (time() - 1));
@@ -72,10 +72,10 @@ class EsiLimitsTest extends TestCase
 
         $this->testStorage->set(Variables::ESI_THROTTLED, (string) (time() + 5));
         $this->checkLimits();
-        self::assertGreaterThanOrEqual(4, $this->getSleepInSeconds()); // very rarely this is 4
+        self::assertGreaterThanOrEqual(4, $this->getSleepInSeconds()); // this is very rarely 4
         self::assertLessThanOrEqual(5, $this->getSleepInSeconds());
         self::assertMatchesRegularExpression(
-            "/EsiRateLimited: hit 'throttled', sleeping \d+ seconds/",
+            "/EsiLimits: hit 'throttled', sleeping \d+ seconds/",
             $this->testLogger->getMessages()[0],
         );
     }
@@ -93,7 +93,30 @@ class EsiLimitsTest extends TestCase
 
         self::assertLessThanOrEqual(20, $this->getSleepInSeconds());
         self::assertStringStartsWith(
-            'EsiRateLimited: hit error limit, sleeping ',
+            'EsiLimits: hit error limit, sleeping ',
+            $this->testLogger->getMessages()[0],
+        );
+        self::assertStringEndsWith(' seconds', $this->testLogger->getMessages()[0]);
+    }
+
+    public function testCheckForErrors_RateLimitApproaching(): void
+    {
+        $timeOffset = 3;
+        $charId = 123456;
+        $time = time() - $timeOffset;
+
+        $this->testStorage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson([
+            "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 10, 2, $time),
+            'sovereignty' => new EsiRateLimit('sovereignty', '600/15m', 10, 2, $time),
+        ]));
+
+        $this->esiLimits($this->testStorage, $this->testLogger, true);
+        $this->checkLimits();
+
+        self::assertGreaterThan(0, $this->getSleepInSeconds());
+        self::assertLessThanOrEqual(20, $this->getSleepInSeconds());
+        self::assertStringStartsWith(
+            'EsiLimits: hit error limit, sleeping ',
             $this->testLogger->getMessages()[0],
         );
         self::assertStringEndsWith(' seconds', $this->testLogger->getMessages()[0]);
