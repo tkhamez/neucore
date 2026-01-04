@@ -8,6 +8,7 @@ namespace Tests\Unit\Plugin\Core;
 
 use GuzzleHttp\Psr7\Response;
 use Neucore\Data\EsiErrorLimit;
+use Neucore\Data\EsiRateLimit;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Core\EsiClient;
 use Neucore\Plugin\Core\EsiClientInterface;
@@ -38,7 +39,10 @@ class EsiClientTest extends TestCase
         $om = $this->helper->getObjectManager();
         $logger = new Logger();
         $this->httpClient = new Client();
-        $this->storage = new SystemVariableStorage(new RepositoryFactory($om), new ObjectManager($om, $logger));
+        $this->storage = new SystemVariableStorage(
+            new RepositoryFactory($om),
+            new ObjectManager($om, $logger),
+        );
         $this->esiClient = new EsiClient(
             Helper::getEsiClientService($this->httpClient, $logger),
             new HttpClientFactory($this->httpClient),
@@ -93,6 +97,31 @@ class EsiClientTest extends TestCase
         $this->expectExceptionMessage(EsiClientInterface::ERROR_TEMPORARILY_THROTTLED);
 
         $this->esiClient->request('/characters/102003000/', 'GET', null, 20300400);
+    }
+
+    public function testRequest_RateLimit(): void
+    {
+        $timeOffset = 34;
+        $time = time() - $timeOffset;
+        $charId = 1234;
+
+        $this->storage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson([
+            "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 89, 2, $time),
+        ]));
+
+        try {
+            $this->esiClient->request("/characters/$charId/roles", 'GET', null, $charId);
+        } catch (Exception $e) {
+            // do nothing
+        }
+        if (!isset($e)) {
+            $this->fail('Exception expected.');
+        }
+
+        self::assertInstanceOf(Exception::class, $e);
+        self::assertSame(EsiClientInterface::ERROR_PERMISSIBLE_RATE_LIMIT_REACHED, $e->getMessage());
+        self::assertGreaterThanOrEqual(time() + $timeOffset, $e->getCode());
+        self::assertLessThan(time() + $timeOffset + 2, $e->getCode());
     }
 
     public function testRequest_CharNotFound(): void

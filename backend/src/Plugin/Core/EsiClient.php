@@ -23,7 +23,7 @@ class EsiClient implements EsiClientInterface
      * @see \Neucore\Controller\App\EsiController::$rateLimitRemainPercent
      * @see \Neucore\Command\Traits\EsiLimits::$rateLimitRemainPercent
      */
-    private int $rateLimitRemainPercent = 15; # TODO Rate-Limits
+    private int $rateLimitRemainPercent = 15;
 
     private ?string $compatibilityDate = null;
 
@@ -53,7 +53,10 @@ class EsiClient implements EsiClientInterface
         ?string $compatibilityDate = null,
         ?string $acceptLanguage = null,
     ): ResponseInterface {
-        if (($retryAt1 = EsiClientService::getErrorLimitWaitTime($this->storage, $this->errorLimitRemaining)) > 0) {
+        if (($retryAt1 = EsiClientService::getErrorLimitWaitTime(
+            $this->storage,
+            $this->errorLimitRemaining,
+        )) > 0) {
             throw new Exception(EsiClientInterface::ERROR_ERROR_LIMIT_REACHED, $retryAt1);
         }
         if (($retryAt2 = EsiClientService::getRateLimitedWaitTime($this->storage)) > time()) {
@@ -62,7 +65,15 @@ class EsiClient implements EsiClientInterface
         if (($retryAt3 = EsiClientService::getThrottledWaitTime($this->storage)) > time()) {
             throw new Exception(EsiClientInterface::ERROR_TEMPORARILY_THROTTLED, $retryAt3);
         }
-        # TODO Rate-Limits
+        if (($retryAt4 = EsiClientService::getRateLimitWaitTime(
+            $this->storage,
+            $esiPath,
+            $method,
+            $characterId,
+            $this->rateLimitRemainPercent,
+        )) > time()) {
+            throw new Exception(EsiClientInterface::ERROR_PERMISSIBLE_RATE_LIMIT_REACHED, $retryAt4);
+        }
 
         try {
             $response = $this->esiClient->request(

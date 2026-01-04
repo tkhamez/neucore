@@ -56,6 +56,12 @@ implement console commands via Neucore (`backend/bin/console plugin {plugin_id} 
 
 See this [example plugin](https://github.com/tkhamez/neucore-example-plugin) for a simple demo.
 
+#### ESI Limits
+
+Both the [ESI error limit](https://developers.eveonline.com/docs/services/esi/best-practices/#error-limit)
+and the [ESI rate limit](https://developers.eveonline.com/docs/services/esi/rate-limiting/) are 
+reduced to 85% of the actual ESI limits.
+
 ### Service plugins
 
 They are available to users from the "Services" menu. They provide configuration data to customise the 

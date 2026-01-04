@@ -1,13 +1,13 @@
 # Changelog
 
-## next
+## 2.10.0
 
 dd mm yyyy
 
 - New: Compatible with PHP 8.5
 - New: Compatible with MariaDB 11.8
 - New: Added the new rate limit headers to the response of the ESI proxy.
-- New: Implemented the new ESI rate limits for the ESI proxy.
+- New: Implemented the new ESI rate limits for the ESI proxy and plugins.
 - New: Added `NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS` environment variable, 
   see [.env.dist](backend/.env.dist) for details.
 - New: Added a command `generate-eve-api-files` to regenerate ESI files.

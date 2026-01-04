@@ -115,7 +115,8 @@ The API respects the ESI cache headers and will return a cached response if it i
 
 #### ESI Limits
 
-The [ESI error limit](https://developers.eveonline.com/docs/services/esi/best-practices/#error-limit) of 100 errors every 60 seconds is reduced to 80 errors every 60 seconds. It is  
+The [ESI error limit](https://developers.eveonline.com/docs/services/esi/best-practices/#error-limit) 
+of 100 errors every 60 seconds is reduced to 80 errors every 60 seconds. It is  
 shared between all applications that use the ESI API endpoint. The `X-Esi-Error-Limit-Remain` header is
 *not* modified to reflect this. The API will return a 429 status code if it gets below 21, including
 a `Retry-After` header.
