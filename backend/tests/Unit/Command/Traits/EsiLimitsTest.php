@@ -99,26 +99,33 @@ class EsiLimitsTest extends TestCase
         self::assertStringEndsWith(' seconds', $this->testLogger->getMessages()[0]);
     }
 
-    public function testCheckForErrors_RateLimitApproaching(): void
+    public function testCheckForErrors_RateLimitApproaching_PublicBucket(): void
     {
-        $timeOffset = 3;
-        $charId = 123456;
-        $time = time() - $timeOffset;
-
         $this->testStorage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson([
-            "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 10, 2, $time),
-            'sovereignty' => new EsiRateLimit('sovereignty', '600/15m', 10, 2, $time),
+            'sovereignty' => new EsiRateLimit('sovereignty', '600/15m', 10, 2, time() - 3),
         ]));
 
         $this->esiLimits($this->testStorage, $this->testLogger, true);
         $this->checkLimits();
 
         self::assertGreaterThan(0, $this->getSleepInSeconds());
-        self::assertLessThanOrEqual(20, $this->getSleepInSeconds());
+        self::assertLessThanOrEqual(900, $this->getSleepInSeconds());
         self::assertStringStartsWith(
             'EsiLimits: hit error limit, sleeping ',
             $this->testLogger->getMessages()[0],
         );
         self::assertStringEndsWith(' seconds', $this->testLogger->getMessages()[0]);
+    }
+
+    public function testCheckForErrors_RateLimitApproaching_IgnoreAuthenticated(): void
+    {
+        $this->testStorage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson([
+            "char-detail:123456" => new EsiRateLimit('char-detail', '600/15m', 10, 2, time() - 3),
+        ]));
+
+        $this->esiLimits($this->testStorage, $this->testLogger, true);
+        $this->checkLimits();
+
+        self::assertNull($this->getSleepInSeconds());
     }
 }

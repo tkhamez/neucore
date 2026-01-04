@@ -642,11 +642,8 @@ class EsiControllerTest extends WebTestCase
     {
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY])->getId();
 
-        $time = time();
         $charId = 1234;
         $group = 'char-detail';
-        $timeOffset = 3;
-        $tokensPerSecond = 1.5;
 
         // add var
         $this->storage->set(
@@ -656,7 +653,7 @@ class EsiControllerTest extends WebTestCase
                 '600/15m',
                 100,
                 2,
-                $time - $timeOffset,
+                time() - 3,
             )]),
         );
 
@@ -672,11 +669,8 @@ class EsiControllerTest extends WebTestCase
         );
 
         $this->assertSame(429, $response?->getStatusCode());
-        $this->assertGreaterThan('0', $response->getHeaderLine('Retry-After'));
-        $this->assertLessThanOrEqual(
-            10 + $tokensPerSecond - $timeOffset + 1,
-            $response->getHeaderLine('Retry-After')
-        );
+        $this->assertGreaterThan(0, $response->getHeaderLine('Retry-After'));
+        $this->assertLessThanOrEqual(900, $response->getHeaderLine('Retry-After'));
         $this->assertSame(
             "\"Maximum permissible ESI rate limit reached for group '$group'.\"",
             $response->getBody()->__toString(),

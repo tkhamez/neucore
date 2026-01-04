@@ -108,7 +108,7 @@ class EsiClient
      *
      * We only have the time of the last request, so it is unknown when tokens will be returned.
      * This calculation is based on the assumption that the tokens were used evenly across the window.
-     * Then 10 seconds are added to the result.
+     * Then the result is doubled and another 10 seconds are added.
      *
      * @return int Number of seconds to wait.
      * @see https://developers.eveonline.com/docs/services/esi/rate-limiting/
@@ -125,9 +125,9 @@ class EsiClient
         $tokensShouldRemain = floor($numTokens / 100 * $limitRemainPercent);
         if ($limit->r < $tokensShouldRemain) {
             $tokensPerSecond = $numTokens / $windowSeconds;
-            $minWaitTime = $limit->u * $tokensPerSecond;
+            $minWaitSeconds = (($limit->u / $tokensPerSecond) * 2) + 10;
             $secondsSinceLastRequest = time() - $limit->t;
-            $wait = (int) ceil(max(0, $minWaitTime + 10 - $secondsSinceLastRequest));
+            $wait = (int) ceil(max(0, $minWaitSeconds - $secondsSinceLastRequest));
         }
 
         // Do not wait longer than the window duration.
