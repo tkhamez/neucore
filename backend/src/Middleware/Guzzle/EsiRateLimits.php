@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Middleware\Guzzle;
 
 use Neucore\Data\EsiRateLimit;
+use Neucore\Factory\HttpClientFactory;
 use Neucore\Service\EsiClient;
 use Neucore\Storage\StorageDatabaseInterface;
 use Neucore\Storage\Variables;
@@ -33,7 +34,8 @@ class EsiRateLimits
     public function __invoke(callable $handler): \Closure
     {
         return function (RequestInterface $request, array $options) use ($handler) {
-            $characterId = $options['x-neucore']['character_id'] ?? null; // This is not always set for tests.
+            // This is not always set for tests.
+            $characterId = $options[HttpClientFactory::HTTP_CLIENT_OPTIONS_KEY]['character_id'] ?? null;
             return $handler($request, $options)->then(
                 function (ResponseInterface $response) use ($characterId) {
                     $this->handleResponseHeaders($response, $characterId);

@@ -25,6 +25,8 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class HttpClientFactory implements HttpClientFactoryInterface
 {
+    public const HTTP_CLIENT_OPTIONS_KEY = 'x-neucore';
+
     public function __construct(
         private readonly Config $config,
         private readonly EsiErrorLimit $esiHeaders,
@@ -127,7 +129,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
                     'User-Agent' => $this->config['guzzle']['user_agent'],
                 ],
             ),
-            'x-neucore' => [
+            self::HTTP_CLIENT_OPTIONS_KEY => [
                 'character_id' => $characterId,
             ],
         ]);

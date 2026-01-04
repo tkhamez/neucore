@@ -32,6 +32,9 @@ interface HttpClientFactoryInterface
         ?int $characterId = null,
     ): \GuzzleHttp\ClientInterface;
 
+    /**
+     * @param array<string, string|string[]> $headers
+     */
     public function createRequest(
         string $method,
         string $url,
@@ -39,6 +42,9 @@ interface HttpClientFactoryInterface
         ?string $body = null,
     ): RequestInterface;
 
+    /**
+     * @param array<string, string|string[]> $headers
+     */
     public function createResponse(
         int $status = 200,
         array $headers = [],

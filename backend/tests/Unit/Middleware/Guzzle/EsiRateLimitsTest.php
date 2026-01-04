@@ -6,6 +6,7 @@ namespace Tests\Unit\Middleware\Guzzle;
 
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Neucore\Factory\HttpClientFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Guzzle\EsiRateLimits;
 use Neucore\Service\EsiClient;
@@ -52,7 +53,10 @@ class EsiRateLimitsTest extends TestCase
         ]);
         $function = $this->obj->__invoke($this->helper->getGuzzleHandler($response));
 
-        $function(new Request('GET', 'http://localhost/path'), ['x-neucore' => ['character_id' => 123456]]);
+        $function(
+            new Request('GET', 'http://localhost/path'),
+            [HttpClientFactory::HTTP_CLIENT_OPTIONS_KEY => ['character_id' => 123456]],
+        );
 
         $actual = (string) $this->storage->get(Variables::ESI_RATE_LIMIT);
         self::assertSame(
