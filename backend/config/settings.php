@@ -65,7 +65,7 @@ return [
         'use_mail_token_for_unauthenticated_requests' => '${NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS}',
 
         // tkhamez/eve-api must use the same date.
-        'esi_compatibility_date' => '2025-09-30',
+        'esi_compatibility_date' => '2025-12-16',
     ],
 
     'guzzle' => [
