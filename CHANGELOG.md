@@ -2,7 +2,7 @@
 
 ## 2.10.0
 
-dd mm yyyy
+5 Jan 2026
 
 - New: Compatible with PHP 8.5
 - New: Compatible with MariaDB 11.8
