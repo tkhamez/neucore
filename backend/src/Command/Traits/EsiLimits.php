@@ -91,7 +91,7 @@ trait EsiLimits
         }
 
         if ($sleep > 0) {
-            $this->logger->info("EsiLimits: hit error limit, sleeping $sleep seconds");
+            $this->logger->info("EsiLimits: hit rate limit, sleeping $sleep seconds");
             $this->sleep($sleep);
         }
     }

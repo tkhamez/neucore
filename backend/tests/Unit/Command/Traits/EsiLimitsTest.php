@@ -111,7 +111,7 @@ class EsiLimitsTest extends TestCase
         self::assertGreaterThan(0, $this->getSleepInSeconds());
         self::assertLessThanOrEqual(900, $this->getSleepInSeconds());
         self::assertStringStartsWith(
-            'EsiLimits: hit error limit, sleeping ',
+            'EsiLimits: hit rate limit, sleeping ',
             $this->testLogger->getMessages()[0],
         );
         self::assertStringEndsWith(' seconds', $this->testLogger->getMessages()[0]);
