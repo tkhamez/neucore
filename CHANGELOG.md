@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 2.11.0
 
-dd mm yyyy
+17 Jan 2026
 
 - Change: Replaced the filesystem storage for the HTTP cache with a database storage. This fixes 
   a problem with too many open files when `run-jobs.sh` is executed and there are many characters.
