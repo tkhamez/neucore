@@ -341,6 +341,12 @@ class Helper
             }
         }
 
+        try {
+            $em->getConnection()->executeStatement('DELETE FROM cache_http WHERE 1');
+        } catch (Exception) {
+            // do nothing, the table does not always exist
+        }
+
         self::$roleSequence = 0;
 
         $em->clear();

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Factory;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Monolog\Logger;
 use Neucore\Factory\HttpClientFactory;
 use Neucore\Factory\RepositoryFactory;
@@ -21,45 +23,66 @@ class HttpClientFactoryTest extends TestCase
 {
     private HttpClientFactory $factory;
 
+    private Connection $dbalConnection;
+
     protected function setUp(): void
     {
-        if (is_dir(__DIR__ . '/cache-key/@')) {
-            rmdir(__DIR__ . '/cache-key/@');
-            rmdir(__DIR__ . '/cache-key');
-        }
+        $h = new Helper();
+        $h->emptyDb();
+
         $logger = new Logger('test');
-        $om = (new Helper())->getObjectManager();
+        $em = $h->getEm();
+        $this->dbalConnection = $em->getConnection();
         $storage = new SystemVariableStorage(
-            new RepositoryFactory($om),
-            new ObjectManager($om, $logger),
+            new RepositoryFactory($em),
+            new ObjectManager($em, $logger),
         );
         $this->factory = new HttpClientFactory(
-            new Config(['guzzle' => ['cache' => ['dir' => __DIR__], 'user_agent' => 'Test']]),
+            new Config([
+                'guzzle' => [
+                    'cache' => ['table' => 'cache_http'],
+                    'user_agent' => 'Test',
+                ],
+            ]),
             new EsiErrorLimit($storage),
             new EsiWarnings($logger),
             new EsiRateLimits($logger, $storage),
             new EsiThrottled($storage),
             $logger,
+            $this->dbalConnection
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGet(): void
     {
-        $this->assertFalse(is_dir(__DIR__ . '/cache-key'));
+        $this->factory->get('cache-key1');
 
-        $this->factory->get('cache-key');
-        $this->assertTrue(is_dir(__DIR__ . '/cache-key'));
+        $result = $this->dbalConnection->executeQuery('SELECT item_id FROM cache_http');
+        self::assertSame([['item_id' => 'cache-key1:init']], $result->fetchAllAssociative());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetGuzzleClient(): void
     {
         $this->factory->getGuzzleClient(null);
-        $this->assertFalse(is_dir(__DIR__ . '/cache-key'));
+
+        $result = $this->dbalConnection->executeQuery('SELECT item_id FROM cache_http');
+        self::assertSame([], $result->fetchAllAssociative());
     }
 
     public function testCreateRequest(): void
     {
-        $actual = $this->factory->createRequest('GET', 'http://localhost', ['X-Header-Name' => 'value'], 'body');
+        $actual = $this->factory->createRequest(
+            'GET',
+            'http://localhost',
+            ['X-Header-Name' => 'value'],
+            'body',
+        );
         $this->assertSame('GET', $actual->getMethod());
         $this->assertSame('http://localhost', $actual->getUri()->__toString());
         $this->assertSame(['value'], $actual->getHeader('X-Header-Name'));

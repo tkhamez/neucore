@@ -85,7 +85,7 @@ class SettingsControllerTest extends WebTestCase
                 'use_mail_token_for_unauthenticated_requests' => '0',
             ],
             'guzzle' => [
-                'cache' => ['dir' => Application::ROOT_DIR . '/var/cache'],
+                'cache' => ['table' => 'cache_http'],
                 'user_agent' => '',
             ],
             'plugins_install_dir' => __DIR__ . '/SettingsController',

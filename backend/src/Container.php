@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Tools\DsnParser;
 use Doctrine\ORM\EntityManager;
@@ -81,6 +82,9 @@ class Container
             },
             ObjectManager::class => function (ContainerInterface $c) {
                 return $c->get(EntityManagerInterface::class);
+            },
+            Connection::class => function (ContainerInterface $c) {
+                return $c->get(EntityManagerInterface::class)->getConnection();
             },
 
             // EVE OAuth

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Neucore\Factory;
 
+use Doctrine\DBAL\Connection;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Kevinrob\GuzzleCache\CacheEntry;
 use Kevinrob\GuzzleCache\CacheMiddleware;
 use Kevinrob\GuzzleCache\Storage\Psr6CacheStorage;
 use Kevinrob\GuzzleCache\Strategy\PrivateCacheStrategy;
@@ -21,7 +23,7 @@ use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Adapter\DoctrineDbalAdapter;
 
 class HttpClientFactory implements HttpClientFactoryInterface
 {
@@ -34,6 +36,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
         private readonly EsiRateLimits $esiRateLimits,
         private readonly EsiThrottled $esiThrottled,
         private readonly LoggerInterface $logger,
+        private readonly Connection $dbalConnection,
     ) {}
 
     public function get(
@@ -99,20 +102,9 @@ class HttpClientFactory implements HttpClientFactoryInterface
         #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
 
         if (!empty($cacheKey)) {
-            $dir = $this->config['guzzle']['cache']['dir'] . DIRECTORY_SEPARATOR . $cacheKey;
-            $dirExists = is_dir($dir);
-            if (!$dirExists && @mkdir($dir, 0775, true)) {
-                $dirExists = true;
-            }
-            if ($dirExists && is_writable($dir)) {
-                $cache = new CacheMiddleware(new PrivateCacheStrategy(new Psr6CacheStorage(
-                    // 86400 = one-day lifetime
-                    new FilesystemAdapter('', 86400, $dir),
-                )));
-                $stack->push($cache, 'cache');
-            } else {
-                $this->logger->error("$dir is not writable or does not exist.");
-            }
+            $storage = $this->createStorage($cacheKey);
+            $cache = new CacheMiddleware(new PrivateCacheStrategy($storage));
+            $stack->push($cache, 'cache');
         }
 
         $stack->push($this->esiHeaders);
@@ -133,5 +125,27 @@ class HttpClientFactory implements HttpClientFactoryInterface
                 'character_id' => $characterId,
             ],
         ]);
+    }
+
+    private function createStorage(string $cacheKey): Psr6CacheStorage
+    {
+        $tableName = $this->config['guzzle']['cache']['table'];
+        $adapter = new DoctrineDbalAdapter(
+            $this->dbalConnection,
+            $cacheKey,
+            86400,
+            ['db_table' => $tableName],
+        );
+        $storage = new Psr6CacheStorage($adapter);
+
+        // This creates the table if it does not exist yet.
+        $storage->save('init', new CacheEntry(
+            new Request('GET', 'https://example.com/'),
+            new Response(200, [], 'test'),
+            new \DateTime('+ 1 minute'),
+        ));
+        $adapter->commit();
+
+        return $storage;
     }
 }

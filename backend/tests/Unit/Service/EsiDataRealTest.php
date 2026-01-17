@@ -48,7 +48,7 @@ class EsiDataRealTest extends TestCase
                 'use_mail_token_for_unauthenticated_requests' => '0',
             ],
             'guzzle' => [
-                'cache' => ['dir' => $cacheDir],
+                'cache' => ['table' => 'cache_http'],
                 'user_agent' => $settings['env_var_defaults']['NEUCORE_USER_AGENT'],
             ],
         ]);
@@ -72,6 +72,7 @@ class EsiDataRealTest extends TestCase
                     new EsiRateLimits($this->log, $storage),
                     new EsiThrottled($storage),
                     $this->log,
+                    $em->getConnection(),
                 ),
                 $config,
                 new EveMailToken(
