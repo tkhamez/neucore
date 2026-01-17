@@ -643,14 +643,19 @@ class Helper
         rmdir($dir);
     }
 
-    public function addHttpCacheEntry(string $tableName, string $namespace, string $cacheKey): void
+    public function getHttpCacheAdapter(string $tableName, string $namespace): DoctrineDbalAdapter
     {
-        $adapter = new DoctrineDbalAdapter(
+        return new DoctrineDbalAdapter(
             $this->getEm()->getConnection(),
             $namespace,
-            86400,
+            86400, // one day
             ['db_table' => $tableName],
         );
+    }
+
+    public function addHttpCacheEntry(string $tableName, string $namespace, string $cacheKey): void
+    {
+        $adapter = $this->getHttpCacheAdapter($tableName, $namespace);
         $storage = new Psr6CacheStorage($adapter);
 
         // This creates the table if it does not exist yet.

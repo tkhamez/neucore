@@ -140,7 +140,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
         $adapter = new DoctrineDbalAdapter(
             $this->dbalConnection,
             $cacheKey,
-            86400,
+            86400, // one day
             ['db_table' => $tableName],
         );
         $storage = new Psr6CacheStorage($adapter);
