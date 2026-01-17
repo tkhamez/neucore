@@ -10,6 +10,9 @@ dd mm yyyy
 - Fix: Fixed a log message that said "error limit" instead of "rate limit".
 - Updated backend dependencies.
 
+The directory `NEUCORE_CACHE_DIR/http` (`backend/var/cache/http` by default) can be deleted 
+after this update.
+
 ## 2.10.0
 
 5 Jan 2026

@@ -70,7 +70,6 @@ return [
 
     'guzzle' => [
         'cache' => [
-            'dir' => '${NEUCORE_CACHE_DIR}/http',
             'table' => 'cache_http',
         ],
         'user_agent' => '${NEUCORE_USER_AGENT}',
