@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Neucore\Factory;
 
-use Neucore\Exception\Exception;
 use Neucore\Service\Config;
 use Neucore\Service\EveMailToken;
 use Tkhamez\Eve\API\Api\AllianceApi;
