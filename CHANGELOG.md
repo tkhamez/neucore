@@ -1,5 +1,13 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Change: Updated the ESI compatibility date to 2025-12-16.
+- Fix: Fixed a log message that said "error limit" instead of "rate limit".
+- Updated backend dependencies.
+
 ## 2.10.0
 
 5 Jan 2026
