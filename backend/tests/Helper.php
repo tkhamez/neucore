@@ -9,12 +9,15 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Persistence\ObjectManager;
 use Eve\Sso\AuthenticationProvider;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\RS256;
 use Jose\Component\Signature\JWSBuilder;
 use Jose\Component\Signature\Serializer\CompactSerializer;
+use Kevinrob\GuzzleCache\CacheEntry;
+use Kevinrob\GuzzleCache\Storage\Psr6CacheStorage;
 use Neucore\Application;
 use Neucore\Container;
 use Neucore\Entity\Alliance;
@@ -58,6 +61,7 @@ use Neucore\Storage\StorageDatabaseInterface;
 use Neucore\Storage\SystemVariableStorage;
 use Neucore\Util\Crypto;
 use Neucore\Util\Database;
+use Symfony\Component\Cache\Adapter\DoctrineDbalAdapter;
 use Symfony\Component\Yaml\Parser;
 
 class Helper
@@ -637,6 +641,25 @@ class Helper
             }
         }
         rmdir($dir);
+    }
+
+    public function addHttpCacheEntry(string $tableName, string $namespace, string $cacheKey): void
+    {
+        $adapter = new DoctrineDbalAdapter(
+            $this->getEm()->getConnection(),
+            $namespace,
+            86400,
+            ['db_table' => $tableName],
+        );
+        $storage = new Psr6CacheStorage($adapter);
+
+        // This creates the table if it does not exist yet.
+        $storage->save($cacheKey, new CacheEntry(
+            new Request('GET', 'https://example.com/'),
+            new Response(200, [], 'test'),
+            new \DateTime('+ 1 minute'),
+        ));
+        $adapter->commit();
     }
 
     public static function getEveConfig(
