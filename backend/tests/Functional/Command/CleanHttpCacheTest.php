@@ -40,9 +40,10 @@ class CleanHttpCacheTest extends ConsoleTestCase
         $output = $this->runConsoleApp('clean-http-cache', [], [], [], true);
         $actual = explode("\n", $output);
 
-        self::assertStringContainsString('Guzzle cache cleaned.', $actual[0]);
-        self::assertSame('', $actual[1]);
-        self::assertSame(2, count($actual));
+        self::assertStringContainsString('Started "clean-http-cache"', $actual[0]);
+        self::assertStringContainsString('Finished "clean-http-cache"', $actual[1]);
+        self::assertSame('', $actual[2]);
+        self::assertSame(3, count($actual));
 
         $result = $conn->fetchAllAssociative("SELECT item_id FROM $cacheTable");
         $ids = [];

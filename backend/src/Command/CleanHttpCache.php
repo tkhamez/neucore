@@ -41,6 +41,8 @@ class CleanHttpCache extends Command
     {
         $this->executeLogOutput($input, $output);
 
+        $this->writeLine('Started "clean-http-cache"', false);
+
         try {
             $ids = $this->connection->fetchAllAssociative('SELECT item_id FROM cache_http');
         } catch (Exception $e) {
@@ -56,6 +58,7 @@ class CleanHttpCache extends Command
                 $namespaces[] = substr($id['item_id'], 0, $pos);
             }
         }
+        $namespaces = array_keys(array_flip($namespaces)); // faster than array_unique for big files
 
         foreach ($namespaces as $namespace) {
             $adapter = new DoctrineDbalAdapter(
@@ -67,7 +70,7 @@ class CleanHttpCache extends Command
             $adapter->prune();
         }
 
-        $this->writeLine('Guzzle cache cleaned.', false);
+        $this->writeLine('Finished "clean-http-cache"', false);
 
         return 0;
     }

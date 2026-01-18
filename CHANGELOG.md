@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Change: Improved the clean-http-cache command and changed its output.
+
 ## 2.11.0
 
 17 Jan 2026

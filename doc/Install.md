@@ -335,7 +335,7 @@ Set up necessary cron jobs, e.g. every 8 hours using a lock file (adjust user an
 
 The output is logged to backend/var/logs. It can be filtered to see how long each job was running, e.g.:
 ```
-cat app-cli-2022w36.log | grep -E 'Started|Finished|Guzzle' > app-cli-2022w36-filtered.log
+cat app-cli-2022w36.log | grep -E 'Started|Finished' > app-cli-2022w36-filtered.log
 ```
 
 ### Customization
