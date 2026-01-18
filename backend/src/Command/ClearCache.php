@@ -6,6 +6,7 @@ namespace Neucore\Command;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
+use Neucore\Factory\HttpClientFactory;
 use Neucore\Service\Config;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -36,7 +37,11 @@ class ClearCache extends Command
         $cleared = [];
         $cleared[] = $this->deleteDirectoryContent($this->config['di']['cache_dir']);
         $cleared[] = $this->deleteDirectoryContent($this->config['doctrine']['meta']['proxy_dir']);
-        $cleared[] = $this->deleteDatabaseContent($this->config['guzzle']['cache']['table']);
+        if ($this->config['guzzle']['cache']['storage'] === HttpClientFactory::CACHE_STORAGE_DATABASE) {
+            $cleared[] = $this->deleteDatabaseContent($this->config['guzzle']['cache']['table']);
+        } else {
+            $cleared[] = $this->deleteDirectoryContent($this->config['guzzle']['cache']['dir']);
+        }
 
         $output->writeln('Cleared ' . implode(', ', array_filter($cleared)));
 
