@@ -7,9 +7,11 @@ namespace Neucore\Command;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Neucore\Command\Traits\LogOutput;
+use Neucore\Factory\HttpClientFactory;
 use Neucore\Service\Config;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\DoctrineDbalAdapter;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -43,11 +45,24 @@ class CleanHttpCache extends Command
 
         $this->writeLine('Started "clean-http-cache"', false);
 
+        if ($this->config['guzzle']['cache']['storage'] === HttpClientFactory::CACHE_STORAGE_DATABASE) {
+            $this->clearDatabaseCache();
+        } else {
+            $this->clearFilesystemCache();
+        }
+
+        $this->writeLine('Finished "clean-http-cache"', false);
+
+        return 0;
+    }
+
+    private function clearDatabaseCache(): void
+    {
         try {
             $ids = $this->connection->fetchAllAssociative('SELECT item_id FROM cache_http');
         } catch (Exception $e) {
             $this->writeLine('Could not get cache entries: ' . $e->getMessage());
-            return 1;
+            return;
         }
 
         $namespaces = [];
@@ -69,9 +84,16 @@ class CleanHttpCache extends Command
             );
             $adapter->prune();
         }
+    }
 
-        $this->writeLine('Finished "clean-http-cache"', false);
-
-        return 0;
+    private function clearFilesystemCache(): void
+    {
+        foreach (new \DirectoryIterator($this->config['guzzle']['cache']['dir']) as $fileInfo) {
+            /* @var $fileInfo \DirectoryIterator */
+            if ($fileInfo->isDir() && !$fileInfo->isDot()) {
+                $cache = new FilesystemAdapter('', 0, (string) $fileInfo->getRealPath());
+                $cache->prune();
+            }
+        }
     }
 }
