@@ -24,10 +24,15 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\DoctrineDbalAdapter;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class HttpClientFactory implements HttpClientFactoryInterface
 {
     public const HTTP_CLIENT_OPTIONS_KEY = 'x-neucore';
+
+    public const CACHE_STORAGE_FILESYSTEM = 'filesystem';
+
+    public const CACHE_STORAGE_DATABASE = 'database';
 
     public function __construct(
         private readonly Config $config,
@@ -102,9 +107,11 @@ class HttpClientFactory implements HttpClientFactoryInterface
         #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
 
         if (!empty($cacheKey)) {
-            $storage = $this->createStorage($cacheKey);
-            $cache = new CacheMiddleware(new PrivateCacheStrategy($storage));
-            $stack->push($cache, 'cache');
+            $storage = $this->createStorage($cacheKey, $characterId);
+            if ($storage) {
+                $cache = new CacheMiddleware(new PrivateCacheStrategy($storage));
+                $stack->push($cache, 'cache');
+            }
         }
 
         $stack->push($this->esiHeaders);
@@ -131,24 +138,51 @@ class HttpClientFactory implements HttpClientFactoryInterface
         ]);
     }
 
-    private function createStorage(string $cacheKey): Psr6CacheStorage
+    private function createStorage(string $cacheKey, ?int $characterId): ?Psr6CacheStorage
     {
-        $tableName = $this->config['guzzle']['cache']['table'];
-        $adapter = new DoctrineDbalAdapter(
-            $this->dbalConnection,
-            $cacheKey,
-            86400, // one day
-            ['db_table' => $tableName],
-        );
+        $lifetime = 86400; // one day
+
+        if ($this->config['guzzle']['cache']['storage'] === self::CACHE_STORAGE_DATABASE) {
+            $tableName = $this->config['guzzle']['cache']['table'];
+            $adapter = new DoctrineDbalAdapter(
+                $this->dbalConnection,
+                $cacheKey,
+                $lifetime,
+                ['db_table' => $tableName],
+            );
+        } else {
+            $namespace = '';
+            $dir = $this->config['guzzle']['cache']['dir'];
+            if ($characterId && str_ends_with($cacheKey, "$characterId"))  {
+                $subdirectory = substr($cacheKey, 0, -(strlen("$characterId") + 1));
+                $namespace = "$characterId";
+                $dir = $dir . DIRECTORY_SEPARATOR . $subdirectory;
+            } else {
+                $dir = $dir . DIRECTORY_SEPARATOR . $cacheKey;
+            }
+            $dirExists = is_dir($dir);
+            if (!$dirExists && @mkdir($dir, 0775, true)) {
+                $dirExists = true;
+            }
+            if ($dirExists && is_writable($dir)) {
+                $adapter = new FilesystemAdapter($namespace, $lifetime, $dir);
+            } else {
+                $this->logger->error("$dir is not writable or does not exist.");
+                return null;
+            }
+        }
+
         $storage = new Psr6CacheStorage($adapter);
 
-        // This creates the table if it does not exist yet.
-        $storage->save('init', new CacheEntry(
-            new Request('GET', 'https://example.com/'),
-            new Response(200, [], 'test'),
-            new \DateTime('+ 1 minute'),
-        ));
-        $adapter->commit();
+        if ($this->config['guzzle']['cache']['storage'] === self::CACHE_STORAGE_DATABASE) {
+            // This creates the table if it does not exist yet.
+            $storage->save('init', new CacheEntry(
+                new Request('GET', 'https://example.com/'),
+                new Response(200, [], 'test'),
+                new \DateTime('+ 1 minute'),
+            ));
+            $adapter->commit();
+        }
 
         return $storage;
     }

@@ -3,20 +3,22 @@
 declare(strict_types=1);
 
 use Neucore\Application;
+use Neucore\Factory\HttpClientFactory;
 
 return [
 
     'env_var_defaults' => [
-        'NEUCORE_USER_AGENT'        => 'Neucore/' . NEUCORE_VERSION . ' (https://github.com/tkhamez/neucore)',
-        'NEUCORE_LOG_PATH'          => Application::ROOT_DIR . '/var/logs',
-        'NEUCORE_LOG_ROTATION'      => 'weekly',
-        'NEUCORE_LOG_FORMAT'        => 'multiline',
-        'NEUCORE_CACHE_DIR'         => Application::ROOT_DIR . '/var/cache',
-        'NEUCORE_SESSION_SECURE'    => '1',
-        'NEUCORE_ERROR_REPORTING'   => (string)(E_ALL & ~E_DEPRECATED),
-        'NEUCORE_RATE_LIMIT_MAX'   => '0',
-        'NEUCORE_RATE_LIMIT_TIME'   => '0',
+        'NEUCORE_USER_AGENT'         => 'Neucore/' . NEUCORE_VERSION . ' (https://github.com/tkhamez/neucore)',
+        'NEUCORE_LOG_PATH'           => Application::ROOT_DIR . '/var/logs',
+        'NEUCORE_LOG_ROTATION'       => 'weekly',
+        'NEUCORE_LOG_FORMAT'         => 'multiline',
+        'NEUCORE_CACHE_DIR'          => Application::ROOT_DIR . '/var/cache',
+        'NEUCORE_SESSION_SECURE'     => '1',
+        'NEUCORE_ERROR_REPORTING'    => (string)(E_ALL & ~E_DEPRECATED),
+        'NEUCORE_RATE_LIMIT_MAX'     => '0',
+        'NEUCORE_RATE_LIMIT_TIME'    => '0',
         'NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' => '0',
+        'NEUCORE_HTTP_CACHE_STORAGE' => HttpClientFactory::CACHE_STORAGE_DATABASE,
     ],
 
     'monolog' => [
@@ -70,6 +72,8 @@ return [
 
     'guzzle' => [
         'cache' => [
+            'storage' => '${NEUCORE_HTTP_CACHE_STORAGE}',
+            'dir' => '${NEUCORE_CACHE_DIR}/http',
             'table' => 'cache_http',
         ],
         'user_agent' => '${NEUCORE_USER_AGENT}',

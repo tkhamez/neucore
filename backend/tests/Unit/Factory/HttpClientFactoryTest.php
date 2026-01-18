@@ -21,12 +21,19 @@ use Tests\Helper;
 
 class HttpClientFactoryTest extends TestCase
 {
-    private HttpClientFactory $factory;
+    private HttpClientFactory $factory1;
+
+    private HttpClientFactory $factory2;
 
     private Connection $dbalConnection;
 
     protected function setUp(): void
     {
+        if (is_dir(__DIR__ . '/cache-key/@')) {
+            rmdir(__DIR__ . '/cache-key/@');
+            rmdir(__DIR__ . '/cache-key');
+        }
+
         $h = new Helper();
         $h->emptyDb();
 
@@ -37,10 +44,34 @@ class HttpClientFactoryTest extends TestCase
             new RepositoryFactory($em),
             new ObjectManager($em, $logger),
         );
-        $this->factory = new HttpClientFactory(
+
+        $this->factory1 = new HttpClientFactory(
             new Config([
                 'guzzle' => [
-                    'cache' => ['table' => 'cache_http'],
+                    'cache' => [
+                        'storage' => HttpClientFactory::CACHE_STORAGE_DATABASE,
+                        'table' => 'cache_http',
+                        #'dir' => __DIR__,
+                    ],
+                    'user_agent' => 'Test',
+                ],
+            ]),
+            new EsiErrorLimit($storage),
+            new EsiWarnings($logger),
+            new EsiRateLimits($logger, $storage),
+            new EsiThrottled($storage),
+            $logger,
+            $this->dbalConnection
+        );
+
+        $this->factory2 = new HttpClientFactory(
+            new Config([
+                'guzzle' => [
+                    'cache' => [
+                        'storage' => HttpClientFactory::CACHE_STORAGE_FILESYSTEM,
+                        #'table' => 'cache_http',
+                        'dir' => __DIR__,
+                    ],
                     'user_agent' => 'Test',
                 ],
             ]),
@@ -56,28 +87,42 @@ class HttpClientFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testGet(): void
+    public function testGet_DatabaseCache(): void
     {
-        $this->factory->get('cache-key1');
+        $this->factory1->get('cache-key1');
 
         $result = $this->dbalConnection->executeQuery('SELECT item_id FROM cache_http');
         self::assertSame([['item_id' => 'cache-key1:init']], $result->fetchAllAssociative());
     }
 
+    public function testGet_FilesystemCache(): void
+    {
+        $this->assertFalse(is_dir(__DIR__ . '/cache-key'));
+
+        $this->factory2->get('cache-key');
+        $this->assertTrue(is_dir(__DIR__ . '/cache-key'));
+    }
+
     /**
      * @throws Exception
      */
-    public function testGetGuzzleClient(): void
+    public function testGetGuzzleClient_DatabaseCache(): void
     {
-        $this->factory->getGuzzleClient(null);
+        $this->factory1->getGuzzleClient(null);
 
         $result = $this->dbalConnection->executeQuery('SELECT item_id FROM cache_http');
         self::assertSame([], $result->fetchAllAssociative());
     }
 
+    public function testGetGuzzleClient_FilesystemCache(): void
+    {
+        $this->factory2->getGuzzleClient(null);
+        $this->assertFalse(is_dir(__DIR__ . '/cache-key'));
+    }
+
     public function testCreateRequest(): void
     {
-        $actual = $this->factory->createRequest(
+        $actual = $this->factory1->createRequest(
             'GET',
             'http://localhost',
             ['X-Header-Name' => 'value'],

@@ -1,5 +1,14 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Readded the filesystem cache for the HTTP client. The storage type is now configurable with the 
+  environment variable `NEUCORE_HTTP_CACHE_STORAGE`. The default is `database`.
+
+If you use the filesystem cache, you can delete the table `cache_http` from the database.
+
 ## 2.11.1
 
 18 Jan 2026
