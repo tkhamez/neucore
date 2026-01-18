@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.11.3
+
+18 Jan 2026
+
+- Implemented the new HTTP cache storage configuration for the commands `clear-cache` and `clean-http-cache`.
+
 ## 2.11.2
 
 18 Jan 2026
