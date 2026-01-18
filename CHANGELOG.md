@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 2.11.2
 
-dd mm yyyy
+18 Jan 2026
 
 - Readded the filesystem cache for the HTTP client. The storage type is now configurable with the 
   environment variable `NEUCORE_HTTP_CACHE_STORAGE`. The default is `database`.
