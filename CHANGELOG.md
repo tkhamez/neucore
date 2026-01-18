@@ -14,8 +14,8 @@
 
 17 Jan 2026
 
-- Change: Replaced the filesystem storage for the HTTP cache with a database storage. This fixes 
-  a problem with too many open files when `run-jobs.sh` is executed and there are many characters.
+- Change: Replaced the filesystem storage for the HTTP cache with a database storage (trying to fix
+  too-many-open-files errors when `run-jobs.sh` is executed and there are many characters).
 - Change: Updated the ESI compatibility date to 2025-12-16.
 - Fix: Fixed a log message that said "error limit" instead of "rate limit".
 - Updated backend dependencies.
