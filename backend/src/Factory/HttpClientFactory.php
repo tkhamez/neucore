@@ -29,11 +29,6 @@ class HttpClientFactory implements HttpClientFactoryInterface
 {
     public const HTTP_CLIENT_OPTIONS_KEY = 'x-neucore';
 
-    /**
-     * @var array<string, CacheMiddleware>
-     */
-    private static array $caches = [];
-
     public function __construct(
         private readonly Config $config,
         private readonly EsiErrorLimit $esiHeaders,
@@ -108,10 +103,8 @@ class HttpClientFactory implements HttpClientFactoryInterface
 
         if (!empty($cacheKey)) {
             $storage = $this->createStorage($cacheKey);
-            self::$caches[$cacheKey] =
-                self::$caches[$cacheKey] ??
-                new CacheMiddleware(new PrivateCacheStrategy($storage));
-            $stack->push(self::$caches[$cacheKey], 'cache');
+            $cache = new CacheMiddleware(new PrivateCacheStrategy($storage));
+            $stack->push($cache, 'cache');
         }
 
         $stack->push($this->esiHeaders);

@@ -57,9 +57,9 @@ class EveApiFactoryTest extends TestCase
         $api2 = $this->eveApiFactory->getCorporationApi();
         $api3 = $this->eveApiFactory->getCorporationApi('access-token', 123456);
 
-        self::assertSame($api1, $api2);
+        self::assertNotSame($api1, $api2); // no longer using a cache
         self::assertNotSame($api1, $api3);
-        self::assertSame($api1->getConfig(), $api2->getConfig());
+        self::assertNotSame($api1->getConfig(), $api2->getConfig()); // no longer using a cache
         self::assertNotSame($api1->getConfig(), $api3->getConfig());
     }
 
@@ -78,10 +78,10 @@ class EveApiFactoryTest extends TestCase
         $api2 = $this->eveApiFactory->getMailApi('token', 123456);
         $api3 = $this->eveApiFactory->getMailApi('token2', 123456);
 
-        self::assertSame($api1, $api2);
+        self::assertNotSame($api1, $api2); // no longer using a cache
         self::assertNotSame($api1, $api3);
 
-        self::assertSame($api1->getConfig(), $api2->getConfig());
+        self::assertNotSame($api1->getConfig(), $api2->getConfig()); // no longer using a cache
         self::assertNotSame($api1->getConfig(), $api3->getConfig());
     }
 

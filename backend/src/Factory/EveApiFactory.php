@@ -15,11 +15,6 @@ use Tkhamez\Eve\API\Configuration;
 
 class EveApiFactory
 {
-    /**
-     * @var array<string, object>
-     */
-    private array $instances = [];
-
     public function __construct(
         private readonly HttpClientFactoryInterface $httpClientFactory,
         private readonly Config $config,
@@ -68,12 +63,6 @@ class EveApiFactory
 
     private function getInstance(string $class, ?string $token = null, ?int $characterId = null): mixed
     {
-        $key = $class . "$characterId" . hash('sha256', "$token");
-
-        if (isset($this->instances[$key])) {
-            return $this->instances[$key];
-        }
-
         $configuration = new Configuration();
         $configuration->setHost($this->config['eve']['esi_host']);
         // Remove the library default so that it does not use it for its requests but instead uses
@@ -100,9 +89,7 @@ class EveApiFactory
             $authenticated ? $characterId : null,
         );
 
-        $this->instances[$key] = new $class($client, $configuration);
-
-        return $this->instances[$key];
+        return new $class($client, $configuration);
     }
 
     private function getToken(): ?string
