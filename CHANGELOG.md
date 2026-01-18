@@ -5,6 +5,8 @@
 dd mm yyyy
 
 - Change: Improved the clean-http-cache command and changed its output.
+- Change: Configured the HTTP client to close resources after a request (trying to fix
+  too-many-open-files errors).
 
 ## 2.11.0
 

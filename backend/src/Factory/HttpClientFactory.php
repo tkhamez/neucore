@@ -121,10 +121,14 @@ class HttpClientFactory implements HttpClientFactoryInterface
         #$stack->push(\GuzzleHttp\Middleware::mapResponse($debugFunc));
 
         return new Client([
+            'version' => '1.1',
+            CURLOPT_FORBID_REUSE => true,
+            CURLOPT_FRESH_CONNECT => true,
             'handler' => $stack,
             'headers' => array_merge(
                 $requestHeaders,
                 [
+                    'Connection' => 'close',
                     'User-Agent' => $this->config['guzzle']['user_agent'],
                 ],
             ),
