@@ -79,18 +79,23 @@ class CleanHttpCacheTest extends ConsoleTestCase
     public function testExecute_Filesystem(): void
     {
         $dir = self::$cacheDir . '/http/default';
-        $cache = new Psr6CacheStorage(new FilesystemAdapter('', 86400, $dir));
+        $cache1 = new Psr6CacheStorage(new FilesystemAdapter('', 86400, $dir));
+        $cache2 = new Psr6CacheStorage(new FilesystemAdapter('ns1', 86400, $dir));
         $entry1 = new CacheEntry(new Request('GET', '/1'), new Response(), new \DateTime('+ 1000 seconds'));
         $entry2 = new CacheEntry(new Request('GET', '/2'), new Response(), new \DateTime('+ 10 seconds'));
-        $cache->save('abc', $entry1);
-        $cache->save('def', $entry2);
+        $cache1->save('abc', $entry1);
+        $cache1->save('def', $entry2);
+        $cache2->save('123', $entry1);
+        $cache2->save('456', $entry2);
 
         $this->files = $this->getFiles($dir);
 
-        // change lifetime of file1
-        $file2Content = explode("\n", (string) file_get_contents($this->files[1]));
-        $file2Content[0] = time() - 10;
-        file_put_contents($this->files[1], implode("\n", $file2Content));
+        // change lifetime of two files
+        foreach ([1, 3] as $fileIndex) {
+            $fileContent = explode("\n", (string) file_get_contents($this->files[$fileIndex]));
+            $fileContent[0] = time() - 10;
+            file_put_contents($this->files[$fileIndex], implode("\n", $fileContent));
+        }
 
         $output = $this->runConsoleApp('clean-http-cache', [], [], [
             ['NEUCORE_HTTP_CACHE_STORAGE', HttpClientFactory::CACHE_STORAGE_FILESYSTEM],
@@ -104,7 +109,9 @@ class CleanHttpCacheTest extends ConsoleTestCase
         self::assertSame(3, count($actual));
 
         self::assertTrue(file_exists($this->files[0]));
+        self::assertTrue(file_exists($this->files[2]));
         self::assertFalse(file_exists($this->files[1]));
+        self::assertFalse(file_exists($this->files[3]));
     }
 
     /**

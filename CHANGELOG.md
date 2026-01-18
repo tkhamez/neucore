@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.11.4
+
+18 Jan 2026
+
+- Fixed `clean-http-cache` command (it did not delete entries in subdirectories).
+
 ## 2.11.3
 
 18 Jan 2026

@@ -88,11 +88,24 @@ class CleanHttpCache extends Command
 
     private function clearFilesystemCache(): void
     {
-        foreach (new \DirectoryIterator($this->config['guzzle']['cache']['dir']) as $fileInfo) {
-            /* @var $fileInfo \DirectoryIterator */
-            if ($fileInfo->isDir() && !$fileInfo->isDot()) {
-                $cache = new FilesystemAdapter('', 0, (string) $fileInfo->getRealPath());
-                $cache->prune();
+        foreach (new \DirectoryIterator($this->config['guzzle']['cache']['dir']) as $fileInfo1) {
+            /* @var $fileInfo1 \DirectoryIterator */
+            if ($fileInfo1->isDir() && !$fileInfo1->isDot()) {
+                $dir = (string) $fileInfo1->getRealPath();
+                $cache1 = new FilesystemAdapter('', 0, $dir);
+                $cache1->prune();
+
+                // clear namespaces of the directory
+                foreach (new \DirectoryIterator($dir) as $fileInfo2) {
+                    /* @var $fileInfo2 \DirectoryIterator */
+                    if ($fileInfo2->isDir() && !$fileInfo2->isDot()) {
+                        $name = (string) $fileInfo2->getBasename();
+                        if ($name !== '@') {
+                            $cache2 = new FilesystemAdapter($name, 0, $dir);
+                            $cache2->prune();
+                        }
+                    }
+                }
             }
         }
     }
