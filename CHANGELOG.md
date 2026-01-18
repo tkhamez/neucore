@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 2.11.1
 
-dd mm yyyy
+18 Jan 2026
 
 - Change: Improved the clean-http-cache command and changed its output.
 - Change: Configured the HTTP client to close resources after a request (trying to fix
