@@ -14,8 +14,8 @@ use Neucore\Plugin\Core\EsiClient;
 use Neucore\Plugin\Core\EsiClientInterface;
 use Neucore\Plugin\Core\Exception;
 use Neucore\Service\ObjectManager;
-use Neucore\Storage\StorageDatabaseInterface;
-use Neucore\Storage\SystemVariableStorage;
+use Neucore\Storage\EsiHeaderStorageInterface;
+use Neucore\Storage\DatabaseStorage;
 use Neucore\Storage\Variables;
 use PHPUnit\Framework\TestCase;
 use Tests\Client;
@@ -29,7 +29,7 @@ class EsiClientTest extends TestCase
 
     private Client $httpClient;
 
-    private StorageDatabaseInterface $storage;
+    private EsiHeaderStorageInterface $storage;
 
     private EsiClient $esiClient;
 
@@ -39,7 +39,7 @@ class EsiClientTest extends TestCase
         $om = $this->helper->getObjectManager();
         $logger = new Logger();
         $this->httpClient = new Client();
-        $this->storage = new SystemVariableStorage(
+        $this->storage = new DatabaseStorage(
             new RepositoryFactory($om),
             new ObjectManager($om, $logger),
         );

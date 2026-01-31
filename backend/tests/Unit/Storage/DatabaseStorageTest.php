@@ -8,14 +8,14 @@ use Neucore\Entity\SystemVariable;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\ObjectManager;
-use Neucore\Storage\SystemVariableStorage;
+use Neucore\Storage\DatabaseStorage;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Tests\Logger;
 
-class SystemVariableStorageTest extends TestCase
+class DatabaseStorageTest extends TestCase
 {
-    private SystemVariableStorage $storage;
+    private DatabaseStorage $storage;
 
     private RepositoryFactory $repoFactory;
 
@@ -25,7 +25,7 @@ class SystemVariableStorageTest extends TestCase
         $helper->emptyDb();
         $om = $helper->getObjectManager();
         $this->repoFactory = new RepositoryFactory($om);
-        $this->storage = new SystemVariableStorage($this->repoFactory, new ObjectManager($om, new Logger()));
+        $this->storage = new DatabaseStorage($this->repoFactory, new ObjectManager($om, new Logger()));
     }
 
     public function testSetException1(): void
@@ -38,7 +38,7 @@ class SystemVariableStorageTest extends TestCase
     {
         $this->assertTrue($this->storage->set('key', 'value'));
 
-        $var = $this->repoFactory->getSystemVariableRepository()->find(SystemVariableStorage::PREFIX . 'key');
+        $var = $this->repoFactory->getSystemVariableRepository()->find(DatabaseStorage::PREFIX . 'key');
         $this->assertSame('value', $var?->getValue());
         $this->assertSame(SystemVariable::SCOPE_BACKEND, $var->getScope());
     }

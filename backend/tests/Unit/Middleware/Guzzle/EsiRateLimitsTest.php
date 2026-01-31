@@ -11,7 +11,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Guzzle\EsiRateLimits;
 use Neucore\Service\EsiClient;
 use Neucore\Service\ObjectManager;
-use Neucore\Storage\SystemVariableStorage;
+use Neucore\Storage\DatabaseStorage;
 use Neucore\Storage\Variables;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
@@ -21,7 +21,7 @@ class EsiRateLimitsTest extends TestCase
 {
     private Helper $helper;
 
-    private SystemVariableStorage $storage;
+    private DatabaseStorage $storage;
 
     private EsiRateLimits $obj;
 
@@ -33,7 +33,7 @@ class EsiRateLimitsTest extends TestCase
 
         $logger = new Logger();
 
-        $this->storage = new SystemVariableStorage(
+        $this->storage = new DatabaseStorage(
             new RepositoryFactory($om),
             new ObjectManager($om, $logger),
         );

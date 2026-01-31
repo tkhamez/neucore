@@ -11,7 +11,7 @@ use Neucore\Middleware\Guzzle\EsiErrorLimit;
 use Neucore\Service\EsiClient;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\Variables;
-use Neucore\Storage\SystemVariableStorage;
+use Neucore\Storage\DatabaseStorage;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Tests\Logger;
@@ -20,7 +20,7 @@ class EsiErrorLimitTest extends TestCase
 {
     private Helper $helper;
 
-    private SystemVariableStorage $storage;
+    private DatabaseStorage $storage;
 
     private EsiErrorLimit $obj;
 
@@ -32,7 +32,7 @@ class EsiErrorLimitTest extends TestCase
 
         $logger = new Logger();
 
-        $this->storage = new SystemVariableStorage(
+        $this->storage = new DatabaseStorage(
             new RepositoryFactory($om),
             new ObjectManager($om, $logger),
         );

@@ -14,7 +14,7 @@ use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\SystemVariableRepository;
 use Neucore\Service\Account;
-use Neucore\Storage\StorageDatabaseInterface;
+use Neucore\Storage\EsiHeaderStorageInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -50,7 +50,7 @@ class CheckTokens extends Command
         Account $charService,
         EntityManagerInterface $entityManager,
         LoggerInterface $logger,
-        StorageDatabaseInterface $storage,
+        EsiHeaderStorageInterface $storage,
     ) {
         parent::__construct();
         $this->logOutput($logger);

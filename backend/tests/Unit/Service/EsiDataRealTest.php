@@ -19,7 +19,7 @@ use Neucore\Service\Config;
 use Neucore\Service\EsiData;
 use Neucore\Service\EveMailToken;
 use Neucore\Service\ObjectManager;
-use Neucore\Storage\SystemVariableStorage;
+use Neucore\Storage\DatabaseStorage;
 use PHPUnit\Framework\TestCase;
 use Tests\Client;
 use Tests\Helper;
@@ -60,7 +60,7 @@ class EsiDataRealTest extends TestCase
 
         $repoFactory = new RepositoryFactory($em);
         $om = new ObjectManager($em, $this->log);
-        $storage = new SystemVariableStorage($repoFactory, $om);
+        $storage = new DatabaseStorage($repoFactory, $om);
 
         $this->esiData = new EsiData(
             $this->log,

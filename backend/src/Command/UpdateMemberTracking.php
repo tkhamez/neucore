@@ -12,7 +12,7 @@ use Neucore\Entity\EveLogin;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\MemberTracking;
 use Neucore\Service\OAuthToken;
-use Neucore\Storage\StorageDatabaseInterface;
+use Neucore\Storage\EsiHeaderStorageInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -45,7 +45,7 @@ class UpdateMemberTracking extends Command
         OAuthToken $oauthToken,
         LoggerInterface $logger,
         EntityManagerInterface $entityManager,
-        StorageDatabaseInterface $storage,
+        EsiHeaderStorageInterface $storage,
     ) {
         parent::__construct();
         $this->logOutput($logger);

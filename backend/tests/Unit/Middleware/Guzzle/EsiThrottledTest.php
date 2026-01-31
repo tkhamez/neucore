@@ -9,7 +9,7 @@ use GuzzleHttp\Psr7\Response;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Guzzle\EsiThrottled;
 use Neucore\Service\ObjectManager;
-use Neucore\Storage\SystemVariableStorage;
+use Neucore\Storage\DatabaseStorage;
 use Neucore\Storage\Variables;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
@@ -19,7 +19,7 @@ class EsiThrottledTest extends TestCase
 {
     private Helper $helper;
 
-    private SystemVariableStorage $storage;
+    private DatabaseStorage $storage;
 
     private EsiThrottled $obj;
 
@@ -31,7 +31,7 @@ class EsiThrottledTest extends TestCase
 
         $logger = new Logger();
 
-        $this->storage = new SystemVariableStorage(
+        $this->storage = new DatabaseStorage(
             new RepositoryFactory($om),
             new ObjectManager($om, $logger),
         );

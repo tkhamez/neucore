@@ -13,7 +13,7 @@ use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\Watchlist;
 use Neucore\Command\Traits\EsiLimits;
-use Neucore\Storage\StorageDatabaseInterface;
+use Neucore\Storage\EsiHeaderStorageInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -55,7 +55,7 @@ class AutoAllowlist extends Command
         EsiData $esiData,
         ObjectManager $objectManager,
         OAuthToken $tokenService,
-        StorageDatabaseInterface $storage,
+        EsiHeaderStorageInterface $storage,
     ) {
         parent::__construct();
         $this->logOutput($logger);

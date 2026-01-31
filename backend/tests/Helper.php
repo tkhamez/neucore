@@ -57,8 +57,8 @@ use Neucore\Service\OAuthToken;
 use Neucore\Service\PluginService;
 use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
-use Neucore\Storage\StorageDatabaseInterface;
-use Neucore\Storage\SystemVariableStorage;
+use Neucore\Storage\EsiHeaderStorageInterface;
+use Neucore\Storage\DatabaseStorage;
 use Neucore\Util\Crypto;
 use Neucore\Util\Database;
 use Symfony\Component\Cache\Adapter\DoctrineDbalAdapter;
@@ -153,7 +153,7 @@ class Helper
     public static function getPluginFactory(
         ?Client $client = null,
         ?Logger $logger = null,
-        ?StorageDatabaseInterface $storage = null,
+        ?EsiHeaderStorageInterface $storage = null,
     ): Factory {
         if (!$client) {
             $client = new Client();
@@ -163,7 +163,7 @@ class Helper
         }
         $repositoryFactory = new RepositoryFactory(self::getOm());
         if (!$storage) {
-            $storage = new SystemVariableStorage(
+            $storage = new DatabaseStorage(
                 $repositoryFactory,
                 new \Neucore\Service\ObjectManager(self::getOm(), $logger),
             );

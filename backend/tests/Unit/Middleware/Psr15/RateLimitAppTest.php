@@ -13,7 +13,7 @@ use Neucore\Middleware\Psr15\RateLimitApp;
 use Neucore\Middleware\Psr15\RateLimit;
 use Neucore\Service\AppAuth;
 use Neucore\Service\ObjectManager;
-use Neucore\Storage\SystemVariableStorage;
+use Neucore\Storage\DatabaseStorage;
 use Neucore\Storage\Variables;
 use Neucore\Util\Crypto;
 use PHPUnit\Framework\TestCase;
@@ -33,7 +33,7 @@ class RateLimitAppTest extends TestCase
 
     private RepositoryFactory $repoFactory;
 
-    private SystemVariableStorage $storage;
+    private DatabaseStorage $storage;
 
     private int $appId;
 
@@ -56,7 +56,7 @@ class RateLimitAppTest extends TestCase
 
         $this->logger = new Logger();
         $this->repoFactory = new RepositoryFactory($this->om);
-        $this->storage = new SystemVariableStorage($this->repoFactory, new ObjectManager($this->om, $this->logger));
+        $this->storage = new DatabaseStorage($this->repoFactory, new ObjectManager($this->om, $this->logger));
         $this->storage->set(
             Variables::RATE_LIMIT_APP . '_' . $this->appId,
             (string) \json_encode((object) ['remaining' => 0, 'created' => time() - 5]),

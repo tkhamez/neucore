@@ -7,7 +7,7 @@ namespace Neucore\Middleware\Guzzle;
 use Neucore\Data\EsiRateLimit;
 use Neucore\Factory\HttpClientFactory;
 use Neucore\Service\EsiClient;
-use Neucore\Storage\StorageDatabaseInterface;
+use Neucore\Storage\EsiHeaderStorageInterface;
 use Neucore\Storage\Variables;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -23,9 +23,9 @@ class EsiRateLimits
 {
     private LoggerInterface $logger;
 
-    private StorageDatabaseInterface $storage;
+    private EsiHeaderStorageInterface $storage;
 
-    public function __construct(LoggerInterface $logger, StorageDatabaseInterface $storage)
+    public function __construct(LoggerInterface $logger, EsiHeaderStorageInterface $storage)
     {
         $this->logger = $logger;
         $this->storage = $storage;

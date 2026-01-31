@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Middleware\Guzzle;
 
 use Neucore\Service\EsiClient;
-use Neucore\Storage\StorageDatabaseInterface;
+use Neucore\Storage\EsiHeaderStorageInterface;
 use Neucore\Storage\Variables;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -15,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 class EsiErrorLimit
 {
-    public function __construct(private readonly StorageDatabaseInterface $storage) {}
+    public function __construct(private readonly EsiHeaderStorageInterface $storage) {}
 
     public function __invoke(callable $handler): \Closure
     {

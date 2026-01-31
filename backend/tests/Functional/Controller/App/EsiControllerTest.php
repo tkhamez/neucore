@@ -18,9 +18,9 @@ use Neucore\Middleware\Guzzle\EsiErrorLimit;
 use GuzzleHttp\Psr7\Response;
 use Neucore\Service\EsiClient;
 use Neucore\Service\ObjectManager;
-use Neucore\Storage\StorageDatabaseInterface;
+use Neucore\Storage\EsiHeaderStorageInterface;
 use Neucore\Storage\Variables;
-use Neucore\Storage\SystemVariableStorage;
+use Neucore\Storage\DatabaseStorage;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\HttpClientFactory;
@@ -34,7 +34,7 @@ class EsiControllerTest extends WebTestCase
 
     private Logger $logger;
 
-    private SystemVariableStorage $storage;
+    private DatabaseStorage $storage;
 
     protected function setUp(): void
     {
@@ -43,7 +43,7 @@ class EsiControllerTest extends WebTestCase
         $om = $this->helper->getObjectManager();
         $this->logger = new Logger();
 
-        $this->storage = new SystemVariableStorage(
+        $this->storage = new DatabaseStorage(
             new RepositoryFactory($om),
             new ObjectManager($om, $this->logger),
         );
@@ -489,7 +489,7 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v1/esi',
             [],
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
-            [LoggerInterface::class => $this->logger, StorageDatabaseInterface::class => $this->storage],
+            [LoggerInterface::class => $this->logger, EsiHeaderStorageInterface::class => $this->storage],
         );
 
         $this->assertSame(429, $response?->getStatusCode());
@@ -512,7 +512,7 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v2/esi',
             [],
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
-            [LoggerInterface::class => $this->logger, StorageDatabaseInterface::class => $this->storage],
+            [LoggerInterface::class => $this->logger, EsiHeaderStorageInterface::class => $this->storage],
         );
 
         $this->assertSame(429, $response?->getStatusCode());
@@ -545,7 +545,7 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v2/esi',
             [],
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
-            [StorageDatabaseInterface::class => $this->storage],
+            [EsiHeaderStorageInterface::class => $this->storage],
         );
 
         $this->assertNotEquals(429, $response?->getStatusCode());
@@ -566,7 +566,7 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v2/esi',
             [],
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
-            [StorageDatabaseInterface::class => $this->storage],
+            [EsiHeaderStorageInterface::class => $this->storage],
         );
 
         $this->assertNotEquals(429, $response?->getStatusCode());
@@ -591,7 +591,7 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v2/esi',
             [],
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
-            [LoggerInterface::class => $this->logger, StorageDatabaseInterface::class => $this->storage],
+            [LoggerInterface::class => $this->logger, EsiHeaderStorageInterface::class => $this->storage],
         );
 
         $this->assertSame(429, $response2?->getStatusCode());
@@ -624,7 +624,7 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v2/esi',
             [],
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
-            [LoggerInterface::class => $this->logger, StorageDatabaseInterface::class => $this->storage],
+            [LoggerInterface::class => $this->logger, EsiHeaderStorageInterface::class => $this->storage],
         );
 
         $this->assertSame(429, $response2?->getStatusCode());
@@ -665,7 +665,7 @@ class EsiControllerTest extends WebTestCase
                 'Authorization' => 'Bearer ' . base64_encode($appId . ':s1'),
                 'Neucore-EveCharacter' => $charId,
             ],
-            [LoggerInterface::class => $this->logger, StorageDatabaseInterface::class => $this->storage],
+            [LoggerInterface::class => $this->logger, EsiHeaderStorageInterface::class => $this->storage],
         );
 
         $this->assertSame(429, $response?->getStatusCode());
@@ -837,7 +837,7 @@ class EsiControllerTest extends WebTestCase
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
             [
                 HttpClientFactoryInterface::class => new HttpClientFactory($httpClient),
-                StorageDatabaseInterface::class => $this->storage,
+                EsiHeaderStorageInterface::class => $this->storage,
             ],
         );
 

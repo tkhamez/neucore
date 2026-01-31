@@ -15,7 +15,7 @@ use Neucore\Middleware\Guzzle\EsiThrottled;
 use Neucore\Middleware\Guzzle\EsiWarnings;
 use Neucore\Service\Config;
 use Neucore\Service\ObjectManager;
-use Neucore\Storage\SystemVariableStorage;
+use Neucore\Storage\DatabaseStorage;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 
@@ -40,7 +40,7 @@ class HttpClientFactoryTest extends TestCase
         $logger = new Logger('test');
         $em = $h->getEm();
         $this->dbalConnection = $em->getConnection();
-        $storage = new SystemVariableStorage(
+        $storage = new DatabaseStorage(
             new RepositoryFactory($em),
             new ObjectManager($em, $logger),
         );

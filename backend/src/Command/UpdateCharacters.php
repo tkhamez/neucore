@@ -12,7 +12,7 @@ use Neucore\Repository\CharacterRepository;
 use Neucore\Service\Character as CharacterService;
 use Neucore\Service\EntityManager;
 use Neucore\Service\EsiData;
-use Neucore\Storage\StorageDatabaseInterface;
+use Neucore\Storage\EsiHeaderStorageInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -41,7 +41,7 @@ class UpdateCharacters extends Command
         CharacterService $characterService,
         EntityManager $entityManager,
         LoggerInterface $logger,
-        StorageDatabaseInterface $storage,
+        EsiHeaderStorageInterface $storage,
     ) {
         parent::__construct();
         $this->logOutput($logger);

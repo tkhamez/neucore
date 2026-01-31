@@ -28,9 +28,9 @@ use Neucore\Log\FluentdFormatter;
 use Neucore\Log\GelfMessageFormatter;
 use Neucore\Service\Config;
 use Neucore\Storage\ApcuStorage;
-use Neucore\Storage\StorageDatabaseInterface;
+use Neucore\Storage\EsiHeaderStorageInterface;
 use Neucore\Storage\StorageInterface;
-use Neucore\Storage\SystemVariableStorage;
+use Neucore\Storage\DatabaseStorage;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -174,14 +174,16 @@ class Container
             // Storage
             StorageInterface::class => function (ContainerInterface $c) {
                 if (function_exists('apcu_store') && php_sapi_name() !== 'cli') {
-                    $storage = new ApcuStorage();
+                    return new ApcuStorage();
                 } else {
-                    $storage = $c->get(StorageDatabaseInterface::class);
+                    return new DatabaseStorage(
+                        $c->get(RepositoryFactory::class),
+                        $c->get(Service\ObjectManager::class),
+                    );
                 }
-                return $storage;
             },
-            StorageDatabaseInterface::class => function (ContainerInterface $c) {
-                return new SystemVariableStorage(
+            EsiHeaderStorageInterface::class => function (ContainerInterface $c) {
+                return new DatabaseStorage(
                     $c->get(RepositoryFactory::class),
                     $c->get(Service\ObjectManager::class),
                 );
