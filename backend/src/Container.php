@@ -183,10 +183,24 @@ class Container
                 }
             },
             EsiHeaderStorageInterface::class => function (ContainerInterface $c) {
-                return new DatabaseStorage(
-                    $c->get(RepositoryFactory::class),
-                    $c->get(Service\ObjectManager::class),
-                );
+                $storage = $c->get(Config::class)['eve']['esi_header_storage'];
+                if ($storage === 'database') {
+                    return new DatabaseStorage(
+                        $c->get(RepositoryFactory::class),
+                        $c->get(Service\ObjectManager::class),
+                    );
+                } elseif ($storage === 'apc') {
+                    if (
+                        !function_exists('apcu_store') ||
+                        (php_sapi_name() === 'cli' && ini_get('apc.enable_cli') !== '1') ||
+                        (php_sapi_name() !== 'cli' && ini_get('apc.enabled') !== '1')
+                    ) {
+                        throw new RuntimeException('APC not available or enabled.');
+                    }
+                    return new ApcuStorage();
+                } else {
+                    throw new RuntimeException("Invalid storage type $storage.");
+                }
             },
         ];
     }

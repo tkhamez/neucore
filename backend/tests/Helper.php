@@ -667,6 +667,9 @@ class Helper
         $adapter->commit();
     }
 
+    /**
+     * @return array<string, string>
+     */
     public static function getEveConfig(
         string $compatibilityDate = '',
         string $useMailTokenForUnauthenticatedRequests = '0',

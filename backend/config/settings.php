@@ -65,9 +65,8 @@ return [
         'oauth_urls'   => [], // only used for tests
         'oauth_verify_signature' => true,
         'use_mail_token_for_unauthenticated_requests' => '${NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS}',
-
-        // tkhamez/eve-api must use the same date.
-        'esi_compatibility_date' => '2025-12-16',
+        'esi_compatibility_date' => '2025-12-16', // tkhamez/eve-api must use the same date.
+        'esi_header_storage'     => '${NEUCORE_ESI_HEADER_STORAGE}', # TODO
     ],
 
     'guzzle' => [

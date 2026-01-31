@@ -83,6 +83,7 @@ class SettingsControllerTest extends WebTestCase
                 'oauth_verify_signature' => true,
                 'esi_compatibility_date' => '2025-07-11',
                 'use_mail_token_for_unauthenticated_requests' => '0',
+                'esi_header_storage' => 'database',
             ],
             'guzzle' => [
                 'cache' => [
