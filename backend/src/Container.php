@@ -173,7 +173,8 @@ class Container
 
             // Storages
             ApiRateLimitStoreInterface::class => function (ContainerInterface $c) {
-                if (function_exists('apcu_store') && php_sapi_name() !== 'cli') {
+                // Note: This is not used for the CLI.
+                if (function_exists('apcu_store') && ini_get('apc.enabled') === '1') {
                     return new ApcuStorage();
                 } else {
                     return new DatabaseStorage(
