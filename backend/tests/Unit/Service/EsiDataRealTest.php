@@ -48,7 +48,10 @@ class EsiDataRealTest extends TestCase
                 'use_mail_token_for_unauthenticated_requests' => '0',
             ],
             'guzzle' => [
-                'cache' => ['table' => 'cache_http'],
+                'cache' => [
+                    'storage' => HttpClientFactory::CACHE_STORAGE_FILESYSTEM,
+                    'dir' => $cacheDir,
+                ],
                 'user_agent' => $settings['env_var_defaults']['NEUCORE_USER_AGENT'],
             ],
         ]);
