@@ -26,7 +26,11 @@ class MemcachedStorageTest extends TestCase
         }
 
         $config = (new Application())->loadSettings(true);
-        [$host, $port] = explode(':', $config['memcached']['server']);
+        $server = $config['memcached']['server'];
+        if (!str_contains($server, ':')) {
+            self::markTestSkipped('Memcached not available.');
+        }
+        [$host, $port] = explode(':', $server);
 
         self::$memcached = new \Memcached();
         self::$memcached->addServer($host, (int) $port);
