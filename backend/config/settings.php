@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Neucore\Application;
+use Neucore\Container;
 use Neucore\Factory\HttpClientFactory;
 
 return [
@@ -19,6 +20,7 @@ return [
         'NEUCORE_RATE_LIMIT_TIME'    => '0',
         'NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' => '0',
         'NEUCORE_HTTP_CACHE_STORAGE' => HttpClientFactory::CACHE_STORAGE_DATABASE,
+        'NEUCORE_ESI_HEADER_STORAGE' => Container::ESI_HEADER_STORAGE_DATABASE,
     ],
 
     'monolog' => [
@@ -70,7 +72,7 @@ return [
         'oauth_verify_signature' => true,
         'use_mail_token_for_unauthenticated_requests' => '${NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS}',
         'esi_compatibility_date' => '2025-12-16', // tkhamez/eve-api must use the same date.
-        'esi_header_storage'     => '${NEUCORE_ESI_HEADER_STORAGE}', # TODO
+        'esi_header_storage'     => '${NEUCORE_ESI_HEADER_STORAGE}',
     ],
 
     'guzzle' => [

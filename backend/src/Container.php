@@ -40,6 +40,10 @@ use Slim\Psr7\Factory\ResponseFactory;
 
 class Container
 {
+    public const ESI_HEADER_STORAGE_DATABASE = 'database';
+    public const ESI_HEADER_STORAGE_APC = 'apc';
+    public const ESI_HEADER_STORAGE_MEMCACHED = 'memcached';
+
     /**
      * @return array<string, callable>
      * @noinspection PhpComposerExtensionStubsInspection
@@ -187,12 +191,12 @@ class Container
             },
             EsiHeaderStorageInterface::class => function (ContainerInterface $c) {
                 $storage = $c->get(Config::class)['eve']['esi_header_storage'];
-                if ($storage === 'database') {
+                if ($storage === self::ESI_HEADER_STORAGE_DATABASE) {
                     return new DatabaseStorage(
                         $c->get(RepositoryFactory::class),
                         $c->get(Service\ObjectManager::class),
                     );
-                } elseif ($storage === 'apc') {
+                } elseif ($storage === self::ESI_HEADER_STORAGE_APC) {
                     if (
                         !function_exists('apcu_store') ||
                         (php_sapi_name() === 'cli' && ini_get('apc.enable_cli') !== '1') ||
@@ -201,7 +205,7 @@ class Container
                         throw new RuntimeException('APC not available or enabled.');
                     }
                     return new ApcuStorage();
-                } elseif ($storage === 'memcached') {
+                } elseif ($storage === self::ESI_HEADER_STORAGE_MEMCACHED) {
                     $server = $c->get(Config::class)['memcached']['server'];
                     [$host, $port] = explode(':', $server);
                     $memcached = new \Memcached();
