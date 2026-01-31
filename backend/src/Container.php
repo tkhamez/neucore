@@ -28,8 +28,8 @@ use Neucore\Log\FluentdFormatter;
 use Neucore\Log\GelfMessageFormatter;
 use Neucore\Service\Config;
 use Neucore\Storage\ApcuStorage;
+use Neucore\Storage\ApiRateLimitStoreInterface;
 use Neucore\Storage\EsiHeaderStorageInterface;
-use Neucore\Storage\StorageInterface;
 use Neucore\Storage\DatabaseStorage;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -171,8 +171,8 @@ class Container
                 return new ResponseFactory();
             },
 
-            // Storage
-            StorageInterface::class => function (ContainerInterface $c) {
+            // Storages
+            ApiRateLimitStoreInterface::class => function (ContainerInterface $c) {
                 if (function_exists('apcu_store') && php_sapi_name() !== 'cli') {
                     return new ApcuStorage();
                 } else {

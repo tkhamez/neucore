@@ -7,7 +7,7 @@ namespace Neucore\Middleware\Psr15;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AppAuth;
-use Neucore\Storage\StorageInterface;
+use Neucore\Storage\ApiRateLimitStoreInterface;
 use Neucore\Storage\Variables;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -18,16 +18,6 @@ use Psr\Log\LoggerInterface;
 
 class RateLimitApp extends RateLimit implements MiddlewareInterface
 {
-    private AppAuth $appAuth;
-
-    private StorageInterface $storage;
-
-    private ResponseFactoryInterface $responseFactory;
-
-    private LoggerInterface $logger;
-
-    private RepositoryFactory $repositoryFactory;
-
     private ?int $maxRequests = null;
 
     private ?int $resetTime = null;
@@ -35,17 +25,12 @@ class RateLimitApp extends RateLimit implements MiddlewareInterface
     private bool $active = false;
 
     public function __construct(
-        AppAuth $appAuth,
-        StorageInterface $storage,
-        ResponseFactoryInterface $responseFactory,
-        LoggerInterface $logger,
-        RepositoryFactory $repositoryFactory,
+        private readonly AppAuth $appAuth,
+        private readonly ApiRateLimitStoreInterface $storage,
+        private readonly ResponseFactoryInterface $responseFactory,
+        private readonly LoggerInterface $logger,
+        private readonly RepositoryFactory $repositoryFactory,
     ) {
-        $this->appAuth = $appAuth;
-        $this->storage = $storage;
-        $this->responseFactory = $responseFactory;
-        $this->logger = $logger;
-        $this->repositoryFactory = $repositoryFactory;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -64,7 +49,7 @@ class RateLimitApp extends RateLimit implements MiddlewareInterface
         }
 
         $key = Variables::RATE_LIMIT_APP . '_' . $app->getId();
-        list($remaining, $resetIn, $numRequests, $elapsedTime) =
+        [$remaining, $resetIn, $numRequests, $elapsedTime] =
             $this->checkLimit($key, $this->storage, $this->maxRequests, $this->resetTime);
 
         $response = null;

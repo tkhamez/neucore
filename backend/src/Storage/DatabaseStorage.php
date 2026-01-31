@@ -8,7 +8,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\SystemVariableRepository;
 use Neucore\Service\ObjectManager;
 
-class DatabaseStorage implements EsiHeaderStorageInterface
+class DatabaseStorage implements EsiHeaderStorageInterface, ApiRateLimitStoreInterface
 {
     public const PREFIX = '__storage__';
 

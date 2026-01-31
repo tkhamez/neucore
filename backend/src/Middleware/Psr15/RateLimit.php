@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Middleware\Psr15;
 
-use Neucore\Storage\StorageInterface;
+use Neucore\Storage\ApiRateLimitStoreInterface;
 use Psr\Http\Message\ResponseInterface;
 
 abstract class RateLimit
@@ -16,7 +16,7 @@ abstract class RateLimit
     /**
      * @return array{int, float, int, float}
      */
-    protected function checkLimit(string $key, StorageInterface $storage, int $maxRequests, int $resetTime): array
+    protected function checkLimit(string $key, ApiRateLimitStoreInterface $storage, int $maxRequests, int $resetTime): array
     {
         $value = $storage->get($key);
         $variable = $value ? \json_decode($value) : null;

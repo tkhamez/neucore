@@ -6,7 +6,7 @@ namespace Neucore\Middleware\Psr15;
 
 use Neucore\Service\Config;
 use Neucore\Storage\ApcuStorage;
-use Neucore\Storage\StorageInterface;
+use Neucore\Storage\ApiRateLimitStoreInterface;
 use Neucore\Storage\Variables;
 use Neucore\Util\Http;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -23,24 +23,12 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
      */
     public static bool $active = true;
 
-    private StorageInterface $storage;
-
-    private Config $config;
-
-    private ResponseFactoryInterface $responseFactory;
-
-    private LoggerInterface $logger;
-
     public function __construct(
-        StorageInterface $storage,
-        Config $config,
-        ResponseFactoryInterface $responseFactory,
-        LoggerInterface $logger,
+        private readonly ApiRateLimitStoreInterface $storage,
+        private readonly Config $config,
+        private readonly ResponseFactoryInterface $responseFactory,
+        private readonly LoggerInterface $logger,
     ) {
-        $this->storage = $storage;
-        $this->config = $config;
-        $this->responseFactory = $responseFactory;
-        $this->logger = $logger;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -49,7 +37,7 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        // Do not continue unless a fast storage driver is used,
+        // Do not check the IP base rate limit unless a fast storage driver is used,
         // especially one that does not need a database connection.
         if (get_class($this->storage) !== ApcuStorage::class) {
             return $handler->handle($request);
@@ -63,7 +51,7 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
 
         $ip = Http::ipAddress();
         $key = Variables::RATE_LIMIT_IP . '_' . str_replace(['.', ':', ','], '', $ip);
-        list($remaining, $resetIn, $numRequests, $elapsedTime) =
+        [$remaining, $resetIn, $numRequests, $elapsedTime] =
             $this->checkLimit($key, $this->storage, $maxRequests, $resetTime);
 
         if ($remaining < 0) {
