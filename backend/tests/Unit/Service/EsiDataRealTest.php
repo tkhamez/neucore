@@ -31,10 +31,13 @@ class EsiDataRealTest extends TestCase
 
     private EsiData $esiData;
 
+    public static function setUpBeforeClass(): void
+    {
+        self::markTestSkipped('This test uses the real ESI API.');
+    }
+
     protected function setUp(): void
     {
-        $this->markTestSkipped('This test uses the real ESI API.');
-
         $testHelper = new Helper();
 
         $settings = Application::loadFile('settings.php');
