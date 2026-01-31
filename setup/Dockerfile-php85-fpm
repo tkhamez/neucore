@@ -9,6 +9,7 @@ RUN apk add --no-cache gmp-dev
 RUN apk add --no-cache libzip-dev
 RUN apk add --no-cache icu-dev
 RUN apk add --no-cache linux-headers
+RUN apk add --no-cache libmemcached-dev
 RUN mkdir -p /usr/src/php/ext/apcu && \
     curl -fsSL https://pecl.php.net/get/apcu-5.1.27.tgz | tar xvz -C "/usr/src/php/ext/apcu" --strip 1
 RUN mkdir -p /usr/src/php/ext/xdebug && \
@@ -21,6 +22,8 @@ RUN docker-php-ext-install intl
 RUN docker-php-ext-install mysqli
 RUN docker-php-ext-install apcu
 RUN docker-php-ext-install xdebug
+RUN pecl install memcached
+RUN docker-php-ext-enable memcached
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN mkdir -p /home/www-data/.composer && chmod 0777 /home/www-data/.composer

@@ -31,6 +31,7 @@ use Neucore\Storage\ApcuStorage;
 use Neucore\Storage\ApiRateLimitStoreInterface;
 use Neucore\Storage\EsiHeaderStorageInterface;
 use Neucore\Storage\DatabaseStorage;
+use Neucore\Storage\MemcachedStorage;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -41,6 +42,7 @@ class Container
 {
     /**
      * @return array<string, callable>
+     * @noinspection PhpComposerExtensionStubsInspection
      */
     public static function getDefinitions(): array
     {
@@ -199,6 +201,14 @@ class Container
                         throw new RuntimeException('APC not available or enabled.');
                     }
                     return new ApcuStorage();
+                } elseif ($storage === 'memcached') {
+                    $server = $c->get(Config::class)['memcached']['server'];
+                    [$host, $port] = explode(':', $server);
+                    $memcached = new \Memcached();
+                    if (!$memcached->addServer($host, (int) $port)) {
+                        throw new RuntimeException('Failed to add Memcached server.');
+                    }
+                    return new MemcachedStorage($memcached);
                 } else {
                     throw new RuntimeException("Invalid storage type $storage.");
                 }

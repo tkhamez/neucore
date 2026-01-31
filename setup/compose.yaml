@@ -84,6 +84,11 @@ services:
     #user: root
     networks: [neucore]
 
+  neucore_memcached:
+    container_name: neucore_dev_memcached
+    image: memcached:1.6
+    networks: [neucore]
+
 networks:
   neucore:
     name: neucore_dev

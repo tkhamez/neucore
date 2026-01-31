@@ -44,6 +44,10 @@ return [
         ],
     ],
 
+    'memcached' => [
+        'server' => '${NEUCORE_MEMCACHED_SERVER}',
+    ],
+
     'error_reporting' => '${NEUCORE_ERROR_REPORTING}',
 
     'repository' => 'https://github.com/tkhamez/neucore',

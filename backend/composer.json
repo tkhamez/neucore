@@ -64,6 +64,7 @@
     "suggest": {
         "ext-apcu": "*",
         "ext-bcmath": "*",
+        "ext-memcached": "*",
         "ext-zend-opcache": "*"
     },
     "autoload": {
