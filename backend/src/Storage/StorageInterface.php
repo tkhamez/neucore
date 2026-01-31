@@ -13,9 +13,8 @@ interface StorageInterface
 {
     /**
      * @param string $key max. length = 112
-     * @param string $value max. length = 255
+     * @param string $value max. size approximately 16 MB
      * @throws RuntimeException if parameters are too long
-     * @return bool
      */
     public function set(string $key, string $value): bool;
 
