@@ -6,6 +6,7 @@ dd mm yyyy
 
 - The storage type for the ESI header store can now be configured with the environment variable 
   `NEUCORE_ESI_HEADER_STORAGE`.
+- Updated backend dependencies.
 
 ## 2.11.4
 
