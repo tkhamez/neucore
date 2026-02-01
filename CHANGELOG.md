@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 2.12.0
 
-dd mm yyyy
+1 Feb 2026
 
 - New: Added Memcached storage for the ESI header store.
 - New: The storage type for the ESI header store can now be configured with the environment variable 
@@ -10,7 +10,7 @@ dd mm yyyy
   or `memcached` (recommended), see [.env.dist](backend/.env.dist) for more information.
 - Change: Removed the database storage for the HTTP cache and the environment variable 
   `NEUCORE_HTTP_CACHE_STORAGE`. The cache is now always stored in the file system again.
-- Updated backend dependencies.
+- Updated dependencies.
 
 ## 2.11.4
 
