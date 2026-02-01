@@ -1,26 +1,30 @@
 # Creates an image for production
 
 
-FROM php:8.4-apache-bullseye AS build
+FROM php:8.5-apache-trixie AS build
 
 COPY neucore-*.tar.gz /var/www/neucore.tar.gz
 RUN tar -xf /var/www/neucore.tar.gz -C /var/www
 
 
-FROM php:8.4-apache-bullseye
+FROM php:8.5-apache-trixie
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends libgmp-dev libzip4 libzip-dev libicu-dev ssl-cert && \
-    docker-php-ext-install pdo_mysql bcmath gmp zip intl opcache mysqli && \
-    apt-get remove --purge -y libgmp-dev libzip-dev libicu-dev && \
+    apt-get install -y --no-install-recommends \
+            ssl-cert libzip5 libzip-dev libgmp-dev libicu76 libicu-dev \
+            libmemcached11t64 libmemcached-dev && \
+    docker-php-ext-install pdo_mysql bcmath gmp zip mysqli intl && \
+    pecl channel-update pecl.php.net && \
+    printf "\n" | pecl install apcu && \
+    printf "\n" | pecl install memcached && \
+    docker-php-ext-enable apcu && \
+    docker-php-ext-enable memcached && \
+    apt-get remove --purge -y libgmp-dev libzip-dev libicu-dev libmemcached-dev && \
     apt-get autoremove --purge -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-RUN pecl channel-update pecl.php.net &&  \
-    printf "\n" | pecl install apcu &&  \
-    docker-php-ext-enable apcu
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" # /usr/local/etc/php
 RUN echo 'expose_php = Off' > "$PHP_INI_DIR/conf.d/x-neucore.ini"
