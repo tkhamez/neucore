@@ -87,8 +87,7 @@ class SettingsControllerTest extends WebTestCase
             ],
             'guzzle' => [
                 'cache' => [
-                    'storage' => \Neucore\Factory\HttpClientFactory::CACHE_STORAGE_DATABASE,
-                    'table' => 'cache_http',
+                    'dir' => Application::ROOT_DIR . '/var/cache',
                 ],
                 'user_agent' => '',
             ],

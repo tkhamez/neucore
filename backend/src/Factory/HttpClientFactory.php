@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Neucore\Factory;
 
-use Doctrine\DBAL\Connection;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Kevinrob\GuzzleCache\CacheEntry;
 use Kevinrob\GuzzleCache\CacheMiddleware;
 use Kevinrob\GuzzleCache\Storage\Psr6CacheStorage;
 use Kevinrob\GuzzleCache\Strategy\PrivateCacheStrategy;
@@ -23,16 +21,11 @@ use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Cache\Adapter\DoctrineDbalAdapter;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class HttpClientFactory implements HttpClientFactoryInterface
 {
     public const HTTP_CLIENT_OPTIONS_KEY = 'x-neucore';
-
-    public const CACHE_STORAGE_FILESYSTEM = 'filesystem';
-
-    public const CACHE_STORAGE_DATABASE = 'database';
 
     public function __construct(
         private readonly Config $config,
@@ -41,7 +34,6 @@ class HttpClientFactory implements HttpClientFactoryInterface
         private readonly EsiRateLimits $esiRateLimits,
         private readonly EsiThrottled $esiThrottled,
         private readonly LoggerInterface $logger,
-        private readonly Connection $dbalConnection,
     ) {}
 
     public function get(
@@ -140,50 +132,27 @@ class HttpClientFactory implements HttpClientFactoryInterface
 
     private function createStorage(string $cacheKey, ?int $characterId): ?Psr6CacheStorage
     {
-        $lifetime = 86400; // one day
-
-        if ($this->config['guzzle']['cache']['storage'] === self::CACHE_STORAGE_DATABASE) {
-            $tableName = $this->config['guzzle']['cache']['table'];
-            $adapter = new DoctrineDbalAdapter(
-                $this->dbalConnection,
-                $cacheKey,
-                $lifetime,
-                ['db_table' => $tableName],
-            );
+        $namespace = '';
+        $dir = $this->config['guzzle']['cache']['dir'];
+        if ($characterId && str_ends_with($cacheKey, "$characterId"))  {
+            $subdirectory = substr($cacheKey, 0, -(strlen("$characterId") + 1));
+            $namespace = "$characterId";
+            $dir = $dir . DIRECTORY_SEPARATOR . $subdirectory;
         } else {
-            $namespace = '';
-            $dir = $this->config['guzzle']['cache']['dir'];
-            if ($characterId && str_ends_with($cacheKey, "$characterId"))  {
-                $subdirectory = substr($cacheKey, 0, -(strlen("$characterId") + 1));
-                $namespace = "$characterId";
-                $dir = $dir . DIRECTORY_SEPARATOR . $subdirectory;
-            } else {
-                $dir = $dir . DIRECTORY_SEPARATOR . $cacheKey;
-            }
-            $dirExists = is_dir($dir);
-            if (!$dirExists && @mkdir($dir, 0775, true)) {
-                $dirExists = true;
-            }
-            if ($dirExists && is_writable($dir)) {
-                $adapter = new FilesystemAdapter($namespace, $lifetime, $dir);
-            } else {
-                $this->logger->error("$dir is not writable or does not exist.");
-                return null;
-            }
+            $dir = $dir . DIRECTORY_SEPARATOR . $cacheKey;
+        }
+        $dirExists = is_dir($dir);
+        if (!$dirExists && @mkdir($dir, 0775, true)) {
+            $dirExists = true;
+        }
+        if ($dirExists && is_writable($dir)) {
+            $lifetime = 86400; // one day
+            $adapter = new FilesystemAdapter($namespace, $lifetime, $dir);
+        } else {
+            $this->logger->error("$dir is not writable or does not exist.");
+            return null;
         }
 
-        $storage = new Psr6CacheStorage($adapter);
-
-        if ($this->config['guzzle']['cache']['storage'] === self::CACHE_STORAGE_DATABASE) {
-            // This creates the table if it does not exist yet.
-            $storage->save('init', new CacheEntry(
-                new Request('GET', 'https://example.com/'),
-                new Response(200, [], 'test'),
-                new \DateTime('+ 1 minute'),
-            ));
-            $adapter->commit();
-        }
-
-        return $storage;
+        return new Psr6CacheStorage($adapter);
     }
 }

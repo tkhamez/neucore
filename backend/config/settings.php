@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Neucore\Application;
 use Neucore\Container;
-use Neucore\Factory\HttpClientFactory;
 
 return [
 
@@ -19,7 +18,6 @@ return [
         'NEUCORE_RATE_LIMIT_MAX'     => '0',
         'NEUCORE_RATE_LIMIT_TIME'    => '0',
         'NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' => '0',
-        'NEUCORE_HTTP_CACHE_STORAGE' => HttpClientFactory::CACHE_STORAGE_DATABASE,
         'NEUCORE_ESI_HEADER_STORAGE' => Container::ESI_HEADER_STORAGE_DATABASE,
     ],
 
@@ -77,9 +75,7 @@ return [
 
     'guzzle' => [
         'cache' => [
-            'storage' => '${NEUCORE_HTTP_CACHE_STORAGE}',
             'dir' => '${NEUCORE_CACHE_DIR}/http',
-            'table' => 'cache_http',
         ],
         'user_agent' => '${NEUCORE_USER_AGENT}',
     ],

@@ -52,7 +52,6 @@ class EsiDataRealTest extends TestCase
             ],
             'guzzle' => [
                 'cache' => [
-                    'storage' => HttpClientFactory::CACHE_STORAGE_FILESYSTEM,
                     'dir' => $cacheDir,
                 ],
                 'user_agent' => $settings['env_var_defaults']['NEUCORE_USER_AGENT'],
@@ -78,7 +77,6 @@ class EsiDataRealTest extends TestCase
                     new EsiRateLimits($this->log, $storage),
                     new EsiThrottled($storage),
                     $this->log,
-                    $em->getConnection(),
                 ),
                 $config,
                 new EveMailToken(

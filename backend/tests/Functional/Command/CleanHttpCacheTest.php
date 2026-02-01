@@ -12,7 +12,6 @@ use Kevinrob\GuzzleCache\Storage\Psr6CacheStorage;
 use Neucore\Factory\HttpClientFactory;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Tests\Functional\ConsoleTestCase;
-use Tests\Helper;
 
 class CleanHttpCacheTest extends ConsoleTestCase
 {
@@ -32,48 +31,6 @@ class CleanHttpCacheTest extends ConsoleTestCase
                 unlink($file);
             }
         }
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testExecute_Database(): void
-    {
-        $cacheTable = 'cache_http';
-        $h = new Helper();
-        $h->emptyDb();
-        $conn = $h->getEm()->getConnection();
-
-        $storage = new Psr6CacheStorage($h->getHttpCacheAdapter($cacheTable, 'test.1'));
-        $request = new Request('GET', 'https://example.com/test');
-        $entry1 = new CacheEntry($request, new Response(), new \DateTime('+ 1000 seconds'));
-        $entry2 = new CacheEntry($request, new Response(), new \DateTime('+ 10 seconds'));
-        $storage->save('abc', $entry1);
-        $storage->save('def', $entry2);
-
-        // change item time of $entry2
-        $conn->executeStatement(
-            "UPDATE $cacheTable SET item_time = ? WHERE item_id = ?",
-            [time() - 11, 'test.1:def'],
-        );
-
-        $output = $this->runConsoleApp('clean-http-cache', [], [], [
-            ['NEUCORE_HTTP_CACHE_STORAGE', HttpClientFactory::CACHE_STORAGE_DATABASE],
-        ], true);
-        $actual = explode("\n", $output);
-
-        self::assertStringContainsString('Started "clean-http-cache"', $actual[0]);
-        self::assertStringContainsString('Finished "clean-http-cache"', $actual[1]);
-        self::assertSame('', $actual[2]);
-        self::assertSame(3, count($actual));
-
-        $result = $conn->fetchAllAssociative("SELECT item_id FROM $cacheTable");
-        $ids = [];
-        foreach ($result as $row) {
-            $ids[] = $row['item_id'];
-        }
-        self::assertTrue(in_array('test.1:abc', $ids));
-        self::assertFalse(in_array('test.1:def', $ids));
     }
 
     public function testExecute_Filesystem(): void
@@ -98,7 +55,6 @@ class CleanHttpCacheTest extends ConsoleTestCase
         }
 
         $output = $this->runConsoleApp('clean-http-cache', [], [], [
-            ['NEUCORE_HTTP_CACHE_STORAGE', HttpClientFactory::CACHE_STORAGE_FILESYSTEM],
             ['NEUCORE_CACHE_DIR', self::$cacheDir],
         ], true);
         $actual = explode("\n", $output);
