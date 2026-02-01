@@ -5,7 +5,8 @@
 dd mm yyyy
 
 - The storage type for the ESI header store can now be configured with the environment variable 
-  `NEUCORE_ESI_HEADER_STORAGE`.
+  `NEUCORE_ESI_HEADER_STORAGE`. You can now choose between `database` (default), `apc`, 
+  or `memcached` (recommended), see [.env.dist](backend/.env.dist) for more information.
 - Added Memcached storage for the ESI header store.
 - Updated backend dependencies.
 

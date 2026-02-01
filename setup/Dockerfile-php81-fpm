@@ -1,12 +1,14 @@
 FROM php:8.1-fpm-alpine
 
 RUN apk update && \
-    apk add --no-cache autoconf gcc g++ make gmp-dev libzip-dev icu-dev
+    apk add --no-cache autoconf gcc g++ make gmp-dev libzip-dev icu-dev libmemcached-dev
+RUN apk add --update linux-headers
 RUN mkdir -p /usr/src/php/ext/apcu && \
     curl -fsSL https://pecl.php.net/get/apcu-5.1.21.tgz | tar xvz -C "/usr/src/php/ext/apcu" --strip 1
 RUN mkdir -p /usr/src/php/ext/xdebug && \
-    curl -fsSL https://pecl.php.net/get/xdebug-3.1.1.tgz | tar xvz -C "/usr/src/php/ext/xdebug" --strip 1
+    curl -fsSL https://pecl.php.net/get/xdebug-3.5.0.tgz | tar xvz -C "/usr/src/php/ext/xdebug" --strip 1
 RUN docker-php-ext-install pdo_mysql bcmath gmp zip intl apcu xdebug opcache mysqli
+RUN pecl install memcached && docker-php-ext-enable memcached
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 RUN mkdir -p /home/www-data/.composer && chmod 0777 /home/www-data/.composer

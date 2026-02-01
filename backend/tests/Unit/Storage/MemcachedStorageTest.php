@@ -20,18 +20,14 @@ class MemcachedStorageTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        /** @noinspection PhpComposerExtensionStubsInspection */
-        if (!class_exists(\Memcached::class)) {
-            self::markTestSkipped('Memcached not available.');
-        }
-
         $config = (new Application())->loadSettings(true);
         $server = $config['memcached']['server'];
-        if (!str_contains($server, ':')) {
-            self::markTestSkipped('Memcached not available.');
-        }
-        [$host, $port] = explode(':', $server);
 
+        if (!class_exists(\Memcached::class) || !str_contains($server, ':')) {
+            self::markTestSkipped('Memcached not available or missing server configuration.');
+        }
+
+        [$host, $port] = explode(':', $server);
         self::$memcached = new \Memcached();
         self::$memcached->addServer($host, (int) $port);
     }
