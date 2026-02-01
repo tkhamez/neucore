@@ -66,7 +66,18 @@ docker run \
 docker stop neucore_db_prod
 ```
 
-Next, start Neucore (adjust EVE client ID and secret):
+A Memcached server is recommended. You can also run it with Docker:
+
+```shell
+docker run \
+  --network=neucore_prod \
+  --name neucore_memcache \
+  --restart=always \
+  --detach=true \
+  memcached:1.6-alpine
+````
+
+Next, start Neucore (adjust EVE client ID and secret): 
 
 ```shell
 docker run \
@@ -77,6 +88,8 @@ docker run \
   --env=NEUCORE_EVE_SECRET_KEY=abc \
   --env=NEUCORE_EVE_SCOPES="esi-corporations.read_corporation_membership.v1" \
   --env=NEUCORE_SESSION_SECURE=0 \
+  --env=NEUCORE_MEMCACHED_SERVER=neucore_memcache:11211 \
+  --env=NEUCORE_ESI_HEADER_STORAGE=memcached \
   --workdir=/var/www/backend \
   --publish=8080:80 \
   --network=neucore_prod \
@@ -85,6 +98,9 @@ docker run \
   --detach=true \
   tkhamez/neucore
 ```
+
+This example uses a Memcached server, remove NEUCORE_ESI_HEADER_STORAGE if you don't want to use it.
+If you are not using a database or Memcached server via Docker, you can remove the `--network` argument.
 
 The above will automatically start the container when the server is started if the Docker daemon is running.
 The application will be available on port 8080, e.g. http://localhost:8080.
@@ -174,9 +190,6 @@ To access the database from the host, add the following argument when running th
   --publish=127.0.0.1:33060:3306 \
 ```
 
-If you are not using a database via Docker, you can remove the `--network` argument (and obviously change 
-NEUCORE_DATABASE_URL).
-
 To store the logs on the host, create a directory, change its permission, and add a "volume" argument
 when running the Neucore container, for example:
 
@@ -207,7 +220,7 @@ the plugin), for example:
 #### Create the Image
 
 You can also create the image yourself. Clone the repository and build a distribution (see below) or 
-[download](https://github.com/tkhamez/neucore/releases) it and place it in the subdirectory `dist`
+[download](https://github.com/tkhamez/neucore/releases) and place it in the subdirectory `dist`
 (create it if it doesn't exist). Make sure there is only one `neucore-*.tar.gz` file. Then execute 
 the following:
 
@@ -223,9 +236,10 @@ A Linux server (others may work but were not tested).
 
 To run the application:
 * PHP 8.1.0–8.4 (64bit version), see [backend/composer.json](../backend/composer.json) for
-  necessary and suggested extensions (APCu highly recommended).
+  necessary and suggested extensions (APCu and memcached highly recommended).
 * MariaDB or MySQL Server (tested with MariaDB 10.5.1, 10.11, 11.4, 11.8 and MySQL 8.0.22, 8.4).
   Unit tests can also be run with an SQLite in-memory database.
+* Optionally, a Memcached server (tested with 1.6).
 * An HTTP Server with support for PHP and URL rewriting.
   * Set the document root to the `web` directory.
   * Configure URL rewriting to `app.php`:
@@ -236,7 +250,7 @@ To run the application:
 Additionally, for a development environment and to build the application:
 * PHP extensions: pdo_sqlite (optional for unit tests), xdebug (optional for debugging).
 * Composer 2.
-* Node.js, only tested with version 18.12.1 (LTS) with npm 8.19.2.
+* Node.js, only tested with version 20.14.
 * Java runtime >=11 (but only tested with v17) to generate the OpenAPI JavaScript client.
 
 #### Install/Update
