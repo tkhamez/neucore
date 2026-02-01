@@ -191,12 +191,13 @@ class Container
             },
             EsiHeaderStorageInterface::class => function (ContainerInterface $c) {
                 $storage = $c->get(Config::class)['eve']['esi_header_storage'];
-                if ($storage === self::ESI_HEADER_STORAGE_DATABASE) {
+                # Note: "self" does not work here when compiling for production.
+                if ($storage === Container::ESI_HEADER_STORAGE_DATABASE) {
                     return new DatabaseStorage(
                         $c->get(RepositoryFactory::class),
                         $c->get(Service\ObjectManager::class),
                     );
-                } elseif ($storage === self::ESI_HEADER_STORAGE_APC) {
+                } elseif ($storage === Container::ESI_HEADER_STORAGE_APC) {
                     if (
                         !function_exists('apcu_store') ||
                         (php_sapi_name() === 'cli' && ini_get('apc.enable_cli') !== '1') ||
@@ -205,7 +206,7 @@ class Container
                         throw new RuntimeException('APC not available or enabled.');
                     }
                     return new ApcuStorage();
-                } elseif ($storage === self::ESI_HEADER_STORAGE_MEMCACHED) {
+                } elseif ($storage === Container::ESI_HEADER_STORAGE_MEMCACHED) {
                     $server = $c->get(Config::class)['memcached']['server'];
                     [$host, $port] = explode(':', $server);
                     $memcached = new \Memcached();
