@@ -28,8 +28,7 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
         private readonly Config $config,
         private readonly ResponseFactoryInterface $responseFactory,
         private readonly LoggerInterface $logger,
-    ) {
-    }
+    ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

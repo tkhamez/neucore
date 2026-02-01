@@ -112,9 +112,9 @@ class EsiClientTest extends TestCase
             '600/15m',
             59,
             2,
-            time() - $secondsSinceLastRequest
+            time() - $secondsSinceLastRequest,
         );
-        $tokensPerSecond = 600 / (15*60);
+        $tokensPerSecond = 600 / (15 * 60);
         $minWaitSeconds = (2 / $tokensPerSecond * 2) + 10; // (~3 * 2) + 10 = ~16
         $wait = $minWaitSeconds - $secondsSinceLastRequest; // ~13
         $actual2 = EsiClient::calculateRateLimitWaitTime($esiRateLimit, 10);

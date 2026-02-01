@@ -134,7 +134,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
     {
         $namespace = '';
         $dir = $this->config['guzzle']['cache']['dir'];
-        if ($characterId && str_ends_with($cacheKey, "$characterId"))  {
+        if ($characterId && str_ends_with($cacheKey, "$characterId")) {
             $subdirectory = substr($cacheKey, 0, -(strlen("$characterId") + 1));
             $namespace = "$characterId";
             $dir = $dir . DIRECTORY_SEPARATOR . $subdirectory;

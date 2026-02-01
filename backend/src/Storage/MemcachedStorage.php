@@ -13,9 +13,7 @@ class MemcachedStorage implements EsiHeaderStorageInterface
     /**
      * @noinspection PhpComposerExtensionStubsInspection
      */
-    public function __construct(private readonly \Memcached $memcached)
-    {
-    }
+    public function __construct(private readonly \Memcached $memcached) {}
 
     public function set(string $key, string $value): bool
     {

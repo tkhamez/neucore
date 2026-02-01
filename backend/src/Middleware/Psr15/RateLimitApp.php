@@ -30,8 +30,7 @@ class RateLimitApp extends RateLimit implements MiddlewareInterface
         private readonly ResponseFactoryInterface $responseFactory,
         private readonly LoggerInterface $logger,
         private readonly RepositoryFactory $repositoryFactory,
-    ) {
-    }
+    ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
