@@ -47,7 +47,7 @@ class CheckTokensTest extends ConsoleTestCase
     /**
      * @throws \Exception
      */
-    public function testExecute_UpdateCharNoToken()
+    public function testExecute_UpdateCharNoToken(): void
     {
         $c = (new Character())->setId(1)->setName('c1')->setCharacterOwnerHash('coh1');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
@@ -63,14 +63,14 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertSame(4, count($actual));
         $this->assertStringEndsWith('Started "check-tokens" (characters: all)', $actual[0]);
         $this->assertStringEndsWith('  Character 1: token N/A', $actual[1]);
-        $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
+        $this->assertStringEndsWith('Finished "check-tokens" (characters: all)', $actual[2]);
         $this->assertSame('', $actual[3]);
     }
 
     /**
      * @throws \Exception
      */
-    public function testExecute_DeleteCharBiomassed()
+    public function testExecute_DeleteCharBiomassed(): void
     {
         $player = (new Player())->setName('p');
         $corp = (new Corporation())->setId(EsiData::CORPORATION_DOOMHEIM_ID);
@@ -86,7 +86,7 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertSame(4, count($actual));
         $this->assertStringEndsWith('Started "check-tokens" (characters: all)', $actual[0]);
         $this->assertStringEndsWith('  Character 3: character deleted', $actual[1]);
-        $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
+        $this->assertStringEndsWith('Finished "check-tokens" (characters: all)', $actual[2]);
         $this->assertSame('', $actual[3]);
 
         # read result
@@ -101,7 +101,7 @@ class CheckTokensTest extends ConsoleTestCase
     /**
      * @throws \Exception
      */
-    public function testExecute_ErrorUpdateToken()
+    public function testExecute_ErrorUpdateToken(): void
     {
         $c = (new Character())->setId(3)->setName('char1');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
@@ -116,14 +116,14 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertSame(4, count($actual));
         $this->assertStringEndsWith('Started "check-tokens" (characters: all)', $actual[0]);
         $this->assertStringEndsWith('  Character 3: token parse error', $actual[1]);
-        $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
+        $this->assertStringEndsWith('Finished "check-tokens" (characters: all)', $actual[2]);
         $this->assertSame('', $actual[3]);
     }
 
     /**
      * @throws \Exception
      */
-    public function testExecute_InvalidToken()
+    public function testExecute_InvalidToken(): void
     {
         $c = (new Character())->setId(3)->setName('char1');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
@@ -142,16 +142,16 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertSame(4, count($actual));
         $this->assertStringEndsWith('Started "check-tokens" (characters: all)', $actual[0]);
         $this->assertStringEndsWith('  Character 3: token NOK', $actual[1]);
-        $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
+        $this->assertStringEndsWith('Finished "check-tokens" (characters: all)', $actual[2]);
         $this->assertSame('', $actual[3]);
     }
 
     /**
      * @throws \Exception
      */
-    public function testExecute_CharacterDeleted()
+    public function testExecute_CharacterDeleted(): void
     {
-        // This should not be possible in real scenario because the
+        // This should not be possible in a real scenario because the
         // tokens should already be invalid after a character transfer - right!?.
 
         $player = (new Player())->setName('p');
@@ -176,7 +176,7 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertSame(4, count($actual));
         $this->assertStringEndsWith('Started "check-tokens" (characters: all)', $actual[0]);
         $this->assertStringEndsWith('  Character 3: character deleted', $actual[1]);
-        $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
+        $this->assertStringEndsWith('Finished "check-tokens" (characters: all)', $actual[2]);
         $this->assertSame('', $actual[3]);
 
         # read result
@@ -191,7 +191,7 @@ class CheckTokensTest extends ConsoleTestCase
     /**
      * @throws \Exception
      */
-    public function testExecute_ValidToken()
+    public function testExecute_ValidToken(): void
     {
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
@@ -214,7 +214,7 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertSame(4, count($actual));
         $this->assertStringEndsWith('Started "check-tokens" (characters: all)', $actual[0]);
         $this->assertStringEndsWith('  Character 3: token OK', $actual[1]);
-        $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
+        $this->assertStringEndsWith('Finished "check-tokens" (characters: all)', $actual[2]);
         $this->assertSame('', $actual[3]);
 
         # read result
@@ -234,7 +234,7 @@ class CheckTokensTest extends ConsoleTestCase
     /**
      * @throws \Exception
      */
-    public function testExecute_ValidTokenUnexpectedData()
+    public function testExecute_ValidTokenUnexpectedData(): void
     {
         list($token) = Helper::generateToken(['scope1', 'scope2'], 'Name', 'coh3', 123, 'invalid');
 
@@ -251,19 +251,19 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertSame(4, count($actual));
         $this->assertStringEndsWith('Started "check-tokens" (characters: all)', $actual[0]);
         $this->assertStringEndsWith('  Character 3: token OK', $actual[1]);
-        $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
+        $this->assertStringEndsWith('Finished "check-tokens" (characters: all)', $actual[2]);
         $this->assertSame('', $actual[3]);
         $this->assertSame(
             'Unexpected JWT data, missing character owner hash.',
-            $this->log->getHandler()->getRecords()[0]['message'],
+            $this->log->getHandler()?->getRecords()[0]['message'],
         );
     }
 
-    public function testExecute_ActiveChars()
+    public function testExecute_ActiveChars(): void
     {
         $this->setupActive();
 
-        // Note: None of the tokens are valid so this test does not need the test client.
+        // Note: None of the tokens are valid, so this test does not need the test client.
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0, '--characters' => 'active']);
 
         $actual = explode("\n", $output);
@@ -273,22 +273,22 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertStringEndsWith('  Character 100102: token N/A', $actual[2]);
         $this->assertStringEndsWith('  Character 200101: token NOK', $actual[3]);
         $this->assertStringEndsWith('  Character 300101: token NOK', $actual[4]);
-        $this->assertStringEndsWith('Finished "check-tokens"', $actual[5]);
+        $this->assertStringEndsWith('Finished "check-tokens" (characters: active)', $actual[5]);
         $this->assertSame('', $actual[6]);
     }
 
-    public function testExecute_OtherChars()
+    public function testExecute_OtherChars(): void
     {
         $this->setupActive();
 
-        // Note: None of the tokens are valid so this test does not need the test client.
+        // Note: None of the tokens are valid, so this test does not need the test client.
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0, '--characters' => 'other']);
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
         $this->assertStringEndsWith('Started "check-tokens" (characters: other)', $actual[0]);
         $this->assertStringEndsWith('  Character 400101: token NOK', $actual[1]);
-        $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
+        $this->assertStringEndsWith('Finished "check-tokens" (characters: other)', $actual[2]);
         $this->assertSame('', $actual[3]);
     }
 

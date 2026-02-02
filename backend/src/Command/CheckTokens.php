@@ -101,7 +101,7 @@ class CheckTokens extends Command
 
         $this->writeLine("Started \"check-tokens\" (characters: $this->characters)", false);
         $this->check($charId);
-        $this->writeLine('Finished "check-tokens"', false);
+        $this->writeLine("Finished \"check-tokens\" (characters: $this->characters)", false);
 
         return 0;
     }
