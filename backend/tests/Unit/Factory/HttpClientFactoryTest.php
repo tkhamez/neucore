@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Factory;
 
-use Monolog\Logger;
+use GuzzleHttp\Psr7\Request;
 use Neucore\Factory\HttpClientFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Guzzle\EsiRateLimits;
@@ -15,11 +15,15 @@ use Neucore\Service\Config;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\DatabaseStorage;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Client\ClientExceptionInterface;
+use Test\TestLogger;
 use Tests\Helper;
 
 class HttpClientFactoryTest extends TestCase
 {
     private HttpClientFactory $factory;
+
+    private TestLogger $logger;
 
     protected function setUp(): void
     {
@@ -31,11 +35,11 @@ class HttpClientFactoryTest extends TestCase
         $h = new Helper();
         $h->emptyDb();
 
-        $logger = new Logger('test');
+        $this->logger = new TestLogger();
         $em = $h->getEm();
         $storage = new DatabaseStorage(
             new RepositoryFactory($em),
-            new ObjectManager($em, $logger),
+            new ObjectManager($em, $this->logger),
         );
 
         $this->factory = new HttpClientFactory(
@@ -48,10 +52,11 @@ class HttpClientFactoryTest extends TestCase
                 ],
             ]),
             new EsiErrorLimit($storage),
-            new EsiWarnings($logger),
-            new EsiRateLimits($logger, $storage),
+            new EsiWarnings($this->logger),
+            new EsiRateLimits($this->logger, $storage),
             new EsiThrottled($storage),
-            $logger,
+            $this->logger,
+            0,
         );
     }
 
@@ -67,5 +72,22 @@ class HttpClientFactoryTest extends TestCase
     {
         $this->factory->getGuzzleClient(null);
         $this->assertFalse(is_dir(__DIR__ . '/cache-key'));
+    }
+
+    public function testGet_RetryMiddleware_ConnectionFailed(): void
+    {
+        $client = $this->factory->get('cache-key');
+
+        try {
+            $client->sendRequest(new Request('GET', 'http://does-not-exist-734/'));
+        } catch (ClientExceptionInterface) {}
+
+        self::assertSame(
+            [
+                'Retrying http://does-not-exist-734/',
+                'Retrying http://does-not-exist-734/',
+            ],
+            $this->logger->getMessages(),
+        );
     }
 }

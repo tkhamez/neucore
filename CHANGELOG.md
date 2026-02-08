@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- New: Added retry logic for all ESI requests.
+
 ## 2.12.0
 
 1 Feb 2026

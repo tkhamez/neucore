@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Neucore\Factory;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Kevinrob\GuzzleCache\CacheMiddleware;
@@ -34,6 +37,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
         private readonly EsiRateLimits $esiRateLimits,
         private readonly EsiThrottled $esiThrottled,
         private readonly LoggerInterface $logger,
+        private readonly int $retryDelay = 300,
     ) {}
 
     public function get(
@@ -105,6 +109,49 @@ class HttpClientFactory implements HttpClientFactoryInterface
                 $stack->push($cache, 'cache');
             }
         }
+
+        $retryDelay = $this->retryDelay;
+        $logger = $this->logger;
+        $retryMiddleware = Middleware::retry(
+            function (
+                int $retries,
+                RequestInterface $request,
+                ?ResponseInterface $response,
+                ?GuzzleException $exception,
+            ) {
+                // This is called for every request.
+                // $retries is the number of retries that were made so far.
+
+                // Limit the number of retries to 2
+                if ($retries >= 2) {
+                    return false;
+                }
+
+                // Retry on connection errors - there's no response in this case
+                if ($exception instanceof ConnectException) {
+                    return true;
+                }
+
+                // Retry on server errors (5xx)
+                if ($response && $response->getStatusCode() >= 500) {
+                    return true;
+                }
+
+                return false;
+            },
+            function (int $retries, ?ResponseInterface $response, RequestInterface $request)
+                use ($retryDelay, $logger)
+            {
+                // This is called before retrying.
+                // $retries is the number of retries that were made so far plus one.
+
+                $logger->debug("Retrying {$request->getUri()}");
+
+                // Wait (in milliseconds) before retrying
+                return $retryDelay * $retries;
+            }
+        );
+        $stack->push($retryMiddleware);
 
         $stack->push($this->esiHeaders);
         $stack->push($this->esiWarnings);
