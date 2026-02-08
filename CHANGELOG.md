@@ -1,10 +1,10 @@
 # Changelog
 
-## next
+## 2.13.0
 
-dd mm yyyy
+8 Feb 2026
 
-- New: Added retry logic for all ESI requests.
+- New: Added retry logic for all ESI requests. This also affects the ESI client provided for plugins.
 
 ## 2.12.0
 

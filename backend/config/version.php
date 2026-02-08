@@ -4,4 +4,4 @@
 // - the version in OpenAPI definition file
 // - the default user agent for ESI requests
 
-const NEUCORE_VERSION = '2.13.0-dev';
+const NEUCORE_VERSION = '2.13.0';
