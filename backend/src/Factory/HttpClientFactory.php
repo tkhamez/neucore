@@ -145,7 +145,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
                 // This is called before retrying.
                 // $retries is the number of retries that were made so far plus one.
 
-                $logger->debug("Retrying {$request->getUri()}");
+                $logger->debug("Retrying ($retries) {$request->getUri()}");
 
                 // Wait (in milliseconds) before retrying
                 return $retryDelay * $retries;

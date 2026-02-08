@@ -84,8 +84,8 @@ class HttpClientFactoryTest extends TestCase
 
         self::assertSame(
             [
-                'Retrying http://does-not-exist-734/',
-                'Retrying http://does-not-exist-734/',
+                'Retrying (1) http://does-not-exist-734/',
+                'Retrying (2) http://does-not-exist-734/',
             ],
             $this->logger->getMessages(),
         );
