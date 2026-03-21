@@ -70,7 +70,7 @@ class AppAuth implements RoleProviderInterface
             return;
         }
 
-        $tokenParts = explode(':', trim($tokenDecoded));
+        $tokenParts = explode(':', trim($tokenDecoded), 2);
         if (!isset($tokenParts[1])) {
             return;
         }
