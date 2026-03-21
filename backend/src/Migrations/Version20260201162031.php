@@ -21,7 +21,7 @@ final class Version20260201162031 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('DROP TABLE cache_http');
+        $this->addSql('DROP TABLE IF EXISTS cache_http');
     }
 
     public function down(Schema $schema): void {}
