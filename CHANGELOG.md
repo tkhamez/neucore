@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.13.1
+
+22 Mar 2026
+
+- Fix: A database migration tried to delete a table that may not exist.
+
 ## 2.13.0
 
 8 Feb 2026
