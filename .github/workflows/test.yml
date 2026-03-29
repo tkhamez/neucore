@@ -40,12 +40,12 @@ jobs:
         image: memcached:1.6-alpine
         ports: ['11211:11211']
     steps:
-      - name: Checkout
+      - name: Checkout # https://github.com/actions/checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
-      - name: Setup PHP
+      - name: Setup PHP # https://github.com/shivammathur/setup-php
         uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # 2.36.0
         with:
           php-version: ${{ matrix.php-version }}
@@ -80,15 +80,15 @@ jobs:
           NEUCORE_MEMCACHED_SERVER: '127.0.0.1:11211'
         run: cd backend && vendor/bin/phpunit
 
-      - name: Setup Java
+      - name: Setup Java # https://github.com/actions/setup-java
         if: ${{ github.repository_owner == 'tkhamez' && matrix.php-version == '8.4' }}
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           distribution: 'temurin'
           java-version: 17
-      - name: Setup SonarQube
+      - name: Setup SonarQube # https://github.com/Warchant/setup-sonar-scanner
         if: ${{ github.repository_owner == 'tkhamez' && matrix.php-version == '8.4' }}
-        uses: warchant/setup-sonar-scanner@7a89a4622e5c3b5d9c9673cf04f15f005f69d2eb
+        uses: warchant/setup-sonar-scanner@7a89a4622e5c3b5d9c9673cf04f15f005f69d2eb # v9
       - name: SonarQube Scan
         if: ${{ github.repository_owner == 'tkhamez' && matrix.php-version == '8.4' }}
         env:
