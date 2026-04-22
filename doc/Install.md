@@ -175,10 +175,11 @@ sudo certbot --apache
 sudo systemctl restart apache2
 ```
 
-Once the reverse proxy is working, you can change the "publish" argument of Docker so that the port is 
-no longer available for every IP address:
+Once the reverse proxy is working, change the callback URL and the "publish" argument of 
+Docker so that the port is no longer available for every IP address:
 
 ```
+--env=NEUCORE_EVE_CALLBACK_URL="https://your.domain.tdl/login-callback" \
 --publish=127.0.0.1:8080:80 \
 ```
 
