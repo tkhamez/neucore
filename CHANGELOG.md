@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+d m y
+
+- Security: Add "ignore-scripts" to "npm install".
+
 ## 2.13.1
 
 22 Mar 2026

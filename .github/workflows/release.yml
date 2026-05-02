@@ -44,7 +44,7 @@ jobs:
       - name: Build OpenAPI client
         run: |
           cd dist/build/frontend/neucore-js-client
-          npm install
+          npm install --ignore-scripts
           npm run build
       - name: Build frontend
         run: |

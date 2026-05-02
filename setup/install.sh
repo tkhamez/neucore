@@ -15,12 +15,11 @@ fi
 # Generate and build OpenAPI JavaScript client
 cd "${DIR}"/../frontend && ./openapi.sh
 cd "${DIR}"/../frontend/neucore-js-client || exit
-npm install
+npm install --ignore-scripts
 npm run build
 
 # Build frontend
 cd "${DIR}"/../frontend || exit
-npm i file:neucore-js-client
 npm ci
 if [[ $1 = prod ]]; then
     npm run build

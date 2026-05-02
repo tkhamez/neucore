@@ -20,7 +20,7 @@ composer openapi
 # OpenAPI JS client
 "${DIR}"/../dist/build/frontend/openapi.sh
 cd "${DIR}"/../dist/build/frontend/neucore-js-client || exit
-npm install
+npm install --ignore-scripts
 npm run build
 
 # Frontend
