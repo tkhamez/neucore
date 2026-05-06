@@ -103,7 +103,7 @@ class Player implements \JsonSerializable
     private bool $deactivationMailSent = false;
 
     /**
-     * Roles for authorization.
+     * Roles for authorisation.
      */
     #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: "players")]
     #[ORM\OrderBy(["name" => "ASC"])]

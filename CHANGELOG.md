@@ -143,7 +143,7 @@ after this update.
 27 Dec 2024
 
 - Fix: Deleted characters were no longer removed.
-- Changed default error reporting level to "E_ALL & ~E_DEPRECATED".
+- Changed the default error reporting level to "E_ALL & ~E_DEPRECATED".
 - Updated backend dependencies.
 
 ## 2.7.0
@@ -171,13 +171,13 @@ after this update.
 
 14 Jul 2024
 
-- **BC break**: Dropped PHP 8.0 support, minimum required version is now 8.1.0.
+- **BC break**: Dropped PHP 8.0 support, the minimum required version is now 8.1.0.
 - **BC break**: Removed `/application-api.json` file which is outdated since version 1.4.0.
 - Added PHP 8.3 compatibility (no changes were necessary, but it's tested now).
 - Added MySQL 8.4 compatibility (no changes were necessary, but it's tested now).
 - Fixed ESI errors "number of items must be less than or equal to ..." (CCP changed at least one endpoint  
   without increasing its version).
-- Fixed database schema for MariaDB 10.5.
+- Fixed the database schema for MariaDB 10.5.
 - Small UI improvements.
 - Updated development environment to node 20.
 - Updated dependencies.
@@ -193,7 +193,7 @@ after this update.
   All applications with the app-esi role have been given all three new roles with a database update.
 - Fix: Show the "Update Account" button for deactivated service accounts.
 - Fix: Search for deleted characters by ID did not work.
-- Fix: Calculate necessary space for labels in charts.
+- Fix: Calculate the necessary space for labels in charts.
 - Fix: The endpoint `/app/v1/esi/eve-login/{name}/token-data` again no longer allows the EVE login `core.default`
   (as documented).
 
@@ -227,7 +227,7 @@ after this update.
 
 - Change: Added character ID to the result of `/api/app/v1/players`. OpenAPI **BC Break**: The model of the return 
   value changed.
-- Fix: Search for character names containing a slash was broken.
+- Fix: The search for character names containing a slash was broken.
 - Improved texts.
 - Updated dependencies.
 
@@ -251,7 +251,7 @@ after this update.
 18 Jun 2023
 
 - New: The warning about deactivated groups now distinguishes between deactivated and soon to be deactivated.
-- New: Added note about deactivated groups in the player modal window.
+- New: Added a note about deactivated groups in the player modal window.
 - New: Added "deactivated" property with value "yes", "no" or "soon" to the `POST /app/v1/groups` endpoint result
   for each character.
 - New: CSV export for charts.
@@ -323,7 +323,7 @@ finished yet.
 - New logo
 - Update [neucore-plugin](https://github.com/tkhamez/neucore-plugin) to 0.11.0 (no breaking changes).
 - SVG images are now allowed in settings.
-- Footer: Replaced GitHub icon with Neucore logo and text, removed the Discord link.
+- Footer: Replaced the GitHub icon with Neucore logo and text, removed the Discord link.
 - UI/documentation improvements.
 
 ## 1.42.0
@@ -367,12 +367,12 @@ To update a service plugin configuration:
 
 Changes:
 
-- **BC break**: Dropped PHP 7.4 support, minimum required version is now 8.0.
+- **BC break**: Dropped PHP 7.4 support, the minimum required version is now 8.0.
 - **BC Break**: Updated [Neucore plugin](https://github.com/tkhamez/neucore-plugin) to 0.9.2 (from 0.8.0).
 - **BC break**: Removed files necessary to deploy on Heroku (I can't test it any more because they removed free plans).
 - **Deprecated**: Plugins without a plugin.yml file are deprecated and will stop working with the next release.
 - New: The new plugin method `ServiceInterface::onConfigurationChange` is called when a service configuration is saved.
-- New: Added option to disable service plugins.
+- New: Added an option to disable service plugins.
 - Improved service plugin configuration page.
 - Small layout improvements and fixes.
 - PHP 8.2 compatibility (no change was necessary, but it's tested now).
@@ -392,7 +392,7 @@ Changes:
   HTTP server, see also [Install#security](./doc/Install.md#security).
 - **BC break**: Moved `web/dist/favicon.ico` to `web/favicon.ico`, this prevents some 404 errors in the logs.
 - Added robots.txt to prevent some 404 errors in the logs.
-- Member Tracking: Added new filter option: no token.
+- Member Tracking: Added a new filter option: no token.
 - Added admin function to add a new character to a new account.
 - Added function to copy a list of character names to the clipboard on the user admin page and in the player 
   modal window.
@@ -401,14 +401,14 @@ Changes:
 - Removed inline CSS styles and JavaScript code to use a better value for the Content Security Policy header.
 - Removed NEUCORE_SESSION_SAME_SITE option because there's no reason to change it.
 - Small UI fixes and improvements.
-- Dev: Fixed CSS reloading for development build, see also [README.md](./frontend/README.md#development-server).
+- Dev: Fixed CSS reloading for the development build, see also [README.md](./frontend/README.md#development-server).
 
 ## 1.38.0
 
 15 Oct 2022
 
 - **BC Break** The body message of the IP-based rate limit error response (status 429) slightly changed.
-- Security: Added option to disable login with alts (see [sso-issues#79][si79]).
+- Security: Added an option to disable login with alts (see [sso-issues#79][si79]).
 - Allow roles tracking and watchlist to update characters and services from all accounts.
 - Show the new or old Neucore account (if available) for characters that were transferred to another EVE account.
 - Added Ajax search for the alliance and corporation select boxes instead of initially populating them with all.
@@ -484,7 +484,7 @@ Changes:
 - Fix: The HTML around the password on the service plugin page has been changed so that it does not contain
   spaces at the beginning or end when copied in some browsers.
 - Change: The link on the login page has been changed to the new SSO article.
-- Change: Removed "GitHub" configuration option, it's now always https://github.com/tkhamez/neucore.
+- Change: Removed the "GitHub" configuration option, it's now always https://github.com/tkhamez/neucore.
 - New: Added a link to the [Neucore Discord Server](https://discord.gg/memUh56u8z) in the footer (small
   icon next to the GitHub icon).
 - Other small improvements, fixes and library updates.
@@ -563,7 +563,7 @@ ESI endpoint for apps:
 16 Jan 2022
 
 - **BC Break** Updated [tkhamez/neucore-plugin](https://github.com/tkhamez/neucore-plugin) to 0.7.0.
-- New: Added update button to update all service accounts from a player to the character modal and user admin page.
+- New: Added an update button to update all service accounts from a player to the character modal and user admin page.
 - New: Added redirect after login to the previous URL.
 - Small bug fixes.
 
@@ -591,8 +591,8 @@ ESI endpoint for apps:
 
 12 Dec 2021
 
-- **BC break**: Increased min. PHP version to 7.4.
-- Increased min. Node.js version to 14.15.
+- **BC break**: Increased the min. PHP version to 7.4.
+- Increased the min. Node.js version to 14.15.
 - Fixed: App API ESI response did not contain the error message in the body.
 - Updated dependencies.
 
@@ -670,11 +670,11 @@ ESI endpoint for apps:
 - New: Display a public/private and auto-accept flag for group managers.
 - New: Display the number of group members.
 - New: Show the player's corporation in the group members list.
-- New: Show character modal button for user managers if they have the "user-chars" role.
+- New: Show a character modal button for user managers if they have the "user-chars" role.
 - Change: Previously, the account in the member tracking list was updated only when the other data was updated 
   as well. This is no longer the case, and instead, the account display is now always up to date.
 - Change: When a player is removed from a group, their application is now also removed if there is one.
-- Fix: Delete group description from the input field when a group was deleted.
+- Fix: Delete the group description from the input field when a group was deleted.
 - Update dependencies.
 
 ## 1.22.0
@@ -738,13 +738,13 @@ ESI endpoint for apps:
 15 Feb 2021
 
 - Character modal: Added groups, moved characters and service accounts.
-- Group Management: Added list of managers.
-- User Admin: Overview of service accounts added.
+- Group Management: Added a list of managers.
+- User Admin: Overview of service accounts was added.
 - Tracking Admin: Added the ticker to corporations in the list.
 - Player Groups Management: The left column is sticky now.
 - Watchlist: Sort dropdown by name.
 - Settings → Directors: Sort corporations by name.
-- Home: Renamed "Update ESI data" button to "Update corporation".
+- Home: Renamed the "Update ESI data" button to "Update corporation".
 - Added a "player" option to the "update-player-groups" command.
 - The "update player groups" function now also synchronises the manager role, just in case there was an error before.
 - Improved performance of permission check for "/api/user/player/{id}/characters".
@@ -767,7 +767,7 @@ ESI endpoint for apps:
 - Services: Service accounts are now reloaded after a manual update (frontend).
 - New: Charts with statistics on player logins and app requests.
 - New: Added CSRF protection.
-- New: Added option to enable Strict-Transport-Security.
+- New: Added an option to enable Strict-Transport-Security.
 - ESI: Added check for "Undefined 429 response", see also https://github.com/esi/esi-issues/issues/1227
 - ESI: Do not query different types at once via "universe/names".
 - Tracking: Trim search.
@@ -784,7 +784,7 @@ ESI endpoint for apps:
 
 10 Jan 2021
 
-- Add configurable text (markdown) on the login page below the login button.
+- Add configurable text (Markdown) on the login page below the login button.
 
 ## 1.16.0
 
@@ -899,7 +899,7 @@ ESI endpoint for apps:
   the character ID belongs with all characters.
 - Watchlist: Added a watchlist select box and removed the hard-coded selection. (API and UI for adding,
   removing and renaming watchlists are still missing.)
-- Added rate limiting middleware for the application API.
+- Added rate-limiting middleware for the application API.
 - APCu storage was added for variables that do not need to be stored permanently.
 - Small bug fixes and improvements.
 
@@ -913,7 +913,7 @@ ESI endpoint for apps:
 
 4 May 2020
 
-- Member Tracking: Added "mail count" filter.
+- Member Tracking: Added a "mail count" filter.
 
 ## 1.11.4
 
@@ -964,11 +964,11 @@ ESI endpoint for apps:
 
 - **BC break** The `update-chars` command no longer updates corporations and alliances, instead there is a new command
   `update-corporations`.
-- New: Added "Update from ESI" button to the character modal.
-- New: Added "members" tab to groups for group admins.
+- New: Added an "Update from ESI" button to the character modal.
+- New: Added a "members" tab to groups for group admins.
 - Change: Added the role watchlist-manager with permissions to edit the configuration, 
   edit access is now restricted to watchlist-admin.
-- Change: Moved "set account status" function from the role user-admin to user-manager.
+- Change: Moved the "set account status" function from the role user-admin to user-manager.
 - Improvement: The "automatic group assignment" is now performed directly when a character is added or 
   removed from an account.
 - Improvement: Unit tests can now also be run with an SQLite in-memory database.
@@ -1045,7 +1045,7 @@ ESI endpoint for apps:
   This mail is deactivated with the update.  
   The command "send-account-disabled-mail" was renamed to "send-invalid-token-mail".
 - Member Tracking: Search can now be limited to individual columns.
-- API: Added "created" date to the character model.
+- API: Added a "created" date to the character model.
 - UI improvements.
 - Google fonts are now bundled (no more requests to fonts.googleapis.com).
 
@@ -1132,7 +1132,7 @@ ESI endpoint for apps:
 
 30 Jun 2019
 
-- Member tracking: added option to limit to members that do not belong to a player account.
+- Member tracking: added an option to limit to members that do not belong to a player account.
 - Added command to delete expired Guzzle cache entries.
 
 ## 1.1.1
@@ -1150,7 +1150,7 @@ ESI endpoint for apps:
 - New: Optional text area on the home page with customisable text that supports Markdown syntax. [#21][i21]
 - Group management: added action buttons directly to the search result [#20][i20]
 - User admin: added a list of accounts with missing ESI tokens [#16][i16]
-- Cron jobs: reduced number of log entries, reduced sleep time.
+- Cron jobs: reduced the number of log entries, reduced sleep time.
 - Log format is now configurable via optional environment variable BRAVECORE_LOG_FORMAT:
   multiline (default), line (no stacktrace), fluentd, gelf, html, json, loggly, logstash
 - Other small stuff/fixes
@@ -1215,7 +1215,7 @@ With this release, the user interface is complete.
 - Implemented more fine-grained permissions for apps (new roles app-groups and app-chars).
 - Added themes.
 - Several UI improvements.
-- Added script that creates a build for distribution.
+- Added a script that creates a build for distribution.
 - Other small stuff.
 
 ## 0.6.0

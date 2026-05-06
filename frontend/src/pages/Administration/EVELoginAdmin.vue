@@ -351,7 +351,7 @@ function fetchTokens(vm) {
         cursor: pointer;
     }
 
-    // darkly theme does not have a distinct color, so use default
+    // darkly theme does not have a distinct colour, so use default
     .nav-link.disabled {
         color: var(--bs-nav-link-disabled-color);
     }

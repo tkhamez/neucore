@@ -36,7 +36,7 @@ class RateLimitApp extends RateLimit implements MiddlewareInterface
     {
         $app = $this->appAuth->getApp($request);
         if ($app === null) {
-            // Not a request from an authorized app.
+            // Not a request from an authorised app.
             return $handler->handle($request);
         }
 

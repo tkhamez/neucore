@@ -85,7 +85,7 @@ Plugins:
 Software that uses the Neucore API:
 
 - [EVE Recruitment](https://github.com/bravecollective/eve-recruitment) - EVE Online Recruitment application.
-- [EVE-SRP](https://github.com/tkhamez/eve-srp) A ship replacement program application with a provider for Neucore.
+- [EVE-SRP](https://github.com/tkhamez/eve-srp) A ship replacement programme application with a provider for Neucore.
 - [Eve Overseer](https://github.com/1adog1/eve-overseer) A fleet participation tracking application.
 - [Eve Pingboard](https://github.com/cmd-johnson/eve-pingboard) Pings/Timers/Calendar.
 - [finance-check](https://github.com/tkhamez/finance-check) Tax information from corporation wallets.
@@ -126,7 +126,7 @@ This is also where the name "Neucore" (new Core) comes from.
 
 **Copyright notice**
 
-Neucore is licensed under the [MIT license](LICENSE).
+Neucore is licenced under the [MIT licence](LICENSE).
 
 "EVE", "EVE Online", "CCP" and all related logos and images are trademarks or registered trademarks of
 [CCP hf](http://www.ccpgames.com/).

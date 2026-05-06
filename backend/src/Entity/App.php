@@ -35,7 +35,7 @@ class App implements \JsonSerializable
     private ?string $secret = null;
 
     /**
-     * Roles for authorization.
+     * Roles for authorisation.
      */
     #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: "apps")]
     #[ORM\OrderBy(["name" => "ASC"])]

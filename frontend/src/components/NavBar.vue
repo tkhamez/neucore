@@ -319,7 +319,8 @@ function addNavBehaviour() {
                     new Dropdown(element).show();
                 } else {
                     new Dropdown(element).hide();
-                    document.activeElement.blur(); // sometimes needed for some reason to remove the "active" color
+                    // sometimes needed for some reason to remove the "active" colour
+                    document.activeElement.blur();
                 }
             });
         });
