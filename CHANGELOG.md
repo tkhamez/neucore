@@ -175,8 +175,8 @@ after this update.
 - **BC break**: Removed `/application-api.json` file which is outdated since version 1.4.0.
 - Added PHP 8.3 compatibility (no changes were necessary, but it's tested now).
 - Added MySQL 8.4 compatibility (no changes were necessary, but it's tested now).
-- Fixed ESI errors "number of items must be less than or equal to ..." (CCP changed at least one endpoint  
-  without increasing its version).
+- Fixed ESI errors "number of items must be less than or equal to ..." (at least one endpoint was 
+  changed without increasing its version).
 - Fixed the database schema for MariaDB 10.5.
 - Small UI improvements.
 - Updated development environment to node 20.

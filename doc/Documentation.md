@@ -251,7 +251,7 @@ removals have priority over manually adding and removing a corporation from the 
 ## Mail Notifications
 
 Note: The ESI refresh token used to send the mails is not automatically refreshed when no mails are sent. This is 
-relevant should CCP add refresh token rotation for web-based applications. See also 
+relevant should refresh token rotation be added for web-based applications. See also 
 [esi-docs - SSO Response](https://docs.esi.evetech.net/docs/sso/refreshing_access_tokens.html#sso-response)
 (from the old docs, this part is not in the [new docs](https://developers.eveonline.com/docs/services/sso/)).
 

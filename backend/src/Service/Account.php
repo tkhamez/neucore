@@ -318,7 +318,7 @@ class Account
                 $result = self::CHECK_CHAR_DELETED;
             }
         } else {
-            // that's an error, CCP changed the JWT data
+            // That's an error, the JWT data changed.
             $this->log->error('Unexpected JWT data, missing character owner hash.');
         }
 

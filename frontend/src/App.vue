@@ -24,9 +24,9 @@
             </div>
             <div class="container-fluid small">
                 <div class="second-row">
-                    EVE and related materials are trademarks of
+                    EVE Online® and related materials are trademarks of
                     <a class="external" href="https://www.ccpgames.com/" target="_blank"
-                       rel="noopener noreferrer">CCP</a>.
+                       rel="noopener noreferrer">Fenris Creations</a>.
                     <span class="brand">
                         <a :href="settings.repository" class="text-dark text-muted"
                            target="_blank" rel="noopener noreferrer" title="Neucore on GitHub">
@@ -422,6 +422,7 @@ function getCsrfHeader(vm) {
 
         .second-row {
             position: relative;
+            padding-right: 59px;
             .brand {
                 position: absolute;
                 right: 0;

@@ -120,7 +120,7 @@ Vulnerabilities can be reported privately to tkhamez@gmail.com.
 **Origin**
 
 The software was originally developed for the [Brave Collective](https://www.bravecollective.com),
-when CCP shut down the old API, and we had to replace our Core system.
+when the old API was shut down, and we had to replace our Core system.
 
 This is also where the name "Neucore" (new Core) comes from.
 
@@ -128,5 +128,5 @@ This is also where the name "Neucore" (new Core) comes from.
 
 Neucore is licenced under the [MIT licence](LICENSE).
 
-"EVE", "EVE Online", "CCP" and all related logos and images are trademarks or registered trademarks of
-[CCP hf](http://www.ccpgames.com/).
+EVE Online® and all related logos and other elements are trademarks of
+[Fenris Creations](http://www.ccpgames.com/).
