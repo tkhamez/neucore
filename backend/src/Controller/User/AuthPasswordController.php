@@ -76,7 +76,17 @@ class AuthPasswordController extends BaseController
         $playerId = $this->getBodyParam($request, 'playerId');
         $password = $this->getBodyParam($request, 'password');
 
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
+        if (!is_scalar($playerId) || !is_scalar($password)) {
+            return $this->response->withStatus(400);
+        }
+
+        $playerId = (int) $playerId;
+        $password = (string) $password;
+        if ($playerId === 0 || $password === '') {
+            return $this->response->withStatus(400);
+        }
+
+        $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);
         if (!$player) {
             return $this->response->withStatus(401);
         }

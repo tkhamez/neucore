@@ -54,6 +54,30 @@ class AuthPasswordControllerTest extends WebTestCase
         $this->assertTrue(password_verify($body, $player->getPassword()));
     }
 
+    public function testLogin400InvalidParams()
+    {
+        $response = $this->runApp(
+            'POST',
+            '/api/user/auth/password-login',
+            ['playerId' => [8], 'password' => ''],
+            ['Content-Type' => 'application/x-www-form-urlencoded'],
+        );
+
+        $this->assertSame(400, $response->getStatusCode());
+    }
+
+    public function testLogin400MissingValue()
+    {
+        $response = $this->runApp(
+            'POST',
+            '/api/user/auth/password-login',
+            ['playerId' => 8, 'password' => ''],
+            ['Content-Type' => 'application/x-www-form-urlencoded'],
+        );
+
+        $this->assertSame(400, $response->getStatusCode());
+    }
+
     public function testLogin401UnknownUser()
     {
         $response = $this->runApp(
