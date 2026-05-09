@@ -5,6 +5,7 @@
 d m y
 
 - Security: Add "ignore-scripts" to "npm install".
+- Security: Improve password login.
 
 ## 2.13.1
 

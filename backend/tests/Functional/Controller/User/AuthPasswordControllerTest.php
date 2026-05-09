@@ -54,7 +54,7 @@ class AuthPasswordControllerTest extends WebTestCase
         $this->assertTrue(password_verify($body, $player->getPassword()));
     }
 
-    public function testLogin400()
+    public function testLogin401UnknownUser()
     {
         $response = $this->runApp(
             'POST',
@@ -63,10 +63,24 @@ class AuthPasswordControllerTest extends WebTestCase
             ['Content-Type' => 'application/x-www-form-urlencoded'],
         );
 
-        $this->assertSame(400, $response->getStatusCode());
+        $this->assertSame(401, $response->getStatusCode());
     }
 
-    public function testLogin401()
+    public function testLogin401NoMain()
+    {
+        $player = $this->helper->addCharacterMain('User 8', 8, noMain: true)->getPlayer();
+
+        $response = $this->runApp(
+            'POST',
+            '/api/user/auth/password-login',
+            ['playerId' => $player->getId(), 'password' => '123456'],
+            ['Content-Type' => 'application/x-www-form-urlencoded'],
+        );
+
+        $this->assertSame(401, $response->getStatusCode());
+    }
+
+    public function testLogin401WrongPassword()
     {
         $player = $this->helper->addCharacterMain('User 8', 8)->getPlayer();
 

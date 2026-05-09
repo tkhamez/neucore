@@ -414,6 +414,7 @@ class Helper
         ?\DateTime $created = null,
         int $tokenExpires = 123456,
         ?bool $tokenValid = null,
+        bool $noMain = false,
     ): Character {
         $om = $this->getObjectManager();
 
@@ -424,7 +425,9 @@ class Helper
         $char = new Character();
         $char->setId($charId);
         $char->setName($name);
-        $char->setMain(true);
+        if (!$noMain) {
+            $char->setMain(true);
+        }
         $char->setCharacterOwnerHash('123');
         if ($created) {
             $char->setCreated($created);

@@ -78,12 +78,12 @@ class AuthPasswordController extends BaseController
 
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
         if (!$player) {
-            return $this->response->withStatus(400);
+            return $this->response->withStatus(401);
         }
 
         $mainCharacter = $player->getMain();
         if (!$mainCharacter) {
-            return $this->response->withStatus(400);
+            return $this->response->withStatus(401);
         }
 
         if (!password_verify($password, $player->getPassword())) {
