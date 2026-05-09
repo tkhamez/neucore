@@ -6,9 +6,16 @@ namespace Neucore\Util;
 
 abstract class Http
 {
-    public static function ipAddress(): string
+    public static function ipAddress(array $trustedProxies = []): string
     {
         $remoteIp = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        if (!filter_var($remoteIp, FILTER_VALIDATE_IP)) {
+            return 'unknown';
+        }
+
+        if (count($trustedProxies) > 0 && !in_array($remoteIp, $trustedProxies, true)) {
+            return $remoteIp;
+        }
 
         $forwardedIps = [];
         $forwardedIp = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '';
@@ -16,9 +23,13 @@ abstract class Http
             $forwardedIps = array_map('trim', explode(',', $forwardedIp));
         }
 
-        $allIps = array_merge($forwardedIps, [$remoteIp]);
+        foreach ($forwardedIps as $ip) {
+            if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                return $ip;
+            }
+        }
 
-        return $allIps[0];
+        return $remoteIp;
     }
 
     public static function appId(): ?int

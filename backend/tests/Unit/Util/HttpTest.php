@@ -20,14 +20,22 @@ class HttpTest extends TestCase
     {
         $this->assertSame('unknown', Http::ipAddress());
 
+        $_SERVER['REMOTE_ADDR'] = 'invalid';
+        $this->assertSame('unknown', Http::ipAddress());
+
         $_SERVER['REMOTE_ADDR'] = '150.172.238.178';
         $this->assertSame('150.172.238.178', Http::ipAddress());
+        $this->assertSame('150.172.238.178', Http::ipAddress(['1.2.3.4']));
 
         $_SERVER['HTTP_X_FORWARDED_FOR'] = '192.168.1.2';
-        $this->assertSame('192.168.1.2', Http::ipAddress());
+        $this->assertSame('192.168.1.2', Http::ipAddress()); // no trusted proxy
+        $this->assertSame('150.172.238.178', Http::ipAddress(['1.2.3.4'])); // untrusted proxy
+        $this->assertSame('192.168.1.2', Http::ipAddress(['150.172.238.178']));
 
-        $_SERVER['HTTP_X_FORWARDED_FOR'] = '::1 , 192.168.1.2';
-        $this->assertSame('::1', Http::ipAddress());
+        $_SERVER['HTTP_X_FORWARDED_FOR'] = 'invalid, ::1 , 192.168.1.2';
+        $this->assertSame('::1', Http::ipAddress()); // no trusted proxy
+        $this->assertSame('150.172.238.178', Http::ipAddress(['1.2.3.4'])); // untrusted proxy
+        $this->assertSame('::1', Http::ipAddress(['150.172.238.178']));
     }
 
     public function testAppId()

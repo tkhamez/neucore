@@ -19,6 +19,7 @@ return [
         'NEUCORE_RATE_LIMIT_TIME'    => '0',
         'NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' => '0',
         'NEUCORE_ESI_HEADER_STORAGE' => Container::ESI_HEADER_STORAGE_DATABASE,
+        'NEUCORE_TRUSTED_PROXIES'    => '',
     ],
 
     'monolog' => [
@@ -83,6 +84,8 @@ return [
     'di' => [
         'cache_dir' => '${NEUCORE_CACHE_DIR}/di'
     ],
+
+    'trusted_proxies' => '${NEUCORE_TRUSTED_PROXIES}',
 
     'rate_limit' => [
         'max' => '${NEUCORE_RATE_LIMIT_MAX}',

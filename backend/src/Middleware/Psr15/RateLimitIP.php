@@ -48,7 +48,13 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        $ip = Http::ipAddress();
+        $trustedProxies = [];
+        $configured = (string) ($this->config['trusted_proxies'] ?? '');
+        if ($configured !== '') {
+            $trustedProxies = array_filter(array_map('trim', explode(',', $configured)));
+        }
+
+        $ip = Http::ipAddress($trustedProxies);
         $key = Variables::RATE_LIMIT_IP . '_' . str_replace(['.', ':', ','], '', $ip);
         [$remaining, $resetIn, $numRequests, $elapsedTime] =
             $this->checkLimit($key, $this->storage, $maxRequests, $resetTime);
