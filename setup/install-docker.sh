@@ -19,6 +19,7 @@ docker compose exec neucore_node npm run build --prefix /app/frontend/neucore-js
 
 # Build frontend
 docker compose exec neucore_node npm ci
+docker compose exec neucore_node npm run postinstall
 if [[ $1 = prod ]]; then
     docker compose exec neucore_node npm run build
 fi

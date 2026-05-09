@@ -21,6 +21,7 @@ npm run build
 # Build frontend
 cd "${DIR}"/../frontend || exit
 npm ci
+npm run postinstall
 if [[ $1 = prod ]]; then
     npm run build
 fi

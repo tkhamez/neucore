@@ -50,6 +50,7 @@ jobs:
         run: |
           cd dist/build/frontend
           npm ci
+          npm run postinstall
           npm run build
 
       - name: Get the version

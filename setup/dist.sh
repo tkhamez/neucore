@@ -26,6 +26,7 @@ npm run build
 # Frontend
 cd "${DIR}"/../dist/build/frontend || exit
 npm ci
+npm run postinstall
 npm run build
 
 # Collect files and create archive
