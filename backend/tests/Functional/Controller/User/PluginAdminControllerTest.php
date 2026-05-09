@@ -475,6 +475,20 @@ class PluginAdminControllerTest extends WebTestCase
         $this->assertEquals(400, $response2->getStatusCode());
     }
 
+    public function testSaveConfiguration400_InvalidDirectoryName()
+    {
+        $this->loginUser(1);
+
+        $response = $this->runApp(
+            'PUT',
+            "/api/user/plugin-admin/$this->serviceId/save-configuration",
+            ['configuration' => \json_encode(['directoryName' => '../plugin3'])],
+            ['Content-Type' => 'application/x-www-form-urlencoded'],
+        );
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
     private function setupDb(): void
     {
         $this->helper->emptyDb();

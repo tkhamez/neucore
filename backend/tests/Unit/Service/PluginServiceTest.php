@@ -91,19 +91,32 @@ class PluginServiceTest extends TestCase
         $actual1 = $this->pluginService->getConfigurationFromConfigFile('does-not-exist');
         $this->assertNull($actual1);
 
-        $actual2 = $this->pluginService->getConfigurationFromConfigFile('plugin-parse-error');
+        $actual2= $this->pluginService->getConfigurationFromConfigFile('plugin-class-missing-impl');
         $this->assertNull($actual2);
 
-        $actual3 = $this->pluginService->getConfigurationFromConfigFile('plugin-error-string');
+        $actual3 = $this->pluginService->getConfigurationFromConfigFile('plugin-parse-error');
         $this->assertNull($actual3);
+
+        $actual4 = $this->pluginService->getConfigurationFromConfigFile('plugin-error-string');
+        $this->assertNull($actual4);
 
         $baseDir = __DIR__ . '/PluginService';
         $this->assertSame(
             [
-                "File does not exist $baseDir/does-not-exist/plugin.yml",
+                'Invalid plugin directory name: does-not-exist',
+                "File does not exist $baseDir/plugin-class-missing-impl/plugin.yml",
                 "Malformed inline YAML string at line 2.",
                 "Invalid file content in $baseDir/plugin-error-string/plugin.yml",
             ],
+            $this->log->getMessages(),
+        );
+    }
+
+    public function testGetConfigurationFromConfigFile_InvalidDirectoryName()
+    {
+        $this->assertNull($this->pluginService->getConfigurationFromConfigFile('../plugin-name'));
+        $this->assertSame(
+            ['Invalid plugin directory name: ../plugin-name'],
             $this->log->getMessages(),
         );
     }

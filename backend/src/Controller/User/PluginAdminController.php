@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
+use Neucore\Data\PluginConfiguration;
 use Neucore\Data\PluginConfigurationFile;
 use Neucore\Entity\Plugin;
 use Neucore\Data\PluginConfigurationDatabase;
@@ -132,11 +133,13 @@ class PluginAdminController extends BaseController
                 continue;
             }
 
-            if (!file_exists("$basePath/" . $fileInfo->getFilename() . '/plugin.yml')) {
+            $directoryName = $fileInfo->getFilename();
+
+            if (!file_exists("$basePath/$directoryName/plugin.yml")) {
                 continue;
             }
 
-            $pluginConfig = $pluginService->getConfigurationFromConfigFile($fileInfo->getFilename());
+            $pluginConfig = $pluginService->getConfigurationFromConfigFile($directoryName);
             if (!$pluginConfig) {
                 return $this->response->withStatus(500);
             }
@@ -360,6 +363,16 @@ class PluginAdminController extends BaseController
         }
         $data = \json_decode($configuration, true);
         if (is_array($data)) {
+            if (
+                isset($data['directoryName']) &&
+                (
+                    !is_string($data['directoryName']) ||
+                    !PluginConfiguration::isValidDirectoryName($data['directoryName'])
+                )
+            ) {
+                return $this->response->withStatus(400);
+            }
+
             $configRequest = PluginConfigurationDatabase::fromArray($data);
             $plugin->setConfigurationDatabase($configRequest);
         } else {

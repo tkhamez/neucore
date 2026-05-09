@@ -40,9 +40,18 @@ abstract class PluginConfiguration
     #[OA\Property]
     public string $configurationData = '';
 
+    public static function isValidDirectoryName(string $directoryName): bool
+    {
+        return (bool) preg_match('/^[a-zA-Z0-9+-._]+$/', $directoryName);
+    }
+
     protected static function fromArrayCommon(self $obj, array $data): void
     {
-        $obj->directoryName = $data['directoryName'] ?? '';
+        $directoryName = $data['directoryName'] ?? '';
+        if (!is_string($directoryName) || !self::isValidDirectoryName($directoryName)) {
+            $directoryName = '';
+        }
+        $obj->directoryName = $directoryName;
 
         $obj->URLs = [];
         foreach ($data['URLs'] ?? [] as $urlData) {

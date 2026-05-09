@@ -6,6 +6,7 @@ namespace Neucore\Service;
 
 use Composer\Autoload\ClassLoader;
 use Neucore\Application;
+use Neucore\Data\PluginConfiguration as PluginConfigurationData;
 use Neucore\Data\PluginConfigurationFile;
 use Neucore\Entity\Character;
 use Neucore\Entity\Player;
@@ -58,8 +59,12 @@ class PluginService
 
     public function getConfigurationFromConfigFile(string $pluginDirectory): ?PluginConfigurationFile
     {
-        $basePath = is_string($this->config['plugins_install_dir']) ? $this->config['plugins_install_dir'] : '';
-        $fullPathToFile = $basePath . DIRECTORY_SEPARATOR . $pluginDirectory . '/plugin.yml';
+        $pluginPath = $this->getPluginDirectoryPath($pluginDirectory);
+        if ($pluginPath === null) {
+            $this->log->error("Invalid plugin directory name: $pluginDirectory");
+            return null;
+        }
+        $fullPathToFile = $pluginPath . '/plugin.yml';
 
         if (!file_exists($fullPathToFile)) {
             $this->log->error("File does not exist $fullPathToFile");
@@ -188,9 +193,21 @@ class PluginService
     {
         // configure autoloader
         $psr4Path = '';
-        if (is_string($this->config['plugins_install_dir'])) {
-            $psr4Path = $this->config['plugins_install_dir'] . DIRECTORY_SEPARATOR . $pluginConfigYaml->directoryName .
-                DIRECTORY_SEPARATOR . $pluginConfigYaml->psr4Path;
+        $pluginPath = $this->getPluginDirectoryPath($pluginConfigYaml->directoryName);
+        if ($pluginPath !== null) {
+            $relativePsr4Path = ltrim($pluginConfigYaml->psr4Path, '/\\');
+            $candidate = $pluginPath . DIRECTORY_SEPARATOR . $relativePsr4Path;
+            $psr4PathReal = realpath($candidate);
+            if (
+                $psr4PathReal !== false &&
+                is_dir($psr4PathReal) &&
+                (
+                    $psr4PathReal === $pluginPath ||
+                    str_starts_with($psr4PathReal, $pluginPath . DIRECTORY_SEPARATOR)
+                )
+            ) {
+                $psr4Path = $psr4PathReal;
+            }
         }
         if (!empty($pluginConfigYaml->psr4Prefix) && !empty($psr4Path) && is_dir($psr4Path)) {
             $psr4Paths = [$psr4Path];
@@ -235,6 +252,32 @@ class PluginService
         }
 
         return $phpClass;
+    }
+
+    private function getPluginDirectoryPath(string $directoryName): ?string
+    {
+        if (!PluginConfigurationData::isValidDirectoryName($directoryName)) {
+            return null;
+        }
+
+        $basePath = is_string($this->config['plugins_install_dir']) ?
+            $this->config['plugins_install_dir'] : '';
+        if ($basePath === '') {
+            return null;
+        }
+
+        $basePathReal = realpath($basePath);
+        if ($basePathReal === false || !is_dir($basePathReal)) {
+            return null;
+        }
+
+        $pluginPath = $basePathReal . DIRECTORY_SEPARATOR . $directoryName;
+        $pluginPathReal = realpath($pluginPath);
+        if ($pluginPathReal === false || !is_dir($pluginPathReal)) {
+            return null;
+        }
+
+        return $pluginPathReal;
     }
 
     /**
