@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 2.14.0
 
-d m y
+9 May 2026
 
 - Change: The PHP extension `filter` is now required.
 - Security: Improve password login.
