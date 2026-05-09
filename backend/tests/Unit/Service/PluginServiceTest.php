@@ -91,7 +91,7 @@ class PluginServiceTest extends TestCase
         $actual1 = $this->pluginService->getConfigurationFromConfigFile('does-not-exist');
         $this->assertNull($actual1);
 
-        $actual2= $this->pluginService->getConfigurationFromConfigFile('plugin-class-missing-impl');
+        $actual2 = $this->pluginService->getConfigurationFromConfigFile('plugin-class-missing-impl');
         $this->assertNull($actual2);
 
         $actual3 = $this->pluginService->getConfigurationFromConfigFile('plugin-parse-error');

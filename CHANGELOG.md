@@ -4,6 +4,7 @@
 
 d m y
 
+- Change: The PHP extension `filter` is now required.
 - Security: Improve password login.
 - Security: Plugin path traversal mitigation.
 - Security: Added NEUCORE_TRUSTED_PROXIES configuration variable (optional).

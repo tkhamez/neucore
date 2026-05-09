@@ -49,8 +49,8 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
         }
 
         $trustedProxies = [];
-        $configured = (string) ($this->config['trusted_proxies'] ?? '');
-        if ($configured !== '') {
+        $configured = $this->config['trusted_proxies'];
+        if (is_string($configured) && $configured !== '') {
             $trustedProxies = array_filter(array_map('trim', explode(',', $configured)));
         }
 

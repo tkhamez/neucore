@@ -80,7 +80,8 @@ class HttpClientFactoryTest extends TestCase
 
         try {
             $client->sendRequest(new Request('GET', 'http://does-not-exist-734/'));
-        } catch (ClientExceptionInterface) {}
+        } catch (ClientExceptionInterface) {
+        }
 
         self::assertSame(
             [

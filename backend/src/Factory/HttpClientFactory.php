@@ -139,9 +139,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
 
                 return false;
             },
-            function (int $retries, ?ResponseInterface $response, RequestInterface $request)
-                use ($retryDelay, $logger)
-            {
+            function (int $retries, ?ResponseInterface $response, RequestInterface $request) use ($retryDelay, $logger) {
                 // This is called before retrying.
                 // $retries is the number of retries that were made so far plus one.
 
@@ -149,7 +147,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
 
                 // Wait (in milliseconds) before retrying
                 return $retryDelay * $retries;
-            }
+            },
         );
         $stack->push($retryMiddleware);
 
