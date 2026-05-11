@@ -1,3 +1,4 @@
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/tkhamez/neucore)
 [![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/memUh56u8z)
 [![Docker](https://img.shields.io/badge/dockerhub-images-important.svg?logo=Docker)](https://hub.docker.com/r/tkhamez/neucore)
 [![Test](https://github.com/tkhamez/neucore/actions/workflows/test.yml/badge.svg)](https://github.com/tkhamez/neucore/actions/workflows/test.yml)
