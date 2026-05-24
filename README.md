@@ -130,4 +130,4 @@ This is also where the name "Neucore" (new Core) comes from.
 Neucore is licenced under the [MIT licence](LICENSE).
 
 EVE Online® and all related logos and other elements are trademarks of
-[Fenris Creations](http://www.ccpgames.com/).
+[Fenris Creations](https://fenriscreations.com/).

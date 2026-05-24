@@ -25,7 +25,7 @@
             <div class="container-fluid small">
                 <div class="second-row">
                     EVE Online® and related materials are trademarks of
-                    <a class="external" href="https://www.ccpgames.com/" target="_blank"
+                    <a class="external" href="https://fenriscreations.com/" target="_blank"
                        rel="noopener noreferrer">Fenris Creations</a>.
                     <span class="brand">
                         <a :href="settings.repository" class="text-dark text-muted"
