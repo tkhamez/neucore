@@ -318,9 +318,9 @@ class WatchlistController extends BaseController
         path: '/user/watchlist/{id}/players',
         operationId: 'watchlistPlayers',
         description: 'Needs role: watchlist',
-        summary: 'List of player accounts that have characters in one of the configured alliances' .
-            ' or corporations and additionally have other characters in another player (not NPC) ' .
-            'corporation that is not on the allowlist and have not been manually excluded.',
+        summary: 'List of player accounts that have characters in one of the configured alliances'
+            . ' or corporations and additionally have other characters in another player (not NPC) '
+            . 'corporation that is not on the allowlist and have not been manually excluded.',
         security: [['Session' => []]],
         tags: ['Watchlist'],
         parameters: [
@@ -361,8 +361,8 @@ class WatchlistController extends BaseController
         path: '/user/watchlist/{id}/players-kicklist',
         operationId: 'watchlistPlayersKicklist',
         description: 'Needs role: watchlist',
-        summary: 'Accounts from the watchlist with members in one of the alliances or corporations' .
-            ' from the kicklist.',
+        summary: 'Accounts from the watchlist with members in one of the alliances or corporations'
+            . ' from the kicklist.',
         security: [['Session' => []]],
         tags: ['Watchlist'],
         parameters: [
@@ -1481,9 +1481,9 @@ class WatchlistController extends BaseController
 
         // check lock
         if (
-            $checkSettingsLock &&
-            $watchlist->getLockWatchlistSettings() &&
-            !in_array(Role::WATCHLIST_ADMIN, $userAuth->getRoles())
+            $checkSettingsLock
+            && $watchlist->getLockWatchlistSettings()
+            && !in_array(Role::WATCHLIST_ADMIN, $userAuth->getRoles())
         ) {
             return false;
         }

@@ -19,12 +19,12 @@ class ErrorHandler extends \Slim\Handlers\ErrorHandler
         $additionalMessage = '';
 
         if (
-            $this->exception instanceof HttpNotFoundException ||
-            $this->exception instanceof HttpMethodNotAllowedException
+            $this->exception instanceof HttpNotFoundException
+            || $this->exception instanceof HttpMethodNotAllowedException
         ) {
             $logErrorDetails = false;
-            $additionalMessage = ' - Request: ' . $this->request->getMethod() . ' ' .
-                $this->request->getUri()->getPath();
+            $additionalMessage = ' - Request: ' . $this->request->getMethod() . ' '
+                . $this->request->getUri()->getPath();
         }
 
         $context = [];

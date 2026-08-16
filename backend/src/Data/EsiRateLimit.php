@@ -15,8 +15,8 @@ class EsiRateLimit
         foreach ($rateLimits as $bucket => $values) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
             if (
-                (string) $bucket === '' ||
-                !$values instanceof self
+                (string) $bucket === ''
+                || !$values instanceof self
             ) {
                 continue;
             }
@@ -36,12 +36,12 @@ class EsiRateLimit
         if ($data instanceof \stdClass) {
             foreach (get_object_vars($data) as $group => $values) {
                 if (
-                    (string) $group === '' ||
-                    !property_exists($values, 'g') ||
-                    !property_exists($values, 'l') ||
-                    !property_exists($values, 'r') ||
-                    !property_exists($values, 'u') ||
-                    !property_exists($values, 't')
+                    (string) $group === ''
+                    || !property_exists($values, 'g')
+                    || !property_exists($values, 'l')
+                    || !property_exists($values, 'r')
+                    || !property_exists($values, 'u')
+                    || !property_exists($values, 't')
                 ) {
                     continue;
                 }

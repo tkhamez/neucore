@@ -182,9 +182,9 @@ class Application
         }
         if ($appEnv === false) {
             throw new RuntimeException(
-                'NEUCORE_APP_ENV environment variable is not defined. ' .
-                'You need to define environment variables for configuration ' .
-                'or load variables from a .env file (see .env.dist file).',
+                'NEUCORE_APP_ENV environment variable is not defined. '
+                . 'You need to define environment variables for configuration '
+                . 'or load variables from a .env file (see .env.dist file).',
             );
         }
 

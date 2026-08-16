@@ -236,11 +236,11 @@ class RemovedCharacter implements \JsonSerializable
     public function toCoreMovedCharacter(): ?CoreMovedCharacter
     {
         if (
-            !$this->player ||
-            !$this->characterId ||
-            !$this->removedDate ||
-            !$this->reason ||
-            !($oldPlayer = $this->player->toCoreAccount(false))
+            !$this->player
+            || !$this->characterId
+            || !$this->removedDate
+            || !$this->reason
+            || !($oldPlayer = $this->player->toCoreAccount(false))
         ) {
             return null;
         }

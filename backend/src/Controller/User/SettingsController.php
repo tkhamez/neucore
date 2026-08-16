@@ -89,8 +89,8 @@ class SettingsController extends BaseController
                 self::COLUMN_VALUE => $config['eve']['esi_compatibility_date'],
             ], [
                 self::COLUMN_NAME => 'navigationShowGroups',
-                self::COLUMN_VALUE => $groupRepository->count(['visibility' => Group::VISIBILITY_PUBLIC]) > 0 ?
-                    '1' : '0',
+                self::COLUMN_VALUE => $groupRepository->count(['visibility' => Group::VISIBILITY_PUBLIC]) > 0
+                    ? '1' : '0',
             ], [
                 self::COLUMN_NAME => 'navigationServices',
                 self::COLUMN_VALUE => \json_encode($services),
@@ -264,13 +264,13 @@ class SettingsController extends BaseController
         foreach ($items as $item) {
             if (!in_array($item->getParent(), $validPositions)) {
                 $logger->warning(
-                    'Plugin navigation item: invalid position "' . $item->getParent() . '", plugin ID ' .
-                    $plugin->getId(),
+                    'Plugin navigation item: invalid position "' . $item->getParent() . '", plugin ID '
+                    . $plugin->getId(),
                 );
             } elseif (!str_starts_with($item->getUrl(), '/')) {
                 $logger->warning(
-                    'Plugin navigation item: invalid URL "' . $item->getUrl() . '", plugin ID ' .
-                    $plugin->getId(),
+                    'Plugin navigation item: invalid URL "' . $item->getUrl() . '", plugin ID '
+                    . $plugin->getId(),
                 );
             } else {
                 if (!empty($item->getRoles()) &&  empty(array_intersect($item->getRoles(), $roles))) {
@@ -281,8 +281,8 @@ class SettingsController extends BaseController
                     continue;
                 }
                 if (
-                    !empty($item->getManagerGroups()) &&
-                    empty(array_intersect($item->getManagerGroups(), $player->getManagerGroupIds()))
+                    !empty($item->getManagerGroups())
+                    && empty(array_intersect($item->getManagerGroups(), $player->getManagerGroupIds()))
                 ) {
                     continue;
                 }

@@ -493,8 +493,8 @@ class GroupController extends BaseController
         responses: [
             new OA\Response(
                 response: '200',
-                description: 'List of players ordered by name. Only id and name, and roles for users with' .
-                    ' group-admin role, properties are returned.',
+                description: 'List of players ordered by name. Only id and name, and roles for users with'
+                    . ' group-admin role, properties are returned.',
                 content: new OA\JsonContent(
                     type: 'array',
                     items: new OA\Items(ref: '#/components/schemas/Player'),

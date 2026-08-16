@@ -28,9 +28,9 @@ use Tests\Logger;
 
 class ServiceControllerTest extends WebTestCase
 {
-    private const ERROR_NO_SERVICE_OBJECT =
-        'ServiceController: The configured service class does not exist or does not implement ' .
-        'Neucore\Plugin\ServiceInterface.';
+    private const ERROR_NO_SERVICE_OBJECT
+        = 'ServiceController: The configured service class does not exist or does not implement '
+        . 'Neucore\Plugin\ServiceInterface.';
 
     private Helper $helper;
 

@@ -156,9 +156,9 @@ class UserAuth implements RoleProviderInterface
 
     public function hasRequiredGroups(Plugin $service, bool $allowAnonymous = false): bool
     {
-        $requiredGroups = $service->getConfigurationDatabase() ?
-            $service->getConfigurationDatabase()->requiredGroups :
-            [];
+        $requiredGroups = $service->getConfigurationDatabase()
+            ? $service->getConfigurationDatabase()->requiredGroups
+            : [];
 
         if ($allowAnonymous && empty($requiredGroups)) {
             return true;
@@ -170,8 +170,8 @@ class UserAuth implements RoleProviderInterface
         }
 
         if (
-            !empty($requiredGroups) &&
-            $this->accountGroupService->groupsDeactivated($character->getPlayer()) // Do not ignore delay
+            !empty($requiredGroups)
+            && $this->accountGroupService->groupsDeactivated($character->getPlayer()) // Do not ignore delay
         ) {
             return false;
         }

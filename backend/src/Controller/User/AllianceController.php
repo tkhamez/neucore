@@ -138,8 +138,8 @@ class AllianceController extends BaseController
     #[OA\Post(
         path: '/user/alliance/add/{id}',
         operationId: 'add',
-        description: 'Needs role: group-admin, watchlist-manager.<br>' .
-            'This makes an ESI request and adds the alliance only if it exists',
+        description: 'Needs role: group-admin, watchlist-manager.<br>'
+            . 'This makes an ESI request and adds the alliance only if it exists',
         summary: 'Add an EVE alliance to the database.',
         security: [['Session' => [], 'CSRF' => []]],
         tags: ['Alliance'],

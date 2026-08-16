@@ -94,11 +94,11 @@ class EveLogin implements \JsonSerializable
     public static function isValidObject(\stdClass $data): bool
     {
         return
-            property_exists($data, 'id')          && is_int($data->id) &&
-            property_exists($data, 'name')        && is_string($data->name) &&
-            property_exists($data, 'description') && is_string($data->description) &&
-            property_exists($data, 'esiScopes')   && is_string($data->esiScopes) &&
-            property_exists($data, 'eveRoles')    && is_array($data->eveRoles);
+            property_exists($data, 'id')             && is_int($data->id)
+            && property_exists($data, 'name')        && is_string($data->name)
+            && property_exists($data, 'description') && is_string($data->description)
+            && property_exists($data, 'esiScopes')   && is_string($data->esiScopes)
+            && property_exists($data, 'eveRoles')    && is_array($data->eveRoles);
     }
 
     public function jsonSerialize(): array

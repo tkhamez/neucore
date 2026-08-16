@@ -48,14 +48,14 @@ class RateLimitApp extends RateLimit implements MiddlewareInterface
         }
 
         $key = Variables::RATE_LIMIT_APP . '_' . $app->getId();
-        [$remaining, $resetIn, $numRequests, $elapsedTime] =
-            $this->checkLimit($key, $this->storage, $this->maxRequests, $this->resetTime);
+        [$remaining, $resetIn, $numRequests, $elapsedTime]
+            = $this->checkLimit($key, $this->storage, $this->maxRequests, $this->resetTime);
 
         $response = null;
         if ($remaining < 0) {
             $this->logger->info(
-                "API Rate Limit: App {$app->getId()} '{$app->getName()}', " .
-                "limit exceeded with $numRequests request in $elapsedTime seconds.",
+                "API Rate Limit: App {$app->getId()} '{$app->getName()}', "
+                . "limit exceeded with $numRequests request in $elapsedTime seconds.",
             );
             if ($this->active) {
                 $response = $this->responseFactory->createResponse(429); // Too Many Requests

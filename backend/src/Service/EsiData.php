@@ -72,15 +72,15 @@ class EsiData
             // The 404 checks are probably no longer necessary when this is merged:
             // https://github.com/OpenAPITools/openapi-generator/pull/19483
             if (
-                $e->getCode() === 404 &&
-                is_string($body) &&
-                str_contains($body, 'Character not found')
+                $e->getCode() === 404
+                && is_string($body)
+                && str_contains($body, 'Character not found')
             ) {
                 throw new Exception('Character not found (exception)', 404);
             } elseif (
-                $e->getCode() === 404 &&
-                is_string($body) &&
-                str_contains($body, 'Character has been deleted')
+                $e->getCode() === 404
+                && is_string($body)
+                && str_contains($body, 'Character has been deleted')
             ) {
                 throw new Exception('Character has been deleted (exception)', 410);
             } {
@@ -401,9 +401,9 @@ class EsiData
                 // https://github.com/OpenAPITools/openapi-generator/pull/19483,
                 // see also fetchCharacter().
                 if (
-                    $e->getCode() === 404 &&
-                    is_string($body) &&
-                    str_contains($body, 'Ensure all IDs are valid before resolving')
+                    $e->getCode() === 404
+                    && is_string($body)
+                    && str_contains($body, 'Ensure all IDs are valid before resolving')
                 ) {
                     // Try again with fewer IDs
                     if (count($checkIds) > 100) {
@@ -481,9 +481,9 @@ class EsiData
                 $checkDate = new \DateTime("now -$configErrorDays days");
                 $locationDate = $location->getLastUpdate() ? $location->getLastUpdate()->getTimestamp() : 0;
                 if (
-                    $configErrorCount > 0 &&
-                    $location->getErrorCount() >= $configErrorCount &&
-                    $locationDate > $checkDate->getTimestamp()
+                    $configErrorCount > 0
+                    && $location->getErrorCount() >= $configErrorCount
+                    && $locationDate > $checkDate->getTimestamp()
                 ) {
                     // Note: there's no need to flush here because this cannot be a new location object
                     // and nothing was changed.
@@ -573,9 +573,9 @@ class EsiData
         }
 
         if (
-            !$charRoles instanceof CharactersCharacterIdRolesGet ||
-            !is_array($charRoles->getRoles()) ||
-            !empty(array_diff($roles, $charRoles->getRoles()))
+            !$charRoles instanceof CharactersCharacterIdRolesGet
+            || !is_array($charRoles->getRoles())
+            || !empty(array_diff($roles, $charRoles->getRoles()))
         ) {
             return false;
         }

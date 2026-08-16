@@ -32,8 +32,8 @@ class EsiErrorLimit
     private function handleResponseHeaders(ResponseInterface $response): void
     {
         if (
-            $response->hasHeader(EsiClient::HEADER_ERROR_LIMIT_REMAIN) &&
-            $response->hasHeader(EsiClient::HEADER_ERROR_LIMIT_RESET)
+            $response->hasHeader(EsiClient::HEADER_ERROR_LIMIT_REMAIN)
+            && $response->hasHeader(EsiClient::HEADER_ERROR_LIMIT_RESET)
         ) {
             $remain = (int) $response->getHeader(EsiClient::HEADER_ERROR_LIMIT_REMAIN)[0];
             $reset = (int) $response->getHeader(EsiClient::HEADER_ERROR_LIMIT_RESET)[0];

@@ -136,8 +136,8 @@ class SendMissingCharacterMail extends Command
                         $this->writeLine('  Missing character mail sent to ' . $memberId, false);
                     } else {
                         $this->writeLine(
-                            "  Missing character mail could not be sent to $memberId " .
-                                "because of CSPA charge or blocked sender",
+                            "  Missing character mail could not be sent to $memberId "
+                                . "because of CSPA charge or blocked sender",
                             false,
                         );
                     }

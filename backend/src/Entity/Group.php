@@ -401,9 +401,9 @@ class Group implements \JsonSerializable
 
     public function setIsAutoManaged(): bool
     {
-        $this->isAutoManaged =
-            count($this->getAlliances()) > 0 ||
-            count($this->getCorporations()) > 0;
+        $this->isAutoManaged
+            = count($this->getAlliances()) > 0
+            || count($this->getCorporations()) > 0;
 
         return $this->isAutoManaged;
     }

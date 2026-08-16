@@ -92,8 +92,8 @@ class SessionMiddleware implements MiddlewareInterface
     {
         $start = false;
 
-        if (isset($this->options[self::OPTION_ROUTE_INCLUDE_PATTERN]) &&
-            is_array($this->options[self::OPTION_ROUTE_INCLUDE_PATTERN])
+        if (isset($this->options[self::OPTION_ROUTE_INCLUDE_PATTERN])
+            && is_array($this->options[self::OPTION_ROUTE_INCLUDE_PATTERN])
         ) {
             if ($route === null) {
                 return false;
@@ -162,8 +162,8 @@ class SessionMiddleware implements MiddlewareInterface
         }
 
         $readOnly = true;
-        if (isset($this->options[self::OPTION_ROUTE_BLOCKING_PATTERN]) &&
-            is_array($this->options[self::OPTION_ROUTE_BLOCKING_PATTERN])
+        if (isset($this->options[self::OPTION_ROUTE_BLOCKING_PATTERN])
+            && is_array($this->options[self::OPTION_ROUTE_BLOCKING_PATTERN])
         ) {
             foreach ($this->options[self::OPTION_ROUTE_BLOCKING_PATTERN] as $blockingPattern) {
                 if (str_starts_with($routePattern, $blockingPattern)) {

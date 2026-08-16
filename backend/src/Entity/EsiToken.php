@@ -240,9 +240,9 @@ class EsiToken implements \JsonSerializable
         return new CoreEsiToken(
             $this->character->toCoreCharacter($fullCharacter),
             $this->getEveLogin()->getName(),
-            !empty($this->getEveLogin()->getEsiScopes()) ?
-                array_map('trim', explode(' ', $this->getEveLogin()->getEsiScopes())) :
-                [],
+            !empty($this->getEveLogin()->getEsiScopes())
+                ? array_map('trim', explode(' ', $this->getEveLogin()->getEsiScopes()))
+                : [],
             $this->getEveLogin()->getEveRoles(),
             $this->validToken,
             $this->validTokenTime,

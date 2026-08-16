@@ -189,8 +189,8 @@ class CorporationMemberRepository extends EntityRepository
             $qb->andWhere($qb->expr()->isNull('e.validToken'));
         }
         if (
-            $this->tokenChanged > 0 &&
-            ($tokenChangedDate = date_create(self::NOW . ' -' . $this->tokenChanged . ' ' . self::DAYS))
+            $this->tokenChanged > 0
+            && ($tokenChangedDate = date_create(self::NOW . ' -' . $this->tokenChanged . ' ' . self::DAYS))
         ) {
             $qb->andWhere('e.validTokenTime < :tokenChanged')
                 ->setParameter('tokenChanged', $tokenChangedDate->format(self::DATE_FORMAT));

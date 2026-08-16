@@ -131,8 +131,8 @@ class AutoAllowlist extends Command
         $allowlist = $this->getAllowlist($accountsData);
 
         $this->writeLine(
-            "    Corporations to check: $this->numCorporations, checked: $this->numCorporationsChecked, " .
-            "allowlist: $this->numCorporationsAllowed",
+            "    Corporations to check: $this->numCorporations, checked: $this->numCorporationsChecked, "
+            . "allowlist: $this->numCorporationsAllowed",
             false,
         );
 
@@ -186,10 +186,10 @@ class AutoAllowlist extends Command
                 $accountsData[$playerId][$corporationId][self::KEY_CHAR_IDS][] = $character->getId();
                 $esiToken = $character->getEsiToken(EveLogin::NAME_DEFAULT);
                 if (
-                    $accountsData[$playerId][$corporationId][self::KEY_TOKEN_ID] === null &&
-                    $esiToken !== null &&
-                    $esiToken->getValidToken() &&
-                    in_array(EveLogin::SCOPE_MEMBERSHIP, $this->tokenService->getScopesFromToken($esiToken))
+                    $accountsData[$playerId][$corporationId][self::KEY_TOKEN_ID] === null
+                    && $esiToken !== null
+                    && $esiToken->getValidToken()
+                    && in_array(EveLogin::SCOPE_MEMBERSHIP, $this->tokenService->getScopesFromToken($esiToken))
                 ) {
                     $accountsData[$playerId][$corporationId][self::KEY_TOKEN_ID] = $esiToken->getId();
                 }

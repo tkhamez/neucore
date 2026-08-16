@@ -244,8 +244,8 @@ class Account
     {
         // check if character is in Doomheim (biomassed)
         if (
-            $char->getCorporation() !== null &&
-            $char->getCorporation()->getId() === EsiData::CORPORATION_DOOMHEIM_ID
+            $char->getCorporation() !== null
+            && $char->getCorporation()->getId() === EsiData::CORPORATION_DOOMHEIM_ID
         ) {
             $this->deleteCharacter($char, RemovedCharacter::REASON_DELETED_BIOMASSED);
             $this->objectManager->flush();
@@ -366,9 +366,9 @@ class Account
         $oldPlayer = $character->getPlayer();
         if ($reason === RemovedCharacter::REASON_DELETED_BY_ADMIN) {
             $this->log->info(
-                'An admin (player ID: ' . ($deletedBy ? $deletedBy->getId() : 'unknown') . ') ' .
-                'deleted character "' . $character->getName() . '" [' . $character->getId() . '] ' .
-                'from player "' . $oldPlayer->getName() . '" [' . $oldPlayer->getId() . ']',
+                'An admin (player ID: ' . ($deletedBy ? $deletedBy->getId() : 'unknown') . ') '
+                . 'deleted character "' . $character->getName() . '" [' . $character->getId() . '] '
+                . 'from player "' . $oldPlayer->getName() . '" [' . $oldPlayer->getId() . ']',
             );
         } else {
             $this->createRemovedCharacter($character, $reason, null, $deletedBy);
@@ -391,11 +391,11 @@ class Account
         $mainFound = false;
         foreach ($player->getCharacters() as $character) {
             if (
-                $oldestCharacter === null ||
-                $character->getCreated() === null ||
-                (
-                    $oldestCharacter->getCreated() !== null &&
-                    $character->getCreated()->getTimestamp() < $oldestCharacter->getCreated()->getTimestamp()
+                $oldestCharacter === null
+                || $character->getCreated() === null
+                || (
+                    $oldestCharacter->getCreated() !== null
+                    && $character->getCreated()->getTimestamp() < $oldestCharacter->getCreated()->getTimestamp()
                 )
             ) {
                 $oldestCharacter = $character;
@@ -514,8 +514,8 @@ class Account
     public function syncTrackingRole(?Player $changedPlayer = null, ?Corporation $changedCorporation = null): void
     {
         // validate params
-        if (($changedPlayer === null && $changedCorporation === null) ||
-            ($changedPlayer !== null && $changedCorporation !== null)
+        if (($changedPlayer === null && $changedCorporation === null)
+            || ($changedPlayer !== null && $changedCorporation !== null)
         ) {
             $this->log->error('Account::syncTrackingRole(): Invalid function call.');
             return;
@@ -596,8 +596,8 @@ class Account
 
         $addRole = false;
         if (
-            ($roleName === Role::GROUP_MANAGER && !empty($player->getManagerGroups())) ||
-            ($roleName === Role::APP_MANAGER && !empty($player->getManagerApps()))
+            ($roleName === Role::GROUP_MANAGER && !empty($player->getManagerGroups()))
+            || ($roleName === Role::APP_MANAGER && !empty($player->getManagerApps()))
         ) {
             $addRole = true;
         }

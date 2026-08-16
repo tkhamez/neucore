@@ -186,8 +186,8 @@ class AuthController extends BaseController
                 } elseif (!$userAuth->getUser()) {
                     $errorMessage = 'Error, ESI token not added: Not logged in, login first.';
                 } elseif (!($character = $userAuth->findCharacterOnAccount($eveAuth))) {
-                    $errorMessage =
-                        'Error, ESI token not added: Character not found on this account, please add it first.';
+                    $errorMessage
+                        = 'Error, ESI token not added: Character not found on this account, please add it first.';
                 } elseif (!$esiData->verifyRoles(
                     $eveLogin->getEveRoles(),
                     $eveAuth->getCharacterId(),

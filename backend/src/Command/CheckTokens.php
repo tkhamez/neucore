@@ -67,19 +67,19 @@ class CheckTokens extends Command
     {
         $this->setName('check-tokens')
             ->setDescription(
-                'Checks refresh token. ' .
-                'If the character owner hash has changed or the character has been biomassed, it will be deleted.',
+                'Checks refresh token. '
+                . 'If the character owner hash has changed or the character has been biomassed, it will be deleted.',
             )
             ->addArgument('character', InputArgument::OPTIONAL, 'Check only one char.')
             ->addOption(
                 'characters',
                 'c',
                 InputOption::VALUE_OPTIONAL,
-                'Which characters should be checked: all, active, other. ' .
-                    'Active refers to all characters added in the last x days (x comes from the ' .
-                    '"Groups Deactivation" configuration) or from player accounts where at ' .
-                    'least one character is a member of one of the alliances or corporations configured for ' .
-                    'the "Groups Deactivation" feature.',
+                'Which characters should be checked: all, active, other. '
+                    . 'Active refers to all characters added in the last x days (x comes from the '
+                    . '"Groups Deactivation" configuration) or from player accounts where at '
+                    . 'least one character is a member of one of the alliances or corporations configured for '
+                    . 'the "Groups Deactivation" feature.',
                 'all',
             )
             ->addOption(

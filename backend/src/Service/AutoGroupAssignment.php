@@ -174,18 +174,18 @@ class AutoGroupAssignment
 
         foreach ($player->getGroups() as $group) {
             if (
-                count($group->getRequiredGroups()) === 0 &&
-                count($group->getForbiddenGroups()) === 0
+                count($group->getRequiredGroups()) === 0
+                && count($group->getForbiddenGroups()) === 0
             ) {
                 $groups1[] = $group;
             } elseif (
-                count($group->getRequiredGroups()) > 0 &&
-                count($group->getForbiddenGroups()) === 0
+                count($group->getRequiredGroups()) > 0
+                && count($group->getForbiddenGroups()) === 0
             ) {
                 $groups2[] = $group;
             } elseif (
-                count($group->getRequiredGroups()) > 0 &&
-                count($group->getForbiddenGroups()) > 0
+                count($group->getRequiredGroups()) > 0
+                && count($group->getForbiddenGroups()) > 0
             ) {
                 $groups3[] = $group;
             } else { // 0 required groups, >0 forbidden groups

@@ -205,9 +205,9 @@ class EveMail
         foreach (explode(',', $corporations->getValue()) as $corporationId) {
             $corporation = $corpRepo->find((int) $corporationId);
             if (
-                $corporation &&
-                $corporation->getTrackingLastUpdate() > $yesterday &&
-                !in_array($corporation->getId(), $result)
+                $corporation
+                && $corporation->getTrackingLastUpdate() > $yesterday
+                && !in_array($corporation->getId(), $result)
             ) {
                 $result[] = $corporation->getId();
             }
@@ -287,10 +287,10 @@ class EveMail
         }
 
         if (
-            $subject === null ||
-            trim($subject->getValue()) === '' ||
-            $body === null ||
-            trim($body->getValue()) === ''
+            $subject === null
+            || trim($subject->getValue()) === ''
+            || $body === null
+            || trim($body->getValue()) === ''
         ) {
             return 'Missing subject or body text.';
         }

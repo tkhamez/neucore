@@ -65,8 +65,8 @@ class CharacterController extends BaseController
         path: '/user/character/find-character/{name}',
         operationId: 'findCharacter',
         description: 'Needs role: user-admin, user-manager, user-chars',
-        summary: 'Returns a list of characters (together with the name of the player account/main' .
-            ' character) that matches the name (partial matching).',
+        summary: 'Returns a list of characters (together with the name of the player account/main'
+            . ' character) that matches the name (partial matching).',
         security: [['Session' => []]],
         tags: ['Character'],
         parameters: [
@@ -174,9 +174,9 @@ class CharacterController extends BaseController
     #[OA\Put(
         path: '/user/character/{id}/update',
         operationId: 'update',
-        description: 'Needs role: user to update own characters or user-admin, user-manager, ' .
-            'group-admin, app-admin, user-chars, tracking or watchlist to update any character.<br>' .
-            'It also updates groups and verifies the OAuth token.',
+        description: 'Needs role: user to update own characters or user-admin, user-manager, '
+            . 'group-admin, app-admin, user-chars, tracking or watchlist to update any character.<br>'
+            . 'It also updates groups and verifies the OAuth token.',
         summary: 'Update a character with data from ESI.',
         security: [['Session' => [], 'CSRF' => []]],
         tags: ['Character'],
@@ -217,13 +217,13 @@ class CharacterController extends BaseController
         // find character
         $char = null;
         if (
-            $player->hasRole(Role::USER_ADMIN) ||
-            $player->hasRole(Role::USER_MANAGER) ||
-            $player->hasRole(Role::GROUP_ADMIN) ||
-            $player->hasRole(Role::APP_ADMIN) ||
-            $player->hasRole(Role::USER_CHARS) ||
-            $player->hasRole(Role::TRACKING) ||
-            $player->hasRole(Role::WATCHLIST)
+            $player->hasRole(Role::USER_ADMIN)
+            || $player->hasRole(Role::USER_MANAGER)
+            || $player->hasRole(Role::GROUP_ADMIN)
+            || $player->hasRole(Role::APP_ADMIN)
+            || $player->hasRole(Role::USER_CHARS)
+            || $player->hasRole(Role::TRACKING)
+            || $player->hasRole(Role::WATCHLIST)
         ) {
             $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
         } else {
@@ -370,9 +370,9 @@ class CharacterController extends BaseController
     {
         foreach ($result as $item) {
             if (
-                $item->characterId === $char->getId() &&
-                $item->characterName === $char->getName() &&
-                $item->playerId === $char->getPlayer()->getId()
+                $item->characterId === $char->getId()
+                && $item->characterName === $char->getName()
+                && $item->playerId === $char->getPlayer()->getId()
             ) {
                 return true;
             }

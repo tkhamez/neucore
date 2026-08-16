@@ -74,8 +74,8 @@ class AppController extends BaseController
     #[OA\Post(
         path: '/user/app/create',
         operationId: 'create',
-        description: 'Needs role: app-admin<br>' .
-            'Generates a random secret that must be changed by an app manager.',
+        description: 'Needs role: app-admin<br>'
+            . 'Generates a random secret that must be changed by an app manager.',
         summary: 'Create an app.',
         security: [['Session' => [], 'CSRF' => []]],
         requestBody: new OA\RequestBody(
@@ -377,8 +377,8 @@ class AppController extends BaseController
     #[OA\Get(
         path: '/user/app/{id}/show',
         operationId: 'show',
-        description: 'Needs role: app-admin, app-manager<br>' .
-            'Managers can only see groups of their own apps.',
+        description: 'Needs role: app-admin, app-manager<br>'
+            . 'Managers can only see groups of their own apps.',
         summary: 'Shows app information.',
         security: [['Session' => []]],
         tags: ['App'],

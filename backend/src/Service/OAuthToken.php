@@ -43,9 +43,9 @@ class OAuthToken
             'access_token' => $accessToken,
             'refresh_token' => $refreshToken,
             // see oauth2InceptionDate in \League\OAuth2\Client\Token\AccessToken::isExpirationTimestamp()
-            'expires' => $expires > 1349067600 ?
-                         $expires - $expiresBuffer :
-                         $expires,
+            'expires' => $expires > 1349067600
+                         ? $expires - $expiresBuffer
+                         : $expires,
         ]);
     }
 
@@ -131,9 +131,9 @@ class OAuthToken
         $eveAuth = $this->getEveAuth($token);
         if ($eveAuth !== null) { // null = decoding the token failed, change nothing in this case
             if (
-                empty($eveAuth->getScopes()) ||
-                !is_numeric($token->getExpires()) ||
-                !is_string($token->getRefreshToken())
+                empty($eveAuth->getScopes())
+                || !is_numeric($token->getExpires())
+                || !is_string($token->getRefreshToken())
             ) {
                 $esiToken->setValidToken(); // treat no scopes as if there was no token
             } else {

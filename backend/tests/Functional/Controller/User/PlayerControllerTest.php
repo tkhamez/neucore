@@ -1300,8 +1300,8 @@ class PlayerControllerTest extends WebTestCase
         $this->assertNull($this->charRepo->find(10));
         $this->assertNull($this->removedCharRepo->findOneBy(['characterId' => 10]));
         $this->assertSame(
-            'An admin (player ID: ' . $this->player3Id . ') ' .
-                'deleted character "User" [10] from player "User" [' . $this->player1Id . ']',
+            'An admin (player ID: ' . $this->player3Id . ') '
+                . 'deleted character "User" [10] from player "User" [' . $this->player1Id . ']',
             $this->log->getHandler()->getRecords()[0]['message'],
         );
     }

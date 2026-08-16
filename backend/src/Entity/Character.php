@@ -21,8 +21,8 @@ use OpenApi\Attributes as OA;
     properties: [
         new OA\Property(
             property: 'validToken',
-            description: "Shows if character's default refresh token is valid or not. This is null if " .
-                "there is no refresh token (EVE SSOv1 only) or a valid token but without scopes (SSOv2).",
+            description: "Shows if character's default refresh token is valid or not. This is null if "
+                . "there is no refresh token (EVE SSOv1 only) or a valid token but without scopes (SSOv2).",
             type: 'boolean',
             nullable: true,
         ),
@@ -133,10 +133,10 @@ class Character implements \JsonSerializable
             'created' => $this->created?->format(Api::DATE_FORMAT),
             'lastUpdate' => $this->getLastUpdate()?->format(Api::DATE_FORMAT),
             'validToken' => $this->getDefaultTokenValid(),
-            'validTokenTime' => $this->getDefaultTokenValidTime() !== null ?
-                $this->getDefaultTokenValidTime()->format(Api::DATE_FORMAT) : null,
-            'tokenLastChecked' => $this->getDefaultTokenLastChecked() !== null ?
-                $this->getDefaultTokenLastChecked()->format(Api::DATE_FORMAT) : null,
+            'validTokenTime' => $this->getDefaultTokenValidTime() !== null
+                ? $this->getDefaultTokenValidTime()->format(Api::DATE_FORMAT) : null,
+            'tokenLastChecked' => $this->getDefaultTokenLastChecked() !== null
+                ? $this->getDefaultTokenLastChecked()->format(Api::DATE_FORMAT) : null,
         ];
         if ($withCorporation) {
             $result['corporation'] = $this->corporation;

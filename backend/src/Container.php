@@ -199,9 +199,9 @@ class Container
                     );
                 } elseif ($storage === Container::ESI_HEADER_STORAGE_APC) {
                     if (
-                        !function_exists('apcu_store') ||
-                        (php_sapi_name() === 'cli' && ini_get('apc.enable_cli') !== '1') ||
-                        (php_sapi_name() !== 'cli' && ini_get('apc.enabled') !== '1')
+                        !function_exists('apcu_store')
+                        || (php_sapi_name() === 'cli' && ini_get('apc.enable_cli') !== '1')
+                        || (php_sapi_name() !== 'cli' && ini_get('apc.enabled') !== '1')
                     ) {
                         throw new RuntimeException('APC not available or enabled.');
                     }

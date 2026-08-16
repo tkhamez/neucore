@@ -150,8 +150,8 @@ class EsiController extends BaseController
         path: '/app/v1/esi/eve-login/{name}/token-data',
         operationId: 'esiEveLoginTokenDataV1',
         description: 'Needs role: app-esi-login.',
-        summary: 'Returns data for all valid tokens (roles are also checked if applicable) for an ' .
-            'EVE login. This returns cached data, it does not check if the token is still valid.',
+        summary: 'Returns data for all valid tokens (roles are also checked if applicable) for an '
+            . 'EVE login. This returns cached data, it does not check if the token is still valid.',
         security: [['BearerAuth' => []]],
         tags: ['Application - ESI'],
         parameters: [
@@ -289,8 +289,8 @@ class EsiController extends BaseController
         parameters: [
             new OA\Parameter(
                 name: self::HEADER_NEUCORE_EVE_CHARACTER,
-                description: "The EVE character ID those token should be used. Has priority over the query " .
-                    "parameter 'datasource'",
+                description: "The EVE character ID those token should be used. Has priority over the query "
+                    . "parameter 'datasource'",
                 in: 'header',
                 schema: new OA\Schema(type: 'string'),
             ),
@@ -352,28 +352,28 @@ class EsiController extends BaseController
     #[OA\Get(
         path: '/app/v2/esi',
         operationId: 'esiV2',
-        description: "Needs role: app-esi-proxy<br>" .
-            "Either the header '" . self::HEADER_NEUCORE_EVE_CHARACTER . "' and optionally '" .
-            self::HEADER_NEUCORE_EVE_LOGIN . "' or the query parameter 'datasource' is required.<br> " .
-            "Public ESI routes are not allowed.<br>" .
-            "The following headers from ESI are passed through to the response if they exist: Content-Type, " .
-            "Expires, " . EsiClient::HEADER_ERROR_LIMIT_REMAIN . ", " . EsiClient::HEADER_ERROR_LIMIT_RESET .
-            ", " . EsiClient::HEADER_RATE_LIMIT_GROUP . ", " . EsiClient::HEADER_RATE_LIMIT_LIMIT . ", " .
-            "" . EsiClient::HEADER_RATE_LIMIT_REMAINING . ", " . EsiClient::HEADER_RATE_LIMIT_USED .
-            ", X-Pages, X-Compatibility-Date, warning, Warning, " .
-            "Retry-After.<br>" .
-            "The HTTP status code from ESI is also passed through, so there may be more than the documented " .
-            "ones.<br>" .
-            "The ESI path and query parameters can alternatively be appended to the path of this endpoint, this " .
-            "allows using OpenAPI clients generated for the EVE API (ESI), see doc/api-examples for more.",
+        description: "Needs role: app-esi-proxy<br>"
+            . "Either the header '" . self::HEADER_NEUCORE_EVE_CHARACTER . "' and optionally '"
+            . self::HEADER_NEUCORE_EVE_LOGIN . "' or the query parameter 'datasource' is required.<br> "
+            . "Public ESI routes are not allowed.<br>"
+            . "The following headers from ESI are passed through to the response if they exist: Content-Type, "
+            . "Expires, " . EsiClient::HEADER_ERROR_LIMIT_REMAIN . ", " . EsiClient::HEADER_ERROR_LIMIT_RESET
+            . ", " . EsiClient::HEADER_RATE_LIMIT_GROUP . ", " . EsiClient::HEADER_RATE_LIMIT_LIMIT . ", "
+            . EsiClient::HEADER_RATE_LIMIT_REMAINING . ", " . EsiClient::HEADER_RATE_LIMIT_USED
+            . ", X-Pages, X-Compatibility-Date, warning, Warning, "
+            . "Retry-After.<br>"
+            . "The HTTP status code from ESI is also passed through, so there may be more than the documented "
+            . "ones.<br>"
+            . "The ESI path and query parameters can alternatively be appended to the path of this endpoint, this "
+            . "allows using OpenAPI clients generated for the EVE API (ESI), see doc/api-examples for more.",
         summary: 'Makes an ESI GET request on behalf on an EVE character and returns the result.',
         security: [['BearerAuth' => []]],
         tags: ['Application - ESI'],
         parameters: [
             new OA\Parameter(
                 name: self::HEADER_NEUCORE_EVE_CHARACTER,
-                description: "The EVE character ID those token should be used. Has priority over the query " .
-                    "parameter 'datasource'",
+                description: "The EVE character ID those token should be used. Has priority over the query "
+                    . "parameter 'datasource'",
                 in: 'header',
                 schema: new OA\Schema(type: 'string'),
             ),
@@ -403,9 +403,9 @@ class EsiController extends BaseController
             ),
             new OA\Parameter(
                 name: 'datasource',
-                description: 'The EVE character ID those token should be used from the default login to ' .
-                    'make the ESI request. Optionally followed by a colon and the name of an EVE login to ' .
-                    'use an alternative ESI token.',
+                description: 'The EVE character ID those token should be used from the default login to '
+                    . 'make the ESI request. Optionally followed by a colon and the name of an EVE login to '
+                    . 'use an alternative ESI token.',
                 in: 'query',
                 schema: new OA\Schema(type: 'string'),
             ),
@@ -413,8 +413,8 @@ class EsiController extends BaseController
         responses: [
             new OA\Response(
                 response: '200',
-                description: 'The data from ESI.<br> Please note that the JSON schema type can be an object, ' .
-                    'array or number etc., unfortunately, there is no way to document this.',
+                description: 'The data from ESI.<br> Please note that the JSON schema type can be an object, '
+                    . 'array or number etc., unfortunately, there is no way to document this.',
                 headers: [
                     new OA\Header(
                         header: 'Expires',
@@ -503,8 +503,8 @@ class EsiController extends BaseController
         parameters: [
             new OA\Parameter(
                 name: self::HEADER_NEUCORE_EVE_CHARACTER,
-                description: "The EVE character ID those token should be used. Has priority over the query " .
-                    "parameter 'datasource'",
+                description: "The EVE character ID those token should be used. Has priority over the query "
+                    . "parameter 'datasource'",
                 in: 'header',
                 schema: new OA\Schema(type: 'string'),
             ),
@@ -577,8 +577,8 @@ class EsiController extends BaseController
         parameters: [
             new OA\Parameter(
                 name: self::HEADER_NEUCORE_EVE_CHARACTER,
-                description: "The EVE character ID those token should be used. Has priority over the query " .
-                    "parameter 'datasource'",
+                description: "The EVE character ID those token should be used. Has priority over the query "
+                    . "parameter 'datasource'",
                 in: 'header',
                 schema: new OA\Schema(type: 'string'),
             ),
@@ -687,8 +687,8 @@ class EsiController extends BaseController
             } elseif ($publicPath) {
                 $reason = 'Public ESI routes are not allowed.';
             } else { // $characterId === 0
-                $reason = 'The ' . self::HEADER_NEUCORE_EVE_CHARACTER . ' header and datasource ' .
-                    'parameter cannot both be empty, one of them must contain an EVE character ID';
+                $reason = 'The ' . self::HEADER_NEUCORE_EVE_CHARACTER . ' header and datasource '
+                    . 'parameter cannot both be empty, one of them must contain an EVE character ID';
             }
             if ($version === 1) {
                 return $this->response->withStatus(400, $reason);

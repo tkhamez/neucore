@@ -354,8 +354,8 @@ class EsiControllerTest extends WebTestCase
         );
         $this->assertSame(400, $response2?->getStatusCode());
         $this->assertSame(
-            '"The ' . EsiController::HEADER_NEUCORE_EVE_CHARACTER . ' header and datasource ' .
-            'parameter cannot both be empty, one of them must contain an EVE character ID"',
+            '"The ' . EsiController::HEADER_NEUCORE_EVE_CHARACTER . ' header and datasource '
+            . 'parameter cannot both be empty, one of them must contain an EVE character ID"',
             $response2->getBody()->__toString(),
         );
     }
@@ -524,8 +524,8 @@ class EsiControllerTest extends WebTestCase
             $response->getBody()->__toString(),
         );
         $this->assertSame(
-            'App\EsiController: application ' . $appId .
-            " \"A1\": Maximum permissible ESI error limit reached ($headerRemain <= 20).",
+            'App\EsiController: application ' . $appId
+            . " \"A1\": Maximum permissible ESI error limit reached ($headerRemain <= 20).",
             $this->logger->getHandler()?->getRecords()[0]['message'],
         );
     }
@@ -676,8 +676,8 @@ class EsiControllerTest extends WebTestCase
             $response->getBody()->__toString(),
         );
         $this->assertSame(
-            'App\EsiController: application ' . $appId .
-            " \"A1\": Maximum permissible ESI rate limit reached for group '$group'.",
+            'App\EsiController: application ' . $appId
+            . " \"A1\": Maximum permissible ESI rate limit reached for group '$group'.",
             $this->logger->getHandler()?->getRecords()[0]['message'],
         );
     }
@@ -745,9 +745,9 @@ class EsiControllerTest extends WebTestCase
             $response->getBody()->__toString(),
         );
         $this->assertSame(
-            'App\EsiController: (application ' . $appId . ' "A1") ' .
-            '/universe/structures/1/?page=1: ' .
-            '{"error": "not a potential structure_id (id < 100000000)"}',
+            'App\EsiController: (application ' . $appId . ' "A1") '
+            . '/universe/structures/1/?page=1: '
+            . '{"error": "not a potential structure_id (id < 100000000)"}',
             $this->logger->getHandler()?->getRecords()[0]['message'],
         );
     }
@@ -867,8 +867,8 @@ class EsiControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/api/app/v2/esi?esi-path-query=' . urlencode('/v3/characters/96061222/assets/?page=1') .
-                '&datasource=123',
+            '/api/app/v2/esi?esi-path-query=' . urlencode('/v3/characters/96061222/assets/?page=1')
+                . '&datasource=123',
             null,
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
             [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)],

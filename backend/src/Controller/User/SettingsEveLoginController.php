@@ -211,8 +211,8 @@ class SettingsEveLoginController extends BaseController
         }
 
         if (
-            !preg_match($this->namePattern, $data->name) ||
-            str_starts_with($data->name, EveLogin::INTERNAL_LOGIN_PREFIX)
+            !preg_match($this->namePattern, $data->name)
+            || str_starts_with($data->name, EveLogin::INTERNAL_LOGIN_PREFIX)
         ) {
             return $this->response->withStatus(400);
         }

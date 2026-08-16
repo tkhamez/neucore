@@ -109,9 +109,9 @@ class GenerateEveApiFiles extends Command
         $public = [];
         foreach ($this->definition->paths as $path => $data) {
             if (
-                (!isset($data->get) && !isset($data->post)) ||
-                (isset($data->get->security)) ||
-                (isset($data->post->security))
+                (!isset($data->get) && !isset($data->post))
+                || (isset($data->get->security))
+                || (isset($data->post->security))
             ) {
                 continue;
             }

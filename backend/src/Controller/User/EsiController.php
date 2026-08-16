@@ -34,11 +34,11 @@ class EsiController extends BaseController
     #[OA\Get(
         path: '/user/esi/request',
         operationId: 'request',
-        description: 'Needs role: esi<br>' .
-            'Example route: /characters/{character_id}/stats/<br>' .
-            'Only for GET request.<br>' .
-            '{character_id}, {corporation_id} and {alliance_id} are automatically replaced with the ' .
-            'corresponding IDs of the selected character',
+        description: 'Needs role: esi<br>'
+            . 'Example route: /characters/{character_id}/stats/<br>'
+            . 'Only for GET request.<br>'
+            . '{character_id}, {corporation_id} and {alliance_id} are automatically replaced with the '
+            . 'corresponding IDs of the selected character',
         summary: 'ESI request.',
         security: [['Session' => []]],
         tags: ['ESI'],

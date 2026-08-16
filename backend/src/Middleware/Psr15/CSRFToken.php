@@ -48,11 +48,11 @@ class CSRFToken implements MiddlewareInterface
 
         // check token
         if (
-            in_array($request->getMethod(), ['POST', 'PUT', 'DELETE']) &&
-            (
-                empty($this->sessionData->get(self::CSRF_SESSION_NAME)) ||
-                !$request->hasHeader(self::CSRF_HEADER_NAME) ||
-                $request->getHeader(self::CSRF_HEADER_NAME)[0] !== $this->sessionData->get(self::CSRF_SESSION_NAME)
+            in_array($request->getMethod(), ['POST', 'PUT', 'DELETE'])
+            && (
+                empty($this->sessionData->get(self::CSRF_SESSION_NAME))
+                || !$request->hasHeader(self::CSRF_HEADER_NAME)
+                || $request->getHeader(self::CSRF_HEADER_NAME)[0] !== $this->sessionData->get(self::CSRF_SESSION_NAME)
             )
         ) {
             return $this->responseFactory->createResponse()->withStatus(403);

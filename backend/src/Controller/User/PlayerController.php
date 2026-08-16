@@ -179,8 +179,8 @@ class PlayerController extends BaseController
 
         // Check special tracking and watchlist permissions
         if (
-            !$this->getUser($userAuth)->getPlayer()->hasRole(Role::USER_ADMIN) &&
-            !$this->hasPlayerModalPermission($userAuth, $player)
+            !$this->getUser($userAuth)->getPlayer()->hasRole(Role::USER_ADMIN)
+            && !$this->hasPlayerModalPermission($userAuth, $player)
         ) {
             return $this->response->withStatus(403);
         }
@@ -772,8 +772,8 @@ class PlayerController extends BaseController
         responses: [
             new OA\Response(
                 response: '200',
-                description: 'The player (this includes the removedCharacters, incomingCharacters and ' .
-                    'serviceAccounts properties).',
+                description: 'The player (this includes the removedCharacters, incomingCharacters and '
+                    . 'serviceAccounts properties).',
                 content: new OA\JsonContent(ref: '#/components/schemas/Player'),
             ),
             new OA\Response(response: '403', description: 'Not authorized.'),
@@ -799,10 +799,10 @@ class PlayerController extends BaseController
     #[OA\Get(
         path: '/user/player/{id}/characters',
         operationId: 'userPlayerCharacters',
-        description: 'Needs role: app-admin, group-admin, user-manager, user-chars, watchlist, tracking.<br>' .
-            'If a user only has the tracking or watchlist roles, the player must have a character in a ' .
-            'corporation for which the user has access to the member tracking data or the player must ' .
-            'be on a watchlist that the user can view.',
+        description: 'Needs role: app-admin, group-admin, user-manager, user-chars, watchlist, tracking.<br>'
+            . 'If a user only has the tracking or watchlist roles, the player must have a character in a '
+            . 'corporation for which the user has access to the member tracking data or the player must '
+            . 'be on a watchlist that the user can view.',
         summary: 'Show player with characters, moved characters, groups and service accounts.',
         security: [['Session' => []]],
         tags: ['Player'],
@@ -857,9 +857,9 @@ class PlayerController extends BaseController
     #[OA\Post(
         path: '/user/player/group-characters-by-account',
         operationId: 'playerGroupCharactersByAccount',
-        description: 'Needs role: user-chars.<br>The returned character list always contains the main ' .
-            'character as the first character in the list. Characters that do not exist will all be ' .
-            'added to a separate group as the last element of the result list.',
+        description: 'Needs role: user-chars.<br>The returned character list always contains the main '
+            . 'character as the first character in the list. Characters that do not exist will all be '
+            . 'added to a separate group as the last element of the result list.',
         summary: 'Accepts a list of character names and returns them grouped by account.',
         security: [['Session' => [], 'CSRF' => []]],
         requestBody: new OA\RequestBody(
@@ -942,8 +942,8 @@ class PlayerController extends BaseController
             ),
             new OA\Parameter(
                 name: 'admin-reason',
-                description: "Specifies a reason if a user admin triggered the deletion. ('deleted-by-admin' " .
-                    "will not create a 'Removed Character' entry.)",
+                description: "Specifies a reason if a user admin triggered the deletion. ('deleted-by-admin' "
+                    . "will not create a 'Removed Character' entry.)",
                 in: 'query',
                 schema: new OA\Schema(
                     type: 'string',
@@ -1043,9 +1043,9 @@ class PlayerController extends BaseController
     private function hasPlayerModalPermission(UserAuth $userAuth, Player $player): bool
     {
         if (
-            $this->needsTrackingOrWatchlistPermission($userAuth) &&
-            !$this->hasTrackingPermission($userAuth, $player) &&
-            !$this->hasWatchlistPermission($userAuth, $player)
+            $this->needsTrackingOrWatchlistPermission($userAuth)
+            && !$this->hasTrackingPermission($userAuth, $player)
+            && !$this->hasWatchlistPermission($userAuth, $player)
         ) {
             return false;
         }
@@ -1060,8 +1060,8 @@ class PlayerController extends BaseController
             [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER_MANAGER, Role::USER_CHARS],
         );
         if (
-            (in_array(Role::TRACKING, $roles) || in_array(Role::WATCHLIST, $roles)) &&
-            empty($neededRolesExceptTrackingAndWatchlist)
+            (in_array(Role::TRACKING, $roles) || in_array(Role::WATCHLIST, $roles))
+            && empty($neededRolesExceptTrackingAndWatchlist)
         ) {
             return true;
         }

@@ -232,13 +232,13 @@ class ServiceController extends BaseController
             return $this->response->withStatus(500);
         }
         if (
-            !empty($accounts) &&
-            (
-                $oneAccountOnly ||
+            !empty($accounts)
+            && (
+                $oneAccountOnly
 
                 // Check status of main character. Note: this method is also used to reactivate deactivated accounts,
                 // for example for services that do not support account updates.
-                !in_array(
+                || !in_array(
                     $accounts[0]->getStatus(),
                     [ServiceAccountData::STATUS_DEACTIVATED, ServiceAccountData::STATUS_UNKNOWN],
                 )
@@ -459,8 +459,8 @@ class ServiceController extends BaseController
         $serviceImplementation = $this->pluginService->getPluginImplementation($service);
         if (!$serviceImplementation instanceof ServiceInterface) {
             $this->log->error(
-                "ServiceController: The configured service class does not exist or does not implement " .
-                "Neucore\Plugin\ServiceInterface.",
+                "ServiceController: The configured service class does not exist or does not implement "
+                . "Neucore\Plugin\ServiceInterface.",
             );
             $this->responseErrorCode = 500;
             return null;

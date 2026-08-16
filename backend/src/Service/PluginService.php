@@ -199,11 +199,11 @@ class PluginService
             $candidate = $pluginPath . DIRECTORY_SEPARATOR . $relativePsr4Path;
             $psr4PathReal = realpath($candidate);
             if (
-                $psr4PathReal !== false &&
-                is_dir($psr4PathReal) &&
-                (
-                    $psr4PathReal === $pluginPath ||
-                    str_starts_with($psr4PathReal, $pluginPath . DIRECTORY_SEPARATOR)
+                $psr4PathReal !== false
+                && is_dir($psr4PathReal)
+                && (
+                    $psr4PathReal === $pluginPath
+                    || str_starts_with($psr4PathReal, $pluginPath . DIRECTORY_SEPARATOR)
                 )
             ) {
                 $psr4Path = $psr4PathReal;
@@ -260,8 +260,8 @@ class PluginService
             return null;
         }
 
-        $basePath = is_string($this->config['plugins_install_dir']) ?
-            $this->config['plugins_install_dir'] : '';
+        $basePath = is_string($this->config['plugins_install_dir'])
+            ? $this->config['plugins_install_dir'] : '';
         if ($basePath === '') {
             return null;
         }

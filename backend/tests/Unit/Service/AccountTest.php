@@ -115,8 +115,8 @@ class AccountTest extends TestCase
     {
         $this->helper = new Helper();
         $this->helper->emptyDb();
-        list($this->role0, $this->role1, $this->role2, $this->role3, $this->role4, $this->role5) =
-            $this->helper->addRoles([
+        list($this->role0, $this->role1, $this->role2, $this->role3, $this->role4, $this->role5)
+            = $this->helper->addRoles([
                 Role::GROUP_MANAGER, Role::TRACKING, Role::WATCHLIST, Role::APP_MANAGER, Role::USER_CHARS,
                 Role::ESI, Role::USER_ADMIN, Role::WATCHLIST_MANAGER,
             ]);
@@ -831,8 +831,8 @@ class AccountTest extends TestCase
         $this->assertSame(0, count($this->removedCharRepo->findAll()));
 
         $this->assertSame(
-            'An admin (player ID: unknown) deleted character "char" [10] from player "player 1" [' .
-                $player->getId() . ']',
+            'An admin (player ID: unknown) deleted character "char" [10] from player "player 1" ['
+                . $player->getId() . ']',
             $this->log->getHandler()->getRecords()[0]['message'],
         );
     }

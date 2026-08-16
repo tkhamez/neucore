@@ -364,10 +364,10 @@ class PluginAdminController extends BaseController
         $data = \json_decode($configuration, true);
         if (is_array($data)) {
             if (
-                isset($data['directoryName']) &&
-                (
-                    !is_string($data['directoryName']) ||
-                    !PluginConfiguration::isValidDirectoryName($data['directoryName'])
+                isset($data['directoryName'])
+                && (
+                    !is_string($data['directoryName'])
+                    || !PluginConfiguration::isValidDirectoryName($data['directoryName'])
                 )
             ) {
                 return $this->response->withStatus(400);

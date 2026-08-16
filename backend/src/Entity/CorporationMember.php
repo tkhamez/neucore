@@ -275,12 +275,12 @@ class CorporationMember implements \JsonSerializable
     public function toCoreMemberTracking(): ?CoreMemberTracking
     {
         if (
-            !$this->character ||
-            !$this->logonDate ||
-            !$this->logoffDate ||
-            !$this->location ||
-            !$this->shipType ||
-            !$this->startDate
+            !$this->character
+            || !$this->logonDate
+            || !$this->logoffDate
+            || !$this->location
+            || !$this->shipType
+            || !$this->startDate
         ) {
             return null;
         }

@@ -400,10 +400,10 @@ class Player implements \JsonSerializable
                 continue;
             }
             if ((
-                $character->getCorporation()->getAlliance() !== null &&
-                in_array($character->getCorporation()->getAlliance()->getId(), $alliances)
-            ) ||
-                in_array($character->getCorporation()->getId(), $corporations)
+                $character->getCorporation()->getAlliance() !== null
+                && in_array($character->getCorporation()->getAlliance()->getId(), $alliances)
+            )
+                || in_array($character->getCorporation()->getId(), $corporations)
             ) {
                 $isMember = true;
                 break;

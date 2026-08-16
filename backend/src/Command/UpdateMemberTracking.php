@@ -103,8 +103,8 @@ class UpdateMemberTracking extends Command
             $corporationId = $corporation->getId();
 
             if (
-                in_array($corporation->getId(), $processedCorporations) || // don't process the same corp twice
-                ($corpId > 0 && $corpId !== $corporation->getId())
+                in_array($corporation->getId(), $processedCorporations) // don't process the same corp twice
+                || ($corpId > 0 && $corpId !== $corporation->getId())
             ) {
                 continue;
             }
@@ -148,8 +148,8 @@ class UpdateMemberTracking extends Command
             $this->entityManager->flush();
 
             $this->writeLine(
-                '  Updated tracking data for ' . count($trackingData) .
-                ' members of corporation ' . $corporation->getId(),
+                '  Updated tracking data for ' . count($trackingData)
+                . ' members of corporation ' . $corporation->getId(),
             );
 
             $processedCorporations[] = $corporation->getId();

@@ -148,8 +148,8 @@ class GroupController extends BaseController
     #[OA\Post(
         path: '/app/v1/groups',
         operationId: 'groupsBulkV1',
-        description: 'Needs role: app-groups.<br> Returns only groups that have been added to the app ' .
-            'as well. Skips characters that are not found in the local database.',
+        description: 'Needs role: app-groups.<br> Returns only groups that have been added to the app '
+            . 'as well. Skips characters that are not found in the local database.',
         summary: 'Return groups of multiple players, identified by one of their character IDs.',
         security: [['BearerAuth' => []]],
         requestBody: new OA\RequestBody(
@@ -260,8 +260,8 @@ class GroupController extends BaseController
     #[OA\Post(
         path: '/app/v1/corp-groups',
         operationId: 'corpGroupsBulkV1',
-        description: 'Needs role: app-groups.<br> Returns only groups that have been added to the app ' .
-            'as well. Skips corporations that are not found in the local database.',
+        description: 'Needs role: app-groups.<br> Returns only groups that have been added to the app '
+            . 'as well. Skips corporations that are not found in the local database.',
         summary: 'Return groups of multiple corporations.',
         security: [['BearerAuth' => []]],
         requestBody: new OA\RequestBody(
@@ -372,8 +372,8 @@ class GroupController extends BaseController
     #[OA\Post(
         path: '/app/v1/alliance-groups',
         operationId: 'allianceGroupsBulkV1',
-        description: 'Needs role: app-groups.<br>Returns only groups that have been added to the app ' .
-            'as well. Skips alliances that are not found in the local database.',
+        description: 'Needs role: app-groups.<br>Returns only groups that have been added to the app '
+            . 'as well. Skips alliances that are not found in the local database.',
         summary: 'Return groups of multiple alliances.',
         security: [['BearerAuth' => []]],
         requestBody: new OA\RequestBody(
@@ -407,8 +407,8 @@ class GroupController extends BaseController
     #[OA\Get(
         path: '/app/v1/groups-with-fallback',
         operationId: 'groupsWithFallbackV1',
-        description: 'Needs role: app-groups.<br> Returns only groups that have been added to the app as well.<br>' .
-            'It is not checked if character, corporation and alliance match.',
+        description: 'Needs role: app-groups.<br> Returns only groups that have been added to the app as well.<br>'
+            . 'It is not checked if character, corporation and alliance match.',
         summary: "Returns groups from the character's account, if available, or the corporation and alliance.",
         security: [['BearerAuth' => []]],
         tags: ['Application - Groups'],
@@ -647,9 +647,9 @@ class GroupController extends BaseController
      */
     private function getGroupsFor(string $entityName, int $entityId, array $appGroups): ?array
     {
-        $repository = $entityName === self::TYPE_CORPORATION ?
-            $this->repositoryFactory->getCorporationRepository() :
-            $this->repositoryFactory->getAllianceRepository();
+        $repository = $entityName === self::TYPE_CORPORATION
+            ? $this->repositoryFactory->getCorporationRepository()
+            : $this->repositoryFactory->getAllianceRepository();
 
         $entity = $repository->find($entityId);
         if ($entity === null) {

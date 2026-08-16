@@ -91,8 +91,8 @@ class EsiClient
         $group = self::getRateLimitGroup($pathQuery, $httpMethod);
         foreach (self::getRateLimits($storage) as $bucket => $limit) {
             if (
-                ($characterId === null && $bucket === $group) ||
-                ($characterId !== null && $bucket === "$group:$characterId")
+                ($characterId === null && $bucket === $group)
+                || ($characterId !== null && $bucket === "$group:$characterId")
             ) {
                 $wait = self::calculateRateLimitWaitTime($limit, $limitRemainPercent);
                 if ($wait > 0) {
@@ -162,8 +162,8 @@ class EsiClient
     {
         $path = $esiPathQuery;
         if (
-            str_starts_with($esiPathQuery, '/latest/') ||
-            preg_match("@^/v([0-9])+/@", $esiPathQuery) === 1
+            str_starts_with($esiPathQuery, '/latest/')
+            || preg_match("@^/v([0-9])+/@", $esiPathQuery) === 1
         ) {
             // Strip the version from the old paths.
             $path = substr($esiPathQuery, (int) strpos($esiPathQuery, '/', 1));

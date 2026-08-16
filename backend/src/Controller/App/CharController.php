@@ -480,8 +480,8 @@ class CharController extends BaseController
         path: '/app/v1/incoming-characters/{characterId}',
         operationId: 'incomingCharactersV1',
         description: 'Needs role: app-chars.',
-        summary: 'Returns all characters that were moved from another account to the player account to ' .
-            'which the ID belongs.',
+        summary: 'Returns all characters that were moved from another account to the player account to '
+            . 'which the ID belongs.',
         security: [['BearerAuth' => []]],
         tags: ['Application - Characters'],
         parameters: [

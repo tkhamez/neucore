@@ -131,10 +131,10 @@ class UpdateServiceAccounts extends Command
         }
 
         $this->writeLine(
-            "  Updated $serviceName: " .
-            "$this->accountsUpdated accounts updated, " .
-            "$this->updatesFailed updates failed, " .
-            "$this->charactersOrPlayersNotFound characters or players not found.",
+            "  Updated $serviceName: "
+            . "$this->accountsUpdated accounts updated, "
+            . "$this->updatesFailed updates failed, "
+            . "$this->charactersOrPlayersNotFound characters or players not found.",
         );
     }
 

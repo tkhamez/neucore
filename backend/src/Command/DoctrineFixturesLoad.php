@@ -28,8 +28,8 @@ class DoctrineFixturesLoad extends Command
         $this
             ->setName('doctrine-fixtures-load')
             ->setDescription(
-                'Load data fixtures to the database. ' .
-                'Appends the data fixtures instead of deleting all data from the database first.',
+                'Load data fixtures to the database. '
+                . 'Appends the data fixtures instead of deleting all data from the database first.',
             );
     }
 

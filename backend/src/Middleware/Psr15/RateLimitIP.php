@@ -56,15 +56,15 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
 
         $ip = Http::ipAddress($trustedProxies);
         $key = Variables::RATE_LIMIT_IP . '_' . str_replace(['.', ':', ','], '', $ip);
-        [$remaining, $resetIn, $numRequests, $elapsedTime] =
-            $this->checkLimit($key, $this->storage, $maxRequests, $resetTime);
+        [$remaining, $resetIn, $numRequests, $elapsedTime]
+            = $this->checkLimit($key, $this->storage, $maxRequests, $resetTime);
 
         if ($remaining < 0) {
             $appId = Http::appId();
             $appIdLog = empty($appId) ? '' : ", App-ID $appId";
             $this->logger->info(
-                "IP Rate Limit: $ip$appIdLog, " .
-                "limit exceeded with $numRequests request in $elapsedTime seconds.",
+                "IP Rate Limit: $ip$appIdLog, "
+                . "limit exceeded with $numRequests request in $elapsedTime seconds.",
             );
             $response = $this->responseFactory->createResponse(429); // Too Many Requests
             $response->getBody()->write(

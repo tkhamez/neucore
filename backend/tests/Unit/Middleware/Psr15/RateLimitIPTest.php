@@ -88,8 +88,8 @@ class RateLimitIPTest extends TestCase
         $logs = $logger->getMessages();
         $this->assertSame(1, count($logs));
         $this->assertStringStartsWith(
-            'IP Rate Limit: ' . self::$ip . ', App-ID ' . self::$appIdp . ', ' .
-                'limit exceeded with 51 request in ', // ... ~5.5 seconds.
+            'IP Rate Limit: ' . self::$ip . ', App-ID ' . self::$appIdp . ', '
+                . 'limit exceeded with 51 request in ', // ... ~5.5 seconds.
             $logs[0],
         );
     }

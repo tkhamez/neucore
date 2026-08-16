@@ -69,11 +69,11 @@ class EveMailToken
         $tokenValues = json_decode($token->getValue(), true);
 
         if (
-            !is_array($tokenValues) ||
-            !isset($tokenValues[SystemVariable::TOKEN_ID]) ||
-            !isset($tokenValues[SystemVariable::TOKEN_ACCESS]) ||
-            !isset($tokenValues[SystemVariable::TOKEN_REFRESH]) ||
-            !isset($tokenValues[SystemVariable::TOKEN_EXPIRES])
+            !is_array($tokenValues)
+            || !isset($tokenValues[SystemVariable::TOKEN_ID])
+            || !isset($tokenValues[SystemVariable::TOKEN_ACCESS])
+            || !isset($tokenValues[SystemVariable::TOKEN_REFRESH])
+            || !isset($tokenValues[SystemVariable::TOKEN_EXPIRES])
         ) {
             throw new Exception('Missing token data.');
         }
