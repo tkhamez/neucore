@@ -779,6 +779,9 @@ class AuthControllerTest extends WebTestCase
         $this->assertSame(39, strlen($this->parseJsonBody($response1)));
     }
 
+    /**
+     * @return non-empty-string
+     */
     private function getStatePrefix(string $eveLoginName): string
     {
         return $eveLoginName . '*';
