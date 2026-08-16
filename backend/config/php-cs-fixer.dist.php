@@ -10,10 +10,6 @@ $finder = (new PhpCsFixer\Finder())
 return (new PhpCsFixer\Config())
     ->setRules([
         '@PER-CS' => true,
-        'operator_linebreak' => [
-            'position' => 'end',
-            'only_booleans' => true,
-        ],
     ])
     ->setFinder($finder)
 ;

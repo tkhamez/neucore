@@ -47,7 +47,7 @@ The differences between `dev` and `prod` mode (which is determined by the enviro
 
 ## Style Guide
 
-This project uses the [PER Coding Style 2.0](https://www.php-fig.org/per/coding-style/).
+This project uses the [PER Coding Style](https://www.php-fig.org/per/coding-style/).
 
 You can partially check and fix the code by executing the following:
 ```
@@ -130,11 +130,9 @@ Generate OpenAPI interface description files:
 composer openapi
 ```
 
-Check code with PHPStan, Phan and Psalm:
+Check code with PHPStan:
 ```
 composer phpstan
-composer phan
-composer psalm
 ```
 
 ### Doctrine
