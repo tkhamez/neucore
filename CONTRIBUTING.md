@@ -58,17 +58,10 @@ composer phpstan        # Static analysis
 composer test           # Run tests
 ```
 
-Verification order: `composer style:check && composer phpstan && composer test`
-
 ### Frontend
 
 - **Indent**: 4 spaces
 - **Line length**: Maximum 120 characters
-
-```bash
-cd frontend
-npm run build           # Production build also validates
-```
 
 ### Generated Files
 
@@ -113,7 +106,6 @@ Key documentation files:
 
 - Join the [Neucore Discord Server](https://discord.gg/memUh56u8z)
 - Check existing documentation in `doc/`
-- Review the AGENTS.md file for development guidelines
 
 ## Licensing
 

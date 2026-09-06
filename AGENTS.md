@@ -143,16 +143,6 @@ Tracked static ESI data files (regenerate with `bin/console generate-eve-api-fil
 - Generate diff: `vendor/bin/doctrine-migrations migrations:diff` (set `serverVersion` in the URL for compatible syntax).
 - Run: `composer db:migrate`; seed fixtures: `composer db:seed`.
 
-## Common CLI commands
-
-```sh
-bin/console make-admin 1
-bin/console update-member-tracking
-bin/console generate-eve-api-files      # regenerate ESI static data files
-bin/console check-tokens                # cronjob to keep refresh tokens alive
-bin/run-jobs.sh                         # runs all background jobs in order
-```
-
 ## Plugins
 
 - Plugins live under the directory set by `NEUCORE_PLUGINS_INSTALL_DIR` (e.g. `/plugins`); each has a `plugin.yml` in its own subdirectory.
@@ -162,7 +152,7 @@ bin/run-jobs.sh                         # runs all background jobs in order
 
 ## CI / release
 
-- `.github/workflows/test.yml` runs on every push. Matrix: PHP 8.1–8.5 × MariaDB/MySQL (see **Toolchain versions**). Only the PHP 8.4 job uploads coverage to SonarCloud.
+- `.github/workflows/test.yml` runs on every push. Matrix: PHP × MariaDB/MySQL (see **Toolchain versions**). Only the PHP 8.4 job uploads coverage to SonarCloud.
 - `.github/workflows/release.yml` runs on tag pushes: builds the distribution tarball (via `setup/dist-collect-files.sh`) and the multi-arch Docker image.
 
 ## Toolchain versions
