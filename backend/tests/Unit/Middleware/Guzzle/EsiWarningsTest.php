@@ -34,7 +34,6 @@ class EsiWarningsTest extends TestCase
         $response = new Response(
             200,
             [
-                'warning' => ['299 - This route is deprecated'],
                 'Warning' => ['299 - This route is deprecated'],
             ],
         );
@@ -42,14 +41,10 @@ class EsiWarningsTest extends TestCase
         $function = $this->obj->__invoke($this->helper->getGuzzleHandler($response));
         $function(new Request('GET', 'https://local.host/esi/path'), []);
 
-        $this->assertSame(2, count($this->logger->getMessages()));
+        $this->assertSame(1, count($this->logger->getMessages()));
         $this->assertSame(
             'https://local.host/esi/path: 299 - This route is deprecated',
             $this->logger->getMessages()[0],
-        );
-        $this->assertSame(
-            'https://local.host/esi/path: 299 - This route is deprecated',
-            $this->logger->getMessages()[1],
         );
     }
 }

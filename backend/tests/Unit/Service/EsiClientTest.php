@@ -224,7 +224,7 @@ class EsiClientTest extends TestCase
         );
 
         self::assertSame(
-            ['X-Compatibility-Date' => '2025-07-11', 'Accept-Language' => 'en'],
+            [EsiClient::HEADER_COMPATIBILITY_DATE => '2025-07-11', 'Accept-Language' => 'en'],
             $this->httpClient->getHeaders(),
         );
         self::assertSame(200, $response->getStatusCode());
@@ -259,7 +259,7 @@ class EsiClientTest extends TestCase
 
         self::assertSame(
             [
-                'X-Compatibility-Date' => '2025-07-12',
+                EsiClient::HEADER_COMPATIBILITY_DATE => '2025-07-12',
                 'Accept-Language' => 'de',
             ],
             $this->httpClient->getHeaders(),

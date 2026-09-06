@@ -189,7 +189,6 @@ class Player implements \JsonSerializable
             'groups' => $this->getGroups(),
             'managerGroups' => $this->getManagerGroups(),
             'managerApps' => $this->getManagerApps(),
-            // API: removedCharacters are not included by default
         ];
     }
 

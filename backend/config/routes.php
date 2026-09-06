@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 use Neucore\Controller\App\ApplicationController;
 use Neucore\Controller\App\CharController;
-use Neucore\Controller\App\TrackingController as AppCorporationController;
 use Neucore\Controller\App\EsiController as AppEsiController;
 use Neucore\Controller\App\GroupController as AppGroupController;
+use Neucore\Controller\App\McpController;
+use Neucore\Controller\App\TrackingController as AppCorporationController;
 use Neucore\Controller\PluginController;
 use Neucore\Controller\User\AllianceController;
 use Neucore\Controller\User\AppController;
@@ -17,8 +18,8 @@ use Neucore\Controller\User\CorporationController;
 use Neucore\Controller\User\EsiController;
 use Neucore\Controller\User\GroupController;
 use Neucore\Controller\User\PlayerController;
-use Neucore\Controller\User\RoleController;
 use Neucore\Controller\User\PluginAdminController;
+use Neucore\Controller\User\RoleController;
 use Neucore\Controller\User\ServiceController;
 use Neucore\Controller\User\SettingsController;
 use Neucore\Controller\User\SettingsEveLoginController;
@@ -75,6 +76,8 @@ return [
     '/api/app/v1/alliance-groups'           => ['POST', [AppGroupController::class, 'allianceGroupsBulkV1']],
     '/api/app/v1/groups-with-fallback'      => ['GET',  [AppGroupController::class, 'groupsWithFallbackV1']],
     '/api/app/v1/group-members/{groupId}'   => ['GET',  [AppGroupController::class, 'members']],
+
+    '/api/app/v1/mcp' => ['POST', [McpController::class, 'handle']],
 
     '/api/user/app/all'                                 => ['GET',    [AppController::class, 'all']],
     '/api/user/app/create'                              => ['POST',   [AppController::class, 'create']],

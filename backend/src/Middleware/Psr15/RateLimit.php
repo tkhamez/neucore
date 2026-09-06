@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Middleware\Psr15;
 
+use Neucore\Service\RateLimitState;
 use Neucore\Storage\ApiRateLimitStoreInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -13,11 +14,19 @@ abstract class RateLimit
 
     public const HEADER_RESET = 'X-Neucore-Rate-Limit-Reset';
 
+    public function __construct(
+        protected readonly RateLimitState $rateLimitState,
+    ) {}
+
     /**
      * @return array{int, float, int, float}
      */
-    protected function checkLimit(string $key, ApiRateLimitStoreInterface $storage, int $maxRequests, int $resetTime): array
-    {
+    protected function checkLimit(
+        string $key,
+        ApiRateLimitStoreInterface $storage,
+        int $maxRequests,
+        int $resetTime,
+    ): array {
         $value = $storage->get($key);
         $variable = $value ? \json_decode($value) : null;
         if ($variable === null) {
@@ -43,20 +52,12 @@ abstract class RateLimit
         return [$variable->remaining, (float) sprintf("%.1F", $resetIn), $numRequests, $elapsedTime];
     }
 
-    protected function addHeader(ResponseInterface $response, int $newRemaining, float $newResetIn): ResponseInterface
+    protected function addHeader(ResponseInterface $response): ResponseInterface
     {
-        $remaining = $newRemaining;
-        $resetIn = $newResetIn;
-
-        $previousRemain = $response->getHeader(self::HEADER_REMAIN)[0] ?? null;
-        $previousResetIn = $response->getHeader(self::HEADER_RESET)[0] ?? null;
-        if ($previousRemain !== null && $previousResetIn !== null && $newRemaining > $previousRemain) {
-            $remaining = $previousRemain;
-            $resetIn = $previousResetIn;
-        }
+        $state = $this->rateLimitState->get();
 
         return $response
-            ->withHeader(self::HEADER_REMAIN, (string) $remaining)
-            ->withHeader(self::HEADER_RESET, (string) $resetIn);
+            ->withHeader(self::HEADER_REMAIN, (string) ($state['remain'] ?? 0))
+            ->withHeader(self::HEADER_RESET, (string) ($state['reset'] ?? 0.0));
     }
 }

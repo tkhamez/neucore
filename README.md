@@ -34,10 +34,10 @@ build upon.
 
 Main features:
 
-- Management of group memberships, manually and with various ways to automate membership.
-- API for various data including an ESI proxy for all characters.
-- [Plugin](doc/Plugins.md) system for service registration (e.g. Discord, Mumble) and general purposes.
-- Corporation member tracking and character watchlists.
+- Management of group memberships, manually and with various ways to automate membership
+- [API](doc/API.md) for various data including an ESI proxy for all characters and an [MCP server](doc/MCP-Server.md)
+- [Plugin](doc/Plugins.md) system for service registration (e.g. Discord, Mumble) and general purposes
+- Corporation member tracking and character watchlists
 - ... [and much more](doc/Documentation.md#features)
 
 For more information, see the [doc](doc/README.md) directory, which also contains some 

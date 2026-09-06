@@ -13,7 +13,7 @@ See `CONTRIBUTING.md` for full guidelines.
 - **PSRs** — follow PHP Standards Recommendations where applicable.
 - **All code must have unit tests**.
 - **Inclusive language** — use it throughout code, documentation, and communication.
-- **Never drop or destroy data on the development database**. There are two databases (dev + test). Migrations are fine. Ask before any operation that could destroy dev data.
+- **Never drop or destroy data on the development database**. There are two databases (dev + test). Ask before any operation that could destroy dev data.
 
 ## Project shape
 
@@ -27,6 +27,7 @@ See `CONTRIBUTING.md` for full guidelines.
 - Web: `web/app.php` → `Neucore\Application::runWebApp()`.
 - CLI: `backend/bin/console` → `Neucore\Application::runConsoleApp()`.
 - Wiring: `backend/src/Application.php`, `backend/src/Container.php` (PHP-DI definitions).
+  - PHP-DI **autowiring** is enabled — concrete class entries like `RateLimitState::class => fn() => new RateLimitState()` are unnecessary. Only add definitions when autowiring cannot work (e.g. interfaces, conditional logic, or third-party classes).
 - Routes/security config: `backend/config/routes.php`, `backend/config/security.php`.
 
 ## Docker development environment

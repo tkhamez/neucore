@@ -36,32 +36,32 @@
 
 Main features:
 
-* **EVE SSO** login with configurable permission scopes.
-* **Player accounts** with multiple characters.
-* **Groups** and **apps** with managers.
-* **Automatic group assignment** for players based on corporations and alliances from all of their characters.
-* An **API for applications** to query group membership of characters, ESI data and more.
+* **EVE SSO** login with configurable permission scopes
+* **Player accounts** with multiple characters
+* **Groups** and **apps** with managers
+* **Automatic group assignment** for players based on corporations and alliances from all of their characters
+* An **[API](API.md) for applications** to query group membership of characters, ESI data and more
+* An **[MCP server](MCP-Server.md)** with tool to query data, including the ESI proxy
 * General purpose [plugins](Plugins.md) with their own frontend and 
-  plugins for **service registration** (e.g. Discord, Mumble).
-* Configurable **watchlists** with accounts that have characters in other alliances or corporations.
-* Corporation **member tracking**.
+  plugins for **service registration** (e.g. Discord, Mumble)
+* Configurable **watchlists** with accounts that have characters in other alliances or corporations
+* Corporation **member tracking**
 
 and more:
 
-* Customisation of texts, links and images specific to your organisation, including themes.
-* Role-based permission system.
-* Optional alternative login that does not require any ESI scopes (e.g. for a guest account).
-* Ability to add additional ESI tokens per character with configurable OAuth scopes.
-* Advanced group configuration: private, public, default, required and forbidden groups.
-* Member applications for groups, optionally automatically acceptable.
-* Optional automatic temporary removal of groups if an ESI token is invalid.
-* Optional EVE mail notifications for invalid ESI tokens and missing characters (via member tracking).
+* Customisation of texts, links and images specific to your organisation, including themes
+* Role-based permission system
+* Optional alternative login that does not require any ESI scopes (e.g. for a guest account)
+* Ability to add additional ESI tokens per character with configurable OAuth scopes
+* Advanced group configuration: private, public, default, required and forbidden groups
+* Member applications for groups, optionally automatically acceptable
+* Optional automatic temporary removal of groups if an ESI token is invalid
+* Optional EVE mail notifications for invalid ESI tokens and missing characters (via member tracking)
 * An [ESI](https://developers.eveonline.com/api-explorer) proxy for all characters and their tokens,
-  optionally available for apps, compatible with the ESI OpenAPI definition file. See also 
-  [api-examples](api-examples).
-* Configurable rate limits for apps or IP-based for all requests to the backend.
-* CLI commands for data updates from ESI.
-* Usable on small touch screens.
+  available for apps, compatible with the ESI OpenAPI definition file, see also [api-examples](api-examples)
+* Configurable rate limits for apps or IP-based for all requests to the backend
+* CLI commands for data updates from ESI
+* Usable on small touch screens
 
 ## Installation and Configuration
 

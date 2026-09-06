@@ -328,7 +328,7 @@ class Helper
             $dependencyFactory->getMetadataStorage()->ensureInitialized();
             $planCalculator = $dependencyFactory->getMigrationPlanCalculator();
             $plan = $planCalculator->getPlanUntilVersion(
-                $dependencyFactory->getVersionAliasResolver()->resolveVersionAlias('latest')
+                $dependencyFactory->getVersionAliasResolver()->resolveVersionAlias('latest'),
             );
             $migratorConfiguration = $dependencyFactory->getConsoleInputMigratorConfigurationFactory()
                 ->getMigratorConfiguration(new ArrayInput(['version' => 'latest']));

@@ -235,15 +235,22 @@ class EsiController extends BaseController
         } else {
             $headers = [
                 'Expires',
+                # old error limit
                 EsiClient::HEADER_ERROR_LIMIT_REMAIN,
                 EsiClient::HEADER_ERROR_LIMIT_RESET,
+                # new rate limit
                 EsiClient::HEADER_RATE_LIMIT_GROUP,
                 EsiClient::HEADER_RATE_LIMIT_LIMIT,
                 EsiClient::HEADER_RATE_LIMIT_REMAINING,
                 EsiClient::HEADER_RATE_LIMIT_USED,
-                'X-Pages',
-                'warning',
-                'Warning',
+                EsiClient::HEADER_RETRY_AFTER,
+                # pagination
+                EsiClient::HEADER_PAGES,
+                EsiClient::HEADER_BEFORE,
+                EsiClient::HEADER_AFTER,
+                # other
+                EsiClient::HEADER_COMPATIBILITY_DATE,
+                EsiClient::HEADER_WARNING,
             ];
             foreach ($headers as $header) {
                 if ($response->hasHeader($header)) {

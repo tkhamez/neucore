@@ -433,6 +433,7 @@ export default {
                     { id: 'app-esi-login', name: 'app-esi-login' },
                     { id: 'app-esi-proxy', name: 'app-esi-proxy' },
                     { id: 'app-esi-token', name: 'app-esi-token' },
+                    { id: 'app-mcp', name: 'app-mcp' },
                 ];
                 return;
             } else if (this.contentType === 'eveLogins') {

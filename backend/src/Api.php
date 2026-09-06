@@ -6,7 +6,11 @@ namespace Neucore;
 
 use OpenApi\Attributes as OA;
 
-#[OA\Info(version: NEUCORE_VERSION, description: "Client library of Neucore API", title: "Neucore API")]
+#[OA\Info(
+    version: NEUCORE_VERSION,
+    description: "Client library of " . NEUCORE_NAME . " API",
+    title: NEUCORE_NAME . " API",
+)]
 #[OA\Server(url: "https://localhost/api")]
 class Api
 {

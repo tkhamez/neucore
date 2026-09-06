@@ -20,7 +20,7 @@ use OpenApi\Attributes as OA;
 #[OA\Schema(
     type: 'string',
     enum: ['app', 'app-groups', 'app-chars', 'app-tracking', 'app-esi-login', 'app-esi-proxy',
-        'app-esi-token', 'user', 'user-admin', 'user-manager', 'user-chars', 'group-admin',
+        'app-esi-token', 'app-mcp', 'user', 'user-admin', 'user-manager', 'user-chars', 'group-admin',
         'group-manager', 'app-admin', 'app-manager', 'plugin-admin', 'statistics', 'esi',
         'settings', 'tracking', 'tracking-admin', 'watchlist', 'watchlist-manager', 'watchlist-admin'],
 )]
@@ -33,6 +33,7 @@ class Role implements \JsonSerializable
     public const APP_ESI_LOGIN = 'app-esi-login';
     public const APP_ESI_PROXY = 'app-esi-proxy';
     public const APP_ESI_TOKEN = 'app-esi-token';
+    public const APP_MCP = 'app-mcp';
 
     public const ANONYMOUS = 'anonymous';
 

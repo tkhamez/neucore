@@ -12,6 +12,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Psr15\RateLimitApp;
 use Neucore\Middleware\Psr15\RateLimit;
 use Neucore\Service\AppAuth;
+use Neucore\Service\RateLimitState;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\DatabaseStorage;
 use Neucore\Storage\Variables;
@@ -68,6 +69,7 @@ class RateLimitAppTest extends TestCase
             new ResponseFactory(),
             $this->logger,
             $this->repoFactory,
+            new RateLimitState(),
         );
     }
 

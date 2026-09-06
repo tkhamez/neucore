@@ -39,6 +39,7 @@ can be a `Corporation` object, be null or not exist at all.
   * [app-esi-login](#app-esi-login)
   * [app-esi-proxy](#app-esi-proxy)
   * [app-esi-token](#app-esi-token)
+  * [app-mcp](#app-mcp)
 
 <!-- tocstop -->
 
@@ -512,3 +513,10 @@ Allows an app to use ESI access tokens.
 
 Application - ESI API
 - Returns an access token for a character and EVE login that is valid for at least 60 seconds. `GET /app/v1/esi/access-token/{characterId}`
+
+#### app-mcp
+
+Allows an app to use the MCP server.
+
+Application - MCP API
+- The Neucore MCP server. `POST /app/v1/mcp`

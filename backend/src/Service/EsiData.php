@@ -76,7 +76,7 @@ class EsiData
                     str_contains($body, 'Character not found') # old 404
                     || str_contains($body, 'Not Found') # new 404
                     || str_contains($body, 'validation failed') # 422 (invalid ID)
-               )
+                )
             ) {
                 throw new Exception('Character not found (exception)', 404);
             } elseif (

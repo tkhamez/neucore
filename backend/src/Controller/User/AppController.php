@@ -38,6 +38,7 @@ class AppController extends BaseController
         Role::APP_ESI_LOGIN,
         Role::APP_ESI_PROXY,
         Role::APP_ESI_TOKEN,
+        Role::APP_MCP,
     ];
 
     #[OA\Get(
@@ -526,7 +527,7 @@ class AppController extends BaseController
                 schema: new OA\Schema(
                     type: 'string',
                     enum: ['app-groups', 'app-chars', 'app-tracking', 'app-esi-login',
-                        'app-esi-proxy', 'app-esi-token'],
+                        'app-esi-proxy', 'app-esi-token', 'app-mcp'],
                 ),
             ),
         ],
@@ -572,7 +573,7 @@ class AppController extends BaseController
                 schema: new OA\Schema(
                     type: 'string',
                     enum: ['app-groups', 'app-chars', 'app-tracking', 'app-esi-login', 'app-esi-proxy',
-                        'app-esi-token'],
+                        'app-esi-token', 'app-mcp'],
                 ),
             ),
         ],

@@ -162,7 +162,7 @@ class EsiClientTest extends TestCase
         $response = $this->esiClient->request('/characters/102003000/', 'GET', null, 20300400);
 
         $this->assertSame(
-            ['X-Compatibility-Date' => '2025-07-11', 'Accept-Language' => 'en'],
+            [\Neucore\Service\EsiClient::HEADER_COMPATIBILITY_DATE => '2025-07-11', 'Accept-Language' => 'en'],
             $this->httpClient->getHeaders(),
         );
         $this->assertSame(200, $response->getStatusCode());
@@ -199,7 +199,7 @@ class EsiClientTest extends TestCase
 
         $this->assertSame(
             [
-                'X-Compatibility-Date' => '2025-07-12',
+                \Neucore\Service\EsiClient::HEADER_COMPATIBILITY_DATE => '2025-07-12',
                 'Accept-Language' => 'de',
             ],
             $this->httpClient->getHeaders(),

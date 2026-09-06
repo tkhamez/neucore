@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Middleware\Psr15;
 
 use Neucore\Service\Config;
+use Neucore\Service\RateLimitState;
 use Neucore\Storage\ApcuStorage;
 use Neucore\Storage\ApiRateLimitStoreInterface;
 use Neucore\Storage\Variables;
@@ -28,7 +29,10 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
         private readonly Config $config,
         private readonly ResponseFactoryInterface $responseFactory,
         private readonly LoggerInterface $logger,
-    ) {}
+        RateLimitState $rateLimitState,
+    ) {
+        parent::__construct($rateLimitState);
+    }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -59,6 +63,8 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
         [$remaining, $resetIn, $numRequests, $elapsedTime]
             = $this->checkLimit($key, $this->storage, $maxRequests, $resetTime);
 
+        $this->rateLimitState->setIp((int) $remaining, (float) $resetIn);
+
         if ($remaining < 0) {
             $appId = Http::appId();
             $appIdLog = empty($appId) ? '' : ", App-ID $appId";
@@ -74,6 +80,6 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
             $response = $handler->handle($request);
         }
 
-        return $this->addHeader($response, $remaining, $resetIn);
+        return $this->addHeader($response);
     }
 }

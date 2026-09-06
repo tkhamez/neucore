@@ -41,6 +41,8 @@ return [
     '/api/app/v1/groups-with-fallback'             => [Role::APP_GROUPS],
     '/api/app/v1/group-members/{groupId}'          => [Role::APP_GROUPS],
 
+    '/api/app/v1/mcp'                              => [Role::APP_MCP],
+
     '/api/app'                                     => [Role::APP], // only showV1
 
     '/api/user/alliance/find'      => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER, Role::SETTINGS],

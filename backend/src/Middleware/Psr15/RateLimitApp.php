@@ -7,6 +7,7 @@ namespace Neucore\Middleware\Psr15;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AppAuth;
+use Neucore\Service\RateLimitState;
 use Neucore\Storage\ApiRateLimitStoreInterface;
 use Neucore\Storage\Variables;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -30,7 +31,10 @@ class RateLimitApp extends RateLimit implements MiddlewareInterface
         private readonly ResponseFactoryInterface $responseFactory,
         private readonly LoggerInterface $logger,
         private readonly RepositoryFactory $repositoryFactory,
-    ) {}
+        RateLimitState $rateLimitState,
+    ) {
+        parent::__construct($rateLimitState);
+    }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -51,6 +55,8 @@ class RateLimitApp extends RateLimit implements MiddlewareInterface
         [$remaining, $resetIn, $numRequests, $elapsedTime]
             = $this->checkLimit($key, $this->storage, $this->maxRequests, $this->resetTime);
 
+        $this->rateLimitState->setApp((int) $remaining, (float) $resetIn);
+
         $response = null;
         if ($remaining < 0) {
             $this->logger->info(
@@ -69,7 +75,7 @@ class RateLimitApp extends RateLimit implements MiddlewareInterface
         }
 
         if ($this->active) {
-            $response = $this->addHeader($response, $remaining, $resetIn);
+            $response = $this->addHeader($response);
         }
 
         return $response;

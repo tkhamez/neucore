@@ -7,6 +7,7 @@ namespace Tests\Unit\Factory;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\EveApiFactory;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\EsiClient;
 use Neucore\Service\EveMailToken;
 use Neucore\Service\ObjectManager;
 use PHPUnit\Framework\TestCase;
@@ -48,7 +49,10 @@ class EveApiFactoryTest extends TestCase
     {
         $api = $this->eveApiFactory->getAllianceApi();
         self::assertSame('http://localhost', $api->getConfig()->getHost());
-        self::assertSame(['X-Compatibility-Date' => '2025-09-30'], $this->client->getHeaders());
+        self::assertSame(
+            [EsiClient::HEADER_COMPATIBILITY_DATE => '2025-09-30'],
+            $this->client->getHeaders(),
+        );
     }
 
     public function testGetCorporationApi(): void

@@ -8,7 +8,8 @@ use Neucore\Container;
 return [
 
     'env_var_defaults' => [
-        'NEUCORE_USER_AGENT'         => 'Neucore/' . NEUCORE_VERSION . ' (https://github.com/tkhamez/neucore)',
+        'NEUCORE_USER_AGENT'         => NEUCORE_NAME . '/' . NEUCORE_VERSION
+                                        . ' (https://github.com/tkhamez/neucore)',
         'NEUCORE_LOG_PATH'           => Application::ROOT_DIR . '/var/logs',
         'NEUCORE_LOG_ROTATION'       => 'weekly',
         'NEUCORE_LOG_FORMAT'         => 'multiline',

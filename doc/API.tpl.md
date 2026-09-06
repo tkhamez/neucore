@@ -174,3 +174,9 @@ Allows an app to make ESI requests on behalf of a character from the database.
 Allows an app to use ESI access tokens.
 
 {app-esi-token}
+
+#### app-mcp
+
+Allows an app to use the MCP server.
+
+{app-mcp}

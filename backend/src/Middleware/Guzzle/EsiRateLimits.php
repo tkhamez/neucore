@@ -65,9 +65,9 @@ class EsiRateLimits
 
         if ($response->getStatusCode() === 429) {
             $waitUntil = time() + 60;
-            if ($response->hasHeader('Retry-After')) {
-                $retryAfter = $response->getHeader('Retry-After')[0];
-                $this->logger->warning("EsiRateLimits Retry-After: $retryAfter");
+            if ($response->hasHeader(EsiClient::HEADER_RETRY_AFTER)) {
+                $retryAfter = $response->getHeader(EsiClient::HEADER_RETRY_AFTER)[0];
+                $this->logger->warning("EsiRateLimits " . EsiClient::HEADER_RETRY_AFTER . ": $retryAfter");
                 if (is_numeric($retryAfter)) { // number of seconds to wait
                     $waitUntil = time() + ceil((float) $retryAfter);
                 } else {

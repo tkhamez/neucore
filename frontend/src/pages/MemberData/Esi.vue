@@ -48,8 +48,8 @@
                     must be replaced manually.<br>
                     If the result contains an "X-Pages" header, you can request the other pages by
                     adding "?page=2" etc. to the route.<br>
-                    If the result contains “before” and “after” tokens, you can request additional
-                    pages by adding them to the request, e.g. "?after=token", see also
+                    If the result contains “before” and “after” headers (tokens), you can request
+                    additional pages by adding them to the request, e.g. "?after=token", see also
                     <a href="https://developers.eveonline.com/blog/changing-pagination-turning-a-new-page"
                        class="external" target="_blank" rel="noopener noreferrer">Changing pagination:
                         turning a new page</a>.

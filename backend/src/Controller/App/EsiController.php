@@ -357,11 +357,18 @@ class EsiController extends BaseController
             . self::HEADER_NEUCORE_EVE_LOGIN . "' or the query parameter 'datasource' is required.<br> "
             . "Public ESI routes are not allowed.<br>"
             . "The following headers from ESI are passed through to the response if they exist: Content-Type, "
-            . "Expires, " . EsiClient::HEADER_ERROR_LIMIT_REMAIN . ", " . EsiClient::HEADER_ERROR_LIMIT_RESET
-            . ", " . EsiClient::HEADER_RATE_LIMIT_GROUP . ", " . EsiClient::HEADER_RATE_LIMIT_LIMIT . ", "
-            . EsiClient::HEADER_RATE_LIMIT_REMAINING . ", " . EsiClient::HEADER_RATE_LIMIT_USED
-            . ", X-Pages, X-Compatibility-Date, warning, Warning, "
-            . "Retry-After.<br>"
+            . "Expires, " . EsiClient::HEADER_ERROR_LIMIT_REMAIN . ", "
+            . EsiClient::HEADER_ERROR_LIMIT_RESET . ", "
+            . EsiClient::HEADER_RATE_LIMIT_GROUP . ", "
+            . EsiClient::HEADER_RATE_LIMIT_LIMIT . ", "
+            . EsiClient::HEADER_RATE_LIMIT_REMAINING . ", "
+            . EsiClient::HEADER_RATE_LIMIT_USED . ", "
+            . EsiClient::HEADER_RETRY_AFTER . ", "
+            . EsiClient::HEADER_PAGES . ", "
+            . EsiClient::HEADER_BEFORE . ", "
+            . EsiClient::HEADER_AFTER . ", "
+            . EsiClient::HEADER_COMPATIBILITY_DATE . ", "
+            . EsiClient::HEADER_WARNING . ". <br>"
             . "The HTTP status code from ESI is also passed through, so there may be more than the documented "
             . "ones.<br>"
             . "The ESI path and query parameters can alternatively be appended to the path of this endpoint, this "
@@ -384,7 +391,7 @@ class EsiController extends BaseController
                 schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
-                name: 'X-Compatibility-Date',
+                name: EsiClient::HEADER_COMPATIBILITY_DATE,
                 description: "The ESI compatibility date.",
                 in: 'header',
                 schema: new OA\Schema(type: 'string'),
@@ -460,7 +467,7 @@ class EsiController extends BaseController
                 description: 'An ESI limit was reached, see body for details. The minimum of seconds to try again.',
                 headers: [
                     new OA\Header(
-                        header: 'Retry-After',
+                        header: EsiClient::HEADER_RETRY_AFTER,
                         description: 'Delay in seconds.',
                         schema: new OA\Schema(type: 'string'),
                     ),
@@ -589,7 +596,7 @@ class EsiController extends BaseController
                 schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
-                name: 'X-Compatibility-Date',
+                name: EsiClient::HEADER_COMPATIBILITY_DATE,
                 description: "The ESI compatibility date.",
                 in: 'header',
                 schema: new OA\Schema(type: 'string'),
@@ -637,7 +644,7 @@ class EsiController extends BaseController
                 description: '',
                 headers: [
                     new OA\Header(
-                        header: 'Retry-After',
+                        header: EsiClient::HEADER_RETRY_AFTER,
                         description: 'Delay in seconds.',
                         schema: new OA\Schema(type: 'string'),
                     ),
@@ -810,7 +817,7 @@ class EsiController extends BaseController
         if ($version === 1) {
             $this->response = $this->response->withStatus(429, $messageV1 ?: $message);
         } else {
-            $this->response = $this->response->withHeader('Retry-After', (string) max(1, $retryAfter - time()));
+            $this->response = $this->response->withHeader(EsiClient::HEADER_RETRY_AFTER, (string) max(1, $retryAfter - time()));
             $this->response = $this->withJson($message, 429);
         }
     }
@@ -858,17 +865,22 @@ class EsiController extends BaseController
         $headerAllowList = [
             'Content-Type',
             'Expires',
+            # old error limit
             EsiClient::HEADER_ERROR_LIMIT_REMAIN,
             EsiClient::HEADER_ERROR_LIMIT_RESET,
+            # new rate limit
             EsiClient::HEADER_RATE_LIMIT_GROUP,
             EsiClient::HEADER_RATE_LIMIT_LIMIT,
             EsiClient::HEADER_RATE_LIMIT_REMAINING,
             EsiClient::HEADER_RATE_LIMIT_USED,
-            'X-Pages',
-            'X-Compatibility-Date',
-            'warning',
-            'Warning',
-            'Retry-After',
+            EsiClient::HEADER_RETRY_AFTER,
+            # cursor-based pagination
+            EsiClient::HEADER_PAGES,
+            EsiClient::HEADER_BEFORE,
+            EsiClient::HEADER_AFTER,
+            # other
+            EsiClient::HEADER_COMPATIBILITY_DATE,
+            EsiClient::HEADER_WARNING,
         ];
         foreach ($esiResponse->getHeaders() as $name => $value) {
             if (in_array($name, $headerAllowList)) {

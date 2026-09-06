@@ -114,6 +114,8 @@ class Character implements \JsonSerializable
         bool $withCorporation = true,
         bool $withNameChanges = false,
         bool $withEsiTokens = false,
+        bool $withPlayerId = false,
+        bool $withIsMain = false,
     ): array {
         if ($minimum) {
             $result = [
@@ -122,6 +124,12 @@ class Character implements \JsonSerializable
             ];
             if ($withCorporation) {
                 $result['corporation'] = $this->corporation;
+            }
+            if ($withPlayerId) {
+                $result['playerId'] = $this->player->getId();
+            }
+            if ($withIsMain) {
+                $result['main'] = $this->main;
             }
             return $result;
         }

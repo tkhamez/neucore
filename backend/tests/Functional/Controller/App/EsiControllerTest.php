@@ -771,11 +771,10 @@ class EsiControllerTest extends WebTestCase
                 EsiClient::HEADER_RATE_LIMIT_LIMIT => ['150/15m'],
                 EsiClient::HEADER_RATE_LIMIT_REMAINING => ['149'],
                 EsiClient::HEADER_RATE_LIMIT_USED => ['1'],
-                'X-Compatibility-Date' => ['2025-07-11'],
-                'X-Pages' => ['3'],
-                'warning' => ['199 - This route has an upgrade available'],
-                'Warning' => ['199 - This route has an upgrade available'],
-                'Retry-After' => ['55'],
+                EsiClient::HEADER_COMPATIBILITY_DATE => ['2025-07-11'],
+                EsiClient::HEADER_PAGES => ['3'],
+                EsiClient::HEADER_WARNING => ['199 - This route has an upgrade available'],
+                EsiClient::HEADER_RETRY_AFTER => ['55'],
             ],
             '{"key": "value"}',
         ));
@@ -802,13 +801,12 @@ class EsiControllerTest extends WebTestCase
             EsiClient::HEADER_RATE_LIMIT_LIMIT => ['150/15m'],
             EsiClient::HEADER_RATE_LIMIT_REMAINING => ['149'],
             EsiClient::HEADER_RATE_LIMIT_USED => ['1'],
-            'X-Compatibility-Date' => ['2025-07-11'],
-            'X-Pages' => ['3'],
-            'warning' => [
-                '199 - This route has an upgrade available',
+            EsiClient::HEADER_COMPATIBILITY_DATE => ['2025-07-11'],
+            EsiClient::HEADER_PAGES => ['3'],
+            EsiClient::HEADER_WARNING => [
                 '199 - This route has an upgrade available',
             ],
-            'Retry-After' => ['55'],
+            EsiClient::HEADER_RETRY_AFTER => ['55'],
         ], $response->getHeaders());
     }
 

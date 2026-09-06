@@ -31,6 +31,18 @@ class EsiClient
 
     public const HEADER_RATE_LIMIT_USED = 'X-Ratelimit-Used';
 
+    public const HEADER_RETRY_AFTER = 'Retry-After';
+
+    public const HEADER_PAGES = 'X-Pages';
+
+    public const HEADER_COMPATIBILITY_DATE = 'X-Compatibility-Date';
+
+    public const HEADER_WARNING = 'Warning';
+
+    public const HEADER_BEFORE = 'before';
+
+    public const HEADER_AFTER = 'after';
+
     /**
      * @see GenerateEveApiFiles::replacePlaceholders()
      */
@@ -225,7 +237,6 @@ class EsiClient
                 throw new RuntimeException('Character has no valid token.', 568421);
             }
         } elseif ($isPublicPath) {
-            // This is currently only relevant for requests from plugins.
             if ($this->config['eve']['use_mail_token_for_unauthenticated_requests'] === '1') {
                 $token = $this->eveMailToken->getAccessToken();
             }
@@ -240,7 +251,7 @@ class EsiClient
         $request = $this->httpClientFactory->createRequest($method, $url, $header, $body);
 
         $requestHeaders = [
-            'X-Compatibility-Date' => $compatibilityDate ?: $this->config['eve']['esi_compatibility_date'],
+            self::HEADER_COMPATIBILITY_DATE => $compatibilityDate ?: $this->config['eve']['esi_compatibility_date'],
             'Accept-Language' => $acceptLanguage ?: 'en',
         ];
         if ($debug) {

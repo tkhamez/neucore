@@ -113,8 +113,15 @@ class Group implements \JsonSerializable
     /**
      * Contains only information of interest to clients.
      */
-    public function jsonSerialize(): array
+    public function jsonSerialize(bool $minimalData = false): array
     {
+        if ($minimalData) {
+            return [
+                'id' => $this->id,
+                'name' => $this->name,
+            ];
+        }
+
         return [
             'id' => $this->id,
             'name' => $this->name,

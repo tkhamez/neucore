@@ -9,6 +9,7 @@ namespace Tests\Unit\Middleware\Psr15;
 use Neucore\Middleware\Psr15\RateLimit;
 use Neucore\Middleware\Psr15\RateLimitIP;
 use Neucore\Service\Config;
+use Neucore\Service\RateLimitState;
 use Neucore\Storage\ApcuStorage;
 use Neucore\Storage\Variables;
 use PHPUnit\Framework\TestCase;
@@ -50,17 +51,17 @@ class RateLimitIPTest extends TestCase
         $request = RequestFactory::createRequest();
 
         $config1 = new Config(['rate_limit' => ['max' => 0, 'time' => 0]]);
-        $middleware1 = new RateLimitIP($storage, $config1, new ResponseFactory(), $logger);
+        $middleware1 = new RateLimitIP($storage, $config1, new ResponseFactory(), $logger, new RateLimitState());
         $response1 = $middleware1->process($request, new RequestHandler());
         $this->assertSame(200, $response1->getStatusCode());
 
         $config2 = new Config(['rate_limit' => ['max' => 50, 'time' => 0]]);
-        $middleware2 = new RateLimitIP($storage, $config2, new ResponseFactory(), $logger);
+        $middleware2 = new RateLimitIP($storage, $config2, new ResponseFactory(), $logger, new RateLimitState());
         $response2 = $middleware2->process($request, new RequestHandler());
         $this->assertSame(200, $response2->getStatusCode());
 
         $config3 = new Config(['rate_limit' => ['max' => 0, 'time' => 10]]);
-        $middleware3 = new RateLimitIP($storage, $config3, new ResponseFactory(), $logger);
+        $middleware3 = new RateLimitIP($storage, $config3, new ResponseFactory(), $logger, new RateLimitState());
         $response3 = $middleware3->process($request, new RequestHandler());
         $this->assertSame(200, $response3->getStatusCode());
     }
@@ -74,7 +75,7 @@ class RateLimitIPTest extends TestCase
         $request = RequestFactory::createRequest();
 
         $config = new Config(['rate_limit' => ['max' => 50, 'time' => 10]]);
-        $middleware = new RateLimitIP($storage, $config, new ResponseFactory(), $logger);
+        $middleware = new RateLimitIP($storage, $config, new ResponseFactory(), $logger, new RateLimitState());
         $response = $middleware->process($request, new RequestHandler());
         $this->assertSame(429, $response->getStatusCode());
 

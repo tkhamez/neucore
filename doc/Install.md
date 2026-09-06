@@ -356,7 +356,7 @@ working development environment.
 
 (This is not part of the installation process, but I have no better place for it.)
 
-To generate the table of contents for various files, use the following commands in the node container:
+To generate the table of contents for various files, use the following commands in the `neucore_node` container:
 
 ```
 markdown-toc ../README.md -i
