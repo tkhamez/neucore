@@ -54,6 +54,7 @@ class Role implements \JsonSerializable
     public const TRACKING = 'tracking';
     public const WATCHLIST = 'watchlist';
     public const WATCHLIST_MANAGER = 'watchlist-manager';
+    public const MCP = 'mcp';
 
     public const ROLES_WITH_GROUP_REQUIREMENT = [
         Role::USER_ADMIN,

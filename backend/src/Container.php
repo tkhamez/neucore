@@ -9,6 +9,7 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Tools\DsnParser;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\Persistence\ObjectManager;
 use Eve\Sso\AuthenticationProvider;
@@ -26,7 +27,10 @@ use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\FluentdFormatter;
 use Neucore\Log\GelfMessageFormatter;
+use Neucore\Mcp\McpServer;
+use Neucore\Repository\McpTokenRepository;
 use Neucore\Service\Config;
+use Neucore\Service\McpAuth;
 use Neucore\Storage\ApcuStorage;
 use Neucore\Storage\ApiRateLimitStoreInterface;
 use Neucore\Storage\EsiHeaderStorageInterface;
@@ -217,6 +221,44 @@ class Container
                 } else {
                     throw new RuntimeException("Invalid storage type $storage.");
                 }
+            },
+
+            // MCP Repository
+            McpTokenRepository::class => function (ContainerInterface $c) {
+                return new McpTokenRepository($c->get(EntityManagerInterface::class));
+            },
+
+            // MCP
+            McpAuth::class => function (ContainerInterface $c) {
+                return new McpAuth(
+                    $c->get(RepositoryFactory::class),
+                    $c->get(ObjectManager::class),
+                );
+            },
+            McpServer::class => function (ContainerInterface $c) {
+                return new McpServer();
+            },
+            \Neucore\Mcp\Tools\PlayerTools::class => function (ContainerInterface $c) {
+                return new \Neucore\Mcp\Tools\PlayerTools(
+                    $c->get(RepositoryFactory::class),
+                );
+            },
+            \Neucore\Mcp\Tools\EsiTools::class => function (ContainerInterface $c) {
+                return new \Neucore\Mcp\Tools\EsiTools(
+                    $c->get(RepositoryFactory::class),
+                    $c->get(\Neucore\Service\EsiClient::class),
+                );
+            },
+            \Neucore\Mcp\Tools\TrackingTools::class => function (ContainerInterface $c) {
+                return new \Neucore\Mcp\Tools\TrackingTools(
+                    $c->get(RepositoryFactory::class),
+                );
+            },
+            \Neucore\Command\CreateMcpToken::class => function (ContainerInterface $c) {
+                return new \Neucore\Command\CreateMcpToken(
+                    $c->get(RepositoryFactory::class),
+                    $c->get(ObjectManager::class),
+                );
             },
         ];
     }

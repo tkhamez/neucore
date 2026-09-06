@@ -24,12 +24,15 @@ use Neucore\Controller\User\SettingsController;
 use Neucore\Controller\User\SettingsEveLoginController;
 use Neucore\Controller\User\StatisticsController;
 use Neucore\Controller\User\WatchlistController;
+use Neucore\Controller\McpController;
 
 return [
     '/login/{name}'      => ['GET', [AuthController::class, 'login']],
     '/login-callback'    => ['GET', [AuthController::class, 'callback']],
 
     '/plugin/{id}/{name}'   => ['GET', [PluginController::class, 'request']],
+
+    '/api/mcp' => ['POST', [McpController::class, 'handle']],
 
     '/api/user/auth/callback'   => ['GET',  [AuthController::class, 'callback']], // only for backwards compatibility
     '/api/user/auth/result'     => ['GET',  [AuthController::class, 'result']],

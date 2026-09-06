@@ -38,6 +38,7 @@ use Neucore\Repository\EsiTypeRepository;
 use Neucore\Repository\EveLoginRepository;
 use Neucore\Repository\GroupApplicationRepository;
 use Neucore\Repository\GroupRepository;
+use Neucore\Repository\McpTokenRepository;
 use Neucore\Repository\PlayerLoginsRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\RemovedCharacterRepository;
@@ -166,6 +167,11 @@ class RepositoryFactory
     public function getWatchlistRepository(): WatchlistRepository
     {
         return $this->getRepository(WatchlistRepository::class, Watchlist::class);
+    }
+
+    public function getMcpTokenRepository(): McpTokenRepository
+    {
+        return $this->getRepository(McpTokenRepository::class, \Neucore\Entity\McpToken::class);
     }
 
     /**

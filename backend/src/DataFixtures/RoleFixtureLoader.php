@@ -39,6 +39,7 @@ class RoleFixtureLoader
             23 => Role::APP_ESI_LOGIN,
             24 => Role::APP_ESI_PROXY,
             25 => Role::APP_ESI_TOKEN,
+            26 => Role::MCP,
         ];
 
         foreach ($roles as $id => $name) {

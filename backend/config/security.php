@@ -152,4 +152,6 @@ return [
     '/api/user/statistics/'     => [Role::STATISTICS],
 
     '/api/user' => [Role::USER],
+
+    '/api/mcp' => [Role::MCP],
 ];

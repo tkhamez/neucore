@@ -19,6 +19,7 @@ use Neucore\Command\DBVerifySSL;
 use Neucore\Command\DoctrineFixturesLoad;
 use Neucore\Command\GenerateEveApiFiles;
 use Neucore\Command\MakeAdmin;
+use Neucore\Command\CreateMcpToken;
 use Neucore\Command\Plugin;
 use Neucore\Command\RevokeToken;
 use Neucore\Command\SendInvalidTokenMail;
@@ -455,6 +456,7 @@ class Application
         $console->add($this->getFromContainer(AssureMain::class));
         $console->add($this->getFromContainer(UpdateServiceAccounts::class));
         $console->add($this->getFromContainer(GenerateEveApiFiles::class));
+        $console->add($this->getFromContainer(CreateMcpToken::class));
     }
 
     private function logException(Throwable $e): void
