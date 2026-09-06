@@ -16,3 +16,6 @@
 # Docker
 /.db/*
 /compose.yaml
+
+# OpenCode personal config
+/.opencode/

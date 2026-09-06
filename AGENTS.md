@@ -2,6 +2,19 @@
 
 Compact guide for OpenCode sessions working in this repo.
 
+**Project language**: English (British spelling).
+
+## Development Principles
+
+See `CONTRIBUTING.md` for full guidelines. Key principles:
+
+- **Dependency Injection** — use it whenever possible.
+- **Program against interfaces**, not concrete classes.
+- **PSRs** — follow PHP Standards Recommendations where applicable.
+- **All code must have unit tests**.
+- **Inclusive language** — use it throughout code, documentation, and communication.
+- **Never drop databases or run destructive operations** on the development database (the one used via browser). There are two databases (dev + test). Migrations are fine. Ask before any operation that could destroy dev data.
+
 ## Project shape
 
 - **Backend**: PHP 8.1–8.5, Slim 4 + PHP-DI + Doctrine ORM/Migrations. Lives in `backend/`.
@@ -21,7 +34,7 @@ Compact guide for OpenCode sessions working in this repo.
 ### Docker dev environment
 
 - The root `compose.yaml` is a **gitignored local file** (contains user-specific plugin mounts); adapt it as needed.
-- `export UID` first, in every shell (containers run as `${UID}`).
+- **Always run `export UID` first, in every shell** (containers run as `${UID}`). Forgetting this causes permission warnings and wrong file ownership (e.g. from `composer install`).
 - `docker compose build` then `docker compose up`; then run `setup/install-docker.sh`.
 - URLs: app http://localhost:8080, frontend dev server http://localhost:3000, DB at 127.0.0.1:30306.
 - Copy `backend/.env.dist` → `backend/.env`; inside containers the DB host is `neucore_db`.
@@ -78,12 +91,13 @@ export NEUCORE_MEMCACHED_SERVER='127.0.0.1:11211'
   - `composer style:check`
   - `composer style:fix`
 - PHPStan level 8: `composer phpstan` (config `backend/phpstan.neon`).
+- **Maximum line length: 120 characters** (strictly enforced for both backend and frontend).
 - Frontend style: 4-space indent, 120 char line max (from `frontend/README.md`).
 - Verification order: `composer style:check && composer phpstan && composer test`.
 
 ## Build / codegen order
 
-When you change backend routes or OpenAPI annotations, regenerate:
+When you change backend routes or OpenAPI annotations, regenerate in order:
 
 ```sh
 cd backend
@@ -93,7 +107,7 @@ composer openapi     # writes web/openapi-3.yaml, web/frontend-api-3.yml, web/ap
 Then regenerate the JS API client:
 
 ```sh
-cd frontend
+cd ../frontend
 ./openapi.sh                              # needs Java; downloads openapi-generator-cli 7.18.0
 cd neucore-js-client && npm install --ignore-scripts && npm run build
 ```
@@ -101,12 +115,14 @@ cd neucore-js-client && npm install --ignore-scripts && npm run build
 Then rebuild the frontend:
 
 ```sh
-cd frontend
+cd ..
 npm run build
 ```
 
 Frontend production build writes into the document root: `web/dist/` and `web/index.html`.
 Dev server (`npm run serve`) hot-reloads on port 3000 and proxies to `VUE_APP_BACKEND_HOST` (set in `frontend/.env.development`).
+
+**Note on `composer.json`:** It has `"sort-packages": true`. When adding or modifying dependencies manually, keep the `require` and `require-dev` sections alphabetically sorted.
 
 ## Important generated / ignored artifacts
 
@@ -119,7 +135,7 @@ Do not hand-edit these; regenerate via the scripts above:
 - Doctrine proxy classes (`bin/doctrine orm:generate-proxies`) in prod
 
 Tracked static ESI data files (regenerate with `bin/console generate-eve-api-files` after ESI changes):
-`web/esi-paths-http-get.json`, `web/esi-paths-http-post.json`, `backend/config/esi-rate-limits.php`.
+`web/esi-paths-http-get.json`, `web/esi-paths-http-post.json`, `backend/config/esi-paths-public.php`, `backend/config/esi-rate-limits.php`.
 
 ## Database migrations
 
@@ -146,9 +162,8 @@ bin/run-jobs.sh                         # runs all background jobs in order
 
 ## CI / release
 
-- `.github/workflows/test.yml` runs on every push. Matrix: PHP 8.1–8.5 × MariaDB 10.5.1/10.11/11.4/11.8, MySQL 8.0.22/8.4. Only the PHP 8.4 job uploads coverage to SonarCloud.
+- `.github/workflows/test.yml` runs on every push. Matrix: PHP 8.1–8.5 × MariaDB/MySQL (see **Toolchain versions**). Only the PHP 8.4 job uploads coverage to SonarCloud.
 - `.github/workflows/release.yml` runs on tag pushes: builds the distribution tarball (via `setup/dist-collect-files.sh`) and the multi-arch Docker image.
-- PHP platform in `composer.json` is pinned to `8.1.0`; app supports up to 8.5.
 
 ## Toolchain versions
 
