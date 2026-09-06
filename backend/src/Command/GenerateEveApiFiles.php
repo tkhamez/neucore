@@ -72,8 +72,8 @@ class GenerateEveApiFiles extends Command
         $this
             ->setName('generate-eve-api-files')
             ->setDescription(
-                'Generates esi-paths-public.php, esi-paths-http-get.json, ' .
-                'esi-paths-http-post.json and esi-rate-limits.php.'
+                'Generates esi-paths-public.php, esi-paths-http-get.json, '
+                . 'esi-paths-http-post.json and esi-rate-limits.php.',
             );
     }
 
