@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- The function for determining the client's IP address has been corrected and improved.
+
 ## 2.14.0
 
 9 May 2026
