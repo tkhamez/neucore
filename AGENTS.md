@@ -1,6 +1,6 @@
 # AGENTS.md — Neucore
 
-Compact guide for OpenCode sessions working in this repo.
+Compact guide for AI coding agent sessions working in this repo.
 
 **Project language**: English (British spelling).
 
@@ -33,27 +33,12 @@ See `CONTRIBUTING.md` for full guidelines. Key principles:
 
 ### Docker dev environment
 
-- The root `compose.yaml` is a **gitignored local file** (contains user-specific plugin mounts); adapt it as needed.
+- The root `compose.yaml` is a **gitignored local file** (contains user-specific plugin mounts), it is a copy of `setup/compose.yaml`.
 - **Always run `export UID` first, in every shell** (containers run as `${UID}`). Forgetting this causes permission warnings and wrong file ownership (e.g. from `composer install`).
-- `docker compose build` then `docker compose up`; then run `setup/install-docker.sh`.
+- `docker compose build` then `docker compose up`; then run `setup/install-docker.sh` and `docker compose exec neucore_node npm run build`.
 - URLs: app http://localhost:8080, frontend dev server http://localhost:3000, DB at 127.0.0.1:30306.
 - Copy `backend/.env.dist` → `backend/.env`; inside containers the DB host is `neucore_db`.
 - Make first user admin: `docker compose exec neucore_php bin/console make-admin 1`.
-
-### Manual install
-
-```sh
-cd backend
-composer install
-composer compile          # clear-cache + db:migrate + db:seed + openapi
-
-cd ../frontend
-npm ci
-npm run postinstall       # installs swagger-ui-dist
-npm run build
-```
-
-Or run `setup/install.sh` (dev) / `setup/install.sh prod` (prod), which does backend + JS client + frontend.
 
 ## Environment / configuration
 

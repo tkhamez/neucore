@@ -256,7 +256,7 @@ Additionally, for a development environment and to build the application:
 
 #### Install/Update
 
-Clone the repository or [download](https://github.com/tkhamez/neucore/releases) the pre-built distribution
+[Download](https://github.com/tkhamez/neucore/releases) the pre-built distribution
 file and extract it.
 
 Copy `backend/.env.dist` file to `backend/.env` and adjust values or
@@ -273,9 +273,7 @@ using the same user.
 If available, the app uses an APCu cache in production mode. It must be cleared during an update:
 depending on the setup, restart the web server or php-fpm.
 
-##### Pre-built Distribution file
-
-If you downloaded the pre-built app, you only need to run the database migrations and seeds and clear the cache.
+Now you need to run the database migrations and seeds and clear the cache.
 
 If you are using a different cache directory, you must first copy or generate the Doctrine proxy cache files:
 ```
@@ -293,21 +291,9 @@ vendor/bin/doctrine-migrations migrations:migrate --no-interaction
 bin/console doctrine-fixtures-load
 ```
 
-##### Git
-
-If you have cloned the repository, you must install the dependencies and build the backend and frontend:
-```
-# for production:
-setup/install.sh prod
-
-# for develeopment:
-setup/install.sh
-cd frontend && npm run build
-```
-
 ### Docker Development Environment
 
-Needs [Docker Compose](https://docs.docker.com/compose/) V2. Only tested on Linux and once or 
+This needs [Docker Compose](https://docs.docker.com/compose/) V2. Only tested on Linux and once or 
 twice on macOS.
 
 Copy `backend/.env.dist` file to `backend/.env` and adjust values, the database password and user 
@@ -364,7 +350,7 @@ X-Content-Type-Options "nosniff"
 
 ## Build Distribution
 
-There are scripts that build the distribution package, `setup/dist.sh` or `setup/dist-docker.sh`. They need a 
+There is a script that builds the distribution package, `setup/dist-docker.sh`. It needs a 
 working development environment.
 
 ## Generate TOC

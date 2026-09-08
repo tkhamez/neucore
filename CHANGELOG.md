@@ -3,6 +3,8 @@
 ## next
 
 - The function for determining the client's IP address has been corrected and improved.
+- The `install.sh` and `dist.sh` scripts have been removed; only the Docker development environment
+  is now supported.
 
 ## 2.14.0
 
