@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace Tests;
 
 use Doctrine\DBAL\Exception;
+use Doctrine\Migrations\Configuration\Migration\YamlFile;
+use Doctrine\Migrations\DependencyFactory;
+use Doctrine\Migrations\Configuration\EntityManager\ExistingEntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Persistence\ObjectManager;
 use Eve\Sso\AuthenticationProvider;
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\RS256;
 use Jose\Component\Signature\JWSBuilder;
 use Jose\Component\Signature\Serializer\CompactSerializer;
-use Kevinrob\GuzzleCache\CacheEntry;
-use Kevinrob\GuzzleCache\Storage\Psr6CacheStorage;
 use Neucore\Application;
 use Neucore\Container;
 use Neucore\Entity\Alliance;
@@ -61,7 +61,7 @@ use Neucore\Storage\EsiHeaderStorageInterface;
 use Neucore\Storage\DatabaseStorage;
 use Neucore\Util\Crypto;
 use Neucore\Util\Database;
-use Symfony\Component\Cache\Adapter\DoctrineDbalAdapter;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Yaml\Parser;
 
 class Helper
@@ -307,19 +307,60 @@ class Helper
     {
         $em = $this->getEm();
 
-        $classes = [];
-        foreach ($this->entities as $entity) {
-            $classes[] = $em->getClassMetadata($entity);
-        }
-
-        $tool = new SchemaTool($em);
         if (Database::getDbName($em) === 'sqlite') {
+            $classes = [];
+            foreach ($this->entities as $entity) {
+                $classes[] = $em->getClassMetadata($entity);
+            }
+
+            $tool = new SchemaTool($em);
             $tool->updateSchema($classes);
         } else {
-            $em->getConnection()->executeStatement('SET FOREIGN_KEY_CHECKS = 0;');
-            $tool->updateSchema($classes);
-            $em->getConnection()->executeStatement('SET FOREIGN_KEY_CHECKS = 1;');
+            echo "Dropping all tables and running database migrations ...", PHP_EOL;
+
+            // Drop all tables first to ensure clean state for migration testing
+            $this->dropAllTables($em);
+
+            $dependencyFactory = DependencyFactory::fromEntityManager(
+                new YamlFile(Application::ROOT_DIR . '/config/migrations.yml'),
+                new ExistingEntityManager($em),
+            );
+            $dependencyFactory->getMetadataStorage()->ensureInitialized();
+            $planCalculator = $dependencyFactory->getMigrationPlanCalculator();
+            $plan = $planCalculator->getPlanUntilVersion(
+                $dependencyFactory->getVersionAliasResolver()->resolveVersionAlias('latest')
+            );
+            $migratorConfiguration = $dependencyFactory->getConsoleInputMigratorConfigurationFactory()
+                ->getMigratorConfiguration(new ArrayInput(['version' => 'latest']));
+            $dependencyFactory->getMigrator()->migrate($plan, $migratorConfiguration);
+
+            // Reset connection to avoid transaction state issues after migrations
+            $em->clear();
+            $em->getConnection()->close();
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function dropAllTables(EntityManagerInterface $em): void
+    {
+        $connection = $em->getConnection();
+        $platform = $connection->getDatabasePlatform();
+
+        // Get all tables
+        $tables = $connection->createSchemaManager()->listTables();
+
+        // Disable foreign key checks
+        $connection->executeStatement('SET FOREIGN_KEY_CHECKS = 0;');
+
+        foreach ($tables as $table) {
+            $dropTableSql = $platform->getDropTableSQL($table->getName());
+            $connection->executeStatement($dropTableSql);
+        }
+
+        // Re-enable foreign key checks
+        $connection->executeStatement('SET FOREIGN_KEY_CHECKS = 1;');
     }
 
     public function emptyDb(): void
@@ -343,12 +384,6 @@ class Helper
             } catch (Exception $e) {
                 echo $e->getMessage();
             }
-        }
-
-        try {
-            $em->getConnection()->executeStatement('DELETE FROM cache_http WHERE 1');
-        } catch (Exception) {
-            // do nothing, the table does not always exist
         }
 
         self::$roleSequence = 0;
@@ -644,30 +679,6 @@ class Helper
             }
         }
         rmdir($dir);
-    }
-
-    public function getHttpCacheAdapter(string $tableName, string $namespace): DoctrineDbalAdapter
-    {
-        return new DoctrineDbalAdapter(
-            $this->getEm()->getConnection(),
-            $namespace,
-            86400, // one day
-            ['db_table' => $tableName],
-        );
-    }
-
-    public function addHttpCacheEntry(string $tableName, string $namespace, string $cacheKey): void
-    {
-        $adapter = $this->getHttpCacheAdapter($tableName, $namespace);
-        $storage = new Psr6CacheStorage($adapter);
-
-        // This creates the table if it does not exist yet.
-        $storage->save($cacheKey, new CacheEntry(
-            new Request('GET', 'https://example.com/'),
-            new Response(200, [], 'test'),
-            new \DateTime('+ 1 minute'),
-        ));
-        $adapter->commit();
     }
 
     /**
