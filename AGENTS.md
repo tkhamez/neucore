@@ -34,11 +34,10 @@ See `CONTRIBUTING.md` for full guidelines. Key principles:
 ### Docker dev environment
 
 - The root `compose.yaml` is a **gitignored local file** (contains user-specific plugin mounts), it is a copy of `setup/compose.yaml`.
-- **Always run `export UID` first, in every shell** (containers run as `${UID}`). Forgetting this causes permission warnings and wrong file ownership (e.g. from `composer install`).
+- **⚠️ CRITICAL: Run `export UID` in EVERY shell before any `docker compose` command** (containers run as `${UID}`). Forgetting this causes permission warnings and wrong file ownership (e.g. from `composer install`).
 - `docker compose build` then `docker compose up`; then run `setup/install-docker.sh` and `docker compose exec neucore_node npm run build`.
 - URLs: app http://localhost:8080, frontend dev server http://localhost:3000, DB at 127.0.0.1:30306.
 - Copy `backend/.env.dist` → `backend/.env`; inside containers the DB host is `neucore_db`.
-- Make first user admin: `docker compose exec neucore_php bin/console make-admin 1`.
 
 ## Environment / configuration
 
@@ -76,6 +75,7 @@ export NEUCORE_MEMCACHED_SERVER='127.0.0.1:11211'
   - `composer style:check`
   - `composer style:fix`
 - PHPStan level 8: `composer phpstan` (config `backend/phpstan.neon`).
+  - For specific files/dirs: `cd backend && vendor/bin/phpstan analyse path/to/file.php` (or a directory).
 - **Maximum line length: 120 characters** (strictly enforced for both backend and frontend).
 - Frontend style: 4-space indent, 120 char line max (from `frontend/README.md`).
 - Verification order: `composer style:check && composer phpstan && composer test`.
