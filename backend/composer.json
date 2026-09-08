@@ -111,7 +111,8 @@
         "process-timeout": 0,
         "sort-packages": true,
         "allow-plugins": {
-            "arokettu/composer-license-manager": true
+            "arokettu/composer-license-manager": true,
+            "php-http/discovery": true
         }
     },
     "extra": {
