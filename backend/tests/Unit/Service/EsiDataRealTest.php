@@ -33,7 +33,7 @@ class EsiDataRealTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        self::markTestSkipped('This test uses the real ESI API.');
+        #self::markTestSkipped('This test uses the real ESI API.');
     }
 
     protected function setUp(): void
@@ -96,6 +96,16 @@ class EsiDataRealTest extends TestCase
      * @throws Exception
      */
     public function testFetchCharacter_NotFound(): void
+    {
+        $this->expectExceptionCode(404);
+        $this->expectExceptionMessage('Character not found (exception)');
+        $this->esiData->fetchCharacter(146604392);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testFetchCharacter_InvalidId(): void
     {
         $this->expectExceptionCode(404);
         $this->expectExceptionMessage('Character not found (exception)');

@@ -69,12 +69,14 @@ class EsiData
             $eveChar = $characterApi->getCharactersCharacterId($id);
         } catch (ApiException $e) {
             $body = $e->getResponseBody();
-            // The 404 checks are probably no longer necessary when this is merged:
-            // https://github.com/OpenAPITools/openapi-generator/pull/19483
             if (
-                $e->getCode() === 404
+                ($e->getCode() === 404 || $e->getCode() === 422)
                 && is_string($body)
-                && str_contains($body, 'Character not found')
+                && (
+                    str_contains($body, 'Character not found') # old 404
+                    || str_contains($body, 'Not Found') # new 404
+                    || str_contains($body, 'validation failed') # 422 (invalid ID)
+               )
             ) {
                 throw new Exception('Character not found (exception)', 404);
             } elseif (
@@ -94,7 +96,11 @@ class EsiData
         if ($eveChar instanceof Error) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
             $error = (string) $eveChar->getError();
-            if (str_contains($error, 'Character not found')) {
+            if (
+                str_contains($error, 'Character not found')
+                || str_contains($error, 'Not Found')
+                || str_contains($error, 'validation failed')
+            ) {
                 throw new Exception('Character not found (error object)', 404);
             } elseif (str_contains($error, 'Character has been deleted')) {
                 throw new Exception('Character has been deleted (error object)', 410);
