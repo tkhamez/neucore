@@ -36,7 +36,7 @@ jobs:
           composer openapi
         env:
           NEUCORE_APP_ENV: prod
-          NEUCORE_DATABASE_URL: 'mysql://user:@127.0.0.1/db'
+          NEUCORE_DATABASE_URL: 'mysql://user:@127.0.0.1/db?serverVersion=8.0.22'
       - name: Generate OpenAPI client
         run: |
           cd dist/build/frontend

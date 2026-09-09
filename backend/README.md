@@ -137,7 +137,7 @@ composer phpstan
 
 ### Doctrine
 
-Generate proxy classes:
+Generate proxy classes - this needs a database connection or "serverVersion" set in the connection string:
 ```
 bin/doctrine orm:generate-proxies
 ```
