@@ -3,18 +3,20 @@
 services:
   neucore_db:
     container_name: neucore_dev_db
-    #image: mariadb:10.5.1
     image: mariadb:10.11 # LTS
     #image: mariadb:11.4 # LTS
     #image: mariadb:11.8 # LTS
+    #image: mariadb:12.3 # LTS
     #image: mysql:8.0.22
     #image: mysql:8.4 # LTS
-    #volumes: ["./.db/10.5:/var/lib/mysql"]
+    #image: mysql:9.7 # LTS
     volumes: ["./.db/10.11:/var/lib/mysql"]
     #volumes: ["./.db/11.4:/var/lib/mysql"]
     #volumes: ["./.db/11.8:/var/lib/mysql"]
+    #volumes: ["./.db/12.3:/var/lib/mysql"]
     #volumes: ["./.db/8.0.22:/var/lib/mysql"]
     #volumes: ["./.db/8.4:/var/lib/mysql"]
+    #volumes: ["./.db/9.7:/var/lib/mysql"]
     environment:
       MYSQL_ROOT_PASSWORD: neucore
       MYSQL_USER: neucore
@@ -27,7 +29,7 @@ services:
   neucore_java:
     container_name: neucore_dev_java
     image: eclipse-temurin:17-jre-alpine
-    platform: linux/amd64 # Force amd64 as there no ARM compatible manifest 
+    platform: linux/amd64 # Force amd64 as there no ARM compatible manifest
     volumes: [".:/app"]
     user: ${UID}
     #user: root

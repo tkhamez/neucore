@@ -125,7 +125,7 @@ Tracked static ESI data files (regenerate with `bin/console generate-eve-api-fil
 ## Database migrations
 
 - Migration namespace: `Neucore\Migrations` → `backend/src/Migrations/` (config `backend/config/migrations.yml`).
-- Generate diff: `vendor/bin/doctrine-migrations migrations:diff` (set `serverVersion` in the URL for compatible syntax).
+- Generate diff: `vendor/bin/doctrine-migrations migrations:diff`.
 - Run: `composer db:migrate`; seed fixtures: `composer db:seed`.
 
 ## Plugins
@@ -145,7 +145,7 @@ Tracked static ESI data files (regenerate with `bin/console generate-eve-api-fil
 - PHP: 8.1–8.5 (platform 8.1.0 in composer).
 - Node: 24.14, npm 11.11 (from `frontend/package.json` engines).
 - Java: Temurin 17 for the OpenAPI generator.
-- DB: MariaDB 10.5.1/10.11/11.4/11.8 or MySQL 8.0.22/8.4.
+- DB: MariaDB 10.11/11.4/11.8/12.3 or MySQL 8.0.22/8.4/9.7.
 
 ## References
 

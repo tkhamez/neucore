@@ -238,7 +238,7 @@ A Linux server (others may work but were not tested).
 To run the application:
 * PHP 8.1.0–8.5 (64bit version), see [backend/composer.json](../backend/composer.json) for
   necessary and suggested extensions (APCu and memcached highly recommended).
-* MariaDB or MySQL Server (tested with MariaDB 10.5.1, 10.11, 11.4, 11.8 and MySQL 8.0.22, 8.4).
+* MariaDB or MySQL Server (tested with MariaDB 10.11, 11.4, 11.8, 12.3 and MySQL 8.0.22, 8.4, 9.7).
   Unit tests can also be run with an SQLite in-memory database.
 * Optionally, a Memcached server (tested with 1.6).
 * An HTTP Server with support for PHP and URL rewriting.

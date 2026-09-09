@@ -12,9 +12,6 @@ jobs:
         include:
           - php-version: '8.1'
             db-image: mariadb
-            db-version: '10.5.1'
-          - php-version: '8.1'
-            db-image: mariadb
             db-version: '10.11'
           - php-version: '8.2'
             db-image: mariadb
@@ -23,11 +20,17 @@ jobs:
             db-image: mariadb
             db-version: '11.8'
           - php-version: '8.4'
+            db-image: mariadb
+            db-version: '12.3'
+          - php-version: '8.4'
             db-image: mysql
-            db-version: '8.0.22'
+            db-version: '8.0.22' # 8.0 is no longer supported from Oracle, but it's in Ubuntu 24.04
           - php-version: '8.5'
             db-image: mysql
             db-version: '8.4'
+          - php-version: '8.5'
+            db-image: mysql
+            db-version: '9.7'
       fail-fast: false
     services:
       database:

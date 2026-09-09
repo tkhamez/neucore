@@ -2,9 +2,11 @@
 
 ## next
 
-- The function for determining the client's IP address has been corrected and improved.
-- ESI: Fixed handling of "character not found" errors (they changed a bit).
-- The `install.sh` and `dist.sh` scripts have been removed; only the Docker development environment
+- **BC break**: Dropped support for MariaDb 10.5, the minimum require version is now 10.11.
+- New: Added support for MariaDB 12.3 and MySQL 9.7.
+- Fix: The function for determining the client's IP address has been corrected and improved.
+- Fix: ESI: Fixed handling of "character not found" errors (they changed a bit).
+- Misc: The `install.sh` and `dist.sh` scripts have been removed; only the Docker development environment
   is now supported.
 
 ## 2.14.0

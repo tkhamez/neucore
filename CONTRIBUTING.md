@@ -87,8 +87,6 @@ cd .. && npm run build
 - Run migrations: `composer db:migrate`
 - Seed fixtures: `composer db:seed`
 
-Set `serverVersion` in the database URL for compatible syntax generation.
-
 ## Documentation
 
 - Project documentation lives in `doc/`
