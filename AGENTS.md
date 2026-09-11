@@ -6,14 +6,14 @@ Compact guide for AI coding agent sessions working in this repo.
 
 ## Development Principles
 
-See `CONTRIBUTING.md` for full guidelines. Key principles:
+See `CONTRIBUTING.md` for full guidelines.
 
 - **Dependency Injection** — use it whenever possible.
 - **Program against interfaces**, not concrete classes.
 - **PSRs** — follow PHP Standards Recommendations where applicable.
 - **All code must have unit tests**.
 - **Inclusive language** — use it throughout code, documentation, and communication.
-- **Never drop databases or run destructive operations** on the development database (the one used via browser). There are two databases (dev + test). Migrations are fine. Ask before any operation that could destroy dev data.
+- **Never drop or destroy data on the development database**. There are two databases (dev + test). Migrations are fine. Ask before any operation that could destroy dev data.
 
 ## Project shape
 
@@ -29,90 +29,69 @@ See `CONTRIBUTING.md` for full guidelines. Key principles:
 - Wiring: `backend/src/Application.php`, `backend/src/Container.php` (PHP-DI definitions).
 - Routes/security config: `backend/config/routes.php`, `backend/config/security.php`.
 
-## Development environment
+## Docker development environment
 
-- The root `compose.yaml` is a **gitignored local file** (contains user-specific plugin mounts), it is a copy of `setup/compose.yaml`.
-- `docker compose build` then `docker compose up`; then run `setup/install-docker.sh` and `docker compose exec neucore_node npm run build`.
-- URLs: app http://localhost:8080, frontend dev server http://localhost:3000, DB at 127.0.0.1:30306.
-- Copy `backend/.env.dist` → `backend/.env`; inside containers the DB host is `neucore_db`.
+`setup/compose.yaml` defines services: `neucore_db` (MariaDB/MySQL), `neucore_php`, `neucore_node`, `neucore_http`, `neucore_memcached`, `neucore_java` (for OpenAPI codegen).
+
+- The root `compose.yaml` is a **gitignored local copy** with user-specific mounts (plugin dirs, PHP Dockerfile selection).
+- Setup: `docker compose build` → `docker compose up` → `setup/install-docker.sh` → `docker compose exec neucore_node npm run build`.
+- URLs: app `http://localhost:8080`, frontend dev server `http://localhost:3000`, DB `127.0.0.1:30306`.
+- Inside containers: DB host is `neucore_db`; working dirs are `/app/backend` (PHP) and `/app/frontend` (Node).
+- Copy `backend/.env.dist` → `backend/.env` (gitignored).
+
+### Rules
+
+- **NEVER** run `composer`, `npm`, `node`, `php`, `phpunit`, etc. on the host. Always use `docker compose exec` or `docker compose run`:
+  - PHP/Composer/PHPUnit: `docker compose exec neucore_php <command>`
+  - npm/node: `docker compose exec neucore_node <command>`
+  - Java (OpenAPI codegen): `docker compose run --rm neucore_java <command>`
+- Do not install software on the host system.
+- Do not make changes to files outside this project.
+- Only work on files under version control.
 
 ## Environment / configuration
 
-- Config is env-var based. Copy `backend/.env.dist` → `backend/.env` (gitignored).
-- Required: `NEUCORE_APP_ENV=dev|prod`, `NEUCORE_DATABASE_URL`, EVE app credentials.
-- Full env reference: `backend/.env.dist`.
-
-## Running tests
-
-```sh
-cd backend
-composer test        # phpunit --colors=always
-composer test:cov    # HTML coverage in var/phpunit
-```
-
-Tests need env vars set. Minimum for MySQL (as in CI):
-
-```sh
-export NEUCORE_APP_ENV=dev
-export NEUCORE_TEST_DATABASE_URL='mysql://root:@127.0.0.1/test'
-export NEUCORE_EVE_CLIENT_ID=123
-export NEUCORE_EVE_SECRET_KEY=abc
-export NEUCORE_EVE_CALLBACK_URL='http://localhost'
-export NEUCORE_MEMCACHED_SERVER='127.0.0.1:11211'
-```
-
-- `NEUCORE_TEST_DATABASE_URL=sqlite:///:memory:` is supported (see `.env.dist`).
-- Test bootstrap creates the DB schema automatically: `backend/tests/bootstrap.php`.
-- Functional tests use the DB and Memcached.
-- Single test: `vendor/bin/phpunit tests/Unit/SomeTest.php` (or `--filter TestName::method`).
+- Env-var based. Full reference: `backend/.env.dist`.
+- Required: `NEUCORE_APP_ENV`, `NEUCORE_DATABASE_URL`, EVE app credentials.
+- For tests: `NEUCORE_TEST_DATABASE_URL` (MySQL or `sqlite:///:memory:`) and `NEUCORE_MEMCACHED_SERVER`.
+- Functional tests use the DB and Memcached. Test bootstrap (`backend/tests/bootstrap.php`) creates the schema automatically.
+- Single test: `docker compose exec neucore_php vendor/bin/phpunit tests/Unit/SomeTest.php` (or `--filter TestName::method`).
 
 ## Code style & static analysis
 
 - PHP style: PER CS, config `backend/config/php-cs-fixer.dist.php`.
-  - `composer style:check`
-  - `composer style:fix`
+  - `composer style:check` / `composer style:fix`
 - PHPStan level 8: `composer phpstan` (config `backend/phpstan.neon`).
-  - For specific files/dirs: `cd backend && vendor/bin/phpstan analyse path/to/file.php` (or a directory).
-- **Maximum line length: 120 characters** (strictly enforced for both backend and frontend).
-- Frontend style: 4-space indent, 120 char line max (from `frontend/README.md`).
+- Max line length: **120 characters** (strictly enforced for both backend and frontend).
+- Frontend: 4-space indent, 120 char line max. No linter/formatter — manual compliance.
 - Verification order: `composer style:check && composer phpstan && composer test`.
 
 ## Build / codegen order
 
-When you change backend routes or OpenAPI annotations, regenerate in order:
+When you change backend routes or OpenAPI annotations, regenerate **in this order**:
 
 ```sh
-cd backend
-composer openapi     # writes web/openapi-3.yaml, web/frontend-api-3.yml, web/application-api-3.yml
+# 1. OpenAPI spec files
+cd backend && docker compose exec neucore_php composer openapi
+# 2. JS API client (needs Java)
+cd ../frontend && docker compose run --rm neucore_java /app/frontend/openapi.sh
+cd neucore-js-client && docker compose exec neucore_node npm install --ignore-scripts && npm run build
+# 3. Frontend production build
+cd .. && docker compose exec neucore_node npm run build
 ```
 
-Then regenerate the JS API client:
+Frontend production build writes to `web/dist/` and `web/index.html`.
+Dev server (`npm run serve`) hot-reloads on port 3000, proxies to `VUE_APP_BACKEND_HOST` (set in `frontend/.env.development`).
 
-```sh
-cd ../frontend
-./openapi.sh                              # needs Java; downloads openapi-generator-cli 7.18.0
-cd neucore-js-client && npm install --ignore-scripts && npm run build
-```
+**`composer.json` has `"sort-packages": true`** — keep `require`/`require-dev` alphabetically sorted.
 
-Then rebuild the frontend:
-
-```sh
-cd ..
-npm run build
-```
-
-Frontend production build writes into the document root: `web/dist/` and `web/index.html`.
-Dev server (`npm run serve`) hot-reloads on port 3000 and proxies to `VUE_APP_BACKEND_HOST` (set in `frontend/.env.development`).
-
-**Note on `composer.json`:** It has `"sort-packages": true`. When adding or modifying dependencies manually, keep the `require` and `require-dev` sections alphabetically sorted.
-
-## Important generated / ignored artifacts
+## Generated / ignored artefacts
 
 Do not hand-edit these; regenerate via the scripts above:
 
-- `web/openapi-3.yaml`, `web/frontend-api-3.yml`, `web/application-api-3.yml` (gitignored)
-- `frontend/neucore-js-client/` (generated OpenAPI JS client, gitignored)
-- `web/dist/`, `web/index.html` (frontend production build, gitignored)
+- `web/openapi-3.yaml`, `web/frontend-api-3.yml`, `web/application-api-3.yml`
+- `frontend/neucore-js-client/`
+- `web/dist/`, `web/index.html`
 - `backend/var/cache/`, `backend/var/logs/`
 - Doctrine proxy classes (`bin/doctrine orm:generate-proxies`) in prod
 
@@ -124,31 +103,33 @@ Tracked static ESI data files (regenerate with `bin/console generate-eve-api-fil
 - Migration namespace: `Neucore\Migrations` → `backend/src/Migrations/` (config `backend/config/migrations.yml`).
 - Generate diff: `vendor/bin/doctrine-migrations migrations:diff`.
 - Run: `composer db:migrate`; seed fixtures: `composer db:seed`.
+- **Important**: Generate migrations while using the **oldest** supported database version, then test against all supported MariaDB/MySQL versions (see CI matrix in `.github/workflows/test.yml`).
 
 ## Plugins
 
-- Plugins live under the directory set by `NEUCORE_PLUGINS_INSTALL_DIR` (e.g. `/plugins`); each has a `plugin.yml` in its own subdirectory.
-- Plugin frontends are served from `web/plugin/{name}/` (symlink or mount).
-- Plugin code must **only** use classes from `tkhamez/neucore-plugin` and the `FactoryInterface`; never import Neucore app classes or the Neucore DB directly.
-- If you update a library also included in `tkhamez/neucore-plugin`, update it there and release it together with Neucore.
+- Plugins live under `NEUCORE_PLUGINS_INSTALL_DIR` (e.g. `/plugins`); each has a `plugin.yml`.
+- Plugin frontends served from `web/plugin/{name}/` (symlink or mount).
+- Plugin code must **only** use classes from `tkhamez/neucore-plugin` and the `FactoryInterface`; never import Neucore app classes or the Neucore DB.
+- If you update a library also shipped in `tkhamez/neucore-plugin`, update it there and release together with Neucore.
 
 ## CI / release
 
-- `.github/workflows/test.yml` runs on every push. Matrix: PHP × MariaDB/MySQL (see **Toolchain versions**). Only the PHP 8.4 job uploads coverage to SonarCloud.
-- `.github/workflows/release.yml` runs on tag pushes: builds the distribution tarball (via `setup/dist-collect-files.sh`) and the multi-arch Docker image.
+- Test: `.github/workflows/test.yml` runs on every push. Matrix: PHP 8.1–8.5 × MariaDB/MySQL (7 combinations). Only the PHP 8.4 job uploads coverage to SonarCloud.
+- Release: `.github/workflows/release.yml` runs on tag pushes — builds distribution tarball (`setup/dist-collect-files.sh`) and multi-arch Docker image.
+- SonarCloud project: `tkhamez_neucore`.
 
 ## Toolchain versions
 
 - PHP: 8.1–8.5 (platform 8.1.0 in composer).
-- Node: 24.14, npm 11.11 (from `frontend/package.json` engines).
-- Java: Temurin 17 for the OpenAPI generator.
+- Node: 24.14, npm 11.11 (`frontend/package.json` engines).
+- Java: Temurin 17 (OpenAPI generator, used via `neucore_java` Docker service).
 - DB: MariaDB 10.11/11.4/11.8/12.3 or MySQL 8.0.22/8.4/9.7.
 
 ## References
 
-- Backend guide: `backend/README.md`
-- Frontend guide: `frontend/README.md`
-- Install/deployment: `doc/Install.md`
-- Features/API concepts: `doc/Documentation.md`
-- Plugin API contract: `doc/Plugins.md`
-- Env vars: `backend/.env.dist`
+- `backend/README.md` — Backend guide
+- `frontend/README.md` — Frontend guide
+- `doc/Install.md` — Installation
+- `doc/Documentation.md` — Features and API concepts
+- `doc/Plugins.md` — Plugin API contract
+- `doc/API.md` — Auto-generated API docs (from `doc/API.tpl.md`)
