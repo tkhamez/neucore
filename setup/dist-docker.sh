@@ -11,7 +11,7 @@ git checkout-index -a -f --prefix="${DIR}"/../dist/build/
 
 # A minimum configuration is required to generate the doctrine proxy classes
 echo "NEUCORE_APP_ENV=prod" > "${DIR}"/../dist/build/backend/.env
-echo "NEUCORE_DATABASE_URL=mysql://user:@127.0.0.1/db" >> "${DIR}"/../dist/build/backend/.env
+echo "NEUCORE_DATABASE_URL=mysql://user:@127.0.0.1/db?serverVersion=8.0.22" >> "${DIR}"/../dist/build/backend/.env
 
 # Backend
 cd "${DIR}"/.. || exit
