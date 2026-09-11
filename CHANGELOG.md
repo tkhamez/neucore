@@ -8,6 +8,8 @@
 - Fix: ESI: Fixed handling of "character not found" errors (they changed a bit).
 - Misc: The `install.sh` and `dist.sh` scripts have been removed; only the Docker development environment
   is now supported.
+- Change (dev env): “user: ${UID}” has been removed from the default Compose file. Instead, the 
+  user “www-data” is now a member of the “root” group for write permissions in the cache directory.
 
 ## 2.14.0
 

@@ -267,8 +267,8 @@ Make sure that the web server can write to the log and cache directories, by def
 
 The app uses umask 0002 when writing files and directories (the owner and group can read and write).
 Please note that both the web server and console user write the same files to the cache directory. 
-So make sure they can override each other's files, e.g. by putting them into each other's group or 
-using the same user.
+So make sure they can override each other's files, e.g. by putting them into each other's group, 
+using the same user or setting the setgid bit.
 
 If available, the app uses an APCu cache in production mode. It must be cleared during an update:
 depending on the setup, restart the web server or php-fpm.
@@ -301,7 +301,6 @@ are both `neucore`, the database host is `neucore_db` and the database name also
 
 Copy `setup/compose.yaml` to `/compose.yaml` and adjust its content if necessary.
 
-- Always run `export UID` first in each console that you use to execute any of the following commands.
 - Build the containers:  
   `docker compose build`  
 - Start services:  

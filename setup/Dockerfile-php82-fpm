@@ -23,3 +23,6 @@ RUN echo "memory_limit = 256M"                                 > /usr/local/etc/
     echo "xdebug.client_host = 172.17.0.1"                    >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
     echo "xdebug.max_nesting_level = 1024"                    >> /usr/local/etc/php/conf.d/docker-php-neucore.ini && \
     echo "apc.enable_cli = 1"                                 >> /usr/local/etc/php/conf.d/docker-php-neucore.ini
+
+# for the cache directory
+RUN addgroup www-data root

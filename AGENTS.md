@@ -29,12 +29,9 @@ See `CONTRIBUTING.md` for full guidelines. Key principles:
 - Wiring: `backend/src/Application.php`, `backend/src/Container.php` (PHP-DI definitions).
 - Routes/security config: `backend/config/routes.php`, `backend/config/security.php`.
 
-## Local setup
-
-### Docker dev environment
+## Development environment
 
 - The root `compose.yaml` is a **gitignored local file** (contains user-specific plugin mounts), it is a copy of `setup/compose.yaml`.
-- **⚠️ CRITICAL: Run `export UID` in EVERY shell before any `docker compose` command** (containers run as `${UID}`). Forgetting this causes permission warnings and wrong file ownership (e.g. from `composer install`).
 - `docker compose build` then `docker compose up`; then run `setup/install-docker.sh` and `docker compose exec neucore_node npm run build`.
 - URLs: app http://localhost:8080, frontend dev server http://localhost:3000, DB at 127.0.0.1:30306.
 - Copy `backend/.env.dist` → `backend/.env`; inside containers the DB host is `neucore_db`.
