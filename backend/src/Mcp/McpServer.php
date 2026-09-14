@@ -49,7 +49,7 @@ class McpServer
     private function getExtensions(): array
     {
         return [
-            'ai.neucore/rateLimits' => [
+            'eve.neucore/rateLimits' => [
                 'global' => [
                     'headers' => [RateLimit::HEADER_REMAIN, RateLimit::HEADER_RESET],
                     'location' => "Included in the 'headers' field of the tool response.",
@@ -107,7 +107,7 @@ class McpServer
                         . ' before retrying.',
                 ],
             ],
-            'ai.neucore/esiPagination' => [
+            'eve.neucore/esiPagination' => [
                 "location" => "Pagination headers are included in the 'headers' field of the tool response.",
                 "offset_based" => [
                     "description" => "Legacy pagination style used by many standard ESI endpoints.",

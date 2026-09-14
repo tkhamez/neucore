@@ -87,6 +87,47 @@ class CharacterTest extends TestCase
         ], json_decode((string) json_encode($char->jsonSerialize(false, true, false, true)), true));
     }
 
+    public function testJsonSerializeMinimumWithPlayerIdAndIsMain()
+    {
+        $player = (new Player())->setId(99);
+        $corp = (new Corporation())->setName('c');
+        $char = new Character();
+        $char->setId(123);
+        $char->setName('test char');
+        $char->setMain(true);
+        $char->setPlayer($player);
+        $char->setCorporation($corp);
+
+        // withPlayerId=true, withCorporation=false
+        $this->assertSame([
+            'id' => 123,
+            'name' => 'test char',
+            'playerId' => 99,
+        ], $char->jsonSerialize(true, false, false, false, true));
+
+        // withIsMain=true, withCorporation=false
+        $this->assertSame([
+            'id' => 123,
+            'name' => 'test char',
+            'main' => true,
+        ], $char->jsonSerialize(true, false, false, false, false, true));
+
+        // both together
+        $this->assertSame([
+            'id' => 123,
+            'name' => 'test char',
+            'playerId' => 99,
+            'main' => true,
+        ], $char->jsonSerialize(true, false, false, false, true, true));
+
+        // withIsMain=false (default), should not include 'main'
+        $this->assertSame([
+            'id' => 123,
+            'name' => 'test char',
+            'playerId' => 99,
+        ], $char->jsonSerialize(true, false, false, false, true));
+    }
+
     public function testSetGetId()
     {
         $char = new Character();
@@ -262,10 +303,10 @@ class CharacterTest extends TestCase
         $coreCharacter = $character->toCoreCharacter();
         $this->assertSame(100, $coreCharacter->id);
         $this->assertSame(1, $coreCharacter->playerId);
-        $this->assertTrue($minCoreCharacter->main);
+        $this->assertTrue($coreCharacter->main);
         $this->assertSame('char name', $coreCharacter->name);
         $this->assertSame('player name', $coreCharacter->playerName);
-        $this->assertSame('hash', $minCoreCharacter->ownerHash);
+        $this->assertSame('hash', $coreCharacter->ownerHash);
         $this->assertSame(10, $coreCharacter->corporationId);
         $this->assertSame('corp name', $coreCharacter->corporationName);
         $this->assertSame('-C-', $coreCharacter->corporationTicker);

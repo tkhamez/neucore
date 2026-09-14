@@ -30,6 +30,17 @@ class GroupTest extends TestCase
         );
     }
 
+    public function testJsonSerializeMinimalData()
+    {
+        $group = new Group();
+        $group->setName('minimal group');
+
+        self::assertSame(
+            ['id' => null, 'name' => 'minimal group'],
+            $group->jsonSerialize(true),
+        );
+    }
+
     public function testGetId()
     {
         self::assertSame(0, (new Group())->getId());
