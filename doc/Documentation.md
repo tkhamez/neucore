@@ -41,7 +41,7 @@ Main features:
 * **Groups** and **apps** with managers
 * **Automatic group assignment** for players based on corporations and alliances from all of their characters
 * An **[API](API.md) for applications** to query group membership of characters, ESI data and more
-* An **[MCP server](MCP-Server.md)** with tool to query data, including the ESI proxy
+* An **[MCP server](MCP-Server.md) for AI assistants** with tools to query data, including from ESI
 * General purpose [plugins](Plugins.md) with their own frontend and 
   plugins for **service registration** (e.g. Discord, Mumble)
 * Configurable **watchlists** with accounts that have characters in other alliances or corporations

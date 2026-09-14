@@ -3,7 +3,7 @@
 ## next
 
 - **BC break**: Dropped support for MariaDb 10.5, the minimum require version is now 10.11.
-- New: MCP server with tools to query data from Neucore and ESI via its proxy.
+- New: MCP server for AI assistants with tools to query data from Neucore and ESI.
 - New: Added support for MariaDB 12.3 and MySQL 9.7.
 - Fix: The function for determining the client's IP address has been corrected and improved.
 - Fix: ESI: Fixed handling of "character not found" errors (they changed a bit).
