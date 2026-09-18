@@ -57,6 +57,7 @@ See `CONTRIBUTING.md` for full guidelines.
 - For tests: `NEUCORE_TEST_DATABASE_URL` (MySQL or `sqlite:///:memory:`) and `NEUCORE_MEMCACHED_SERVER`.
 - Functional tests use the DB and Memcached. Test bootstrap (`backend/tests/bootstrap.php`) creates the schema automatically.
 - Single test: `docker compose exec neucore_php vendor/bin/phpunit tests/Unit/SomeTest.php` (or `--filter TestName::method`).
+- Tests with coverage: `docker compose exec neucore_php vendor/bin/phpunit --coverage-clover=var/logs/clover.xml`.
 
 ## Code style & static analysis
 

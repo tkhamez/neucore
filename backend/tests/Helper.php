@@ -203,9 +203,44 @@ class Helper
         );
     }
 
-    private static function getOm(): EntityManagerInterface
+    /**
+     * @return array<string, string>
+     */
+    public static function getEveConfig(
+        string $compatibilityDate = '',
+        string $useMailTokenForUnauthenticatedRequests = '0',
+    ): array {
+        return [
+            'esi_host' => 'http://localhost',
+            'esi_compatibility_date' => $compatibilityDate,
+            'use_mail_token_for_unauthenticated_requests' => $useMailTokenForUnauthenticatedRequests,
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function getFullEveConfig(): array
     {
-        return self::$em;
+        return [
+            'client_id' => '123',
+            'secret_key' => 'abc',
+            'callback_url' => 'https://example.com',
+            'esi_host' => 'https://esi.evetech.net',
+            'oauth_verify_signature' => true,
+            'esi_compatibility_date' => '2025-07-11',
+            'use_mail_token_for_unauthenticated_requests' => '0',
+            'esi_header_storage' => 'database',
+        ];
+    }
+
+    public static function getConfig(
+        string $compatibilityDate = '',
+        string $useMailTokenForUnauthenticatedRequests = '0',
+    ): Config {
+        return new Config([
+            'eve' => self::getEveConfig($compatibilityDate, $useMailTokenForUnauthenticatedRequests),
+        ]);
     }
 
     public function resetSessionData(): void
@@ -338,29 +373,6 @@ class Helper
             $em->clear();
             $em->getConnection()->close();
         }
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function dropAllTables(EntityManagerInterface $em): void
-    {
-        $connection = $em->getConnection();
-        $platform = $connection->getDatabasePlatform();
-
-        // Get all tables
-        $tables = $connection->createSchemaManager()->listTables();
-
-        // Disable foreign key checks
-        $connection->executeStatement('SET FOREIGN_KEY_CHECKS = 0;');
-
-        foreach ($tables as $table) {
-            $dropTableSql = $platform->getDropTableSQL($table->getName());
-            $connection->executeStatement($dropTableSql);
-        }
-
-        // Re-enable foreign key checks
-        $connection->executeStatement('SET FOREIGN_KEY_CHECKS = 1;');
     }
 
     public function emptyDb(): void
@@ -681,26 +693,31 @@ class Helper
         rmdir($dir);
     }
 
-    /**
-     * @return array<string, string>
-     */
-    public static function getEveConfig(
-        string $compatibilityDate = '',
-        string $useMailTokenForUnauthenticatedRequests = '0',
-    ): array {
-        return [
-            'esi_host' => 'http://localhost',
-            'esi_compatibility_date' => $compatibilityDate,
-            'use_mail_token_for_unauthenticated_requests' => $useMailTokenForUnauthenticatedRequests,
-        ];
+    private static function getOm(): EntityManagerInterface
+    {
+        return self::$em;
     }
 
-    public static function getConfig(
-        string $compatibilityDate = '',
-        string $useMailTokenForUnauthenticatedRequests = '0',
-    ): Config {
-        return new Config([
-            'eve' => self::getEveConfig($compatibilityDate, $useMailTokenForUnauthenticatedRequests),
-        ]);
+    /**
+     * @throws Exception
+     */
+    private function dropAllTables(EntityManagerInterface $em): void
+    {
+        $connection = $em->getConnection();
+        $platform = $connection->getDatabasePlatform();
+
+        // Get all tables
+        $tables = $connection->createSchemaManager()->listTables();
+
+        // Disable foreign key checks
+        $connection->executeStatement('SET FOREIGN_KEY_CHECKS = 0;');
+
+        foreach ($tables as $table) {
+            $dropTableSql = $platform->getDropTableSQL($table->getName());
+            $connection->executeStatement($dropTableSql);
+        }
+
+        // Re-enable foreign key checks
+        $connection->executeStatement('SET FOREIGN_KEY_CHECKS = 1;');
     }
 }

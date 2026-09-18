@@ -75,6 +75,15 @@ return [
         'esi_header_storage'     => '${NEUCORE_ESI_HEADER_STORAGE}',
     ],
 
+    'esi' => [
+        'files' => [
+            'esi_rate_limits'     => realpath(Application::ROOT_DIR . '/..') . '/backend/config/esi-rate-limits.php',
+            'esi_paths_public'    => realpath(Application::ROOT_DIR . '/..') . '/backend/config/esi-paths-public.php',
+            'esi_paths_http_get'  => realpath(Application::ROOT_DIR . '/..') . '/web/esi-paths-http-get.json',
+            'esi_paths_http_post' => realpath(Application::ROOT_DIR . '/..') . '/web/esi-paths-http-post.json',
+        ],
+    ],
+
     'guzzle' => [
         'cache' => [
             'dir' => '${NEUCORE_CACHE_DIR}/http',

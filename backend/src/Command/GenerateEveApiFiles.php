@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Neucore\Command;
 
-use Neucore\Application;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Service\Config;
-use Neucore\Service\EsiClient;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -62,8 +61,10 @@ class GenerateEveApiFiles extends Command
         '{killmail_hash}',
     ];
 
-    public function __construct(private readonly Config $config)
-    {
+    public function __construct(
+        private readonly Config $config,
+        private readonly HttpClientFactoryInterface $clientFactory,
+    ) {
         parent::__construct();
     }
 
@@ -83,9 +84,23 @@ class GenerateEveApiFiles extends Command
 
         $esiHost = $this->config['eve']['esi_host'];
         $esiCompatibilityDate = $this->config['eve']['esi_compatibility_date'];
-        $openapi = file_get_contents(
-            "$esiHost/meta/openapi.json?compatibility_date=$esiCompatibilityDate",
-        );
+        $url = "$esiHost/meta/openapi.json?compatibility_date=$esiCompatibilityDate";
+
+        $request = $this->clientFactory->createRequest('GET', $url);
+        $client = $this->clientFactory->get();
+        try {
+            $response = $client->sendRequest($request);
+        } catch (\Throwable $e) {
+            $this->output->writeln('Error reading openapi.json: ' . $e->getMessage());
+            return 1;
+        }
+
+        if ($response->getStatusCode() !== 200) {
+            $this->output->writeln('Error reading openapi.json: HTTP ' . $response->getStatusCode());
+            return 1;
+        }
+
+        $openapi = (string) $response->getBody();
         if (!$openapi) {
             $this->output->writeln('Error reading openapi.json.');
             return 1;
@@ -123,7 +138,7 @@ class GenerateEveApiFiles extends Command
         }
 
         $this->writeFile(
-            realpath(Application::ROOT_DIR . '/..') . '/backend/config/esi-paths-public.php',
+            $this->config['esi']['files']['esi_paths_public'],
             $public,
             'php',
         );
@@ -144,13 +159,13 @@ class GenerateEveApiFiles extends Command
         }
 
         $this->writeFile(
-            realpath(Application::ROOT_DIR . '/..') . '/web/esi-paths-http-get.json',
+            $this->config['esi']['files']['esi_paths_http_get'],
             $get,
             'json',
         );
 
         $this->writeFile(
-            realpath(Application::ROOT_DIR . '/..') . '/web/esi-paths-http-post.json',
+            $this->config['esi']['files']['esi_paths_http_post'],
             $post,
             'json',
         );
@@ -173,7 +188,7 @@ class GenerateEveApiFiles extends Command
         }
 
         $this->writeFile(
-            realpath(Application::ROOT_DIR . '/..') . '/backend/config/esi-rate-limits.php',
+            $this->config['esi']['files']['esi_rate_limits'],
             $rateLimits,
             'php',
         );

@@ -75,16 +75,7 @@ class SettingsControllerTest extends WebTestCase
             'repository' => 'https://github.com/tkhamez/neucore',
             'CORS' => ['allow_origin' => ''],
             'session' => ['secure' => '1'],
-            'eve' => [
-                'client_id' => '123',
-                'secret_key' => 'abc',
-                'callback_url' => 'https://example.com',
-                'esi_host' => 'https://esi.evetech.net',
-                'oauth_verify_signature' => true,
-                'esi_compatibility_date' => '2025-07-11',
-                'use_mail_token_for_unauthenticated_requests' => '0',
-                'esi_header_storage' => 'database',
-            ],
+            'eve' => Helper::getFullEveConfig(),
             'guzzle' => [
                 'cache' => [
                     'dir' => Application::ROOT_DIR . '/var/cache',
