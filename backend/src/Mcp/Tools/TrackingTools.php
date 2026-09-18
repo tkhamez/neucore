@@ -32,13 +32,13 @@ class TrackingTools
                 'properties' => [
                     'active' => ['type' => 'integer', 'description' => 'Maximum age of active members in days'],
                     'inactive' => ['type' => 'integer', 'description' => 'Maximum age of inactive members in days'],
-                    'account' => ['type' => 'boolean', 'description' => 'Filter by account access'],
+                    'account' => ['type' => 'boolean', 'description' => 'Filter by "belongs to a player account"'],
                     'tokenStatus' => [
                         'type' => 'integer',
                         'enum' => [1, 2, 3],
                         'description' => '1=valid, 2=invalid, 3=none',
                     ],
-                    'tokenChanged' => ['type' => 'integer', 'description' => 'Maximum days since token changed'],
+                    'tokenChanged' => ['type' => 'integer', 'description' => 'Maximum days since token status changed'],
                     'mailCount' => ['type' => 'integer', 'description' => 'Minimum number of missing character mails'],
                 ],
             ],

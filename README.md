@@ -36,7 +36,7 @@ Main features:
 
 - Management of group memberships, manually and with various ways to automate membership
 - [API](doc/API.md) for various data including an ESI proxy for all characters
-- An [MCP server](doc/MCP-Server.md) for AI assistants to query data, including from ESI
+- [MCP server](doc/MCP-Server.md) for AI assistants to query data, including from ESI
 - [Plugin](doc/Plugins.md) system for service registration (e.g. Discord, Mumble) and general purposes
 - Corporation member tracking and character watchlists
 - ... [and much more](doc/Documentation.md#features)

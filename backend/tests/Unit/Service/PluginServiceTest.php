@@ -14,6 +14,7 @@ use Doctrine\Persistence\ObjectManager;
 use Neucore\Application;
 use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Data\PluginConfigurationFile;
+use Neucore\Data\ServiceAccount;
 use Neucore\Entity\Character;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
@@ -554,6 +555,52 @@ class PluginServiceTest extends TestCase
         $char->setId(102);
         $result2 = $this->pluginService->updateServiceAccount($char, $this->testService1Impl);
         $this->assertSame('Test error', $result2);
+    }
+
+    public function testGetActiveServiceAccounts()
+    {
+        $this->helper->emptyDb();
+
+        $conf1 = new PluginConfigurationDatabase();
+        $conf1->directoryName = 'plugin-acc1';
+        $conf1->active = true;
+        $service1 = (new Plugin())->setName('S1')->setConfigurationDatabase($conf1);
+
+        $conf2 = new PluginConfigurationDatabase();
+        $conf2->directoryName = 'plugin-acc1';
+        $conf2->active = false;
+        $service2 = (new Plugin())->setName('S2')->setConfigurationDatabase($conf2);
+
+        $player = (new Player())->setName('P1');
+        $char = (new Character())->setId(101)->setName('C1')->setPlayer($player);
+        $player->addCharacter($char);
+
+        $this->om->persist($service1);
+        $this->om->persist($service2);
+        $this->om->persist($player);
+        $this->om->persist($char);
+        $this->om->flush();
+
+        $result = $this->pluginService->getActiveServiceAccounts($player, true);
+
+        $this->assertCount(1, $result);
+        $this->assertInstanceOf(ServiceAccount::class, $result[0]);
+        $json = $result[0]->jsonSerialize();
+        $this->assertSame('S1', $json['serviceName']);
+        $this->assertSame(101, $json['characterId']);
+    }
+
+    public function testGetActiveServiceAccounts_NoActivePlugins()
+    {
+        $this->helper->emptyDb();
+
+        $player = (new Player())->setName('P1');
+        $char = (new Character())->setId(123)->setName('C1')->setPlayer($player);
+        $player->addCharacter($char);
+
+        $result = $this->pluginService->getActiveServiceAccounts($player, true);
+
+        $this->assertSame([], $result);
     }
 
     private function setupPlugins(): array

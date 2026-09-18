@@ -1,26 +1,29 @@
 # MCP Server
 
 The MCP server provides tools that allow AI assistants to query player and corporation member
-tracking data and perform EVE API (ESI) requests for each character.
+tracking data and perform authenticated EVE API (ESI) requests for each character.
 
 The server supports only the modern protocol version 2026-07-28.
 
 
 ## Tools Overview
 
-| Tool                  | Purpose                                                               |
-|-----------------------|-----------------------------------------------------------------------|
-| `find_players`        | Search players by name (min. 3 characters)                            |
-| `get_player`          | Get a player with their characters, corporation, alliance, and groups |
-| `get_character`       | Get a single character with their corporation and alliance            |
-| `get_corporation`     | Get a corporation with its alliance                                   |
-| `get_alliance`        | Get an alliance by ID                                                 |
-| `get_groups`          | Get groups a player belongs to                                        |
-| `get_member_tracking` | Get corporation member tracking data, with filters                    |
-| `esi_request`         | Make authenticated ESI API requests using a character's ESI token.    |
+| Tool                   | Purpose                                                               |
+|------------------------|-----------------------------------------------------------------------|
+| `find_players`         | Search players by name (min. 3 characters)                            |
+| `find_characters`      | Search characters by name (min. 3 characters)                         |
+| `get_player`           | Get a player with their characters, corporation, alliance, and groups |
+| `get_character`        | Get a single character with their corporation and alliance            |
+| `get_corporation`      | Get a corporation with its alliance                                   |
+| `get_alliance`         | Get an alliance by ID                                                 |
+| `get_groups`           | Get groups a player belongs to                                        |
+| `get_group_members`    | Get all players that belong to a group                                |
+| `get_service_accounts` | Get all service accounts from active plugins for a player             |
+| `get_member_tracking`  | Get corporation member tracking data, with filters                    |
+| `esi_request`          | Make authenticated ESI API requests using a character's ESI token.    |
 
-Filters for `get_member_tracking`: active, inactive, tokenStatus, tokenChanged, 
-mailCount, account
+Filters for `get_member_tracking`: active days, inactive days, token status, token status changed date, 
+missing character mail count, belongs to a player account
 
 
 ## Usage

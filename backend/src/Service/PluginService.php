@@ -12,9 +12,10 @@ use Neucore\Entity\Character;
 use Neucore\Entity\Player;
 use Neucore\Entity\Plugin;
 use Neucore\Exception\RuntimeException;
+use Neucore\Data\ServiceAccount;
+use Neucore\Plugin\Exception;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
-use Neucore\Plugin\Exception;
 use Neucore\Plugin\Core\Factory;
 use Neucore\Plugin\GeneralInterface;
 use Neucore\Plugin\PluginInterface;
@@ -319,6 +320,46 @@ class PluginService
         }
 
         return $accountData;
+    }
+
+    /**
+     * Returns service accounts for all active plugins for the given player.
+     *
+     * @param Player $player The player whose characters to query.
+     * @return ServiceAccount[]
+     */
+    public function getActiveServiceAccounts(Player $player, bool $onlyActive): array
+    {
+        $result = [];
+
+        if ($onlyActive) {
+            $plugins = $this->getActivePlugins();
+        } else {
+            $plugins = $this->repositoryFactory->getPluginRepository()->findBy([], ['name' => 'ASC']);
+        }
+        foreach ($plugins as $plugin) {
+            $implementation = $this->getPluginImplementation($plugin);
+            $accounts = [];
+            if ($implementation instanceof ServiceInterface) {
+                try {
+                    $accounts = $this->getAccounts($implementation, $player->getCharacters());
+                } catch (Exception) {
+                    // do nothing, service needs to log its errors
+                }
+            }
+            foreach ($accounts as $account) {
+                $result[] = new ServiceAccount(
+                    $plugin->getId(),
+                    $plugin->getName(),
+                    $account->getCharacterId(),
+                    $account->getUsername(),
+                    $account->getStatus(),
+                    $account->getName(),
+                );
+            }
+        }
+
+        return $result;
     }
 
     public function updatePlayerAccounts(Player $player, ?Player $from = null): array

@@ -11,11 +11,8 @@ use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
-use Neucore\Data\ServiceAccount;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Plugin\Exception;
-use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\Account;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\ObjectManager;
@@ -791,7 +788,7 @@ class PlayerController extends BaseController
         $json = $player->jsonSerialize(false, true, true); // with character name changes and ESI tokens
         $json['removedCharacters'] = $player->getRemovedCharacters();
         $json['incomingCharacters'] = $player->getIncomingCharacters();
-        $json['serviceAccounts'] = $this->getServiceAccounts($player, $pluginService, false);
+        $json['serviceAccounts'] = $pluginService->getActiveServiceAccounts($player, false);
 
         return $this->withJson($json);
     }
@@ -850,7 +847,7 @@ class PlayerController extends BaseController
             'groups' => $player->getGroups(),
             'removedCharacters' => $player->getRemovedCharacters(),
             'incomingCharacters' => $player->getIncomingCharacters(),
-            'serviceAccounts' => $this->getServiceAccounts($player, $pluginService, true),
+            'serviceAccounts' => $pluginService->getActiveServiceAccounts($player, true),
         ]);
     }
 
@@ -1124,7 +1121,7 @@ class PlayerController extends BaseController
             }
         }
 
-        // allow if player if part of the watchlist
+        // allow if player is part of the watchlist
         if (array_intersect($watchlistsAllianceIds, $playerAllianceIds)) {
             return true;
         }
@@ -1133,39 +1130,5 @@ class PlayerController extends BaseController
         }
 
         return false;
-    }
-
-    private function getServiceAccounts(Player $player, PluginService $pluginService, bool $onlyActive): array
-    {
-        $result = [];
-
-        if ($onlyActive) {
-            $plugins = $pluginService->getActivePlugins();
-        } else {
-            $plugins = $this->repositoryFactory->getPluginRepository()->findBy([], ['name' => 'ASC']);
-        }
-        foreach ($plugins as $plugin) {
-            $implementation = $pluginService->getPluginImplementation($plugin);
-            $accounts = [];
-            if ($implementation instanceof ServiceInterface) {
-                try {
-                    $accounts = $pluginService->getAccounts($implementation, $player->getCharacters());
-                } catch (Exception) {
-                    // do nothing, service needs to log its errors
-                }
-            }
-            foreach ($accounts as $account) {
-                $result[] = new ServiceAccount(
-                    $plugin->getId(),
-                    $plugin->getName(),
-                    $account->getCharacterId(),
-                    $account->getUsername(),
-                    $account->getStatus(),
-                    $account->getName(),
-                );
-            }
-        }
-
-        return $result;
     }
 }

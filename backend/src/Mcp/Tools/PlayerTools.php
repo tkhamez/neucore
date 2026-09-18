@@ -5,16 +5,20 @@ declare(strict_types=1);
 namespace Neucore\Mcp\Tools;
 
 use Mcp\Capability\Attribute\McpTool;
+use Neucore\Data\ServiceAccount;
+use Neucore\Entity\Character;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Mcp\ResponseBuilder;
+use Neucore\Service\PluginService;
 
 class PlayerTools
 {
     public function __construct(
         private readonly RepositoryFactory $repositoryFactory,
         private readonly ResponseBuilder $responseBuilder,
+        private readonly PluginService $pluginService,
     ) {}
 
     #[McpTool(
@@ -57,6 +61,32 @@ class PlayerTools
         return $this->responseBuilder->success(
             array_map(fn(Player $player) => $player->jsonSerialize(true), $players),
         );
+    }
+
+    #[McpTool(
+        name: 'find_characters',
+        description: 'Find characters by their name (minimum 3 characters)',
+    )]
+    /**
+     * @param string $name The character name to search for (minimum 3 characters)
+     */
+    public function findCharacters(string $name): array
+    {
+        if (mb_strlen($name) < 3) {
+            return $this->responseBuilder->error(0, 'Name must be at least 3 characters long');
+        }
+
+        $repository = $this->repositoryFactory->getCharacterRepository();
+        $qb = $repository->createQueryBuilder('c');
+        $qb->andWhere('c.name LIKE :name')
+           ->setParameter('name', '%' . $name . '%');
+
+        $characters = $qb->getQuery()->getResult();
+
+        return $this->responseBuilder->success(array_map(
+            fn(Character $character) => $character->jsonSerialize(true, withPlayerId: true, withIsMain: true),
+            $characters,
+        ));
     }
 
     #[McpTool(
@@ -130,6 +160,51 @@ class PlayerTools
 
         return $this->responseBuilder->success(
             array_map(fn(Group $group) => $group->jsonSerialize(true), $groups),
+        );
+    }
+
+    #[McpTool(
+        name: 'get_group_members',
+        description: 'Get all players that belong to a group',
+    )]
+    /**
+     * @param int $groupId The group ID
+     */
+    public function getGroupMembers(int $groupId): array
+    {
+        $group = $this->repositoryFactory->getGroupRepository()->find($groupId);
+        if ($group === null) {
+            return $this->responseBuilder->error(0, 'Group not found');
+        }
+
+        $players = $group->getPlayers();
+
+        return $this->responseBuilder->success(
+            array_map(fn(Player $player) => [
+                'id' => $player->getId(),
+                'name' => $player->getName(),
+            ], $players),
+        );
+    }
+
+    #[McpTool(
+        name: 'get_service_accounts',
+        description: 'Get all service accounts from active plugins for a player',
+    )]
+    /**
+     * @param int $playerId The player ID
+     */
+    public function getServiceAccounts(int $playerId): array
+    {
+        $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);
+        if ($player === null) {
+            return $this->responseBuilder->error(0, 'Player not found');
+        }
+
+        $accounts = $this->pluginService->getActiveServiceAccounts($player, true);
+
+        return $this->responseBuilder->success(
+            array_map(fn(ServiceAccount $account) => $account->jsonSerialize(), $accounts),
         );
     }
 }
