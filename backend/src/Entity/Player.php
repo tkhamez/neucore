@@ -70,8 +70,8 @@ class Player implements \JsonSerializable
     /**
      * A name for the player.
      *
-     * This is the EVE character name of the current main character or of
-     * the last main character if there is currently none.
+     * This is the EVE character name of the current main character or the most recent main
+     * character, if there isn't one at the moment.
      */
     #[ORM\Column(type: "string", length: 255)]
     #[OA\Property]

@@ -1,18 +1,35 @@
 # Changelog
 
+- [1.0.0](#100)
+- [2.0.0](#200)
+
 ## next
 
-- **BC break**: Dropped support for MariaDb 10.5, the minimum require version is now 10.11.
-- New: MCP server for AI assistants with tools to query data from Neucore and ESI.
-- New: Added support for MariaDB 12.3 and MySQL 9.7.
-- Change: Added more security related HTTP headers (Referrer-Policy, Cross-Origin-*, Permissions-Policy)
+d M 2026
+
+**New**
+
+- Added an MCP server for AI assistants that includes tools for retrieving data from Neucore and ESI.
+- Added support for MariaDB 12.3 and MySQL 9.7.
+
+**Breaking Changes**
+
+- Fixed a typo in a schema: `PlayerWithCharcterId` is now `PlayerWithCharacterId`.
+- Dropped support for MariaDb 10.5, the minimum required version is now 10.11.
+
+**Other Changed**
+
+- Added more security related HTTP headers (`Referrer-Policy`, `Cross-Origin-*`, `Permissions-Policy`)
   to the Docker image, development environment and installation instructions.
-- Fix: The function for determining the client's IP address has been corrected and improved.
-- Fix: ESI: Fixed handling of "character not found" errors (they changed a bit).
-- Misc: The `install.sh` and `dist.sh` scripts have been removed; only the Docker development environment
+- The `install.sh` and `dist.sh` scripts have been removed; only the Docker development environment
   is now supported.
-- Change (dev env): “user: ${UID}” has been removed from the default Compose file. Instead, the 
-  user “www-data” is now a member of the “root” group for write permissions in the cache directory.
+- Dev Env: `user: ${UID}` has been removed from the default Compose file. Instead, the
+  user `www-data` is now a member of the `root` group for write permissions in the cache directory.
+
+**Fixes**
+
+- The function for determining the client's IP address has been corrected and improved.
+- ESI: Fixed handling of "character not found" errors (they changed a bit).
 
 ## 2.14.0
 

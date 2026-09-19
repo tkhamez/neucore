@@ -13,7 +13,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 #[OA\Tag(name: 'Application - Characters')]
 #[OA\Schema(
-    schema: 'PlayerWithCharcterId',
+    schema: 'PlayerWithCharacterId',
     required: ['id', 'name', 'characterId'],
     properties: [
         new OA\Property(property: 'id', type: 'int'),
@@ -178,7 +178,7 @@ class CharController extends BaseController
                 description: 'One entry for each character ID that was provided and found.',
                 content: new OA\JsonContent(
                     type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/PlayerWithCharcterId'),
+                    items: new OA\Items(ref: '#/components/schemas/PlayerWithCharacterId'),
                 ),
             ),
             new OA\Response(response: '400', description: 'Invalid body.'),
