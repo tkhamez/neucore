@@ -44,6 +44,10 @@ class MemberTracking
         return is_array($memberTracking) ? $memberTracking : null;
     }
 
+    /**
+     * @param int[] $charIds
+     * @return array<int, string>
+     */
     public function fetchCharacterNames(array $charIds): array
     {
         $charNames = [];
@@ -58,6 +62,11 @@ class MemberTracking
      * Resolves ESI IDs to names and creates/updates database entries.
      *
      * This flushes and clears the ObjectManager every 100 IDs.
+     */
+    /**
+     * @param int[] $typeIds
+     * @param int[] $systemIds
+     * @param int[] $stationIds
      */
     public function updateNames(array $typeIds, array $systemIds, array $stationIds, int $sleep = 0): void
     {
@@ -181,7 +190,7 @@ class MemberTracking
      *
      * @param int $corporationId
      * @param CorporationsCorporationIdMembertrackingGetInner[] $trackingData
-     * @param array $charNames
+     * @param array<int, string> $charNames
      * @param int $sleep
      */
     public function storeMemberData(int $corporationId, array $trackingData, array $charNames, int $sleep = 0): void

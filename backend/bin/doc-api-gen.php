@@ -51,6 +51,11 @@ echo "wrote doc/API.md", PHP_EOL;
 /**
  * @see \Tkhamez\Slim\RoleAuth\SecureRouteMiddleware::__invoke()
  */
+/**
+ * @param array<string, mixed> $routes
+ * @param array<string, string[]> $securityDef
+ * @return array<array{string, string}>
+ */
 function getRoutesForRole(string $role, array $routes, array $securityDef): array
 {
     $result = [];
@@ -75,6 +80,11 @@ function getRoutesForRole(string $role, array $routes, array $securityDef): arra
     return $result;
 }
 
+/**
+ * @param array{string, string} $route
+ * @param array<string, mixed> $apiPaths
+ * @return array{group: string, desc: string}|null
+ */
 function getApiForRoute(array $route, array $apiPaths): ?array
 {
     $method = strtolower($route[1]);

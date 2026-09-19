@@ -95,6 +95,9 @@ class EsiToken implements \JsonSerializable
     #[OA\Property]
     private ?\DateTime $lastChecked = null;
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(bool $withCharacterDetails = false): array
     {
         $data = [

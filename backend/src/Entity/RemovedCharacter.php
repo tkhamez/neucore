@@ -123,8 +123,7 @@ class RemovedCharacter implements \JsonSerializable
     /**
      * Contains only information of interest to clients.
      *
-     * {@inheritDoc}
-     * @see \JsonSerializable::jsonSerialize()
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

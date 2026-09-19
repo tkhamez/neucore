@@ -240,6 +240,7 @@ class SettingsController extends BaseController
     }
 
     /**
+     * @param NavigationItem[] $navigationItems
      * @return NavigationItem[]
      */
     private function getNavigationItems(
@@ -287,12 +288,13 @@ class SettingsController extends BaseController
                     continue;
                 }
 
-                $navigationItems[] = [
-                    'parent' => $item->getParent(),
-                    'name' => $item->getName(),
-                    'url' => '/plugin/' . $plugin->getId() . $item->getUrl(),
-                    'target' => $item->getTarget(),
-                ];
+                $navigationItems[] = new NavigationItem(
+                    $item->getParent(),
+                    $item->getName(),
+                    '/plugin/' . $plugin->getId() . $item->getUrl(),
+                    $item->getTarget(),
+                    [],
+                );
             }
         }
 

@@ -64,8 +64,7 @@ class GroupApplication implements \JsonSerializable
     private string $status = self::STATUS_PENDING;
 
     /**
-     * {@inheritDoc}
-     * @see \JsonSerializable::jsonSerialize()
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

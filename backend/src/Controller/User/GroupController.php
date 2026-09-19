@@ -1171,7 +1171,7 @@ class GroupController extends BaseController
                     'allianceName' => $player['alliance_name'],
                 ];
             }
-            if ($withRoles) {
+            if ($withRoles && $player instanceof Player) {
                 $result['roles'] = $player->getRoles();
             }
             $ret[] = $result;

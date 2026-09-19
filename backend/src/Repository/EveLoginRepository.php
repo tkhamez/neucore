@@ -9,7 +9,7 @@ use Neucore\Entity\EveLogin;
 
 /**
  * @method EveLogin|null find($id, $lockMode = null, $lockVersion = null)
- * @method EveLogin|null findOneBy(array $criteria, array $orderBy = null)
- * @method EveLogin[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method EveLogin|null findOneBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null)
+ * @method EveLogin[] findBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null, $limit = null, $offset = null)
  */
 class EveLoginRepository extends EntityRepository {}

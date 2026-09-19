@@ -15,8 +15,8 @@ use Neucore\Util\Database;
  * repository methods below.
  *
  * @method Corporation|null find($id, $lockMode = null, $lockVersion = null)
- * @method Corporation|null findOneBy(array $criteria, array $orderBy = null)
- * @method Corporation[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Corporation|null findOneBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null)
+ * @method Corporation[] findBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null, $limit = null, $offset = null)
  */
 class CorporationRepository extends EntityRepository
 {
@@ -49,7 +49,7 @@ class CorporationRepository extends EntityRepository
     }
 
     /**
-     * @param array $corporationIds
+     * @param int[] $corporationIds
      * @return Corporation[]
      */
     public function getAllFromAlliances(array $corporationIds): array

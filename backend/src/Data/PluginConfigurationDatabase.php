@@ -32,7 +32,7 @@ class PluginConfigurationDatabase extends PluginConfiguration implements \JsonSe
     public array $requiredGroups = [];
 
     /**
-     * @param array $data Array created from jsonSerialize().
+     * @param array<string, mixed> $data Array created from jsonSerialize().
      */
     public static function fromArray(array $data): self
     {
@@ -49,7 +49,7 @@ class PluginConfigurationDatabase extends PluginConfiguration implements \JsonSe
     /**
      * @param bool $fullConfig Only required API properties if true
      * @param bool $includeBackendOnly Include PHP autoloader properties if true
-     * @return array
+     * @return array<string, mixed>
      */
     public function jsonSerialize(bool $fullConfig = true, bool $includeBackendOnly = true): array
     {

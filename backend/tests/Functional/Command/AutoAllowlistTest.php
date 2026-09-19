@@ -20,6 +20,7 @@ class AutoAllowlistTest extends ConsoleTestCase
 {
     private ObjectManager $om;
 
+    /** @var array<string, int> */
     private array $data = [];
 
     /**

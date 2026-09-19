@@ -50,6 +50,9 @@ abstract class BaseController
         return $default;
     }
 
+    /**
+     * @return ?int[]
+     */
     protected function getIntegerArrayFromBody(ServerRequestInterface $request): ?array
     {
         $ids = $request->getParsedBody();

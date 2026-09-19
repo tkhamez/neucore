@@ -327,6 +327,9 @@ class AuthController extends BaseController
         return $this->redirect($url);
     }
 
+    /**
+     * @return string[]
+     */
     private function getLoginScopes(string $state): array
     {
         $loginName = $this->getLoginNameFromState($state);

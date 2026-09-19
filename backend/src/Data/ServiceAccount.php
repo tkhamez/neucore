@@ -43,6 +43,9 @@ class ServiceAccount implements \JsonSerializable
         $this->name = $name;
     }
 
+    /**
+     * @return array<string, int|string|null>
+     */
     public function jsonSerialize(): array
     {
         return [

@@ -15,8 +15,8 @@ use Neucore\Util\Database;
  * repository methods below.
  *
  * @method Alliance|null find($id, $lockMode = null, $lockVersion = null)
- * @method Alliance|null findOneBy(array $criteria, array $orderBy = null)
- * @method Alliance[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Alliance|null findOneBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null)
+ * @method Alliance[] findBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null, $limit = null, $offset = null)
  */
 class AllianceRepository extends EntityRepository
 {

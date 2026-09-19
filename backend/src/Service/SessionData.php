@@ -25,6 +25,7 @@ class SessionData
         return self::$readOnly;
     }
 
+    /** @return array<string, mixed>|null */
     public function getAll(): ?array
     {
         return $_SESSION ?? null;

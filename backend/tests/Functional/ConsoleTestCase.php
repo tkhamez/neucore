@@ -15,6 +15,12 @@ use Tests\Helper;
  */
 class ConsoleTestCase extends TestCase
 {
+    /**
+     * @param array<string, mixed> $input
+     * @param array<string, mixed> $mocks
+     * @param array{string, string}[] $envVars
+     * @param string[] $argv
+     */
     protected function runConsoleApp(
         string $name,
         array $input = [],

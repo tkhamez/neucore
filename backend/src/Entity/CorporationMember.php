@@ -92,8 +92,7 @@ class CorporationMember implements \JsonSerializable
     private int $missingCharacterMailSentNumber = 0;
 
     /**
-     * {@inheritDoc}
-     * @see \JsonSerializable::jsonSerialize()
+     * @return array<string, mixed>
      */
     public function jsonSerialize(bool $forUser = true): array
     {

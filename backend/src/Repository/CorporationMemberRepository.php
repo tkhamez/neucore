@@ -15,7 +15,7 @@ use Neucore\Entity\Player;
 
 /**
  * @method CorporationMember|null find($id, $lockMode = null, $lockVersion = null)
- * @method CorporationMember[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method CorporationMember[] findBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null, $limit = null, $offset = null)
  */
 class CorporationMemberRepository extends EntityRepository
 {
@@ -271,6 +271,9 @@ class CorporationMemberRepository extends EntityRepository
         }, $result);
     }
 
+    /**
+     * @param int[] $currentMemberIds
+     */
     public function removeFormerMembers(int $corporationId, array $currentMemberIds): int
     {
         $qb = $this->createQueryBuilder('m');

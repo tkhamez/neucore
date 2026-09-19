@@ -165,6 +165,8 @@ class Player implements \JsonSerializable
 
     /**
      * Contains only information of interest to clients.
+     *
+     * @return array<string, mixed>
      */
     public function jsonSerialize(
         bool $minimum = false,
@@ -359,6 +361,9 @@ class Player implements \JsonSerializable
         }, $this->getCharacters());
     }
 
+    /**
+     * @return int[]
+     */
     public function getCharactersId(): array
     {
         return array_map(function (Character $character) {
@@ -597,6 +602,9 @@ class Player implements \JsonSerializable
         }, $this->getManagerGroups());
     }
 
+    /**
+     * @return int[]
+     */
     public function getManagerGroupIds(): array
     {
         $groupIds = [];

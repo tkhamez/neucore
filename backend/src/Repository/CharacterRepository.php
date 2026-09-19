@@ -15,8 +15,8 @@ use Neucore\Util\Database;
  * repository methods below.
  *
  * @method Character|null find($id, $lockMode = null, $lockVersion = null)
- * @method Character|null findOneBy(array $criteria, array $orderBy = null)
- * @method Character[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Character|null findOneBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null)
+ * @method Character[] findBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null, $limit = null, $offset = null)
  */
 class CharacterRepository extends EntityRepository
 {
@@ -60,6 +60,7 @@ class CharacterRepository extends EntityRepository
 
     /**
      * @param int[] $playerIds
+     * @return array<string, int>[]
      */
     public function getAllCharactersFromPlayers(array $playerIds): array
     {
@@ -106,6 +107,10 @@ class CharacterRepository extends EntityRepository
         }, $qb->getQuery()->getResult());
     }
 
+    /**
+     * @param int[] $playerIds
+     * @return int[]
+     */
     public function getCharacterIdsNotFromPlayers(array $playerIds, ?int $dbResultLimit = null, int $offset = 0): array
     {
         $qb = $this->createQueryBuilder('c');
@@ -121,6 +126,10 @@ class CharacterRepository extends EntityRepository
         }, $qb->getQuery()->getResult());
     }
 
+    /**
+     * @param int[] $characterIds
+     * @return array<string, int|string>[]
+     */
     public function findPlayersByCharacters(array $characterIds): array
     {
         if (count($characterIds) === 0) {

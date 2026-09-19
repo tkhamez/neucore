@@ -9,7 +9,7 @@ use Neucore\Entity\Plugin;
 
 /**
  * @method Plugin|null find($id, $lockMode = null, $lockVersion = null)
- * @method Plugin|null findOneBy(array $criteria, array $orderBy = null)
- * @method Plugin[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Plugin|null findOneBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null)
+ * @method Plugin[] findBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null, $limit = null, $offset = null)
  */
 class PluginRepository extends EntityRepository {}

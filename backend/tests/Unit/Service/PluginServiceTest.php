@@ -603,6 +603,9 @@ class PluginServiceTest extends TestCase
         $this->assertSame([], $result);
     }
 
+    /**
+     * @return int[]
+     */
     private function setupPlugins(): array
     {
         $conf1 = new PluginConfigurationDatabase();

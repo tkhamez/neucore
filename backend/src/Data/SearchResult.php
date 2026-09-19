@@ -20,6 +20,9 @@ class SearchResult implements \JsonSerializable
         public string $playerName,
     ) {}
 
+    /**
+     * @return array<string, int|string>
+     */
     public function jsonSerialize(): array
     {
         return [

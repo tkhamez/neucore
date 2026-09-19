@@ -56,6 +56,9 @@ class PlayerController extends BaseController
 
     private Account $account;
 
+    /**
+     * @var string[]
+     */
     private array $assignableRoles = [
         Role::APP_ADMIN,
         Role::GROUP_ADMIN,
@@ -70,6 +73,9 @@ class PlayerController extends BaseController
         Role::WATCHLIST_ADMIN,
     ];
 
+    /**
+     * @var string[]
+     */
     private array $availableStatus = [
         Player::STATUS_STANDARD,
         Player::STATUS_MANAGED,

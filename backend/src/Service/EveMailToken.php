@@ -58,6 +58,7 @@ class EveMailToken
 
     /**
      * @throws Exception
+     * @return array<string, mixed>
      */
     public function getStoredToken(): array
     {
@@ -82,6 +83,7 @@ class EveMailToken
     }
 
     /**
+     * @param array<string, mixed> $tokenValues
      * @throws Exception If the token could not be refreshed.
      */
     public function getValidToken(array $tokenValues): AccessTokenInterface

@@ -21,13 +21,14 @@ class PlayerTools
         private readonly PluginService $pluginService,
     ) {}
 
+    /**
+     * @param int $playerId The player ID
+     * @return array<string, mixed>
+     */
     #[McpTool(
         name: 'get_player',
         description: 'Get a player with their characters (including corporation and alliance) and groups',
     )]
-    /**
-     * @param int $playerId The player ID
-     */
     public function getPlayer(int $playerId): array
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);
@@ -38,13 +39,14 @@ class PlayerTools
         return $this->responseBuilder->success($player->jsonSerialize());
     }
 
+    /**
+     * @param string $name The player name to search for (minimum 3 characters)
+     * @return array<string, mixed>
+     */
     #[McpTool(
         name: 'find_players',
         description: 'Find players by their name..',
     )]
-    /**
-     * @param string $name The player name to search for (minimum 3 characters)
-     */
     public function findPlayers(string $name): array
     {
         if (mb_strlen($name) < 2) {
@@ -63,13 +65,14 @@ class PlayerTools
         );
     }
 
+    /**
+     * @param string $name The character name to search for (minimum 3 characters)
+     * @return array<string, mixed>
+     */
     #[McpTool(
         name: 'find_characters',
         description: 'Find characters by their name (minimum 3 characters)',
     )]
-    /**
-     * @param string $name The character name to search for (minimum 3 characters)
-     */
     public function findCharacters(string $name): array
     {
         if (mb_strlen($name) < 3) {
@@ -89,13 +92,14 @@ class PlayerTools
         ));
     }
 
+    /**
+     * @param int $characterId The character ID
+     * @return array<string, mixed>
+     */
     #[McpTool(
         name: 'get_character',
         description: 'Get a character with their corporation and alliance',
     )]
-    /**
-     * @param int $characterId The character ID
-     */
     public function getCharacter(int $characterId): array
     {
         $character = $this->repositoryFactory->getCharacterRepository()->find($characterId);
@@ -108,13 +112,14 @@ class PlayerTools
         );
     }
 
+    /**
+     * @param int $corporationId The corporation ID
+     * @return array<string, mixed>
+     */
     #[McpTool(
         name: 'get_corporation',
         description: 'Get a corporation with its alliance',
     )]
-    /**
-     * @param int $corporationId The corporation ID
-     */
     public function getCorporation(int $corporationId): array
     {
         $corporation = $this->repositoryFactory->getCorporationRepository()->find($corporationId);
@@ -125,13 +130,14 @@ class PlayerTools
         return $this->responseBuilder->success($corporation->jsonSerialize());
     }
 
+    /**
+     * @param int $allianceId The alliance ID
+     * @return array<string, mixed>
+     */
     #[McpTool(
         name: 'get_alliance',
         description: 'Get an alliance',
     )]
-    /**
-     * @param int $allianceId The alliance ID
-     */
     public function getAlliance(int $allianceId): array
     {
         $alliance = $this->repositoryFactory->getAllianceRepository()->find($allianceId);
@@ -142,13 +148,14 @@ class PlayerTools
         return $this->responseBuilder->success($alliance->jsonSerialize());
     }
 
+    /**
+     * @param int $playerId The player ID
+     * @return array<string, mixed>
+     */
     #[McpTool(
         name: 'get_groups',
         description: 'Get groups a player belongs to',
     )]
-    /**
-     * @param int $playerId The player ID
-     */
     public function getGroups(int $playerId): array
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);
@@ -163,13 +170,14 @@ class PlayerTools
         );
     }
 
+    /**
+     * @param int $groupId The group ID
+     * @return array<string, mixed>
+     */
     #[McpTool(
         name: 'get_group_members',
         description: 'Get all players that belong to a group',
     )]
-    /**
-     * @param int $groupId The group ID
-     */
     public function getGroupMembers(int $groupId): array
     {
         $group = $this->repositoryFactory->getGroupRepository()->find($groupId);
@@ -187,13 +195,14 @@ class PlayerTools
         );
     }
 
+    /**
+     * @param int $playerId The player ID
+     * @return array<string, mixed>
+     */
     #[McpTool(
         name: 'get_service_accounts',
         description: 'Get all service accounts from active plugins for a player',
     )]
-    /**
-     * @param int $playerId The player ID
-     */
     public function getServiceAccounts(int $playerId): array
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);

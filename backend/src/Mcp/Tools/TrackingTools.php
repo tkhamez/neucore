@@ -17,13 +17,15 @@ class TrackingTools
         private readonly ResponseBuilder $responseBuilder,
     ) {}
 
+    /**
+     * @param int $corporationId The corporation ID
+     * @param array<string, mixed> $filter Filter criteria for corporation member tracking
+     * @return array<string, mixed>
+     */
     #[McpTool(
         name: 'get_member_tracking',
         description: 'Get member tracking data for a corporation.',
     )]
-    /**
-     * @param int $corporationId The corporation ID
-     */
     public function getMemberTracking(
         int $corporationId,
         #[Schema(

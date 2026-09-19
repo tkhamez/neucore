@@ -11,6 +11,7 @@ namespace Tests\Functional\Controller\User\ServiceController;
 use Neucore\Plugin\Core\FactoryInterface;
 use Neucore\Plugin\Data\CoreAccount;
 use Neucore\Plugin\Data\CoreCharacter;
+use Neucore\Plugin\Data\CoreGroup;
 use Neucore\Plugin\Data\PluginConfiguration;
 use Neucore\Plugin\Data\ServiceAccountData;
 use Neucore\Plugin\Exception;
@@ -21,6 +22,7 @@ use Psr\Log\LoggerInterface;
 
 class TestService1 implements ServiceInterface
 {
+    /** @var CoreGroup[] */
     public static ?array $lastGroups = null;
 
     public static bool $throw = false;

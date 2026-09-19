@@ -9,7 +9,7 @@ use Neucore\Entity\EsiLocation;
 
 /**
  * @method EsiLocation|null find($id, $lockMode = null, $lockVersion = null)
- * @method EsiLocation|null findOneBy(array $criteria, array $orderBy = null)
- * @method EsiLocation[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method EsiLocation|null findOneBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null)
+ * @method EsiLocation[] findBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null, $limit = null, $offset = null)
  */
 class EsiLocationRepository extends EntityRepository {}

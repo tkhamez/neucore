@@ -110,6 +110,9 @@ class Watchlist implements \JsonSerializable
     #[ORM\OrderBy(["name" => "ASC"])]
     private Collection $allowlistAlliances;
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return [

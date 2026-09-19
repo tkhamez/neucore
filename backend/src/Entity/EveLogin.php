@@ -101,6 +101,9 @@ class EveLogin implements \JsonSerializable
             && property_exists($data, 'eveRoles')    && is_array($data->eveRoles);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return [

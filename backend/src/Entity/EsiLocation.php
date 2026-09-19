@@ -59,6 +59,9 @@ class EsiLocation implements \JsonSerializable
     #[ORM\Column(name: "error_count", type: "integer", nullable: true)]
     private ?int $errorCount = null;
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return [

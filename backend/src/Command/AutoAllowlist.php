@@ -145,11 +145,11 @@ class AutoAllowlist extends Command
     }
 
     /**
-     * find relevant corporations for each account and store their character IDs
+     * Find relevant corporations for each account and store their character IDs
      *
      * @param Player[] $players
      * @param int[] $watchedCorporationIds
-     * @return array
+     * @return array<int, array<int, array{'char_ids': int[], 'token_id': ?int}>>
      */
     private function getAccountData(array $players, array $watchedCorporationIds): array
     {
@@ -208,7 +208,7 @@ class AutoAllowlist extends Command
     /**
      * fetch members of all corporations and check against characters on account
      *
-     * @param array $accountsData
+     * @param array<int, array<int, array{'char_ids': int[], 'token_id': ?int}>> $accountsData
      * @return int[]
      */
     private function getAllowlist(array $accountsData): array
@@ -261,6 +261,9 @@ class AutoAllowlist extends Command
         return $allowlist;
     }
 
+    /**
+     * @param int[] $allowlist
+     */
     private function saveAllowlist(\Neucore\Entity\Watchlist $watchlist, array $allowlist): void
     {
         foreach ($watchlist->getAllowlistCorporations() as $corporationRemove) {

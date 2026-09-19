@@ -33,6 +33,9 @@ class Factory implements FactoryInterface
         ]);
     }
 
+    /**
+     * @param array<string, string> $headers
+     */
     public function createHttpRequest(
         string $method,
         string $url,

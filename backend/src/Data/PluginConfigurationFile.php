@@ -69,7 +69,7 @@ class PluginConfigurationFile extends PluginConfiguration implements \JsonSerial
     public array $actions = [];
 
     /**
-     * @param array $data Array created from jsonSerialize(), except "types".
+     * @param array<string, mixed> $data Array created from jsonSerialize(), except "types".
      */
     public static function fromArray(array $data): self
     {
@@ -89,6 +89,9 @@ class PluginConfigurationFile extends PluginConfiguration implements \JsonSerial
         return $obj;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(bool $fullConfig = true, bool $includeBackendOnly = true): array
     {
         $result = [

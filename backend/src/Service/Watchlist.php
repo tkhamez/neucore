@@ -117,6 +117,9 @@ class Watchlist
         return $result;
     }
 
+    /**
+     * @return array<string, mixed>[]
+     */
     public function getKicklist(int $id): array
     {
         $playersFromKicklistCorporations = $this->playerRepository->findInCorporationsWithExcludes(

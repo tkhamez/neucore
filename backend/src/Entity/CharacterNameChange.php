@@ -37,6 +37,9 @@ class CharacterNameChange implements \JsonSerializable
     #[OA\Property(nullable: true)]
     private ?\DateTime $changeDate = null;
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return [

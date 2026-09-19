@@ -46,6 +46,9 @@ class Plugin implements \JsonSerializable
 
     private ?GeneralInterface $generalImplementation = null;
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(
         bool $onlyRequired = true,
         bool $fullConfig = false,

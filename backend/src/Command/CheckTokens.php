@@ -43,6 +43,7 @@ class CheckTokens extends Command
 
     private int $sleep = 50;
 
+    /** @var int[] */
     private array $activePlayerIds = [];
 
     public function __construct(

@@ -52,6 +52,7 @@ class RepositoryFactory
 
     private ObjectManager $objectManager;
 
+    /** @var array<string, object> */
     private array $factories = [];
 
     public static function getInstance(ObjectManager $objectManager): self

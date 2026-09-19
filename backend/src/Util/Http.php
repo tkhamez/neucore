@@ -58,6 +58,9 @@ abstract class Http
         return self::IP_UNKNOWN;
     }
 
+    /**
+     * @param string[] $ipList
+     */
     private static function ipIsContainedIn(string $ip, array $ipList): bool
     {
         foreach ($ipList as $ipCheck) {

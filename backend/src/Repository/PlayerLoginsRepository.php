@@ -11,13 +11,14 @@ use OpenApi\Attributes as OA;
 
 /**
  * @method PlayerLogins|null find($id, $lockMode = null, $lockVersion = null)
- * @method PlayerLogins|null findOneBy(array $criteria, array $orderBy = null)
- * @method PlayerLogins[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method PlayerLogins|null findOneBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null)
+ * @method PlayerLogins[] findBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null, $limit = null, $offset = null)
  */
 class PlayerLoginsRepository extends EntityRepository
 {
     use DateHelper;
 
+    /** @return array<string, int|string>[] */
     #[OA\Schema(
         schema: 'PlayerLoginStatistics',
         required: ['unique_logins', 'total_logins', 'year', 'month'],

@@ -588,9 +588,8 @@ class GroupController extends BaseController
     }
 
     /**
-     * @param int $characterId
      * @param Group[] $appGroups
-     * @return null|array Returns NULL if character was not found.
+     * @return ?array<string, mixed> Returns NULL if character was not found.
      */
     private function getGroupsForPlayer(int $characterId, array $appGroups): ?array
     {
@@ -640,7 +639,7 @@ class GroupController extends BaseController
      * @param string $entityName "Corporation" or "Alliance"
      * @param int $entityId
      * @param Group[] $appGroups
-     * @return null|array Returns NULL if corporation was not found.
+     * @return ?array<string, array<string, mixed>[]> Returns NULL if corporation was not found.
      * @see \Neucore\Entity\Corporation::jsonSerialize()
      * @see \Neucore\Entity\Alliance::jsonSerialize()
      * @see Group::jsonSerialize

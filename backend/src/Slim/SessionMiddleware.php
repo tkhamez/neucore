@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Slim;
 
+use Doctrine\DBAL\Exception;
 use Neucore\Controller\User\AuthController;
 use Neucore\Factory\SessionHandlerFactory;
 use Neucore\Middleware\Psr15\CSRFToken;
@@ -52,6 +53,8 @@ class SessionMiddleware implements MiddlewareInterface
      *      'route_include_pattern' => ['/path/one'],
      *      'route_blocking_pattern' => ['/path/one/set', '/path/one/delete'],
      * ]
+     *
+     * @param array<string, mixed> $options
      */
     public function __construct(
         private readonly SessionData           $sessionData,
@@ -59,6 +62,9 @@ class SessionMiddleware implements MiddlewareInterface
         private readonly array $options = [],
     ) {}
 
+    /**
+     * @throws Exception
+     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $route = RouteContext::fromRequest($request)->getRoute();
@@ -92,7 +98,8 @@ class SessionMiddleware implements MiddlewareInterface
     {
         $start = false;
 
-        if (isset($this->options[self::OPTION_ROUTE_INCLUDE_PATTERN])
+        if (
+            isset($this->options[self::OPTION_ROUTE_INCLUDE_PATTERN])
             && is_array($this->options[self::OPTION_ROUTE_INCLUDE_PATTERN])
         ) {
             if ($route === null) {
@@ -114,6 +121,8 @@ class SessionMiddleware implements MiddlewareInterface
 
     /**
      * Register session handler.
+     *
+     * @throws Exception
      */
     private function setup(): void
     {

@@ -10,8 +10,8 @@ use Neucore\Entity\EsiToken;
 
 /**
  * @method EsiToken|null find($id, $lockMode = null, $lockVersion = null)
- * @method EsiToken|null findOneBy(array $criteria, array $orderBy = null)
- * @method EsiToken[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method EsiToken|null findOneBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null)
+ * @method EsiToken[] findBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null, $limit = null, $offset = null)
  */
 class EsiTokenRepository extends EntityRepository
 {
@@ -50,6 +50,15 @@ class EsiTokenRepository extends EntityRepository
         }, $result);
     }
 
+    /**
+     * @return array{
+     *      lastChecked: string|null,
+     *      characterId: int,
+     *      characterName: string,
+     *      corporationId: int|null,
+     *      allianceId: int|null
+     *  }[]
+     */
     public function findValidTokens(int $loginId): array
     {
         // Note: This works with ~38k tokens without an out-of-memory error from Doctrine with a 256MB limit.

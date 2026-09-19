@@ -20,10 +20,11 @@ class Cors implements MiddlewareInterface
 {
     private ResponseFactoryInterface $responseFactory;
 
+    /** @var string[] */
     private array $allowOrigin;
 
     /**
-     * @param array $allowOrigin Example: ['https://frontend.domain.tld']
+     * @param string[] $allowOrigin Example: ['https://frontend.domain.tld']
      */
     public function __construct(ResponseFactoryInterface $responseFactory, array $allowOrigin)
     {

@@ -20,6 +20,9 @@ use Psr\Log\LoggerInterface;
 
 class TestService implements ServiceInterface
 {
+    /**
+     * @var int[]
+     */
     public static array $updateAccount = [];
 
     public function __construct(
@@ -39,6 +42,10 @@ class TestService implements ServiceInterface
         throw new Exception();
     }
 
+    /**
+     * @param CoreCharacter[] $characters
+     * @return ServiceAccountData[]
+     */
     public function getAccounts(array $characters): array
     {
         return array_map(function (CoreCharacter $character) {
@@ -46,6 +53,9 @@ class TestService implements ServiceInterface
         }, $characters);
     }
 
+    /**
+     * @throws Exception
+     */
     public function register(
         CoreCharacter $character,
         array $groups,
@@ -72,16 +82,25 @@ class TestService implements ServiceInterface
         throw new Exception();
     }
 
+    /**
+     * @throws Exception
+     */
     public function getAllAccounts(): array
     {
         throw new Exception();
     }
 
+    /**
+     * @throws Exception
+     */
     public function getAllPlayerAccounts(): array
     {
         throw new Exception();
     }
 
+    /**
+     * @throws Exception
+     */
     public function search(string $query): array
     {
         throw new Exception();

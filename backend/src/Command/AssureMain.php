@@ -72,6 +72,9 @@ class AssureMain extends Command
         return 0;
     }
 
+    /**
+     * @return int[][]
+     */
     private function getPlayerIds(int $dbResultLimit): iterable
     {
         $offset = $dbResultLimit * -1;

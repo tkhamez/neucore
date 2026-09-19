@@ -16,8 +16,8 @@ use Neucore\Util\Database;
  * repository methods below.
  *
  * @method Player|null find($id, $lockMode = null, $lockVersion = null)
- * @method Player|null findOneBy(array $criteria, array $orderBy = null)
- * @method Player[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Player|null findOneBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null)
+ * @method Player[] findBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null, $limit = null, $offset = null)
  */
 class PlayerRepository extends EntityRepository
 {
@@ -162,7 +162,7 @@ class PlayerRepository extends EntityRepository
      * Return all players who have characters in one of the provided corporation
      * and do not belong to one of the provided players.
      *
-     * @param array $corporationIds Player accounts with characters in these corporations
+     * @param int[] $corporationIds Player accounts with characters in these corporations
      * @param Player[] $players Exclude these players
      * @return Player[]
      */
@@ -193,7 +193,7 @@ class PlayerRepository extends EntityRepository
      * not in a corporation from the provided list
      * and are not one of the provided players.
      *
-     * @param array $corporationIds Exclude these corporations
+     * @param int[] $corporationIds Exclude these corporations
      * @param Player[] $players Exclude these players
      * @return Player[]
      */
@@ -321,6 +321,7 @@ class PlayerRepository extends EntityRepository
     }
 
     /**
+     * @param int[] $characterIds
      * @return int[] Player IDs
      */
     public function findPlayersOfCharacters(array $characterIds): array

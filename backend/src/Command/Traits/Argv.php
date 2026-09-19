@@ -6,6 +6,9 @@ namespace Neucore\Command\Traits;
 
 trait Argv
 {
+    /**
+     * @var ?string[]
+     */
     private ?array $argv = null;
 
     /**

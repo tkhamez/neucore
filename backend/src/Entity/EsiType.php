@@ -25,6 +25,9 @@ class EsiType implements \JsonSerializable
     #[OA\Property]
     private ?string $name = null;
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return [

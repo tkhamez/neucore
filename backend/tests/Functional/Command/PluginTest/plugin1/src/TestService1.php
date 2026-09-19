@@ -19,8 +19,10 @@ use Psr\Log\LoggerInterface;
 
 class TestService1 implements GeneralInterface
 {
+    /** @var string[] */
     public static array $arguments = [];
 
+    /** @var array<string, string> */
     public static array $options = [];
 
     public function __construct(

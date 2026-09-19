@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\RemovedCharacter;
 
 /**
- * @method RemovedCharacter|null findOneBy(array $criteria, array $orderBy = null)
- * @method RemovedCharacter[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method RemovedCharacter|null findOneBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null)
+ * @method RemovedCharacter[] findBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null, $limit = null, $offset = null)
  */
 class RemovedCharacterRepository extends EntityRepository {}

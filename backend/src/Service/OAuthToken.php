@@ -72,6 +72,9 @@ class OAuthToken
         return $token;
     }
 
+    /**
+     * @return string[]
+     */
     public function getScopesFromToken(EsiToken $esiToken): array
     {
         $token = $this->createAccessToken($esiToken);

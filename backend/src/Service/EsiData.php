@@ -239,7 +239,7 @@ class EsiData
     }
 
     /**
-     * @param array $ids Valid IDs
+     * @param int[] $ids Valid IDs
      * @return CharactersAffiliationPostInner[]
      * @see https://developers.eveonline.com/api-explorer#/operations/PostCharactersAffiliation
      */
@@ -384,7 +384,7 @@ class EsiData
      *
      * Note: All IDs need to be valid, but it seems that ESI sometimes complains about an ID that will work later.
      *
-     * @param array $ids Valid IDs
+     * @param int[] $ids Valid IDs
      * @return UniverseNamesPostInner[]
      * @see https://developers.eveonline.com/api-explorer#/operations/PostUniverseNames
      */
@@ -618,6 +618,8 @@ class EsiData
     }
 
     /**
+     * @param UniverseNamesPostInner[] $names
+     * @param int[] $checkIds
      * @return UniverseNamesPostInner[]
      */
     private function fetchUniverseNamesChunked(array $names, array $checkIds, int $chunkSize): array

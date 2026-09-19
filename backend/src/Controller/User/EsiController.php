@@ -218,6 +218,9 @@ class EsiController extends BaseController
         ], $code);
     }
 
+    /**
+     * @return ?array{0: string, 1: string}[]
+     */
     private function extractHeaders(bool $debug, ?ResponseInterface $response = null): ?array
     {
         if ($response === null) {

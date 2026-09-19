@@ -23,6 +23,9 @@ class Logger extends \Monolog\Logger
         return $handler instanceof TestHandler ? $handler : null;
     }
 
+    /**
+     * @return string[]
+     */
     public function getMessages(): array
     {
         if (($handler = $this->getHandler()) !== null) {

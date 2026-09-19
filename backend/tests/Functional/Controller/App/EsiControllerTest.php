@@ -663,7 +663,7 @@ class EsiControllerTest extends WebTestCase
             [],
             [
                 'Authorization' => 'Bearer ' . base64_encode($appId . ':s1'),
-                'Neucore-EveCharacter' => $charId,
+                'Neucore-EveCharacter' => "$charId",
             ],
             [LoggerInterface::class => $this->logger, EsiHeaderStorageInterface::class => $this->storage],
         );

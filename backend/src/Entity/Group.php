@@ -112,6 +112,8 @@ class Group implements \JsonSerializable
 
     /**
      * Contains only information of interest to clients.
+     *
+     * @return array<string, mixed>
      */
     public function jsonSerialize(bool $minimalData = false): array
     {
@@ -312,6 +314,9 @@ class Group implements \JsonSerializable
         return $this->corporations->removeElement($corporation);
     }
 
+    /**
+     * @return Corporation[]
+     */
     public function getCorporations(): array
     {
         return array_values($this->corporations->toArray());

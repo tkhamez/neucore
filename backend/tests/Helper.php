@@ -70,6 +70,7 @@ class Helper
 
     private static int $roleSequence = 0;
 
+    /** @var array<class-string> */
     private array $entities = [
         Plugin::class,
         Watchlist::class,
@@ -95,6 +96,8 @@ class Helper
     ];
 
     /**
+     * @param string[] $scopes
+     * @return array{0: string, 1: array<array<string, mixed>>}
      * @throws \Exception
      */
     public static function generateToken(
@@ -323,6 +326,10 @@ class Helper
         );
     }
 
+    /**
+     * @param array<string, mixed> $mocks
+     * @return array<string, mixed>
+     */
     public function addEm(array $mocks): array
     {
         if (!array_key_exists(ObjectManager::class, $mocks)) {
@@ -404,7 +411,7 @@ class Helper
     }
 
     /**
-     * @param array $roles
+     * @param string[] $roles
      * @return Role[]
      */
     public function addRoles(array $roles): array
@@ -429,7 +436,7 @@ class Helper
     }
 
     /**
-     * @param array $groups
+     * @param string[] $groups
      * @return Group[]
      */
     public function addGroups(array $groups): array
@@ -452,6 +459,10 @@ class Helper
         return $groupEntities;
     }
 
+    /**
+     * @param string[] $roles
+     * @param string[] $groups
+     */
     public function addCharacterMain(
         string $name,
         int $charId,
@@ -537,6 +548,10 @@ class Helper
         return $player;
     }
 
+    /**
+     * @param string[] $scopes
+     * @param string[] $roles
+     */
     public function createOrUpdateEsiToken(
         Character $character,
         int $expires = 123456,
@@ -577,6 +592,10 @@ class Helper
         return $esiToken;
     }
 
+    /**
+     * @param string[] $roles
+     * @param string[] $eveLoginNames
+     */
     public function addApp(
         string $name,
         string $secret,
@@ -659,8 +678,15 @@ class Helper
         return $char;
     }
 
-    public function addEveLogin(string $name, array $scopes = [], array $roles = []): EveLogin
-    {
+    /**
+     * @param string[] $scopes
+     * @param string[] $roles
+     */
+    public function addEveLogin(
+        string $name,
+        array $scopes = [],
+        array $roles = [],
+    ): EveLogin {
         $om = $this->getObjectManager();
 
         $eveLogin = RepositoryFactory::getInstance($om)->getEveLoginRepository()->findOneBy(['name' => $name]);

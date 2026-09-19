@@ -18,6 +18,9 @@ class PluginConfigurationURL implements \JsonSerializable
     #[OA\Property]
     public string $target = '';
 
+    /**
+     * @return array<string, string>
+     */
     public function jsonSerialize(): array
     {
         return [

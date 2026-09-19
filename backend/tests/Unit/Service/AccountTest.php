@@ -1245,6 +1245,9 @@ class AccountTest extends TestCase
         return $char;
     }
 
+    /**
+     * @param string[] $roles
+     */
     private function addTokenToChar(string $eveLoginName, Character $char, array $roles, int $expires): EsiToken
     {
         $eveLogin = (new EveLogin())->setName($eveLoginName)->setEveRoles($roles);

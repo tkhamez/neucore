@@ -362,6 +362,9 @@ class PluginService
         return $result;
     }
 
+    /**
+     * @return array<string, int|string>[]
+     */
     public function updatePlayerAccounts(Player $player, ?Player $from = null): array
     {
         $updated = [];

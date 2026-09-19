@@ -21,6 +21,15 @@ class EsiTools
         private readonly ResponseBuilder $responseBuilder,
     ) {}
 
+    /**
+     * @param int $characterId The EVE character ID to use for authentication
+     * @param string $path The ESI API endpoint path (e.g. '/universe/stations/{station_id}')
+     * @param string $method The HTTP method (default: 'GET')
+     * @param string|null $body Optional request body for POST/PUT requests
+     * @param string|null $compatibilityDate ESI compatibility date in YYYY-MM-DD format,
+     *        it may not be in the future (UTC-11) (uses current date if not provided)
+     * @return array<string, mixed>
+     */
     #[McpTool(
         name: 'esi_request',
         description: "Make an authenticated ESI API request using the character's ESI token. "
@@ -36,14 +45,6 @@ class EsiTools
             . 'See extensions eve.neucore/rateLimits and eve.neucore/esiPagination for information '
             . 'about rate limits and pagination',
     )]
-    /**
-     * @param int $characterId The EVE character ID to use for authentication
-     * @param string $path The ESI API endpoint path (e.g. '/universe/stations/{station_id}')
-     * @param string $method The HTTP method (default: 'GET')
-     * @param string|null $body Optional request body for POST/PUT requests
-     * @param string|null $compatibilityDate ESI compatibility date in YYYY-MM-DD format,
-     *        it may not be in the future (UTC-11) (uses current date if not provided)
-     */
     public function esiRequest(
         int $characterId,
         string $path,

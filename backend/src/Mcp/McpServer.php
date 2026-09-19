@@ -46,6 +46,9 @@ class McpServer
             ->buildStateless();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function getExtensions(): array
     {
         return [

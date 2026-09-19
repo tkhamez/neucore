@@ -31,6 +31,9 @@ class AppController extends BaseController
 
     private EveLogin $eveLogin;
 
+    /**
+     * @var string[]
+     */
     private array $availableRoles = [
         Role::APP_GROUPS,
         Role::APP_CHARS,

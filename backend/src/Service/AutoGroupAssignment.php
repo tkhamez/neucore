@@ -25,16 +25,22 @@ class AutoGroupAssignment
 
     /**
      * Alliance ID to group IDs mapping.
+     *
+     * @var array<int, int[]>
      */
     private array $allianceMapping = [];
 
     /**
      * Corporation ID to group IDs mapping.
+     *
+     * @var array<int, int[]>
      */
     private array $corpMapping = [];
 
     /**
      * All group IDs from the corporation and alliance to group configuration.
+     *
+     * @var int[]|null
      */
     private ?array $autoGroups = null;
 
@@ -210,7 +216,7 @@ class AutoGroupAssignment
     /**
      *
      * @param Corporation[]|Alliance[] $entities
-     * @return array
+     * @return array<int, int[]>
      */
     private function fillMaps(array $entities): array
     {

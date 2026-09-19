@@ -21,16 +21,15 @@ class WebTestCase extends TestCase
      *
      * @param string $requestMethod the request method (e.g. GET, POST, etc.)
      * @param string $requestUri the request URI
-     * @param string|array|object|null $requestData the request data
-     * @param array|null $headers
-     * @param array $mocks key/value pairs for the dependency injection container
-     * @param string[][] $envVars [[var, value]]
-     * @return ResponseInterface|null
+     * @param array<int|string, mixed>|object|string|null $requestData the request data
+     * @param array<string, string>|null $headers
+     * @param array<string, mixed> $mocks key/value pairs for the dependency injection container
+     * @param array{string, string}[] $envVars [[var, value]]
      */
     protected function runApp(
         string $requestMethod,
         string $requestUri,
-        object|array|string|null $requestData = null,
+        array|object|string|null $requestData = null,
         ?array $headers = null,
         array $mocks = [],
         array $envVars = [],

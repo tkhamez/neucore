@@ -31,8 +31,6 @@ class AppAuth implements RoleProviderInterface
     }
 
     /**
-     *
-     * {@inheritDoc}
      * @see RoleProviderInterface::getRoles
      */
     public function getRoles(ServerRequestInterface $request): array

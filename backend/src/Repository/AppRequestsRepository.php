@@ -11,8 +11,8 @@ use OpenApi\Attributes as OA;
 
 /**
  * @method AppRequests|null find($id, $lockMode = null, $lockVersion = null)
- * @method AppRequests|null findOneBy(array $criteria, array $orderBy = null)
- * @method AppRequests[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method AppRequests|null findOneBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null)
+ * @method AppRequests[] findBy(array<string, mixed> $criteria, ?array<string, mixed> $orderBy = null, $limit = null, $offset = null)
  */
 class AppRequestsRepository extends EntityRepository
 {
@@ -20,6 +20,7 @@ class AppRequestsRepository extends EntityRepository
 
     private const DATE_FORMAT = 'Y-m-d H:i:s';
 
+    /** @return array<string, int|string>[] */
     #[OA\Schema(
         schema: 'TotalMonthlyAppRequests',
         required: ['requests', 'year', 'month'],
@@ -55,6 +56,7 @@ class AppRequestsRepository extends EntityRepository
         }, $qb->getQuery()->getResult());
     }
 
+    /** @return array<string, int|string>[] */
     #[OA\Schema(
         schema: 'MonthlyAppRequests',
         required: ['app_id', 'app_name', 'requests', 'year', 'month'],
@@ -97,6 +99,7 @@ class AppRequestsRepository extends EntityRepository
         }, $qb->getQuery()->getResult());
     }
 
+    /** @return array<string, int|string>[] */
     #[OA\Schema(
         schema: 'TotalDailyAppRequests',
         required: ['requests', 'year', 'month', 'day_of_month'],
@@ -133,6 +136,7 @@ class AppRequestsRepository extends EntityRepository
         }, $qb->getQuery()->getResult());
     }
 
+    /** @return array<string, int|string>[] */
     #[OA\Schema(
         schema: 'HourlyAppRequests',
         required: ['app_id', 'app_name', 'requests', 'year', 'month', 'day_of_month', 'hour'],

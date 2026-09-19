@@ -45,6 +45,9 @@ abstract class PluginConfiguration
         return (bool) preg_match('/^[a-zA-Z0-9+-._]+$/', $directoryName);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     protected static function fromArrayCommon(self $obj, array $data): void
     {
         $directoryName = $data['directoryName'] ?? '';
@@ -69,6 +72,10 @@ abstract class PluginConfiguration
         $obj->configurationData = $data['configurationData'] ?? '';
     }
 
+    /**
+     * @param array<string, mixed> $result
+     * @return array<string, mixed>
+     */
     protected function jsonSerializeCommon(array $result, bool $fullConfig, bool $includeBackendOnly): array
     {
         $result['directoryName'] = $this->directoryName;

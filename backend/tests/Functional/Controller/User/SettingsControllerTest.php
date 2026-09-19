@@ -115,7 +115,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'navigationServices', 'value' => \json_encode([])],
             ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([
                 ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/' . $this->service1->getId() . '/t7',
-                    'target' => '_self'],
+                    'target' => '_self', 'roles' => [], 'groups' => [], 'managerGroups' => []],
             ])],
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
         ], $this->parseJsonBody($response));
@@ -149,17 +149,17 @@ class SettingsControllerTest extends WebTestCase
             ])],
             ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([
                 ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/' . $this->service1->getId() . '/t1',
-                    'target' => '_blank'],
+                    'target' => '_blank', 'roles' => [], 'groups' => [], 'managerGroups' => []],
                 ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/' . $this->service1->getId() . '/t4',
-                    'target' => '_self'],
+                    'target' => '_self', 'roles' => [], 'groups' => [], 'managerGroups' => []],
                 ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/' . $this->service1->getId() . '/t6',
-                    'target' => '_self'],
+                    'target' => '_self', 'roles' => [], 'groups' => [], 'managerGroups' => []],
                 ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/' . $this->service2->getId() . '/t1',
-                    'target' => '_blank'],
+                    'target' => '_blank', 'roles' => [], 'groups' => [], 'managerGroups' => []],
                 ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/' . $this->service2->getId() . '/t4',
-                    'target' => '_self'],
+                    'target' => '_self', 'roles' => [], 'groups' => [], 'managerGroups' => []],
                 ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/' . $this->service2->getId() . '/t6',
-                    'target' => '_self'],
+                    'target' => '_self', 'roles' => [], 'groups' => [], 'managerGroups' => []],
             ])],
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
         ], $this->parseJsonBody($response));
@@ -224,7 +224,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'navigationServices', 'value' => \json_encode([$this->service1->jsonSerialize()])],
             ['name' => 'navigationGeneralPlugins', 'value' => \json_encode([
                 ['parent' => 'root', 'name' => 'Test', 'url' => '/plugin/' . $this->service1->getId() . '/t1',
-                    'target' => '_blank'],
+                    'target' => '_blank', 'roles' => [], 'groups' => [], 'managerGroups' => []],
             ])],
             ['name' => 'repository', 'value' => 'https://github.com/tkhamez/neucore'],
         ], $this->parseJsonBody($response));

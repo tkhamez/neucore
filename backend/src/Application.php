@@ -213,6 +213,7 @@ class Application
 
     /**
      * @throws Exception
+     * @param array<string, mixed> $mocks
      */
     public function buildContainer(array $mocks = []): ContainerInterface
     {
@@ -238,9 +239,8 @@ class Application
     /**
      * Creates the Slim app
      *
-     * @param array $mocks Replaces dependencies in the DI container
+     * @param array<string, mixed> $mocks Replaces dependencies in the DI container
      * @throws Throwable
-     * @return App
      */
     public function getApp(array $mocks = []): App
     {
@@ -271,7 +271,7 @@ class Application
     /**
      * Creates the Symfony console app.
      *
-     * @param array $mocks Replaces dependencies in the DI container
+     * @param array<string, mixed> $mocks Replaces dependencies in the DI container
      * @throws Throwable
      * @return ConsoleApplication
      */
@@ -358,6 +358,7 @@ class Application
     /**
      * Builds the DI container.
      *
+     * @param array<string, mixed> $mocks
      * @throws Exception
      */
     private function createContainer(array $mocks = []): Container

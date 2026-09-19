@@ -677,7 +677,7 @@ class CorporationController extends BaseController
 
     /**
      * @param Corporation[] $corporations
-     * @return array[]
+     * @return array<string, mixed>[]
      */
     private function minimalCorporationsResult(array $corporations): array
     {

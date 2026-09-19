@@ -16,6 +16,7 @@ class Client extends \GuzzleHttp\Client
      */
     private array $responses = [];
 
+    /** @var callable[] */
     private array $middleware = [];
 
     /**
@@ -37,6 +38,9 @@ class Client extends \GuzzleHttp\Client
         return $this;
     }
 
+    /**
+     * @param array<string, string> $requestHeaders
+     */
     public function setHeaders(array $requestHeaders): void
     {
         $this->headers = $requestHeaders;
@@ -50,6 +54,10 @@ class Client extends \GuzzleHttp\Client
         return $this->headers;
     }
 
+    /**
+     * @param array<string, mixed> $options
+     * @throws \Exception
+     */
     public function send(RequestInterface $request, array $options = []): ResponseInterface
     {
         $response = array_shift($this->responses);
@@ -61,11 +69,18 @@ class Client extends \GuzzleHttp\Client
         return $response;
     }
 
+    /**
+     * @param array<string, mixed> $options
+     * @throws \Exception
+     */
     public function request(string $method, $uri = '', array $options = []): ResponseInterface
     {
         return $this->send(new Request($method, $uri), $options);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function sendRequest(RequestInterface $request): ResponseInterface
     {
         return $this->send($request);

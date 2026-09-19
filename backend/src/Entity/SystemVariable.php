@@ -303,6 +303,9 @@ class SystemVariable implements \JsonSerializable
     #[ORM\Column(type: "string", length: 16, options: ["default" => "public"])]
     private string $scope = self::SCOPE_PUBLIC;
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return [

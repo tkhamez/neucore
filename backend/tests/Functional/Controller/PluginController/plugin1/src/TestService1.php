@@ -20,6 +20,7 @@ use Psr\Log\LoggerInterface;
 
 class TestService1 implements ServiceInterface
 {
+    /** @var array<string, mixed> */
     public static array $data = [];
 
     public function __construct(
