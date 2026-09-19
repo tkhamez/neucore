@@ -345,7 +345,14 @@ Strict-Transport-Security "max-age=31536000"
 Content-Security-Policy "default-src 'none'; style-src 'self'; script-src 'self'; font-src 'self' data:; img-src 'self' data: https://images.evetech.net; connect-src 'self' https://esi.evetech.net; form-action 'self'; base-uri 'none'; frame-ancestors 'none'; sandbox allow-downloads allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation;"
 X-Frame-Options "sameorigin"
 X-Content-Type-Options "nosniff"
+Referrer-Policy "same-origin"
+Cross-Origin-Embedder-Policy "credentialless"
+Cross-Origin-Opener-Policy "same-origin"
+Cross-Origin-Resource-Policy "same-origin"
+Permissions-Policy: "accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=(self), gamepad=(), speaker-selection=(), conversion-measurement=(), focus-without-user-activation=(), hid=(), idle-detection=(), interest-cohort=(), serial=(), sync-script=(), trust-token-redemption=(), unload=(), window-placement=(), vertical-scroll=()"
 ```
+
+Note: `Cross-Origin-Embedder-Policy "credentialless"` is necessary to load images from https://images.evetech.net/.
 
 ## Build Distribution
 

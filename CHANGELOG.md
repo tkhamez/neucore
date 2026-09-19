@@ -5,6 +5,8 @@
 - **BC break**: Dropped support for MariaDb 10.5, the minimum require version is now 10.11.
 - New: MCP server for AI assistants with tools to query data from Neucore and ESI.
 - New: Added support for MariaDB 12.3 and MySQL 9.7.
+- Change: Added more security related HTTP headers (Referrer-Policy, Cross-Origin-*, Permissions-Policy)
+  to the Docker image, development environment and installation instructions.
 - Fix: The function for determining the client's IP address has been corrected and improved.
 - Fix: ESI: Fixed handling of "character not found" errors (they changed a bit).
 - Misc: The `install.sh` and `dist.sh` scripts have been removed; only the Docker development environment
