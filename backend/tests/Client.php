@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
+// @phpstan-ignore class.extendsFinalByPhpDoc
 class Client extends \GuzzleHttp\Client
 {
     /**

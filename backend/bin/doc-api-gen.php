@@ -10,8 +10,8 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 $routesDef = require __DIR__ . '/../config/routes.php';
 $securityDef = require __DIR__ . '/../config/security.php';
-$apiDef = Yaml::parse(file_get_contents(__DIR__ . '/../../web/openapi-3.yaml'));
-$result = file_get_contents(__DIR__ . '/../../doc/API.tpl.md');
+$apiDef = Yaml::parse((string) file_get_contents(__DIR__ . '/../../web/openapi-3.yaml'));
+$result = (string) file_get_contents(__DIR__ . '/../../doc/API.tpl.md');
 $roles = new ReflectionClass(Role::class);
 
 foreach ($roles->getConstants() as $role) {

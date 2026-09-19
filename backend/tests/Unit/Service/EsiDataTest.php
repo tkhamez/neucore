@@ -713,25 +713,21 @@ class EsiDataTest extends TestCase
             'fetchUniverseNames: Invalid ID(s) in request, trying again with max. 100 IDs.',
             $records[0]['message'],
         );
-        // @phpstan-ignore-next-line
         $this->assertNull($records[0]['context']['IDs'] ?? null);
         $this->assertSame(
             'fetchUniverseNames: Invalid ID(s) in request, trying again with max. 10 IDs.',
             $records[1]['message'],
         );
-        // @phpstan-ignore-next-line
         $this->assertNull($records[1]['context']['IDs'] ?? null);
         $this->assertSame(
             'fetchUniverseNames: Invalid ID(s) in request, trying again with max. 1 IDs.',
             $records[2]['message'],
         );
-        // @phpstan-ignore-next-line
         $this->assertNull($records[2]['context']['IDs'] ?? null);
         $this->assertSame(
             '... {\"error\":\"Ensure all IDs are valid before resolving.\"}',
             $records[3]['message'],
         );
-        // @phpstan-ignore-next-line
         $this->assertSame([3], $records[3]['context']['IDs'] ?? []);
     }
 

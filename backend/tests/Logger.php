@@ -7,6 +7,7 @@ namespace Tests;
 use Monolog\Handler\TestHandler;
 use Monolog\LogRecord;
 
+// @phpstan-ignore class.extendsFinalByPhpDoc
 class Logger extends \Monolog\Logger
 {
     public function __construct($handlers = [], $processors = [])
