@@ -9,7 +9,8 @@ d M 2026
 
 **New**
 
-- Added an MCP server for AI assistants that includes tools for retrieving data from Neucore and ESI.
+- Added an [MCP server](doc/MCP-Server.md) for AI assistants that includes tools for retrieving 
+  data from Neucore and ESI.
 - Added support for MariaDB 12.3 and MySQL 9.7.
 
 **Breaking Changes**

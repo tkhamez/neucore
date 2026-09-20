@@ -4,7 +4,7 @@ The MCP server provides tools that allow AI assistants to query player and corpo
 tracking data and perform authenticated EVE API (ESI) requests for each character.
 
 Documentation on rate limits and ESI pagination is available as resources to clients that support 
-these features. Alternatively, they are also available as tools.
+this feature. Alternatively, they are also available as tools.
 
 The server supports only the modern protocol version 2026-07-28.
 
@@ -46,6 +46,10 @@ echo -n "<app id>:<app secret>" | base64
 - HTTP header: `Authorization: Bearer <token>`.
 
 The model used by the agent must support tool calling.
+
+You may need to explain how to use the EVE API to your AI agent, as they often make mistakes at first.
+The ESI tool includes instructions on how to retrieve the current OpenAPI specification,
+but these are often ignored.
 
 
 ### Test it manually

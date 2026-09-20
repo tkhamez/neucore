@@ -34,18 +34,21 @@ class EsiTools
         name: 'esi_request',
         description: "Make an authenticated ESI API request using the character's ESI token. "
             . 'Quick rule: Auth required? → `esi_request`. Public endpoint? → `https://esi.evetech.net` directly. '
-            . 'Endpoints with a "security" entry in the ESI OpenAPI spec require authentication '
-            . '(e.g. "/characters/{character_id}/assets"). '
-            . 'All other endpoints are public (e.g. "/universe/stations/{station_id}"). '
+            . 'Endpoints with a "security" entry in the ESI OpenAPI spec require authentication, '
+            . 'all other endpoints are public. '
             . 'To get the OpenAPI spec with the latest compatibility date: '
             . '1) GET https://esi.evetech.net/meta/compatibility-dates '
             . '2) Read .compatibility_dates[0] '
             . '3) Use this value as compatibility_date in: '
             . 'https://esi.evetech.net/meta/openapi.json?compatibility_date=<DATE>. '
-            . 'See resources neucore://doc/esi-rate-limits and neucore://doc/esi-pagination for information '
-            . 'about rate limits and pagination. '
-            . 'Alternatively, for clients that do not support MCP resources, the information is available '
-            . 'as tools: esi_rate_limits and esi_pagination',
+            . 'For information about rate limits and pagination see resources neucore://doc/esi-rate-limits '
+            . 'and neucore://doc/esi-pagination; alternatively, the information is also available as tools: '
+            . 'esi_rate_limits and esi_pagination. '
+            . 'Key ESI endpoints include: '
+            . 'POST /universe/names; body: array[integer<int64>]; public; Resolve a set of IDs to names and categories. '
+            . 'POST /universe/ids; body: array[string]; public; Resolve a set of names to IDs. '
+            . 'POST /characters/affiliation; body: array[integer<int64>]; public; Bulk lookup of character '
+            . 'IDs to corporation, alliance and faction.',
     )]
     public function esiRequest(
         int $characterId,
