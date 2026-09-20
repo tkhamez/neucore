@@ -149,8 +149,6 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame([
             'id' => $char->getPlayer()->getId(),
             'name' => 'TUser',
-            'status' => Player::STATUS_STANDARD,
-            'roles' => [Role::USER, Role::USER_ADMIN],
             'characters' => [[
                 'id' => 123456,
                 'name' => 'TUser',
@@ -183,6 +181,8 @@ class PlayerControllerTest extends WebTestCase
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
                     'isDefault' => false, 'isAutoManaged' => null],
             ],
+            'status' => Player::STATUS_STANDARD,
+            'roles' => [Role::USER, Role::USER_ADMIN],
             'managerGroups' => [],
             'managerApps' => [],
         ], $this->parseJsonBody($response));
@@ -903,8 +903,6 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame([
             'id' => $this->player3Id,
             'name' => 'Admin',
-            'status' => Player::STATUS_STANDARD,
-            'roles' => [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN],
             'characters' => [[
                 'id' => 12,
                 'name' => 'Admin',
@@ -959,6 +957,8 @@ class PlayerControllerTest extends WebTestCase
                 'isDefault' => false,
                 'isAutoManaged' => null,
             ]],
+            'status' => Player::STATUS_STANDARD,
+            'roles' => [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN],
             'managerGroups' => [],
             'managerApps' => [],
             'removedCharacters' => [],

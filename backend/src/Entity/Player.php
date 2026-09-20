@@ -172,6 +172,7 @@ class Player implements \JsonSerializable
         bool $minimum = false,
         bool $withNameChanges = false,
         bool $withEsiTokens = false,
+        bool $withoutInternalInfo = false,
     ): array {
         if ($minimum) {
             return [
@@ -180,18 +181,23 @@ class Player implements \JsonSerializable
             ];
         }
 
-        return [
+        $result = [
             'id' => $this->id,
             'name' => $this->name,
-            'status' => $this->status,
-            'roles' => $this->getRoles(),
             'characters' => array_map(function (Character $character) use ($withNameChanges, $withEsiTokens) {
                 return $character->jsonSerialize(false, true, $withNameChanges, $withEsiTokens);
             }, $this->getCharacters()),
             'groups' => $this->getGroups(),
-            'managerGroups' => $this->getManagerGroups(),
-            'managerApps' => $this->getManagerApps(),
         ];
+
+        if (!$withoutInternalInfo) {
+            $result['status'] = $this->status;
+            $result['roles'] = $this->getRoles();
+            $result['managerGroups'] = $this->getManagerGroups();
+            $result['managerApps'] = $this->getManagerApps();
+        }
+
+        return $result;
     }
 
     public function __construct()

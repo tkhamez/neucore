@@ -36,7 +36,7 @@ class PlayerTools
             return $this->responseBuilder->error(0, 'Player not found');
         }
 
-        return $this->responseBuilder->success($player->jsonSerialize());
+        return $this->responseBuilder->success($player->jsonSerialize(withoutInternalInfo: true));
     }
 
     /**

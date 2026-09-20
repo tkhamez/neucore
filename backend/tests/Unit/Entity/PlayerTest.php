@@ -55,8 +55,6 @@ class PlayerTest extends TestCase
         $expected1 = [
             'id' => null,
             'name' => 'test user',
-            'status' => Player::STATUS_STANDARD,
-            'roles' => ['rName', 'role2'],
             'characters' => [[
                 'id' => 123,
                 'name' => 'eve one',
@@ -94,6 +92,8 @@ class PlayerTest extends TestCase
                 'isDefault' => false,
                 'isAutoManaged' => null,
             ]],
+            'status' => Player::STATUS_STANDARD,
+            'roles' => ['rName', 'role2'],
             'managerGroups' => [[
                 'id' => null,
                 'name' => 'gName',
@@ -128,6 +128,16 @@ class PlayerTest extends TestCase
         $this->assertSame(
             $expected3,
             json_decode((string) json_encode($play->jsonSerialize(false, false, true)), true),
+        );
+
+        $expected4 = $expected1;
+        unset($expected4['status']);
+        unset($expected4['roles']);
+        unset($expected4['managerGroups']);
+        unset($expected4['managerApps']);
+        $this->assertSame(
+            $expected4,
+            json_decode((string) json_encode($play->jsonSerialize(withoutInternalInfo: true)), true),
         );
     }
 
