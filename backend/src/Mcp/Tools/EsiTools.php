@@ -43,7 +43,9 @@ class EsiTools
             . '3) Use this value as compatibility_date in: '
             . 'https://esi.evetech.net/meta/openapi.json?compatibility_date=<DATE>. '
             . 'See resources neucore://doc/esi-rate-limits and neucore://doc/esi-pagination for information '
-            . 'about rate limits and pagination',
+            . 'about rate limits and pagination. '
+            . 'Alternatively, for clients that do not support MCP resources, the information is available '
+            . 'as tools: esi_rate_limits and esi_pagination',
     )]
     public function esiRequest(
         int $characterId,
