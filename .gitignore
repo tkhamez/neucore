@@ -17,5 +17,6 @@
 /.db/*
 /compose.yaml
 
-# OpenCode personal config
+# AI
 /.opencode/
+/.goosehints
