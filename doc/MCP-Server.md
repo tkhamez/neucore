@@ -49,7 +49,7 @@ The model used by the agent must support tool calling.
 
 Use the token created above.
 
-1. Discover server capabilities
+Discover server capabilities
 
 ```bash
 curl -v -X POST https://neucore.domain.tld/api/app/v1/mcp \
@@ -70,7 +70,7 @@ curl -v -X POST https://neucore.domain.tld/api/app/v1/mcp \
   }'
 ```
 
-2. List tools
+List tools
 
 ```bash
 curl -v -X POST https://neucore.domain.tld/api/app/v1/mcp \
@@ -91,7 +91,28 @@ curl -v -X POST https://neucore.domain.tld/api/app/v1/mcp \
   }'
 ```
 
-3. Tool call - esi_request, get wallet for character 96061222
+List resources
+
+```bash
+curl -X POST https://neucore.domain.tld/api/app/v1/mcp \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -H "MCP-Protocol-Version: 2026-07-28" \
+  -H "Mcp-Method: resources/list" \
+  -d '{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"resources/list",
+    "params":{
+      "_meta":{
+        "io.modelcontextprotocol/protocolVersion":"2026-07-28",
+        "io.modelcontextprotocol/clientCapabilities":{}
+      }
+    }
+  }'
+```
+
+Tool call - esi_request, get wallet for character 96061222
 
 ```bash
 curl -v -X POST https://neucore.domain.tld/api/app/v1/mcp \
@@ -110,6 +131,29 @@ curl -v -X POST https://neucore.domain.tld/api/app/v1/mcp \
         "characterId":96061222,
         "path":"/characters/96061222/wallet"
       },
+      "_meta":{
+        "io.modelcontextprotocol/protocolVersion":"2026-07-28",
+        "io.modelcontextprotocol/clientCapabilities":{}
+      }
+    }
+  }'
+```
+
+Read resource
+
+```bash
+curl -X POST https://neucore.domain.tld/api/app/v1/mcp \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -H "MCP-Protocol-Version: 2026-07-28" \
+  -H "Mcp-Method: resources/read" \
+  -H "Mcp-Name: neucore://doc/esi-rate-limits" \
+  -d '{
+    "jsonrpc":"2.0",
+    "id":2,
+    "method":"resources/read",
+    "params":{
+      "uri":"neucore://doc/esi-rate-limits",
       "_meta":{
         "io.modelcontextprotocol/protocolVersion":"2026-07-28",
         "io.modelcontextprotocol/clientCapabilities":{}

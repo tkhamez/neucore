@@ -42,7 +42,7 @@ class EsiTools
             . '2) Read .compatibility_dates[0] '
             . '3) Use this value as compatibility_date in: '
             . 'https://esi.evetech.net/meta/openapi.json?compatibility_date=<DATE>. '
-            . 'See extensions eve.neucore/rateLimits and eve.neucore/esiPagination for information '
+            . 'See resources neucore://doc/esi-rate-limits and neucore://doc/esi-pagination for information '
             . 'about rate limits and pagination',
     )]
     public function esiRequest(
