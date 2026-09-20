@@ -46,7 +46,7 @@ Backend:
 
 ### PHP
 
-- **Standard**: PER Coding Style (configured in `backend/config/php-cs-fixer.dist.php`)
+- **Standard**: [PER Coding Style](https://www.php-fig.org/per/coding-style/) 
 - **Static Analysis**: PHPStan Level 8 (configured in `backend/phpstan.neon`)
 
 Run checks:
