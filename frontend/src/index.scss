@@ -1,3 +1,5 @@
+//$primary: #375a7f;
+
 @import "~bootstrap/scss/bootstrap";
 
 html {
@@ -39,11 +41,51 @@ body.neucore {
 /**
  * Theme overrides
  */
-[data-bs-theme="dark"] .table th {
-    background-color: var(--bs-secondary-bg);
-}
+:root {
+    --bs-primary: #2c3e50;
+    --bs-primary-rgb: 44, 62, 80;
 
+    .btn-primary {
+        background-color:  var(--bs-primary);
+        border-color:  var(--bs-primary);
+    }
+
+    // nav on left side
+    a {
+        --bs-list-group-active-bg: var(--bs-primary);
+    }
+
+    // horizontal tabs
+    ul {
+        --bs-nav-pills-link-active-bg: var(--bs-primary);
+    }
+
+    // data tables
+    .page-link {
+        --bs-pagination-active-bg:  var(--bs-primary);
+    }
+
+    .entity-info {
+        // same as text-muted
+        color: var(--bs-secondary-color);
+    }
+    .active .entity-info {
+        // those are on a dark background (--bs-primary) for both themes
+        color: #DEE2E6BF;
+    }
+    .entity-actions {
+        // those are on a dark background (--bs-primary) for both themes
+        color: #DEE2E6BF;
+    }
+
+    .table th {
+        background-color: var(--bs-secondary-bg);
+    }
+}
 [data-bs-theme="dark"] {
+    --bs-primary: #375a7f;
+    --bs-primary-rgb: 55, 90, 127;
+
     .form-control,
     .form-select,
     .multiselect__tags,

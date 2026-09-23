@@ -30,7 +30,7 @@
                            :class="{ active: groupId === group.id }"
                            :href="`#GroupAdmin/${group.id}/${contentType}`">
                             {{ group.name }}
-                            <span class="text-muted small">
+                            <span class="entity-info small">
                                 {{ group.visibility }}
                                 {{ group.autoAccept ? 'auto-accept' : '' }}
                                 {{ group.isDefault ? 'default' : '' }}
