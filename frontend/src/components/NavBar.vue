@@ -76,10 +76,14 @@
                             <a href="#" class="dropdown-item" @click.prevent="generatePassword()">
                                 Generate password
                             </a>
-                            <h6 class="dropdown-header">Themes</h6>
-                            <a v-for="theme in themes" class="dropdown-item" href="#"
-                               :class="{ 'active': selectedTheme === theme }"
-                               v-on:click.prevent="selectTheme(theme)">{{ theme }}</a>
+                            <h6 class="dropdown-header">Theme</h6>
+                            <div class="px-3 py-1">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="themeSwitch"
+                                           :checked="isDark" @change="toggleTheme">
+                                    <label class="form-check-label" for="themeSwitch">Dark Mode</label>
+                                </div>
+                            </div>
                         </div>
                     </li>
                 </ul>
@@ -145,8 +149,7 @@ export default {
                 ],
             },
             page: '',
-            themes: Data.themes,
-            selectedTheme: '',
+            isDark: false,
             generatePasswordModal: null,
             newPassword: '',
         }
@@ -157,9 +160,8 @@ export default {
             window.setTimeout(addNavBehaviour, 500);
         });
         this.page = this.route[0];
-        if (this.selectedTheme === '') {
-            this.selectedTheme = window.APP_DEFAULT_THEME;
-        }
+        // Restore current theme
+        this.isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
 
         for (const serviceItem of this.settings.navigationServices) {
             this.navigationItems.services.push({
@@ -174,28 +176,19 @@ export default {
         route() {
             this.page = this.route[0];
         },
-        selectedTheme() {
-            for (const theme of this.themes) {
-                document.body.classList.remove(theme.toLowerCase());
+        isDark(newValue) {
+            if (newValue) {
+                document.documentElement.setAttribute('data-bs-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-bs-theme');
             }
-            document.body.classList.add(this.selectedTheme.toLowerCase());
         }
     },
 
     methods: {
-        selectTheme(name) {
-            if (this.themes.indexOf(name) === -1) {
-                return;
-            }
-            this.selectedTheme = name;
-            const enable = document.querySelector(`head link[href*='css/theme-${this.selectedTheme.toLowerCase()}']`);
-            if (!enable || enable.getAttribute('rel') === 'stylesheet') {
-                return;
-            }
-            document.querySelectorAll("head link[href*='css/theme-']").forEach(link => {
-                link.setAttribute('rel', 'alternate stylesheet');
-            });
-            enable.setAttribute('rel', 'stylesheet');
+        toggleTheme() {
+            this.isDark = !this.isDark;
+            localStorage.setItem('neucore-theme', this.isDark ? 'dark' : 'light');
         },
 
         hasNavigation() {
@@ -334,39 +327,8 @@ function addNavBehaviour() {
         padding-top: 0.25rem;
         padding-bottom: 0.25rem;
     }
-    .lux .navbar,
-    .sketchy .navbar {
-        padding-top: 0.2rem;
-        padding-bottom: 0.2rem;
-    }
-    .materia .navbar {
-        padding-top: 0.1rem;
-        padding-bottom: 0.1rem;
-    }
-    .simplex .navbar,
-    .slate .navbar {
-        padding-top: 0;
-        padding-bottom: 0;
-    }
-    .simplex .navbar-brand,
-    .slate .navbar-brand {
-        padding-top: 0;
-        padding-bottom: 0;
-    }
-    .slate .navbar .nav-link {
-        padding-top: 0.8rem;
-        padding-bottom: 0.8rem;
-    }
-    .lux .navbar .btn,
-    .slate .navbar .btn {
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-    }
     .dropdown-menu {
         margin: 0;
-    }
-    .sketchy .dropdown-menu {
-        margin: -3px;
     }
     @media (min-width: 992px) {
         .scrollable-menu {

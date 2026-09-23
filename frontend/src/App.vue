@@ -28,7 +28,7 @@
                     <a class="external" href="https://fenriscreations.com/" target="_blank"
                        rel="noopener noreferrer">Fenris Creations</a>.
                     <span class="brand">
-                        <a :href="settings.repository" class="text-dark text-muted"
+                        <a :href="settings.repository" class="text-muted"
                            target="_blank" rel="noopener noreferrer" title="Neucore on GitHub">
                             <img :src="logo" alt=""> Neucore
                         </a>

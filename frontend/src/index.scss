@@ -1,3 +1,4 @@
+@import "~bootstrap/scss/bootstrap";
 
 html {
     // for sticky footer
@@ -36,34 +37,13 @@ body.neucore {
 }
 
 /**
- * Change "light" table head for some dark themes
+ * Theme overrides
  */
-.cyborg .table .table-light th {
-    // colors from .table-dark
-    color: #fff;
-    background-color: #888;
-}
-.darkly .table .table-light th {
-    color: #fff;
-    background-color: #404040; // a little bit lighter than .table-dark
-}
-.slate .table .table-light th {
-    // colors from .table-dark
-    color: #fff;
-    background-color: rgb(58, 63, 68);
-}
-.solar .table .table-light th {
-    // colors from .table-dark
-    color: #002B36;
-    background-color: #adb5bd;
+[data-bs-theme="dark"] .table th {
+    background-color: var(--bs-secondary-bg);
 }
 
-/**
- * Change form control background color for dark themes
- */
-.cyborg,
-.darkly,
-.slate {
+[data-bs-theme="dark"] {
     .form-control,
     .form-select,
     .multiselect__tags,
@@ -71,6 +51,10 @@ body.neucore {
     .multiselect__spinner {
         color: #fff;
         background-color: #666;
+    }
+    .form-control[disabled] {
+        color: #adadad;
+        background-color: #565656;
     }
     .multiselect__single,
     .form-check-input:not(:checked) {
@@ -87,39 +71,6 @@ body.neucore {
     .multiselect__option--selected {
         color: #fff;
         background-color: #444;
-    }
-}
-.darkly .form-control[disabled] {
-    color: #adadad;
-    background-color: #565656;
-}
-.solar,
-.superhero,
-.vapor {
-    // colors from .solar
-    .form-control,
-    .form-select,
-    .multiselect__tags,
-    .multiselect__input,
-    .multiselect__spinner {
-        color: #495057;
-        background-color: #A9BDBD;
-    }
-    .multiselect__single,
-    .form-check-input:not(:checked) {
-        background-color: #A9BDBD;
-    }
-    .multiselect__input::placeholder,
-    .form-control::placeholder {
-        color: #495057;
-    }
-    .multiselect__content {
-        color: #495057;
-        background-color: #A9BDBD;
-    }
-    .multiselect__option--selected {
-        color: #495057;
-        background-color: #A9BDBD;
     }
 }
 
@@ -171,51 +122,16 @@ body.neucore {
 /**
  * Border of tab navigation items
  */
-.basic,
-.cerulean,
-.cosmo,
-.cyborg,
-.darkly,
-.flatly,
-.journal,
-.litera,
-.lumen,
-//.lux,
-//.materia,
-//.morph,
-.minty,
-.pulse,
-.quartz,
-.sandstone,
-//.simplex,
-.sketchy,
-//.slate,
-.solar,
-.spacelab,
-.superhero,
-.united,
-.vapor,
-.yeti,
-//.zephyr
-{
-    .nc-nav .nav-link {
-        border-bottom-left-radius: unset;
-        border-bottom-right-radius: unset;
-        border-top: 1px solid;
-        border-left: 1px solid;
-        border-color: rgb(var(--bs-secondary-rgb));
-    }
-    .nc-nav .nav-item:last-child .nav-link {
-        border-right: 1px solid;
-        border-color: rgb(var(--bs-secondary-rgb));
-    }
+.nc-nav .nav-link {
+    border-bottom-left-radius: unset;
+    border-bottom-right-radius: unset;
+    border-top: 1px solid;
+    border-left: 1px solid;
+    border-color: rgb(var(--bs-secondary-rgb));
 }
-
-/**
- * Fix colors
- */
-.slate .list-group-item-action:hover {
-    color: #fff;
+.nc-nav .nav-item:last-child .nav-link {
+    border-right: 1px solid;
+    border-color: rgb(var(--bs-secondary-rgb));
 }
 
 /**
@@ -248,10 +164,6 @@ body.neucore {
 /**
  * Tooltips
  */
-.tooltip {
-    --bs-tooltip-color: var(--bs-body-color);
-    --bs-tooltip-bg: var(--bs-body-bg);
-}
 .character-name-changes .tooltip-inner,
 .character-token .tooltip-inner {
     max-width: initial;

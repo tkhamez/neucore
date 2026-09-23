@@ -201,11 +201,11 @@ mkdir docker-logs && sudo chown 33 docker-logs
   --volume="$(pwd)/docker-logs":/var/www/backend/var/logs \
 ```
 
-To use a custom [theme.js](../frontend/public/theme.js) file, add the following argument, 
+To use a custom [custom.js](../frontend/public/custom.js) file, add the following argument, 
 for example:
 
 ```
-  --volume="$(pwd)/theme.js":/var/www/web/dist/theme.js \
+  --volume="$(pwd)/custom.js":/var/www/web/dist/custom.js \
 ```
 
 To add a service plugin, for example, the [Discord Plugin](https://github.com/tkhamez/neucore-discord-plugin),
@@ -333,8 +333,7 @@ cat app-cli-2022w36.log | grep -E 'Started|Finished' > app-cli-2022w36-filtered.
 
 ### Customization
 
-Adjust `web/dist/theme.js` if you want another default theme or add additional JavaScript code, e.g. for
-analytics software. 
+Adjust `web/dist/custom.js` if you want to add you own JavaScript code, e.g. for analytics software. 
 
 ### Security
 

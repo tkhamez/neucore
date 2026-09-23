@@ -58,7 +58,7 @@
             <div class="table-responsive">
                 <table v-if="isAccount(account)" v-cloak class="table table-bordered mb-0"
                        aria-describedby="Account data">
-                    <thead class="table-light">
+                    <thead>
                         <tr>
                             <th scope="col" v-if="hasProperty('name')">Name</th>
                             <th scope="col" v-if="hasProperty('username')">Username</th>

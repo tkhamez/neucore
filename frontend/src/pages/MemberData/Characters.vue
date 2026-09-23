@@ -27,7 +27,7 @@
                 <button type="submit" class="btn btn-primary" v-on:click.prevent="find()">Submit</button>
             </p>
             <table class="table table-hover table-sm mb-0" aria-describedby="Characters grouped by account">
-                <thead class="table-light">
+                <thead>
                     <tr>
                         <th scope="col">Main</th>
                         <th scope="col">Alts</th>

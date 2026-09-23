@@ -107,7 +107,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <table class="table table-hover nc-table-sm member-table" aria-describedby="Corporation members">
-                    <thead class="table-light">
+                    <thead>
                         <tr>
                             <th scope="col">Character</th>
                             <th scope="col">Account</th>

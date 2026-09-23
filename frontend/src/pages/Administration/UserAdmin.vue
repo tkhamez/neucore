@@ -192,7 +192,7 @@
                     </div>
 
                     <table class="table table-hover nc-table-sm" aria-describedby="Roles">
-                        <thead class="table-light">
+                        <thead>
                             <tr>
                                 <th scope="col">Role</th>
                                 <th scope="col">Action</th>
@@ -238,7 +238,7 @@
                     </h4>
                     <div class="table-responsive">
                         <table class="table table-hover nc-table-sm" aria-describedby="Characters">
-                            <thead class="table-light">
+                            <thead>
                                 <tr>
                                     <th scope="col">Name</th>
                                     <th scope="col">Corporation</th>
@@ -302,7 +302,7 @@
                         <h4>Moved Characters</h4>
                         <div class="table-responsive">
                             <table class="table table-hover nc-table-sm" aria-describedby="'Moved Characters'">
-                                <thead class="table-light">
+                                <thead>
                                     <tr>
                                         <th scope="col">Character Name</th>
                                         <th scope="col">Date moved (GMT)</th>
@@ -354,7 +354,7 @@
                     </p>
                     <div class="table-responsive">
                         <table class="table table-hover nc-table-sm" aria-describedby="Member of groups">
-                            <thead class="table-light">
+                            <thead>
                                 <tr>
                                     <th scope="col">ID</th>
                                     <th scope="col">Name</th>
@@ -379,7 +379,7 @@
                     <h4>Group Manager</h4>
                     <div class="table-responsive">
                         <table class="table table-hover nc-table-sm" aria-describedby="Manager of groups">
-                            <thead class="table-light">
+                            <thead>
                                 <tr>
                                     <th scope="col">ID</th>
                                     <th scope="col">Name</th>
@@ -403,7 +403,7 @@
 
                     <h4>App Manager</h4>
                     <table class="table table-hover nc-table-sm" aria-describedby="Manager of apps">
-                        <thead class="table-light">
+                        <thead>
                             <tr>
                                 <th scope="col">ID</th>
                                 <th scope="col">Name</th>
@@ -425,7 +425,7 @@
                     <h4>Service Accounts *</h4>
                     <div class="table-responsive">
                         <table class="table table-hover nc-table-sm" aria-describedby="Manager of apps">
-                            <thead class="table-light">
+                            <thead>
                                 <tr>
                                     <th scope="col">Service</th>
                                     <th scope="col">Character</th>

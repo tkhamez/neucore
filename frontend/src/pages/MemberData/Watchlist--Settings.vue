@@ -3,7 +3,7 @@
     <add-entity ref="addEntityModal" v-on:success="addEntitySuccess()"></add-entity>
 
     <div class="card">
-        <div  v-cloak v-if="!list.lockWatchlistSettings" class="card-header bg-light text-dark">
+        <div  v-cloak v-if="!list.lockWatchlistSettings" class="card-header">
             <strong>Watchlist</strong>
         </div>
         <div v-cloak v-if="!list.lockWatchlistSettings" class="card-body">
@@ -15,7 +15,7 @@
             <admin :sticky="sticky" :contentType="'corporations'" :type="'Watchlist'" :typeId="list.id"></admin>
         </div>
 
-        <div class="card-header bg-light text-dark"><strong>Kicklist</strong></div>
+        <div class="card-header"><strong>Kicklist</strong></div>
         <div class="card-body">
             <p>
                 Accounts from the warning list are moved to the kicklist
@@ -37,7 +37,7 @@
                    :type="'WatchlistKicklist'" :typeId="list.id"></admin>
         </div>
 
-        <div class="card-header bg-light text-dark"><strong>Allowlist</strong></div>
+        <div class="card-header"><strong>Allowlist</strong></div>
         <div class="card-body">
             <p>
                 Alliances and corporations that should be treated like NPC corporations
@@ -90,5 +90,6 @@ export default {
         position: sticky;
         top: 51px;
         z-index: 2;
+        background-color: var(--bs-secondary-bg);
     }
 </style>

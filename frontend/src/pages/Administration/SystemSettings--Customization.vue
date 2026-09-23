@@ -64,7 +64,7 @@
             <a class="external" href="https://github.com/arve0/markdown-it-attrs" target="_blank"
                rel="noopener noreferrer">attrs</a>
             (use, for example,  with Bootstrap classes "text-primary", "bg-warning"
-            <a class="external" href="https://bootswatch.com/darkly/" target="_blank"
+            <a class="external" href="https://getbootstrap.com/docs/" target="_blank"
                rel="noopener noreferrer">etc.</a>),
             <a class="external" href="https://github.com/markdown-it/markdown-it-emoji/blob/master/lib/data/light.mjs"
                target="_blank" rel="noopener noreferrer">emoji</a> light,

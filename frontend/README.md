@@ -1,7 +1,6 @@
 # Frontend
 
-The frontend is based on [Vue.js](https://vuejs.org) and
-[Bootstrap](https://getbootstrap.com) with a [Bootswatch](https://bootswatch.com) theme.
+The frontend is based on [Vue.js](https://vuejs.org) and [Bootstrap](https://getbootstrap.com).
 
 ## Table of Contents
 
@@ -33,9 +32,6 @@ Compiles and hot-reloads for development:
 ```
 npm run serve
 ```
-
-Note: The build for the development server does not support switching themes. This can be enabled by setting
-`devModeThemes` to `true` in `vue.config.js`. This will, however, disable CSS reloading.
 
 ## Style Guide
 

@@ -57,7 +57,7 @@
                         <h5>Groups</h5>
                         <div class="table-responsive">
                             <table class="table table-hover nc-table-sm" aria-describedby="groups">
-                                <thead class="table-light">
+                                <thead>
                                     <tr>
                                         <th scope="col">ID</th>
                                         <th scope="col">Name</th>
@@ -76,7 +76,7 @@
 
                         <h5>Roles</h5>
                         <table class="table table-hover nc-table-sm" aria-describedby="roles">
-                            <thead class="table-light">
+                            <thead>
                                 <tr>
                                     <th scope="col">Name</th>
                                 </tr>

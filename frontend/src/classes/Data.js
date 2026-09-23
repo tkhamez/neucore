@@ -10,35 +10,6 @@ export default class Data {
         backendHost: null,
     }
 
-    static themes = [
-        'Basic',
-        'Cerulean',
-        'Cosmo',
-        'Cyborg',
-        'Darkly',
-        'Flatly',
-        'Journal',
-        'Litera',
-        'Lumen',
-        'Lux',
-        'Materia',
-        'Morph',
-        'Minty',
-        'Pulse',
-        'Quartz',
-        'Sandstone',
-        'Simplex',
-        'Sketchy',
-        'Slate',
-        'Solar',
-        'Spacelab',
-        'Superhero',
-        'United',
-        'Vapor',
-        'Yeti',
-        'Zephyr',
-    ]
-
     static messages = {
         errorRequiredForbiddenGroup:
             'This player is not a member of any of the required groups or a member' +

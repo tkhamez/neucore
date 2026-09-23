@@ -194,9 +194,6 @@ const chartOption = {
         text: '',
     },
     tooltip: {
-        backgroundColor: 'rgba(50, 50, 50, 0.9)',
-        borderColor: 'rgba(50, 50, 50, 0.9)',
-        textStyle: { color: 'rgb(205, 205, 205)' },
         trigger: 'axis',
         renderMode: 'richText',
     },
@@ -216,7 +213,6 @@ const chartOption = {
     },
     yAxis: { type: 'value' },
     series: [],
-    backgroundColor: '#1e1d23' // rgba(16, 12, 42, 0.2), #100C2A
 };
 
 const chartSeries = {
@@ -388,7 +384,7 @@ function initChart(vm, id, options) {
     }
     const chart = echarts.init(
         document.getElementById(id),
-        'dark',
+        document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light',
         { renderer: 'canvas' }
     );
     chart.setOption(options, true);

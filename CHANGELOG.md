@@ -9,19 +9,26 @@ d M 2026
 
 **New**
 
-- Added an [MCP server](doc/MCP-Server.md) for AI assistants that includes tools for retrieving 
-  data from Neucore and ESI.
-- Added support for MariaDB 12.3 and MySQL 9.7.
+- **[MCP server](doc/MCP-Server.md)** for AI assistants with tools for retrieving data from Neucore 
+  and ESI
+- **Theme changes**
+  - The themes have been removed; now there are only a dark mode and a light mode.
+    They were fun, but the added value doesn't justify the higher maintenance costs.
+    It also simplifies the planned switch from Webpack to Vite.
+  - The default mode (dark or light) now matches the system mode.
+  - The manually selected mode is now saved (client side).
+- Added support for MariaDB 12.3 and MySQL 9.7
 
 **Breaking Changes**
 
-- Fixed a typo in a schema: `PlayerWithCharcterId` is now `PlayerWithCharacterId`.
-- Dropped support for MariaDb 10.5, the minimum required version is now 10.11.
+- Fixed a typo in a schema: `PlayerWithCharcterId` is now `PlayerWithCharacterId`
+- Dropped support for MariaDb 10.5, the minimum required version is now 10.11
+- Renamed `web/dist/theme.js` to `web/dist/custom.js` (source location `frontend/public/custom.js`)
 
 **Other Changed**
 
 - Added more security related HTTP headers (`Referrer-Policy`, `Cross-Origin-*`, `Permissions-Policy`)
-  to the Docker image, development environment and installation instructions.
+  to the Docker image, development environment and installation instructions
 - The `install.sh` and `dist.sh` scripts have been removed; only the Docker development environment
   is now supported.
 - Dev Env: `user: ${UID}` has been removed from the default Compose file. Instead, the
@@ -30,7 +37,7 @@ d M 2026
 **Fixes**
 
 - The function for determining the client's IP address has been corrected and improved.
-- ESI: Fixed handling of "character not found" errors (they changed a bit).
+- ESI: Fixed handling of "character not found" errors (they changed a bit)
 
 ## 2.14.0
 

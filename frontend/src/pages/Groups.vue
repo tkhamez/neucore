@@ -29,7 +29,7 @@
             <div class="col-lg-12">
                 <h1>Requestable Groups</h1>
                 <table class="table table-hover table-sm" aria-describedby="groups">
-                    <thead class="table-light">
+                    <thead>
                         <tr>
                             <th scope="col">Name</th>
                             <th scope="col">Description</th>
