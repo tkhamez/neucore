@@ -1,4 +1,4 @@
-[*.{html,vue,js,css}]
+[*.{html,vue,js,css,scss}]
 charset = utf-8
 indent_style = space
 indent_size = 4
