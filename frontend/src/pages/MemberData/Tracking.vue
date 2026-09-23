@@ -305,13 +305,16 @@ function setPathFromOptions(vm) {
 function configureDataTable(vm) {
     if ($.fn.dataTable.ext.search.length === 0) {
         $.fn.dataTable.ext.search.push((settings, searchData) => {
-            const term = $('#dt-search-0').val().toLowerCase().trim();
-            for (let index = 0; index < vm.columns.length; index++) {
-                if (!vm.columns[index].searchable) {
-                    continue;
-                }
-                if (searchData[index].toLowerCase().indexOf(term) !== -1) {
-                    return true;
+            const search = $('#dt-search-0');
+            if (search.length > 0) {
+                const term = search.val().toLowerCase().trim();
+                for (let index = 0; index < vm.columns.length; index++) {
+                    if (!vm.columns[index].searchable) {
+                        continue;
+                    }
+                    if (searchData[index].toLowerCase().indexOf(term) !== -1) {
+                        return true;
+                    }
                 }
             }
             return false;
