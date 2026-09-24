@@ -45,6 +45,9 @@ body.neucore {
     --bs-primary: #2c3e50;
     --bs-primary-rgb: 44, 62, 80;
 
+    --bs-link-color: #2a9fd6;
+    --bs-link-color-rgb: 42, 159, 214;
+
     .btn-primary {
         background-color:  var(--bs-primary);
         border-color:  var(--bs-primary);
@@ -81,10 +84,27 @@ body.neucore {
     .table th {
         background-color: var(--bs-secondary-bg);
     }
+
+    .dropdown-menu {
+        --bs-dropdown-link-active-bg: var(--bs-primary);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+    }
 }
+
 [data-bs-theme="dark"] {
     --bs-primary: #375a7f;
     --bs-primary-rgb: 55, 90, 127;
+
+    .card {
+        --bs-card-bg: #303030;
+    }
+    .list-group {
+        --bs-list-group-bg: var(--bs-card-bg);
+    }
 
     .form-control,
     .form-select,
