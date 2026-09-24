@@ -12,7 +12,7 @@ d M 2026
 - **[MCP server](doc/MCP-Server.md)** for AI assistants with tools for retrieving data from Neucore 
   and ESI
 - **Theme changes**
-  - The themes have been removed; now there are only a dark mode and a light mode.
+  - The themes have been removed; now there is only a dark mode and a light mode.
     They were fun, but the added value doesn't justify the higher maintenance costs.
     It also simplifies the planned switch from Webpack to Vite.
   - The default mode (dark or light) now matches the system mode.
@@ -25,7 +25,7 @@ d M 2026
 - Dropped support for MariaDb 10.5, the minimum required version is now 10.11
 - Renamed `web/dist/theme.js` to `web/dist/custom.js` (source location `frontend/public/custom.js`)
 
-**Other Changed**
+**Other Changes**
 
 - Added more security related HTTP headers (`Referrer-Policy`, `Cross-Origin-*`, `Permissions-Policy`)
   to the Docker image, development environment and installation instructions

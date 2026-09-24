@@ -1,6 +1,6 @@
 <!--suppress HtmlUnknownAnchorTarget -->
 <template>
-<div v-cloak class="modal" id="generatePasswordModal">
+<div v-cloak v-if="authChar" class="modal" id="generatePasswordModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -9,8 +9,8 @@
             </div>
             <div class="modal-body">
                 <p>
-                    This password can be used together with your account ID to log in instead
-                    of using EVE SSO.
+                    This password can be used together with your account ID
+                    <span>{{ player.id }}</span> to log in instead of using EVE SSO:
                 </p>
                 <code>{{ newPassword }}</code>
             </div>
@@ -61,22 +61,18 @@
             <img v-if="authChar" :src="h.characterPortrait(authChar.id, 32)"
                  class="d-inline-block align-top me-2" alt="portrait">
 
-            <div v-if="authChar" class="dropdown">
+            <div class="dropdown">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-haspopup="true" aria-expanded="false">
-                            {{ authChar.name }}
+                            {{ authChar ? authChar.name : 'Not logged in' }}
                         </a>
                         <div class="dropdown-menu dropdown-menu-end scrollable-menu">
-                            <a href="#" @click.prevent="logout()" class="dropdown-item">
+                            <a v-if="authChar" href="#" @click.prevent="logout()" class="dropdown-item">
                                 <span role="img" class="fas fa-sign-out"></span>
                                 Sign out
                             </a>
-                            <a href="#" class="dropdown-item" @click.prevent="generatePassword()">
-                                Generate password
-                            </a>
-                            <h6 class="dropdown-header">Theme</h6>
                             <div class="px-3 py-1">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="themeSwitch"
@@ -84,6 +80,13 @@
                                     <label class="form-check-label" for="themeSwitch">Dark Mode</label>
                                 </div>
                             </div>
+                            <a v-if="authChar" href="#" class="dropdown-item" @click.prevent="generatePassword()"
+                               data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               :title="'Generates a password that you can use to login. '
+                                        + 'Your password will be reset if you already have one.'">
+                                <span role="img" class="fa-regular fa-circle-question"></span>
+                                Generate password
+                            </a>
                         </div>
                     </li>
                 </ul>
@@ -95,7 +98,7 @@
 
 <script>
 import {toRef} from "vue";
-import {Collapse, Dropdown, Modal} from 'bootstrap';
+import {Collapse, Dropdown, Modal, Tooltip} from 'bootstrap';
 import { AuthApi } from 'neucore-js-client';
 import Data from '../classes/Data';
 import Helper from "../classes/Helper";
@@ -113,6 +116,7 @@ export default {
     data() {
         return {
             h: new Helper(this),
+            player: toRef(this.store.state, 'player'),
             settings: toRef(this.store.state, 'settings'),
             navigationParent: {
                 root:           { id: 'root',           name: '' },
@@ -170,6 +174,11 @@ export default {
                 roles: ['user'],
             });
         }
+    },
+
+    updated() {
+        document.querySelectorAll('.navbar [data-bs-toggle="tooltip"]')
+            .forEach(tooltip => new Tooltip(tooltip));
     },
 
     watch: {
