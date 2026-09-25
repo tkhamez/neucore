@@ -11,7 +11,7 @@ See `CONTRIBUTING.md` for full guidelines.
 - **Dependency Injection** — use it whenever possible.
 - **Program against interfaces**, not concrete classes.
 - **PSRs** — follow PHP Standards Recommendations where applicable.
-- **All code must have unit tests**.
+- **All backend code must have unit tests**.
 - **Inclusive language** — use it throughout code, documentation, and communication.
 - **Never drop or destroy data on the development database**. There are two databases (dev + test). Ask before any operation that could destroy dev data.
 
