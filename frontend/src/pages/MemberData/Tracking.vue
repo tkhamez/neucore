@@ -178,6 +178,7 @@ export default {
     },
 
     unmounted() {
+        removeSearchFilter(this);
         this.table.clear();
         this.table.destroy();
     },
@@ -303,24 +304,6 @@ function setPathFromOptions(vm) {
 }
 
 function configureDataTable(vm) {
-    if ($.fn.dataTable.ext.search.length === 0) {
-        $.fn.dataTable.ext.search.push((settings, searchData) => {
-            const search = $('#dt-search-0');
-            if (search.length > 0) {
-                const term = search.val().toLowerCase().trim();
-                for (let index = 0; index < vm.columns.length; index++) {
-                    if (!vm.columns[index].searchable) {
-                        continue;
-                    }
-                    if (searchData[index].toLowerCase().indexOf(term) !== -1) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        });
-    }
-
     const esiColumnText = (row) => {
         if (!row.character) {
             return '';
@@ -446,6 +429,52 @@ function configureDataTable(vm) {
             }
         }]
     });
+
+    // Register the search filter only after the table was created: The DataTables constructor already
+    // triggers an initial draw, and the filter must not run before vm.table was assigned.
+    registerSearchFilter(vm);
+}
+
+/**
+ * Register the custom search filter for the member table: It limits the global search field to the
+ * columns that are marked as searchable in the "Search in" drop-down.
+ *
+ * DataTables only supports a global list of custom search filters (not per table instance), so the
+ * filter must be removed again when the component is unmounted (see unmounted()). Otherwise, the
+ * old filter - which also references the destroyed component - would remain active for the new
+ * table instance.
+ *
+ * @param vm The component instance
+ */
+function registerSearchFilter(vm) {
+    vm.searchFilter = (settings, searchData) => {
+        // The search term is read via the public search() API. The fallback to an empty string is
+        // required, because search() returns undefined until the user has typed something (or the
+        // search term was set programmatically).
+        const term = (vm.table.search() || '').toLowerCase().trim();
+        for (let index = 0; index < vm.columns.length; index++) {
+            if (!vm.columns[index].searchable) {
+                continue;
+            }
+            if (searchData[index].toLowerCase().indexOf(term) !== -1) {
+                return true;
+            }
+        }
+        return false;
+    };
+    $.fn.dataTable.ext.search.push(vm.searchFilter);
+}
+
+/**
+ * Remove the custom search filter that was registered by registerSearchFilter().
+ *
+ * @param vm The component instance
+ */
+function removeSearchFilter(vm) {
+    const index = $.fn.dataTable.ext.search.indexOf(vm.searchFilter);
+    if (index !== -1) {
+        $.fn.dataTable.ext.search.splice(index, 1);
+    }
 }
 </script>
 
