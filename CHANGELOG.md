@@ -28,6 +28,8 @@ d M 2026
 **Fixes**
 
 - The function for determining the client's IP address has been corrected and improved.
+- Fixed stuck spinner on player modal close by guarding callbacks against nulled state and 
+  settling the superagent loading counter on error/abort
 - ESI: Fixed handling of "character not found" errors (they changed a bit)
 
 **Other Changes**

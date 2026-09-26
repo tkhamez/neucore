@@ -204,6 +204,14 @@ export default {
         }
     },
 
+    mounted() {
+        document.getElementById('playerModal').addEventListener('hide.bs.modal', () => {
+            this.unauthorized = null;
+            this.selectedPlayer = null;
+            this.characterMovements = [];
+        });
+    },
+
     updated() {
         document.querySelectorAll('#playerModal [data-bs-toggle="tooltip"]').forEach(tooltip => {
             if (tooltip.dataset.tooltipInit !== '1') {
@@ -225,12 +233,7 @@ export default {
 
         showCharacters(playerId) {
             const modalElement = document.getElementById('playerModal');
-            new Modal(modalElement).show();
-            modalElement.addEventListener('hide.bs.modal', () => {
-                this.unauthorized = null;
-                this.selectedPlayer = null;
-                this.characterMovements = [];
-            })
+            Modal.getOrCreateInstance(modalElement).show();
             this.fetchCharacters(playerId);
         },
 
@@ -267,8 +270,15 @@ export default {
             if (!this.selectedPlayer) {
                 return;
             }
+            const playerId = this.selectedPlayer.id;
             new Player(this).updatePlayer(this.selectedPlayer, () => {
-                this.fetchCharacters(this.selectedPlayer.id);
+                // If the modal has been closed in the meantime, selectedPlayer has been set to null and
+                // calling fetchCharacters() would throw inside the request callback. An exception there
+                // aborts the remaining superagent "end" listeners, so the loading counter (spinner) in
+                // App.vue would never be reset.
+                if (this.selectedPlayer && this.selectedPlayer.id === playerId) {
+                    this.fetchCharacters(this.selectedPlayer.id);
+                }
             });
         },
 
@@ -276,8 +286,11 @@ export default {
             if (!this.selectedPlayer) {
                 return;
             }
+            const playerId = this.selectedPlayer.id;
             new Player(this).updateServices(this.selectedPlayer, () => {
-                this.fetchCharacters(this.selectedPlayer.id);
+                if (this.selectedPlayer && this.selectedPlayer.id === playerId) {
+                    this.fetchCharacters(this.selectedPlayer.id);
+                }
             });
         },
 
