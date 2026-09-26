@@ -18,7 +18,7 @@ See `CONTRIBUTING.md` for full guidelines.
 ## Project shape
 
 - **Backend**: PHP 8.1–8.5, Slim 4 + PHP-DI + Doctrine ORM/Migrations. Lives in `backend/`.
-- **Frontend**: Vue 3 + Bootstrap/Bootswatch. Lives in `frontend/`.
+- **Frontend**: Vue 3 + Bootstrap. Lives in `frontend/`.
 - **Document root**: `web/` (`web/app.php` is the web entrypoint).
 - **Other dirs**: `setup/` (install scripts, Dockerfiles), `doc/` (docs), `dist/` (release build output).
 
