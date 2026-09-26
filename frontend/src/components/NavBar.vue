@@ -23,17 +23,17 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
     <div class="container-fluid">
-        <a v-cloak class="navbar-brand" :href="settings.customization_website">
+        <a class="navbar-brand" :href="settings.customization_website">
             <img v-if="settings.customization_nav_logo" class="align-top me-2 align-middle" alt="Logo"
                  :src="settings.customization_nav_logo">
             {{ settings.customization_nav_title }}
         </a>
-        <button v-if="hasNavigation()" v-cloak class="navbar-toggler" type="button" data-bs-toggle="collapse"
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbar01" aria-controls="navbar01"
                 aria-expanded="true" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div v-if="hasNavigation()" v-cloak class="navbar-collapse collapse" id="navbar01">
+        <div class="navbar-collapse collapse" id="navbar01">
             <ul class="navbar-nav me-auto">
                 <li v-if="h.hasRole('user')" class="nav-item">
                     <a class="nav-link" :class="{ active: page === 'Home' }" href="#Home">Home</a>
@@ -192,17 +192,6 @@ export default {
         toggleTheme() {
             this.isDark = !this.isDark;
             localStorage.setItem('neucore-theme', this.isDark ? 'dark' : 'light');
-        },
-
-        hasNavigation() {
-            return (
-                this.h.hasRole('user') ||
-                this.hasNavigationItem(this.navigationParent.root.id) ||
-                this.hasNavigationItem(this.navigationParent.services.id) ||
-                this.hasNavigationItem(this.navigationParent.management.id) ||
-                this.hasNavigationItem(this.navigationParent.administration.id) ||
-                this.hasNavigationItem(this.navigationParent.member_data.id)
-            );
         },
 
         getDropdownMenus() {
