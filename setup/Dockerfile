@@ -46,6 +46,8 @@ RUN a2enmod rewrite headers ssl socache_shmcb && \
     echo 'Header always set Permissions-Policy: "accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=(self), gamepad=(), speaker-selection=(), conversion-measurement=(), focus-without-user-activation=(), hid=(), idle-detection=(), interest-cohort=(), serial=(), sync-script=(), trust-token-redemption=(), unload=(), window-placement=(), vertical-scroll=()"' >> /etc/apache2/conf-enabled/x-neucore.conf && \
     echo 'ServerSignature Off'                                           >> /etc/apache2/conf-enabled/x-neucore.conf && \
     echo 'ServerTokens Prod'                                             >> /etc/apache2/conf-enabled/x-neucore.conf && \
+    echo 'TraceEnable off'                                               >> /etc/apache2/conf-enabled/x-neucore.conf && \
+    echo 'Protocols h2 http/1.1'                                         >> /etc/apache2/conf-enabled/x-neucore.conf && \
     echo 'AddOutputFilterByType DEFLATE text/plain text/html application/json font/ttf image/svg+xml image/x-icon' >> /etc/apache2/conf-enabled/x-neucore.conf
 
 RUN ln -s /var/www/html /var/www/web
