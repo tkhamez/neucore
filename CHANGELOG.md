@@ -40,6 +40,7 @@ d M 2026
   is now supported.
 - Dev Env: `user: ${UID}` has been removed from the default Compose file. Instead, the
   user `www-data` is now a member of the `root` group for write permissions in the cache directory.
+- Updated dependencies
 
 ## 2.14.0
 
