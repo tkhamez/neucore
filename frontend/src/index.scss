@@ -2,16 +2,21 @@
 
 @import "~bootstrap/scss/bootstrap";
 
+/**
+ * Footer
+ */
 html {
     // for sticky footer
     position: relative;
     min-height: 100%;
 }
-
 body.neucore {
     margin-bottom: 75px; // max footer height
 }
 
+/**
+ * Vue specific
+ */
 [v-cloak] {
     display: none;
     visibility: hidden;
@@ -29,17 +34,15 @@ body.neucore {
  */
 .row > .sticky-column {
     @media (min-width: 992px) {
-        @supports (position: sticky) {
-            position: sticky;
-            top: 51px;
-            max-height: calc(100vh - 55px);
-            overflow-y: auto;
-        }
+        position: sticky;
+        top: 51px;
+        max-height: calc(100vh - 55px);
+        overflow-y: auto;
     }
 }
 
 /**
- * Theme overrides
+ * Colour overrides
  */
 :root {
     --bs-primary: #2c3e50;
@@ -49,8 +52,10 @@ body.neucore {
     --bs-link-color-rgb: 42, 159, 214;
 
     .btn-primary {
-        background-color:  var(--bs-primary);
-        border-color:  var(--bs-primary);
+        --bs-btn-bg: var(--bs-primary);
+        --bs-btn-border-color: var(--bs-primary);
+        --bs-btn-hover-bg: #253544;
+        --bs-btn-hover-border-color: #233240;
     }
 
     // nav on left side
@@ -68,19 +73,6 @@ body.neucore {
         --bs-pagination-active-bg:  var(--bs-primary);
     }
 
-    .entity-info {
-        // same as text-muted
-        color: var(--bs-secondary-color);
-    }
-    .active .entity-info {
-        // those are on a dark background (--bs-primary) for both themes
-        color: #DEE2E6BF;
-    }
-    .entity-actions {
-        // those are on a dark background (--bs-primary) for both themes
-        color: #DEE2E6BF;
-    }
-
     .table th {
         background-color: var(--bs-secondary-bg);
     }
@@ -93,11 +85,23 @@ body.neucore {
         background-color: var(--bs-primary);
         border-color: var(--bs-primary);
     }
-}
 
+    .entity-info {
+        // same as text-muted
+        color: var(--bs-secondary-color);
+    }
+    .entity-actions {
+        color: var(--bs-secondary-color);
+    }
+}
 [data-bs-theme="dark"] {
     --bs-primary: #375a7f;
     --bs-primary-rgb: 55, 90, 127;
+
+    .btn-primary {
+        --bs-btn-hover-bg: #2f4d6c;
+        --bs-btn-hover-border-color: #2c4866;
+    }
 
     .card {
         --bs-card-bg: #303030;
@@ -133,6 +137,12 @@ body.neucore {
     .multiselect__option--selected {
         color: #fff;
         background-color: #444;
+    }
+}
+[data-bs-theme="light"] {
+    .entity-actions,
+    .active .entity-info {
+        color: var(--bs-gray-500);
     }
 }
 
@@ -185,15 +195,13 @@ body.neucore {
  * Border of tab navigation items
  */
 .nc-nav .nav-link {
-    border-bottom-left-radius: unset;
-    border-bottom-right-radius: unset;
     border-top: 1px solid;
     border-left: 1px solid;
-    border-color: rgb(var(--bs-secondary-rgb));
+    border-bottom-left-radius: unset;
+    border-bottom-right-radius: unset;
 }
 .nc-nav .nav-item:last-child .nav-link {
     border-right: 1px solid;
-    border-color: rgb(var(--bs-secondary-rgb));
 }
 
 /**

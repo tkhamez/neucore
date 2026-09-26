@@ -9,13 +9,13 @@ d M 2026
 
 **New**
 
-- **[MCP server](doc/MCP-Server.md)** for AI assistants with tools for retrieving data from Neucore 
-  and ESI
+- **[MCP server](doc/MCP-Server.md)** for AI assistants with tools for retrieving data from
+  Neucore and ESI
 - **Theme changes**
   - The themes have been removed; now there is only a dark mode and a light mode.
     They were fun, but the added value doesn't justify the higher maintenance costs.
     It also simplifies the planned switch from Webpack to Vite.
-  - The default mode (dark or light) now matches the system mode.
+  - The default colour mode now matches the system colour scheme.
   - The manually selected mode is now saved (client side).
 - Added support for MariaDB 12.3 and MySQL 9.7
 
@@ -25,6 +25,11 @@ d M 2026
 - Dropped support for MariaDb 10.5, the minimum required version is now 10.11
 - Renamed `web/dist/theme.js` to `web/dist/custom.js` (source location `frontend/public/custom.js`)
 
+**Fixes**
+
+- The function for determining the client's IP address has been corrected and improved.
+- ESI: Fixed handling of "character not found" errors (they changed a bit)
+
 **Other Changes**
 
 - Added more security related HTTP headers (`Referrer-Policy`, `Cross-Origin-*`, `Permissions-Policy`)
@@ -33,11 +38,6 @@ d M 2026
   is now supported.
 - Dev Env: `user: ${UID}` has been removed from the default Compose file. Instead, the
   user `www-data` is now a member of the `root` group for write permissions in the cache directory.
-
-**Fixes**
-
-- The function for determining the client's IP address has been corrected and improved.
-- ESI: Fixed handling of "character not found" errors (they changed a bit)
 
 ## 2.14.0
 

@@ -186,11 +186,7 @@ export default {
             this.page = this.route[0];
         },
         isDark(newValue) {
-            if (newValue) {
-                document.documentElement.setAttribute('data-bs-theme', 'dark');
-            } else {
-                document.documentElement.removeAttribute('data-bs-theme');
-            }
+            document.documentElement.setAttribute('data-bs-theme', newValue ? 'dark' : 'light');
         }
     },
 

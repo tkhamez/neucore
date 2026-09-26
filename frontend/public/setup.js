@@ -14,11 +14,13 @@ window.addEventListener('load', function () {
     }
 });
 
-// Restore theme preference from localStorage; default is Dark.
+// Restore the colour mode from localStorage; the default matches the system preference.
 (function() {
     const saved = localStorage.getItem('neucore-theme');
     const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    if (saved === 'dark' || (saved !== 'light' && darkQuery.matches)) {
-        document.documentElement.setAttribute('data-bs-theme', 'dark');
-    }
+    const mode =
+        ['dark', 'light'].indexOf(saved) !== -1
+        ? saved
+        : (darkQuery.matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-bs-theme', mode);
 })();
