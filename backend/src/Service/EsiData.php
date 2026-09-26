@@ -16,11 +16,11 @@ use Neucore\Log\Context;
 use Neucore\Service\Character as CharacterService;
 use Psr\Log\LoggerInterface;
 use Tkhamez\Eve\API\ApiException;
-use Tkhamez\Eve\API\Model\AlliancesAllianceIdGet;
+use Tkhamez\Eve\API\Model\AlliancesDetail;
 use Tkhamez\Eve\API\Model\CharactersAffiliationPostInner;
-use Tkhamez\Eve\API\Model\CharactersCharacterIdGet;
 use Tkhamez\Eve\API\Model\CharactersCharacterIdRolesGet;
-use Tkhamez\Eve\API\Model\CorporationsCorporationIdGet;
+use Tkhamez\Eve\API\Model\CharactersDetail;
+use Tkhamez\Eve\API\Model\CorporationsDetail;
 use Tkhamez\Eve\API\Model\Error;
 use Tkhamez\Eve\API\Model\UniverseNamesPostInner;
 use Tkhamez\Eve\API\Model\UniverseStructuresStructureIdGet;
@@ -62,11 +62,11 @@ class EsiData
      *
      * @throws Exception If the character was deleted, not found or any other ESI error.
      */
-    public function fetchCharacter(int $id): CharactersCharacterIdGet
+    public function fetchCharacter(int $id): CharactersDetail
     {
         $characterApi = $this->esiApiFactory->getCharacterApi();
         try {
-            $eveChar = $characterApi->getCharactersCharacterId($id);
+            $eveChar = $characterApi->GetCharactersDetail($id);
         } catch (ApiException $e) {
             $body = $e->getResponseBody();
             if (
@@ -194,7 +194,7 @@ class EsiData
         $updated = false;
 
         // update char (and player) name
-        if ($eveChar instanceof CharactersCharacterIdGet) {
+        if ($eveChar instanceof CharactersDetail) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
             $this->characterService->setCharacterName($char, (string) $eveChar->getName());
             if ($char->getMain()) {
@@ -210,7 +210,7 @@ class EsiData
             if (isset($affiliation[0])) {
                 /** @noinspection PhpCastIsUnnecessaryInspection */
                 $corpId = (int) $affiliation[0]->getCorporationId();
-            } elseif ($eveChar instanceof CharactersCharacterIdGet) {
+            } elseif ($eveChar instanceof CharactersDetail) {
                 /** @noinspection PhpCastIsUnnecessaryInspection */
                 $corpId = (int) $eveChar->getCorporationId();
             }
@@ -291,7 +291,7 @@ class EsiData
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return null;
         }
-        if (!$eveCorp instanceof CorporationsCorporationIdGet) {
+        if (!$eveCorp instanceof CorporationsDetail) {
             return null;
         }
 
@@ -354,7 +354,7 @@ class EsiData
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return null;
         }
-        if (!$eveAlli instanceof AlliancesAllianceIdGet) {
+        if (!$eveAlli instanceof AlliancesDetail) {
             return null;
         }
 

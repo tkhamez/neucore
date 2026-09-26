@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ab9e24d8548042cfff35ce4f86e6ce4a",
+    "content-hash": "88fe5c95bcb06c3f31661f0205ab64e8",
     "packages": [
         {
             "name": "brick/math",
@@ -5629,16 +5629,16 @@
         },
         {
             "name": "tkhamez/eve-api",
-            "version": "12.20251216.0",
+            "version": "15.20260818.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/eve-api-php.git",
-                "reference": "6ab7ed95c51d63f7e6cb076f68a94fdeecaa31bc"
+                "reference": "bd92715a35eaf88db5b018919c7be96e85a95ee9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/eve-api-php/zipball/6ab7ed95c51d63f7e6cb076f68a94fdeecaa31bc",
-                "reference": "6ab7ed95c51d63f7e6cb076f68a94fdeecaa31bc",
+                "url": "https://api.github.com/repos/tkhamez/eve-api-php/zipball/bd92715a35eaf88db5b018919c7be96e85a95ee9",
+                "reference": "bd92715a35eaf88db5b018919c7be96e85a95ee9",
                 "shasum": ""
             },
             "require": {
@@ -5684,9 +5684,9 @@
             ],
             "support": {
                 "issues": "https://github.com/tkhamez/eve-api-php/issues",
-                "source": "https://github.com/tkhamez/eve-api-php/tree/12.20251216.0"
+                "source": "https://github.com/tkhamez/eve-api-php/tree/15.20260818.0"
             },
-            "time": "2026-01-05T20:05:46+00:00"
+            "time": "2026-09-26T13:12:53+00:00"
         },
         {
             "name": "tkhamez/eve-sso",
