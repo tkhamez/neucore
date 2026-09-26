@@ -130,12 +130,18 @@
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
+import DataTable from 'datatables.net';
 import 'datatables.net-bs5';
 import 'datatables.net-bs5/css/dataTables.bootstrap5.css';
 import {Tooltip} from 'bootstrap';
 import {CorporationApi} from 'neucore-js-client';
 import Helper from "../../classes/Helper";
 import Util from "../../classes/Util";
+
+// DataTables 3 no longer attaches itself to jQuery automatically in module-bundler environments
+// (DataTables 2 did). Register it explicitly, otherwise the $.fn.dataTable / $.fn.DataTable
+// plugin methods would not exist.
+DataTable.use($);
 
 export default {
     props: {
@@ -448,9 +454,8 @@ function configureDataTable(vm) {
  */
 function registerSearchFilter(vm) {
     vm.searchFilter = (settings, searchData) => {
-        // The search term is read via the public search() API. The fallback to an empty string is
-        // required, because search() returns undefined until the user has typed something (or the
-        // search term was set programmatically).
+        // The search term is read via the public search() API. It returns an empty string in its
+        // initial state; the fallback below guards against undefined.
         const term = (vm.table.search() || '').toLowerCase().trim();
         for (let index = 0; index < vm.columns.length; index++) {
             if (!vm.columns[index].searchable) {
