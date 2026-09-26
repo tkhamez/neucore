@@ -68,24 +68,22 @@
                            aria-haspopup="true" aria-expanded="false">
                             {{ authChar ? authChar.name : 'Not logged in' }}
                         </a>
-                        <div class="dropdown-menu dropdown-menu-end scrollable-menu">
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <label class="dropdown-item form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                       :checked="isDark" @change="toggleTheme">
+                                <span class="ms-2">Dark Mode</span>
+                            </label>
+                            <a v-if="authChar" href="#" class="dropdown-item generate-password" @click.stop>
+                                <span role="img" class="fa-regular fa-circle-question"
+                                      data-bs-toggle="tooltip" data-bs-placement="left"
+                                      :title="'Generates a password that you can use to login. '
+                                        + 'Your password will be reset if you already have one.'"></span>
+                                <span class="ms-2 label" @click.prevent="generatePassword()">Generate password</span>
+                            </a>
                             <a v-if="authChar" href="#" @click.prevent="logout()" class="dropdown-item">
                                 <span role="img" class="fas fa-sign-out"></span>
                                 Sign out
-                            </a>
-                            <div class="px-3 py-1">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="themeSwitch"
-                                           :checked="isDark" @change="toggleTheme">
-                                    <label class="form-check-label" for="themeSwitch">Dark Mode</label>
-                                </div>
-                            </div>
-                            <a v-if="authChar" href="#" class="dropdown-item" @click.prevent="generatePassword()"
-                               data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               :title="'Generates a password that you can use to login. '
-                                        + 'Your password will be reset if you already have one.'">
-                                <span role="img" class="fa-regular fa-circle-question"></span>
-                                Generate password
                             </a>
                         </div>
                     </li>
@@ -335,15 +333,20 @@ function addNavBehaviour() {
     .dropdown-menu {
         margin: 0;
     }
-    @media (min-width: 992px) {
-        .scrollable-menu {
-            height: auto;
-            max-height: calc(100vh - 80px);
-            overflow-x: hidden;
-            overflow-y: scroll;
-        }
-    }
     .navbar-brand img {
         max-height: 100px;
+    }
+    .form-switch {
+        cursor: pointer;
+        padding-left: 3.5rem;
+        .form-check-input {
+            cursor: pointer;
+        }
+    }
+    .generate-password {
+        cursor: default;
+        .label {
+            cursor: pointer;
+        }
     }
 </style>
