@@ -28,7 +28,7 @@ docker compose exec -u $UID neucore_node sh -c "cd ../dist/build/frontend/neucor
 # Frontend
 cd "${DIR}"/.. || exit
 docker compose exec -u $UID neucore_node sh -c "cd ../dist/build/frontend && npm ci"
-docker compose exec -u $UID neucore_node sh -c "cd ../dist/build/frontend && npm postinstall"
+docker compose exec -u $UID neucore_node sh -c "cd ../dist/build/frontend && npm run postinstall"
 docker compose exec -u $UID neucore_node sh -c "cd ../dist/build/frontend && npm run build"
 
 # Collect files and create archive
