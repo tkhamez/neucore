@@ -35,6 +35,7 @@ use Neucore\Middleware\Psr15\AppRequestCount;
 use Neucore\Middleware\Psr15\Cors;
 use Neucore\Middleware\Psr15\BodyParams;
 use Neucore\Middleware\Psr15\CSRFToken;
+use Neucore\Middleware\Psr15\DnsRebindingProtection;
 use Neucore\Middleware\Psr15\RateLimitApp;
 use Neucore\Middleware\Psr15\RateLimitIP;
 use Neucore\Service\SessionData;
@@ -329,6 +330,8 @@ class Application
                 SessionMiddleware::OPTION_ROUTE_BLOCKING_PATTERN => ['/api/user/auth', '/login', '/plugin'],
             ],
         ));
+
+        $app->add($this->getFromContainer(DnsRebindingProtection::class));
 
         // Add routing middleware after SecureRouteMiddleware, RoleMiddleware and NonBlockingSession,
         // so the `route` attribute is available from the ServerRequestInterface object

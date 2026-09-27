@@ -8,8 +8,9 @@
 
 dd mm yyyy
 
-- Fixed missing allowed hosts for the MCP server, see `NEUCORE_MCP_ALLOWED_HOSTS`
-- Fixed search functions: Spaces were encoded twice
+- Added global DNS rebinding protection (see `NEUCORE_ALLOWED_HOSTS`)
+- Fixed "Invalid Host header" for the MCP server
+- Fixed search functions (spaces were encoded twice)
 
 ## 3.0.0
 

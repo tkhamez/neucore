@@ -337,6 +337,8 @@ Adjust `web/dist/custom.js` if you want to add you own JavaScript code, e.g. for
 
 ### Security
 
+Make sure to set the environment variable `NEUCORE_ALLOWED_HOSTS` to an appropriate value.
+
 It is recommended to set the following security-related HTTP headers in the web server configuration:
 
 ```

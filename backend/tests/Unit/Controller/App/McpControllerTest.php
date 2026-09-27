@@ -23,9 +23,8 @@ class McpControllerTest extends TestCase
     public function constructor_acceptsMcpServerAndConfig(): void
     {
         $mcpServer = $this->createMock(McpServer::class);
-        $config    = new Config(['env_var_defaults' => []]);
 
-        $controller = new McpController($mcpServer, $config);
+        $controller = new McpController($mcpServer);
 
         /** @noinspection PhpConditionAlreadyCheckedInspection */
         self::assertInstanceOf(McpController::class, $controller);
@@ -38,9 +37,8 @@ class McpControllerTest extends TestCase
             $this->createMock(ContainerInterface::class),
             $this->createMock(LoggerInterface::class),
         );
-        $config    = new Config(['env_var_defaults' => []]);
 
-        $controller = new McpController($mcpServer, $config);
+        $controller = new McpController($mcpServer);
 
         $request = (new ServerRequestFactory())
             ->createServerRequest('POST', '/app/v1/mcp')
@@ -53,59 +51,5 @@ class McpControllerTest extends TestCase
 
         /** @noinspection PhpConditionAlreadyCheckedInspection */
         self::assertInstanceOf(ResponseInterface::class, $response);
-    }
-
-    /**
-     * @throws \ReflectionException
-     */
-    #[Test]
-    public function getConfiguredMiddleware_returnsOnlyCorsWhenHostsEmpty(): void
-    {
-        $mcpServer = $this->createMock(McpServer::class);
-        $config    = new Config([
-            'mcp'                => ['allowed_hosts' => ''],
-            'env_var_defaults'   => [],
-        ]);
-
-        $controller = new McpController($mcpServer, $config);
-
-        $method = new \ReflectionMethod($controller, 'getConfiguredMiddleware');
-        $method->setAccessible(true);
-        $result = $method->invoke($controller);
-
-        // Empty hosts -> only CorsMiddleware (DnsRebindingProtectionMiddleware removed).
-        self::assertCount(1, $result);
-        self::assertInstanceOf(CorsMiddleware::class, $result[0]);
-    }
-
-    /**
-     * @throws \ReflectionException
-     */
-    #[Test]
-    public function getConfiguredMiddleware_replacesDnsRebindingWithConfiguredHosts(): void
-    {
-        $mcpServer = $this->createMock(McpServer::class);
-        $config    = new Config([
-            'mcp'                => ['allowed_hosts' => 'neucore.domain.tld, localhost'],
-            'env_var_defaults'   => [],
-        ]);
-
-        $controller = new McpController($mcpServer, $config);
-
-        $method = new \ReflectionMethod($controller, 'getConfiguredMiddleware');
-        $method->setAccessible(true);
-        $result = $method->invoke($controller);
-
-        // Default middleware replaced: CorsMiddleware + custom DnsRebindingProtectionMiddleware.
-        self::assertCount(2, $result);
-        self::assertInstanceOf(CorsMiddleware::class, $result[0]);
-        self::assertInstanceOf(DnsRebindingProtectionMiddleware::class, $result[1]);
-
-        // Verify the configured hosts are actually set on the middleware.
-        $prop = new \ReflectionProperty(DnsRebindingProtectionMiddleware::class, 'allowedHosts');
-        self::assertTrue($prop->isReadOnly());
-        $prop->setAccessible(true);
-        $allowedHosts = $prop->getValue($result[1]);
-        self::assertSame(['neucore.domain.tld', 'localhost'], $allowedHosts);
     }
 }
