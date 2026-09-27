@@ -228,6 +228,24 @@ return array (
       'windowSize' => '15m',
     ),
   ),
+  '/characters/[0-9]+/freelance-jobs' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-freelance-job',
+      'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/freelance-jobs/{job_id}/participation' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-freelance-job',
+      'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
   '/characters/[0-9]+/fw/stats' => 
   array (
     'get' => 
@@ -585,6 +603,15 @@ return array (
       'windowSize' => '15m',
     ),
   ),
+  '/corporations/[0-9]+/containers/logs' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'corp-structure',
+      'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
   '/corporations/[0-9]+/contracts' => 
   array (
     'get' => 
@@ -626,6 +653,33 @@ return array (
     'get' => 
     array (
       'group' => 'corp-wallet',
+      'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/corporations/[0-9]+/facilities' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'corp-structure',
+      'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/corporations/[0-9]+/freelance-jobs' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'corp-freelance-job',
+      'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/corporations/[0-9]+/freelance-jobs/{job_id}/participants' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'corp-freelance-job',
       'maxTokens' => 300,
       'windowSize' => '15m',
     ),
@@ -783,6 +837,33 @@ return array (
       'windowSize' => '15m',
     ),
   ),
+  '/corporations/[0-9]+/starbases' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'corp-structure',
+      'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/corporations/[0-9]+/starbases/{starbase_id}' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'corp-structure',
+      'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/corporations/[0-9]+/structures' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'corp-structure',
+      'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
   '/corporations/[0-9]+/titles' => 
   array (
     'get' => 
@@ -918,6 +999,24 @@ return array (
       'windowSize' => '15m',
     ),
   ),
+  '/freelance-jobs' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'freelance-job',
+      'maxTokens' => 12000,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/freelance-jobs/{job_id}' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'freelance-job',
+      'maxTokens' => 12000,
+      'windowSize' => '15m',
+    ),
+  ),
   '/fw/leaderboards' => 
   array (
     'get' => 
@@ -1017,6 +1116,15 @@ return array (
       'windowSize' => '15m',
     ),
   ),
+  '/markets/[0-9]+/orders' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'market-order',
+      'maxTokens' => 12000,
+      'windowSize' => '15m',
+    ),
+  ),
   '/meta/changelog' => 
   array (
     'get' => 
@@ -1027,6 +1135,15 @@ return array (
     ),
   ),
   '/meta/compatibility-dates' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'meta',
+      'maxTokens' => 150,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/meta/status' => 
   array (
     'get' => 
     array (
