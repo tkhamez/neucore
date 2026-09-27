@@ -4,6 +4,12 @@
 - [2.0.0](#200)
 - [1.0.0](#100)
 
+## next
+
+dd mm yyyy
+
+- MCP server: Fixed missing allowed hosts, see `NEUCORE_MCP_ALLOWED_HOSTS`
+
 ## 3.0.0
 
 27 Sep 2026

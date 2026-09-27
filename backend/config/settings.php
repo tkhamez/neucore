@@ -21,6 +21,7 @@ return [
         'NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' => '0',
         'NEUCORE_ESI_HEADER_STORAGE' => Container::ESI_HEADER_STORAGE_DATABASE,
         'NEUCORE_TRUSTED_PROXIES'    => '',
+        'NEUCORE_MCP_ALLOWED_HOSTS'  => '',
     ],
 
     'monolog' => [
@@ -100,6 +101,10 @@ return [
     'rate_limit' => [
         'max' => '${NEUCORE_RATE_LIMIT_MAX}',
         'time' => '${NEUCORE_RATE_LIMIT_TIME}',
+    ],
+
+    'mcp' => [
+        'allowed_hosts' => '${NEUCORE_MCP_ALLOWED_HOSTS}',
     ],
 
     'plugins_install_dir' => '${NEUCORE_PLUGINS_INSTALL_DIR}',
