@@ -125,6 +125,7 @@ class SessionDataTest extends TestCase
         $this->assertSame($_SESSION, $sd->getAll());
 
         $sd->set('k2', 'v2');
+        // @phpstan-ignore method.alreadyNarrowedType
         $this->assertSame($_SESSION, $sd->getAll());
     }
 }

@@ -102,6 +102,7 @@ class OAuthTokenTest extends TestCase
 
         // UnexpectedValueException
         $esiToken->setAccessToken('invalid');
+        // @phpstan-ignore method.alreadyNarrowedType
         $this->assertSame([], $this->es->getScopesFromToken($esiToken));
 
         // valid token

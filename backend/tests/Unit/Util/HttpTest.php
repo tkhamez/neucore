@@ -23,6 +23,7 @@ class HttpTest extends TestCase
 
         // Invalid REMOTE_ADDR
         $_SERVER['REMOTE_ADDR'] = 'invalid';
+        // @phpstan-ignore method.alreadyNarrowedType
         $this->assertSame('unknown', Http::ipAddress());
 
         // Valid REMOTE_ADDR, no trusted proxies
@@ -43,6 +44,7 @@ class HttpTest extends TestCase
 
         // Invalid IP in X-Forwarded-For chain - invalid IP is leftmost, so right-to-left scan finds valid IP first
         $_SERVER['HTTP_X_FORWARDED_FOR'] = 'invalid, ::1 , 70.191.25.186';
+        // @phpstan-ignore method.alreadyNarrowedType
         $this->assertSame('70.191.25.186', Http::ipAddress(['150.172.238.178'])); // trusted proxy
 
         // Invalid IP encountered during right-to-left scan (rightmost in original = leftmost in reversed)

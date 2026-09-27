@@ -428,6 +428,7 @@ class EveMailTest extends TestCase
         $this->om->persist($daysVar);
         $this->om->flush();
 
+        // @phpstan-ignore staticMethod.alreadyNarrowedType
         self::assertSame('Invalid config.', $this->eveMail->missingCharacterMaySend(101));
 
         $daysVar->setValue('20');

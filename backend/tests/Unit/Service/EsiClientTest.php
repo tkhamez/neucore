@@ -50,6 +50,7 @@ class EsiClientTest extends TestCase
         self::assertSame(0, EsiClient::getErrorLimitWaitTime($this->storage, 15));
 
         $this->storage->set(Variables::ESI_ERROR_LIMIT, (string) json_encode(new EsiErrorLimit($time - 100, 16, 50)));
+        // @phpstan-ignore staticMethod.alreadyNarrowedType
         self::assertSame(0, EsiClient::getErrorLimitWaitTime($this->storage, 15));
 
         $this->storage->set(Variables::ESI_ERROR_LIMIT, (string) json_encode(new EsiErrorLimit($time, 15, 50)));
@@ -74,6 +75,7 @@ class EsiClientTest extends TestCase
         $this->storage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson([
             "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 148, 2, time() - 3),
         ]));
+        // @phpstan-ignore staticMethod.alreadyNarrowedType
         self::assertSame(0, EsiClient::getRateLimitWaitTime(
             $this->storage,
             "/characters/$charId/roles",
