@@ -110,7 +110,7 @@ class McpController
             // Empty = allow all hosts (omit DNS rebinding middleware entirely).
             $middleware = array_values(array_filter(
                 $middleware,
-                fn ($m) => !($m instanceof DnsRebindingProtectionMiddleware),
+                fn($m) => !($m instanceof DnsRebindingProtectionMiddleware),
             ));
         } else {
             // Replace the default DNS rebinding middleware with one using configured hosts.

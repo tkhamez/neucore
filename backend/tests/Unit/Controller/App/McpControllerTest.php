@@ -75,7 +75,7 @@ class McpControllerTest extends TestCase
 
         // Empty hosts -> only CorsMiddleware (DnsRebindingProtectionMiddleware removed).
         self::assertCount(1, $result);
-        self::assertInstanceOf(CorsMiddleware::class, $result[0],);
+        self::assertInstanceOf(CorsMiddleware::class, $result[0]);
     }
 
     /**
