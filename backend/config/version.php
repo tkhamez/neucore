@@ -5,4 +5,4 @@
 // - the default user agent for ESI requests
 
 const NEUCORE_NAME = 'Neucore';
-const NEUCORE_VERSION = '2.15.0-dev';
+const NEUCORE_VERSION = '3.0.0';
