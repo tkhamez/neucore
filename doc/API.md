@@ -101,7 +101,7 @@ Service API
 Allows a player to add and remove roles from players.
 
 Character API
-- Returns a list of characters (together with the name of the player account/main character) that matches the name (partial matching). `GET /user/character/find-character/{name}`
+- Returns a list of characters (together with the name of the player account/main character) that matches the name (partial matching). `GET /user/character/find-character`
 - Add an EVE character to the database on a new account. `POST /user/character/add/{id}`
 
 Player API
@@ -128,7 +128,7 @@ Service API
 Allows a player to add and remove groups from any player and change the account status.
 
 Character API
-- Returns a list of characters (together with the name of the player account/main character) that matches the name (partial matching). `GET /user/character/find-character/{name}`
+- Returns a list of characters (together with the name of the player account/main character) that matches the name (partial matching). `GET /user/character/find-character`
 
 Group API
 - List all groups. `GET /user/group/all`
@@ -150,7 +150,7 @@ Service API
 Allows a player to view all characters of an account.
 
 Character API
-- Returns a list of characters (together with the name of the player account/main character) that matches the name (partial matching). `GET /user/character/find-character/{name}`
+- Returns a list of characters (together with the name of the player account/main character) that matches the name (partial matching). `GET /user/character/find-character`
 
 Player API
 - Checks whether groups for this account are disabled or will be disabled soon. `GET /user/player/{id}/groups-disabled`
@@ -216,7 +216,7 @@ Allows a player to add and remove members to his groups.
 This role is assigned automatically depending on whether the player is a manager of a group.
 
 Character API
-- Return a list of players that matches the main character name (partial matching). `GET /user/character/find-player/{name}`
+- Return a list of players that matches the main character name (partial matching). `GET /user/character/find-player`
 
 Group API
 - List all managers of a group. `GET /user/group/{id}/managers`

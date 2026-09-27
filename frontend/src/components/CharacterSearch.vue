@@ -20,6 +20,7 @@ Input element to search for characters
 <script>
 import _  from 'lodash';
 import {CharacterApi} from 'neucore-js-client';
+import Util from '../classes/Util';
 
 export default {
     props: {
@@ -68,14 +69,13 @@ const findCharacter = _.debounce(vm => {
         }
         vm.$emit('result', data);
     };
-    const query = encodeURIComponent(vm.searchTerm);
     if (vm.admin) {
-        api.findCharacter(query, {
+        api.findCharacter(vm.searchTerm, {
             currentOnly: vm.currentOnly ? 'true' : 'false',
             plugin: vm.plugin ? 'true' : 'false',
         }, callback);
     } else {
-        api.findPlayer(query, callback);
+        api.findPlayer(vm.searchTerm, callback);
     }
 }, 250);
 </script>

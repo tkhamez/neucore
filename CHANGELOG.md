@@ -8,7 +8,8 @@
 
 dd mm yyyy
 
-- MCP server: Fixed missing allowed hosts, see `NEUCORE_MCP_ALLOWED_HOSTS`
+- Fixed missing allowed hosts for the MCP server, see `NEUCORE_MCP_ALLOWED_HOSTS`
+- Fixed search functions: Spaces were encoded twice
 
 ## 3.0.0
 

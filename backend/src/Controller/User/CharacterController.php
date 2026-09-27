@@ -62,7 +62,7 @@ class CharacterController extends BaseController
     }
 
     #[OA\Get(
-        path: '/user/character/find-character/{name}',
+        path: '/user/character/find-character',
         operationId: 'findCharacter',
         description: 'Needs role: user-admin, user-manager, user-chars',
         summary: 'Returns a list of characters (together with the name of the player account/main'
@@ -73,7 +73,7 @@ class CharacterController extends BaseController
             new OA\Parameter(
                 name: 'name',
                 description: 'Name of the character (min. 3 characters).',
-                in: 'path',
+                in: 'query',
                 required: true,
                 schema: new OA\Schema(type: 'string', minLength: 3),
             ),
@@ -103,11 +103,10 @@ class CharacterController extends BaseController
         ],
     )]
     public function findCharacter(
-        string                 $name,
         ServerRequestInterface $request,
         PluginService          $pluginService,
     ): ResponseInterface {
-        $name = trim($name);
+        $name = trim($this->getQueryParam($request, 'name', ''));
         if (mb_strlen($name) < 3) {
             return $this->withJson([]);
         }
@@ -123,7 +122,7 @@ class CharacterController extends BaseController
     }
 
     #[OA\Get(
-        path: '/user/character/find-player/{name}',
+        path: '/user/character/find-player',
         operationId: 'findPlayer',
         description: 'Needs role: group-manager',
         summary: 'Return a list of players that matches the main character name (partial matching).',
@@ -133,7 +132,7 @@ class CharacterController extends BaseController
             new OA\Parameter(
                 name: 'name',
                 description: 'Name of the main character (min. 3 characters).',
-                in: 'path',
+                in: 'query',
                 required: true,
                 schema: new OA\Schema(type: 'string', minLength: 3),
             ),
@@ -150,9 +149,9 @@ class CharacterController extends BaseController
             new OA\Response(response: '403', description: 'Not authorized'),
         ],
     )]
-    public function findPlayer(string $name): ResponseInterface
+    public function findPlayer(ServerRequestInterface $request): ResponseInterface
     {
-        $name = trim($name);
+        $name = trim($this->getQueryParam($request, 'name', ''));
         if (mb_strlen($name) < 3) {
             return $this->withJson([]);
         }

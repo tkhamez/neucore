@@ -84,11 +84,11 @@ class CharacterControllerTest extends WebTestCase
     {
         $this->setupDb();
 
-        $response1 = $this->runApp('GET', '/api/user/character/find-character/abc');
+        $response1 = $this->runApp('GET', '/api/user/character/find-character?name=abc');
         $this->assertSame(403, $response1?->getStatusCode());
 
         $this->loginUser(10); // not an admin but group-manager
-        $response2 = $this->runApp('GET', '/api/user/character/find-character/abc');
+        $response2 = $this->runApp('GET', '/api/user/character/find-character?name=abc');
         $this->assertSame(403, $response2?->getStatusCode());
     }
 
@@ -97,7 +97,7 @@ class CharacterControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(9); // admin
 
-        $response1 = $this->runApp('GET', '/api/user/character/find-character/ser');
+        $response1 = $this->runApp('GET', '/api/user/character/find-character?name=ser');
         $this->assertSame(200, $response1?->getStatusCode());
         $this->assertSame([[
             'characterId' => 456,
@@ -121,7 +121,7 @@ class CharacterControllerTest extends WebTestCase
             'playerName' => 'User',
         ]], $this->parseJsonBody($response1));
 
-        $response2 = $this->runApp('GET', '/api/user/character/find-character/ser?currentOnly=true');
+        $response2 = $this->runApp('GET', '/api/user/character/find-character?name=ser&currentOnly=true');
         $this->assertSame([[
             'characterId' => 456,
             'characterName' => 'Another USER',
@@ -142,7 +142,7 @@ class CharacterControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/api/user/character/find-character/lug?plugin=true',
+            '/api/user/character/find-character?name=lug&plugin=true',
             null,
             null,
             [],
@@ -162,11 +162,11 @@ class CharacterControllerTest extends WebTestCase
     {
         $this->setupDb();
 
-        $response1 = $this->runApp('GET', '/api/user/character/find-player/abc');
+        $response1 = $this->runApp('GET', '/api/user/character/find-player?name=abc');
         $this->assertSame(403, $response1?->getStatusCode());
 
         $this->loginUser(96061222); // not group-manager or admin
-        $response2 = $this->runApp('GET', '/api/user/character/find-player/abc');
+        $response2 = $this->runApp('GET', '/api/user/character/find-player?name=abc');
         $this->assertSame(403, $response2?->getStatusCode());
     }
 
@@ -175,7 +175,7 @@ class CharacterControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(10); // group-manager
 
-        $response = $this->runApp('GET', '/api/user/character/find-player/ser');
+        $response = $this->runApp('GET', '/api/user/character/find-player?name=ser');
         $this->assertSame(200, $response?->getStatusCode());
 
         $this->assertSame([[

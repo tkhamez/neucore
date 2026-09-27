@@ -136,7 +136,7 @@ export default class Util {
         const api = type === 'Corporations' ? new CorporationApi() : new AllianceApi();
         const method = type === 'Corporations' ? 'userCorporationFind' : 'userAllianceFind';
 
-        api[method].apply(api, [encodeURIComponent(query), (error, data) => {
+        api[method].apply(api, [query, (error, data) => {
             if (error) {
                 callback([]);
                 return;
