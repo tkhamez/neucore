@@ -129,7 +129,6 @@
 
 <script>
 import _ from 'lodash';
-import $ from 'jquery';
 import DataTable from 'datatables.net';
 import 'datatables.net-bs5';
 import 'datatables.net-bs5/css/dataTables.bootstrap5.css';
@@ -137,11 +136,6 @@ import {Tooltip} from 'bootstrap';
 import {CorporationApi} from 'neucore-js-client';
 import Helper from "../../classes/Helper";
 import Util from "../../classes/Util";
-
-// DataTables 3 no longer attaches itself to jQuery automatically in module-bundler environments
-// (DataTables 2 did). Register it explicitly, otherwise the $.fn.dataTable / $.fn.DataTable
-// plugin methods would not exist.
-DataTable.use($);
 
 export default {
     props: {
@@ -185,6 +179,7 @@ export default {
 
     unmounted() {
         removeSearchFilter(this);
+        this.memberTable.removeEventListener('click', this.showCharactersClick);
         this.table.clear();
         this.table.destroy();
     },
@@ -323,7 +318,21 @@ function configureDataTable(vm) {
         return 'n/a';
     };
 
-    vm.table = $('.member-table').DataTable({
+    vm.memberTable = document.querySelector('.member-table');
+
+    // Delegate the clicks on the links in the Account column to the table element: the rows are
+    // re-rendered on every draw, so a single persistent listener is sufficient instead of
+    // rebinding on every draw.
+    vm.showCharactersClick = (evt) => {
+        const link = evt.target.closest('a[data-player-id]');
+        if (link) {
+            evt.preventDefault();
+            vm.h.showCharacters(link.dataset.playerId);
+        }
+    };
+    vm.memberTable.addEventListener('click', vm.showCharactersClick);
+
+    vm.table = new DataTable(vm.memberTable, {
         lengthMenu: [
             [10, 25, 50, 100, 200, 500, 1000, 5000, -1],
             [10, 25, 50, 100, 200, 500, 1000, 5000, "All"]
@@ -337,12 +346,6 @@ function configureDataTable(vm) {
                     tooltip.dataset.tooltipInit = '1';
                     return new Tooltip(tooltip);
                 }
-            });
-            const $link = $('a[data-player-id]');
-            $link.off('click');
-            $link.on('click', evt => {
-                $.Event(evt).preventDefault();
-                vm.h.showCharacters(evt.target.dataset.playerId);
             });
         },
         columns: [{
@@ -467,7 +470,7 @@ function registerSearchFilter(vm) {
         }
         return false;
     };
-    $.fn.dataTable.ext.search.push(vm.searchFilter);
+    DataTable.ext.search.push(vm.searchFilter);
 }
 
 /**
@@ -476,9 +479,9 @@ function registerSearchFilter(vm) {
  * @param vm The component instance
  */
 function removeSearchFilter(vm) {
-    const index = $.fn.dataTable.ext.search.indexOf(vm.searchFilter);
+    const index = DataTable.ext.search.indexOf(vm.searchFilter);
     if (index !== -1) {
-        $.fn.dataTable.ext.search.splice(index, 1);
+        DataTable.ext.search.splice(index, 1);
     }
 }
 </script>
