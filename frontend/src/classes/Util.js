@@ -53,8 +53,7 @@ export default class Util {
         if (typeof elementOrSelectors === typeof '') {
             elem = document.querySelector(elementOrSelectors);
         }
-        // The following line is from jQuery.expr.pseudos.visible
-        return !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length);
+        return !!elem && elem.checkVisibility();
     }
 
     /**
