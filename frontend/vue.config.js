@@ -1,6 +1,9 @@
 const { defineConfig } = require('@vue/cli-service')
 const path = require('path');
 const CompressionPlugin = require('compression-webpack-plugin');
+// css-minimizer-webpack-plugin does not need to be required in package.json
+// noinspection NpmUsedModulesInstalled
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
 
 module.exports = defineConfig(() => {
@@ -8,6 +11,17 @@ module.exports = defineConfig(() => {
     return {
         outputDir: path.resolve(__dirname, '../web/dist'),
         publicPath: production ? '/dist/' : '/',
+        css: {
+            loaderOptions: {
+                scss: {
+                    sassOptions: {
+                        // Bootstrap 5.3 still uses deprecated Sass features (e.g. @import).
+                        // Suppress the resulting deprecation warnings from node_modules.
+                        quietDeps: true,
+                    },
+                },
+            },
+        },
         configureWebpack: config => {
             config.resolve = {
                 fallback: { 'querystring': require.resolve('querystring-es3') },
@@ -22,6 +36,24 @@ module.exports = defineConfig(() => {
                     compressionOptions: { level: 6 },
                 }));
                 config.plugins.push(new LicenseWebpackPlugin({ perChunkOutput: false }));
+                // cssnano's svgo plugin cannot parse the percent-encoded SVG data URIs that
+                // Bootstrap 5.3 ships (e.g. the form-switch and accordion icons): Dart Sass
+                // leaves the '%' of percentage-based colours unencoded, so svgo fails with
+                // SvgoParserError warnings. Disable svgo to keep the build clean.
+                config.optimization.minimizer = config.optimization.minimizer.map(minimizer => {
+                    if (minimizer instanceof CssMinimizerPlugin) {
+                        return new CssMinimizerPlugin({
+                            minimizerOptions: {
+                                preset: ['default', {
+                                    mergeLonghand: false,
+                                    cssDeclarationSorter: false,
+                                    svgo: false,
+                                }],
+                            },
+                        });
+                    }
+                    return minimizer;
+                });
             }
         },
         chainWebpack: config => {
