@@ -4,9 +4,9 @@
 - [2.0.0](#200)
 - [1.0.0](#100)
 
-## next
+## 3.0.1
 
-dd mm yyyy
+29 Sep 2026
 
 - Added global DNS rebinding protection (see `NEUCORE_ALLOWED_HOSTS`)
 - Fixed "Invalid Host header" for the MCP server
