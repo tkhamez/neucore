@@ -216,7 +216,7 @@ class PlayerToolsTest extends TestCase
         $character1 = $this->createMock(Character::class);
         $character2 = $this->createMock(Character::class);
         $character1->method('jsonSerialize')
-            ->with(true, true, false, false, true, true)
+            ->with(true, true, false, false, true, false)
             ->willReturn([
                 'id' => 12345,
                 'name' => 'Test Character',
@@ -225,7 +225,7 @@ class PlayerToolsTest extends TestCase
                 'main' => true,
             ]);
         $character2->method('jsonSerialize')
-            ->with(true, true, false, false, true, true)
+            ->with(true, true, false, false, true, false)
             ->willReturn([
                 'id' => 67890,
                 'name' => 'Another Character',
@@ -354,7 +354,7 @@ class PlayerToolsTest extends TestCase
     {
         $character = $this->createMock(Character::class);
         $character->method('jsonSerialize')
-            ->with(true, true, false, false, true, true)
+            ->with(true, true, false, false, true, false)
             ->willReturn([
                 'id' => 12345,
                 'name' => 'Test Character',

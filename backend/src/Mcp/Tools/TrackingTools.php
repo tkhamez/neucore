@@ -24,7 +24,7 @@ class TrackingTools
      */
     #[McpTool(
         name: 'get_member_tracking',
-        description: 'Get member tracking data for a corporation.',
+        description: 'Get member tracking data for a corporation, if it is available on Neucore.',
     )]
     public function getMemberTracking(
         int $corporationId,

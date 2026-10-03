@@ -22,12 +22,13 @@ class PlayerTools
     ) {}
 
     /**
-     * @param int $playerId The player ID
+     * @param int $playerId The Neucore player ID
      * @return array<string, mixed>
      */
     #[McpTool(
         name: 'get_player',
-        description: 'Get a player with their characters (including corporation and alliance) and groups',
+        description: 'Get a player (Neucore account) with all characters that they added '
+            . '(including their corporation and its alliance) and Neucore their groups.',
     )]
     public function getPlayer(int $playerId): array
     {
@@ -45,7 +46,9 @@ class PlayerTools
      */
     #[McpTool(
         name: 'find_players',
-        description: 'Find players by their name..',
+        description: 'Find players (Neucore accounts) by their name '
+            . '(which usually matches their main character\'s name). '
+            . 'Returns the Neucore player ID and name for each player found.',
     )]
     public function findPlayers(string $name): array
     {
@@ -71,7 +74,8 @@ class PlayerTools
      */
     #[McpTool(
         name: 'find_characters',
-        description: 'Find characters by their name (minimum 3 characters)',
+        description: 'Find characters that were added to Neucore by their name. Returns the '
+            . 'character ID and name and the Neucore player ID for each character found.',
     )]
     public function findCharacters(string $name): array
     {
@@ -87,7 +91,7 @@ class PlayerTools
         $characters = $qb->getQuery()->getResult();
 
         return $this->responseBuilder->success(array_map(
-            fn(Character $character) => $character->jsonSerialize(true, withPlayerId: true, withIsMain: true),
+            fn(Character $character) => $character->jsonSerialize(true, withPlayerId: true),
             $characters,
         ));
     }
@@ -98,7 +102,9 @@ class PlayerTools
      */
     #[McpTool(
         name: 'get_character',
-        description: 'Get a character with their corporation and alliance',
+        description: 'Get a character with their ID and name, '
+            . 'their corporation and its alliance and the Neucore player ID, '
+            . ' if it is available on Neucore.',
     )]
     public function getCharacter(int $characterId): array
     {
@@ -108,7 +114,7 @@ class PlayerTools
         }
 
         return $this->responseBuilder->success(
-            $character->jsonSerialize(true, withPlayerId: true, withIsMain: true),
+            $character->jsonSerialize(true, withPlayerId: true),
         );
     }
 
@@ -118,7 +124,7 @@ class PlayerTools
      */
     #[McpTool(
         name: 'get_corporation',
-        description: 'Get a corporation with its alliance',
+        description: 'Get a corporation with its alliance, if it is available on Neucore.',
     )]
     public function getCorporation(int $corporationId): array
     {
@@ -136,7 +142,7 @@ class PlayerTools
      */
     #[McpTool(
         name: 'get_alliance',
-        description: 'Get an alliance',
+        description: 'Get an alliance, if it is available on Neucore.',
     )]
     public function getAlliance(int $allianceId): array
     {
@@ -149,12 +155,12 @@ class PlayerTools
     }
 
     /**
-     * @param int $playerId The player ID
+     * @param int $playerId The Neucore player ID
      * @return array<string, mixed>
      */
     #[McpTool(
         name: 'get_groups',
-        description: 'Get groups a player belongs to',
+        description: 'Get groups a player belongs to.',
     )]
     public function getGroups(int $playerId): array
     {
@@ -176,7 +182,7 @@ class PlayerTools
      */
     #[McpTool(
         name: 'get_group_members',
-        description: 'Get all players that belong to a group',
+        description: 'Get all players that belong to a group.',
     )]
     public function getGroupMembers(int $groupId): array
     {
@@ -196,12 +202,12 @@ class PlayerTools
     }
 
     /**
-     * @param int $playerId The player ID
+     * @param int $playerId The Neucore player ID
      * @return array<string, mixed>
      */
     #[McpTool(
         name: 'get_service_accounts',
-        description: 'Get all service accounts from active plugins for a player',
+        description: 'Get all service accounts from active Neucore plugins for a player.',
     )]
     public function getServiceAccounts(int $playerId): array
     {

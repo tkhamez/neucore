@@ -32,7 +32,7 @@ class EsiTools
      */
     #[McpTool(
         name: 'esi_request',
-        description: "Make an authenticated ESI API request using the character's ESI token. "
+        description: "Make an authenticated EVE API (ESI) request using the character's ESI token. "
             . 'Quick rule: Auth required? → `esi_request`. Public endpoint? → `https://esi.evetech.net` directly. '
             . 'Endpoints with a "security" entry in the ESI OpenAPI spec require authentication, '
             . 'all other endpoints are public. '
