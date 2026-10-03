@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Mcp;
 
 use Mcp\Server\Stateless\StatelessProtocol;
+use Neucore\Factory\RepositoryFactory;
 use Neucore\Mcp\McpServer;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -21,11 +22,11 @@ class McpServerTest extends TestCase
 
     protected function setUp(): void
     {
-        $container = $this->createMock(ContainerInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->mcpServer = new McpServer(
-            $container,
+            $this->createMock(ContainerInterface::class),
+            $this->createMock(RepositoryFactory::class),
             $this->logger,
         );
     }

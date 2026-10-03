@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Controller\App;
 
 use GuzzleHttp\Psr7\Utils;
-use Mcp\Server\Transport\Http\Middleware\CorsMiddleware;
-use Mcp\Server\Transport\Http\Middleware\DnsRebindingProtectionMiddleware;
 use Neucore\Controller\App\McpController;
+use Neucore\Factory\RepositoryFactory;
 use Neucore\Mcp\McpServer;
-use Neucore\Service\Config;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -35,6 +33,7 @@ class McpControllerTest extends TestCase
     {
         $mcpServer = new McpServer(
             $this->createMock(ContainerInterface::class),
+            $this->createMock(RepositoryFactory::class),
             $this->createMock(LoggerInterface::class),
         );
 

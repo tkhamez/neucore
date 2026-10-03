@@ -8,14 +8,17 @@ use Mcp\Schema\Enum\ProtocolVersion;
 use Mcp\Schema\ServerCapabilities;
 use Mcp\Server;
 use Mcp\Server\Stateless\StatelessProtocol;
-use Psr\Log\LoggerInterface;
+use Neucore\Entity\SystemVariable;
+use Neucore\Factory\RepositoryFactory;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
 class McpServer
 {
     public function __construct(
         private readonly ContainerInterface $container,
+        private readonly RepositoryFactory $repositoryFactory,
         private readonly LoggerInterface $logger,
     ) {}
 
@@ -23,7 +26,7 @@ class McpServer
     {
         return Server::builder()
             ->setServerInfo(
-                NEUCORE_NAME,
+                $this->getName(),
                 NEUCORE_VERSION,
                 'MCP server for ' . NEUCORE_NAME . ' EVE Online data',
             )
@@ -46,6 +49,19 @@ class McpServer
             )
             ->setLogger($this->getLogger())
             ->buildStateless();
+    }
+
+    private function getName(): string
+    {
+        $variable = $this->repositoryFactory
+            ->getSystemVariableRepository()
+            ->find(SystemVariable::CUSTOMIZATION_DOCUMENT_TITLE);
+
+        if ($variable !== null && $variable->getValue() !== '') {
+            return NEUCORE_NAME . ' - ' . $variable->getValue();
+        }
+
+        return NEUCORE_NAME;
     }
 
     private function getLogger(): LoggerInterface
