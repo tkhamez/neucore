@@ -31,10 +31,9 @@ class McpServer
             ->setDiscovery(__DIR__, ['Tools', 'Resources'])
             ->setContainer($this->container)
             ->setInstructions(
-                'Information on global rate limits is available as an MCP resource at '
-                . 'neucore://doc/global-rate-limits. '
-                . 'Alternatively, for clients that do not support MCP resources, the information '
-                . 'is available as a tool: global_rate_limits.',
+                'This server provides additional guidance on using its tools as resources. '
+                . 'For clients that do not support MCP resources, these are also available as tools. '
+                . 'For global rate limits see neucore://doc/global-rate-limits.',
             )
             ->setCapabilities(
                 (new ServerCapabilities(

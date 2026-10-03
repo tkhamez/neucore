@@ -21,9 +21,8 @@ class DocTools
      */
     #[McpTool(
         name: 'global_rate_limits',
-        title: 'Global Rate Limits',
-        description: 'Returns Neucore API rate limit header documentation (X-Neucore-Rate-Limit-Remain, '
-            . 'X-Neucore-Rate-Limit-Reset).',
+        title: DocResources::TITLE_GLOBAL_RATE_LIMIT,
+        description: DocResources::DESC_GLOBAL_RATE_LIMIT,
     )]
     public function globalRateLimits(): array
     {
@@ -35,9 +34,8 @@ class DocTools
      */
     #[McpTool(
         name: 'esi_rate_limits',
-        title: 'ESI Rate Limits',
-        description: 'Returns ESI rate limit documentation (new floating window + legacy error limits, '
-            . 'token costs, advice).',
+        title: DocResources::TITLE_ESI_RATE_LIMITS,
+        description: DocResources::DESC_ESI_RATE_LIMITS,
     )]
     public function esiRateLimits(): array
     {
@@ -49,11 +47,24 @@ class DocTools
      */
     #[McpTool(
         name: 'esi_pagination',
-        title: 'ESI Pagination',
-        description: 'Returns ESI pagination documentation (offset-based and cursor-based pagination).',
+        title: DocResources::TITLE_ESI_PAGINATION,
+        description: DocResources::DESC_ESI_PAGINATION,
     )]
     public function esiPagination(): array
     {
         return $this->resources->esiPagination();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    #[McpTool(
+        name: 'esi_assets',
+        title: DocResources::TITLE_ESI_ASSETS,
+        description: DocResources::DESC_ESI_ASSETS,
+    )]
+    public function esiAssets(): array
+    {
+        return $this->resources->esiAssets();
     }
 }

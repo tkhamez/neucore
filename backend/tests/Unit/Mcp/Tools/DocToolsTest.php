@@ -35,4 +35,9 @@ class DocToolsTest extends TestCase
     {
         self::assertSame($this->docResources->esiPagination(), $this->docTools->esiPagination());
     }
+
+    public function testEsiAssetsDelegatesToResource(): void
+    {
+        self::assertSame($this->docResources->esiAssets(), $this->docTools->esiAssets());
+    }
 }

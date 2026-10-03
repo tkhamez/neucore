@@ -43,4 +43,19 @@ class DocResourcesTest extends TestCase
         self::assertArrayHasKey('offset_based', $data);
         self::assertArrayHasKey('token_based', $data);
     }
+
+    public function testEsiAssets(): void
+    {
+        $data = $this->docResources->esiAssets();
+
+        self::assertArrayHasKey('endpoint', $data);
+        self::assertArrayHasKey('response_schema', $data);
+        self::assertArrayHasKey('build_algorithm', $data);
+        self::assertArrayHasKey('chain_walk', $data);
+        self::assertArrayHasKey('location_flag_decoding', $data);
+        self::assertArrayHasKey('asset_safety', $data);
+        self::assertArrayHasKey('classification', $data);
+        self::assertArrayHasKey('final_locations', $data);
+        self::assertArrayHasKey('related_endpoints', $data);
+    }
 }
