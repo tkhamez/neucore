@@ -103,7 +103,7 @@ Tracked static ESI data files (regenerate with `bin/console generate-eve-api-fil
 ## Database migrations
 
 - Migration namespace: `Neucore\Migrations` → `backend/src/Migrations/` (config `backend/config/migrations.yml`).
-- Generate diff: `vendor/bin/doctrine-migrations migrations:diff`.
+- Create a new migration after making changes to entities: `vendor/bin/doctrine-migrations migrations:diff`.
 - Run: `composer db:migrate`; seed fixtures: `composer db:seed`.
 - **Important**: Generate migrations while using the **oldest** supported database version, then test against all supported MariaDB/MySQL versions (see CI matrix in `.github/workflows/test.yml`).
 
