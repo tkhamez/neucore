@@ -4,6 +4,12 @@
 - [2.0.0](#200)
 - [1.0.0](#100)
 
+## next
+
+dd mm yyyy
+
+- MCP server improvements
+
 ## 3.0.1
 
 29 Sep 2026
