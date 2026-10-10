@@ -9,6 +9,7 @@
 dd mm yyyy
 
 - MCP server improvements
+- Apps with the mcp or tracking role can now be limited to certain corporations.
 
 ## 3.0.1
 

@@ -9,6 +9,7 @@ namespace Tests\Functional\Controller\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\EveLogin;
+use Neucore\Entity\Corporation;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\GroupRepository;
@@ -49,6 +50,8 @@ class AppControllerTest extends WebTestCase
     private int $eveLoginId2;
 
     private int $pid3;
+
+    private int $corpId1;
 
     public static function setupBeforeClass(): void
     {
@@ -157,7 +160,8 @@ class AppControllerTest extends WebTestCase
         $this->assertNotNull($na);
 
         $this->assertSame(
-            ['id' => $na->getId(), 'name' => 'new app', 'groups' => [], 'roles' => [Role::APP], 'eveLogins' => []],
+            ['id' => $na->getId(), 'name' => 'new app', 'groups' => [], 'corporations' => [],
+                'roles' => [Role::APP], 'eveLogins' => []],
             $this->parseJsonBody($response),
         );
 
@@ -218,6 +222,7 @@ class AppControllerTest extends WebTestCase
                 'id' => $this->aid,
                 'name' => 'n a n',
                 'groups' => [$expectedGroup],
+                'corporations' => [],
                 'roles' => [Role::APP],
                 'eveLogins' => [[
                     'id' => $this->eveLoginId1,
@@ -234,6 +239,7 @@ class AppControllerTest extends WebTestCase
                 'id' => $this->aid,
                 'name' => 'new name',
                 'groups' => [$expectedGroup],
+                'corporations' => [],
                 'roles' => [Role::APP],
                 'eveLogins' => [[
                     'id' => $this->eveLoginId1,
@@ -446,6 +452,7 @@ class AppControllerTest extends WebTestCase
                 'groups' => [['id' => $this->gid, 'name' => 'group-one', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
                     'isDefault' => false, 'isAutoManaged' => null]],
+                'corporations' => [],
                 'roles' => [Role::APP],
                 'eveLogins' => [[
                     'id' => $this->eveLoginId1,
@@ -474,6 +481,7 @@ class AppControllerTest extends WebTestCase
                 'groups' => [['id' => $this->gid, 'name' => 'group-one', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
                     'isDefault' => false, 'isAutoManaged' => null]],
+                'corporations' => [],
                 'roles' => [Role::APP],
                 'eveLogins' => [[
                     'id' => $this->eveLoginId1,
@@ -707,9 +715,18 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('PUT', '/api/user/app/' . ($this->aid + 10) . '/add-eve-login/' . $this->eveLoginId2);
-        $response2 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-eve-login/' . ($this->eveLoginId2 + 10));
-        $response3 = $this->runApp('PUT', '/api/user/app/' . ($this->aid + 10) . '/add-eve-login/' . ($this->eveLoginId2 + 10));
+        $response1 = $this->runApp(
+            'PUT',
+            '/api/user/app/' . ($this->aid + 10) . '/add-eve-login/' . $this->eveLoginId2,
+        );
+        $response2 = $this->runApp(
+            'PUT',
+            '/api/user/app/' . $this->aid . '/add-eve-login/' . ($this->eveLoginId2 + 10),
+        );
+        $response3 = $this->runApp(
+            'PUT',
+            '/api/user/app/' . ($this->aid + 10) . '/add-eve-login/' . ($this->eveLoginId2 + 10),
+        );
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -750,8 +767,14 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('PUT', '/api/user/app/' . ($this->aid + 10) . '/remove-eve-login/' . $this->eveLoginId2);
-        $response2 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/remove-eve-login/' . ($this->eveLoginId2 + 10));
+        $response1 = $this->runApp(
+            'PUT',
+            '/api/user/app/' . ($this->aid + 10) . '/remove-eve-login/' . $this->eveLoginId2,
+        );
+        $response2 = $this->runApp(
+            'PUT',
+            '/api/user/app/' . $this->aid . '/remove-eve-login/' . ($this->eveLoginId2 + 10),
+        );
         $response3 = $this->runApp(
             'PUT',
             '/api/user/app/' . ($this->aid + 10) . '/remove-eve-login/' . ($this->eveLoginId2 + 10),
@@ -814,6 +837,108 @@ class AppControllerTest extends WebTestCase
         $this->assertSame(64, strlen($this->parseJsonBody($response)));
     }
 
+    public function testAddCorporation403()
+    {
+        $response = $this->runApp('PUT', '/api/user/app/59/add-corporation/100001');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-corporation/' . $this->corpId1);
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAddCorporation404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        // app not found
+        $response1 = $this->runApp(
+            'PUT',
+            '/api/user/app/' . ($this->aid + 100) . '/add-corporation/' . $this->corpId1,
+        );
+        // corporation not found
+        $response2 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-corporation/' . (100000 + 100));
+
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals(404, $response2->getStatusCode());
+    }
+
+    public function testAddCorporation204()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        // Add the corporation
+        $response1 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-corporation/' . $this->corpId1);
+        $this->assertEquals(204, $response1->getStatusCode());
+
+        // Idempotent: adding again should also return 204
+        $response2 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-corporation/' . $this->corpId1);
+        $this->assertEquals(204, $response2->getStatusCode());
+
+        $this->em->clear();
+
+        $app = $this->appRepo->find($this->aid);
+        $corpIds = [];
+        foreach ($app->getCorporations() as $c) {
+            $corpIds[] = $c->getId();
+        }
+        $this->assertSame([$this->corpId1], $corpIds);
+    }
+
+    public function testRemoveCorporation403()
+    {
+        $response = $this->runApp('PUT', '/api/user/app/59/remove-corporation/100001');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/remove-corporation/' . $this->corpId1);
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testRemoveCorporation404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        // app not found
+        $response1 = $this->runApp(
+            'PUT',
+            '/api/user/app/' . ($this->aid + 100) . '/remove-corporation/' . $this->corpId1,
+        );
+        // corporation not found
+        $response2 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/remove-corporation/' . (100000 + 100));
+
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals(404, $response2->getStatusCode());
+    }
+
+    public function testRemoveCorporation204()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        // First add a corporation
+        $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-corporation/' . $this->corpId1);
+
+        $this->em->clear();
+        $app = $this->appRepo->find($this->aid);
+        $this->assertSame(1, count($app->getCorporations()));
+
+        // Now remove it
+        $response = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/remove-corporation/' . $this->corpId1);
+        $this->assertEquals(204, $response->getStatusCode());
+
+        $this->em->clear();
+        $app = $this->appRepo->find($this->aid);
+        $this->assertSame([], $app->getCorporations());
+    }
+
     /**
      * @param string[] $addRoles
      */
@@ -853,6 +978,13 @@ class AppControllerTest extends WebTestCase
         $this->em->persist($eveLogin1);
         $this->em->persist($eveLogin2);
         $a->addEveLogin($eveLogin1);
+
+        // Add test corporations
+        $corp1 = (new Corporation())->setId(100001)->setName('Test Corp 1')->setTicker('TST1');
+        $corp2 = (new Corporation())->setId(100002)->setName('Test Corp 2')->setTicker('TST2');
+        $this->em->persist($corp1);
+        $this->em->persist($corp2);
+        $this->corpId1 = 100001;
 
         $this->em->flush();
         $this->em->clear();

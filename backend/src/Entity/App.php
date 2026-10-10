@@ -62,6 +62,15 @@ class App implements \JsonSerializable
     private Collection $eveLogins;
 
     /**
+     * Corporations for which app access should be restricted.
+     */
+    #[ORM\ManyToMany(targetEntity: Corporation::class)]
+    #[ORM\JoinTable(name: "app_corporation")]
+    #[ORM\OrderBy(["name" => "ASC"])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/Corporation'))]
+    private Collection $corporations;
+
+    /**
      * Contains only information of interest to clients.
      *
      * @return array<string, mixed>
@@ -72,6 +81,7 @@ class App implements \JsonSerializable
             'id' => $this->id,
             'name' => $this->name,
             'groups' => $this->getGroups(),
+            'corporations' => $this->getCorporations(),
             'roles' => $this->getRoles(),
             'eveLogins' => $this->getEveLogins(),
         ];
@@ -86,6 +96,7 @@ class App implements \JsonSerializable
         $this->groups = new ArrayCollection();
         $this->managers = new ArrayCollection();
         $this->eveLogins = new ArrayCollection();
+        $this->corporations = new ArrayCollection();
     }
 
     public function getId(): int
@@ -230,5 +241,27 @@ class App implements \JsonSerializable
     public function getEveLogins(): array
     {
         return array_values($this->eveLogins->toArray());
+    }
+
+    public function addCorporation(Corporation $corporation): self
+    {
+        if (!$this->corporations->contains($corporation)) {
+            $this->corporations[] = $corporation;
+        }
+
+        return $this;
+    }
+
+    public function removeCorporation(Corporation $corporation): bool
+    {
+        return $this->corporations->removeElement($corporation);
+    }
+
+    /**
+     * @return Corporation[]
+     */
+    public function getCorporations(): array
+    {
+        return array_values($this->corporations->toArray());
     }
 }

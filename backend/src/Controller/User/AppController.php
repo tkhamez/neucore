@@ -6,6 +6,7 @@ namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
 use Neucore\Entity\App;
+use Neucore\Entity\Corporation;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
@@ -28,6 +29,8 @@ class AppController extends BaseController
     private Group $group;
 
     private Role $role;
+
+    private Corporation $corp;
 
     private EveLogin $eveLogin;
 
@@ -684,6 +687,94 @@ class AppController extends BaseController
     }
 
     #[OA\Put(
+        path: '/user/app/{id}/add-corporation/{corporationId}',
+        operationId: 'userAppAddCorporation',
+        description: 'Needs role: app-admin<br>'
+            . 'Adds a corporation to an app.',
+        summary: 'Add a corporation to an app.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['App'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the app.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+            new OA\Parameter(
+                name: 'corporationId',
+                description: 'EVE corporation ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Corporation added.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'App and/or corporation not found.'),
+        ],
+    )]
+    public function addCorporation(string $id, string $corporationId): ResponseInterface
+    {
+        if (!$this->findAppAndCorporation($id, $corporationId)) {
+            return $this->response->withStatus(404);
+        }
+
+        foreach ($this->application->getCorporations() as $existingCorp) {
+            if ($existingCorp->getId() === (int) $corporationId) {
+                return $this->response->withStatus(204);
+            }
+        }
+
+        $this->application->addCorporation($this->corp);
+
+        return $this->flushAndReturn(204);
+    }
+
+    #[OA\Put(
+        path: '/user/app/{id}/remove-corporation/{corporationId}',
+        operationId: 'userAppRemoveCorporation',
+        description: 'Needs role: app-admin<br>'
+            . 'Removes a corporation from an app.',
+        summary: 'Remove a corporation from an app.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['App'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the app.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+            new OA\Parameter(
+                name: 'corporationId',
+                description: 'EVE corporation ID.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Corporation removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'App and/or corporation not found.'),
+        ],
+    )]
+    public function removeCorporation(string $id, string $corporationId): ResponseInterface
+    {
+        if (!$this->findAppAndCorporation($id, $corporationId)) {
+            return $this->response->withStatus(404);
+        }
+
+        $this->application->removeCorporation($this->corp);
+
+        return $this->flushAndReturn(204);
+    }
+
+    #[OA\Put(
         path: '/user/app/{id}/change-secret',
         operationId: 'changeSecret',
         description: 'Needs role: app-manager',
@@ -785,6 +876,17 @@ class AppController extends BaseController
             return false;
         }
         $this->application = $applicationEntity;
+
+        return true;
+    }
+
+    private function findAppAndCorporation(string $appId, string $corpId): bool
+    {
+        $corpEntity = $this->repositoryFactory->getCorporationRepository()->find((int) $corpId);
+        if (!$this->findApp($appId) || $corpEntity === null) {
+            return false;
+        }
+        $this->corp = $corpEntity;
 
         return true;
     }

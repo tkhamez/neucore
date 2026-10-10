@@ -40,7 +40,8 @@ Select and table to add and remove objects from other objects.
             </p>
             <p v-cloak v-if="type === 'Group' && contentType === 'forbiddenGroups'">
                 <strong>Forbidden Groups</strong><br>
-                Add groups that an account cannot be a member of (<em>any one</em> of them) to be a member of that group.
+                Add groups that an account cannot be a member of (<em>any one</em> of them) to be a
+                member of that group.
             </p>
             <p v-cloak v-if="type === 'App' && contentType === 'managers'">
                 Managers can change the application secret.
@@ -136,7 +137,7 @@ Select and table to add and remove objects from other objects.
                         <th scope="col" :style="stickyTop" class="text-nowrap" v-if="
                             contentType === 'corporations' && type === 'WatchlistAllowlist'">auto *</th>
                         <th scope="col" :style="stickyTop" v-if="
-                            (type === 'Group' || type === 'App') &&
+                            type === 'Group' &&
                             (contentType === 'corporations' || contentType === 'alliances')">Groups</th>
                         <th scope="col" :style="stickyTop">Action</th>
                     </tr>
@@ -174,7 +175,7 @@ Select and table to add and remove objects from other objects.
                             {{ row.autoAllowlist }}
                         </td>
                         <td v-if="
-                                (type === 'Group' || type === 'App') &&
+                                type === 'Group' &&
                                 (contentType === 'corporations' || contentType === 'alliances')">
                             <button class="btn btn-info btn-sm" v-on:click="showGroups(row.id)">Show groups</button>
                         </td>
@@ -238,17 +239,17 @@ export default {
         contentType: '',
 
         /**
-         * Type of entity to add/remove items from, e. g. "Group"
+         * Type of entity to add/remove items from, e.g. "Group"
          */
         type: '',
 
         /**
-         * ID of entity to add/remove items from, e. g. 12
+         * ID of entity to add/remove items from, e.g. 12
          */
         typeId: Number,
 
         /**
-         * Unique name of entity to add/remove items from, e. g. user-chars
+         * Unique name of entity to add/remove items from, e.g. user-chars
          */
         typeName: String,
 
@@ -484,7 +485,8 @@ export default {
                 method = 'alliances';
             } else if (
                 this.type === 'App' &&
-                (this.contentType === 'groups' || this.contentType === 'roles' || this.contentType === 'eveLogins')
+                (this.contentType === 'groups' || this.contentType === 'roles' ||
+                    this.contentType === 'eveLogins' || this.contentType === 'corporations')
             ) {
                 method = 'show';
             } else if ((this.type === 'App' || this.type === 'Player') && this.contentType === 'groups') {
@@ -546,6 +548,8 @@ export default {
                     this.tableContent = roles;
                 } else if (this.type === 'App' && this.contentType === 'eveLogins') {
                     this.tableContent = data.eveLogins;
+                } else if (this.type === 'App' && this.contentType === 'corporations') {
+                    this.tableContent = data.corporations || [];
                 }  else if (this.type === 'Player') {
                     this.tableContent = data.groups;
                     this.$emit('activePlayer', data); // pass data to parent
@@ -661,6 +665,11 @@ export default {
                 }
                 param1 = this.typeId;
                 param2 = id;
+            } else if (this.type === 'App' && this.contentType === 'corporations') {
+                api = new AppApi();
+                method = action === 'add' ? 'userAppAddCorporation' : 'userAppRemoveCorporation';
+                param1 = this.typeId;
+                param2 = id;
             } else if (this.contentType === 'managers') {
                 if (this.type === 'Group') {
                     api = new GroupApi();
@@ -694,7 +703,8 @@ export default {
                     }
                 } else if (this.type === 'WatchlistKicklist') {
                     if (this.contentType === 'alliances') {
-                        method = action === 'add' ? 'watchlistKicklistAllianceAdd' : 'watchlistKicklistAllianceRemove';
+                        method = action === 'add' ?
+                            'watchlistKicklistAllianceAdd' : 'watchlistKicklistAllianceRemove';
                     } else {
                         method = action === 'add' ?
                             'watchlistKicklistCorporationAdd' : 'watchlistKicklistCorporationRemove';

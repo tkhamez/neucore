@@ -74,6 +74,37 @@
                             </table>
                         </div>
 
+                        <h5>Corporations</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover nc-table-sm" aria-describedby="corporations">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">EVE ID</th>
+                                        <th scope="col">Ticker</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Alliance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="corp in app.corporations">
+                                        <td>{{ corp.id }}</td>
+                                        <td>{{ corp.ticker }}</td>
+                                        <td>
+                                            <a class="external" target="_blank" rel="noopener noreferrer"
+                                               :href="`https://evewho.com/corporation/${corp.id}`">{{ corp.name }}</a>
+                                        </td>
+                                        <td>
+                                            <a v-if="corp.alliance" class="external" target="_blank"
+                                               rel="noopener noreferrer"
+                                               :href="`https://evewho.com/alliance/${corp.alliance.id}`">
+                                                [{{ corp.alliance.ticker }}] {{ corp.alliance.name }}</a>
+                                            <span v-else class="text-muted">—</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
                         <h5>Roles</h5>
                         <table class="table table-hover nc-table-sm" aria-describedby="roles">
                             <thead>

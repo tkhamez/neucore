@@ -61,6 +61,11 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
+                       :class="{ 'active': contentType === 'corporations' }"
+                       :href="`#AppAdmin/${appId}/corporations`">Corporations</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
                        :class="{ 'active': contentType === 'roles' }"
                        :href="`#AppAdmin/${appId}/roles`">Roles</a>
                 </li>
