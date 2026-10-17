@@ -20,9 +20,9 @@ class DocTools
      * @return array<string, mixed>
      */
     #[McpTool(
-        name: 'global_rate_limits',
-        title: DocResources::TITLE_GLOBAL_RATE_LIMIT,
-        description: DocResources::DESC_GLOBAL_RATE_LIMIT,
+        name: 'doc_global_rate_limits',
+        title: DocResources::TITLE_GLOBAL_RATE_LIMITS,
+        description: DocResources::DESC_GLOBAL_RATE_LIMITS,
     )]
     public function globalRateLimits(): array
     {
@@ -33,7 +33,7 @@ class DocTools
      * @return array<string, mixed>
      */
     #[McpTool(
-        name: 'esi_rate_limits',
+        name: 'doc_esi_rate_limits',
         title: DocResources::TITLE_ESI_RATE_LIMITS,
         description: DocResources::DESC_ESI_RATE_LIMITS,
     )]
@@ -46,7 +46,7 @@ class DocTools
      * @return array<string, mixed>
      */
     #[McpTool(
-        name: 'esi_pagination',
+        name: 'doc_esi_pagination',
         title: DocResources::TITLE_ESI_PAGINATION,
         description: DocResources::DESC_ESI_PAGINATION,
     )]
@@ -59,7 +59,7 @@ class DocTools
      * @return array<string, mixed>
      */
     #[McpTool(
-        name: 'esi_assets',
+        name: 'doc_esi_assets',
         title: DocResources::TITLE_ESI_ASSETS,
         description: DocResources::DESC_ESI_ASSETS,
     )]

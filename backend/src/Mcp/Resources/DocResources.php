@@ -10,9 +10,9 @@ use Neucore\Service\EsiClient;
 
 class DocResources
 {
-    public const TITLE_GLOBAL_RATE_LIMIT = 'Global Rate Limits';
+    public const TITLE_GLOBAL_RATE_LIMITS = 'Global Rate Limits';
 
-    public const DESC_GLOBAL_RATE_LIMIT = 'Returns Neucore API rate limit header documentation '
+    public const DESC_GLOBAL_RATE_LIMITS = 'Returns Neucore API rate limit header documentation '
         . '(X-Neucore-Rate-Limit-Remain, X-Neucore-Rate-Limit-Reset).';
 
     public const TITLE_ESI_RATE_LIMITS = 'ESI Rate Limits';
@@ -35,8 +35,8 @@ class DocResources
      */
     #[McpResource(
         uri: 'neucore://doc/global-rate-limits',
-        title: self::TITLE_GLOBAL_RATE_LIMIT,
-        description: self::DESC_GLOBAL_RATE_LIMIT,
+        title: self::TITLE_GLOBAL_RATE_LIMITS,
+        description: self::DESC_GLOBAL_RATE_LIMITS,
     )]
     public function globalRateLimits(): array
     {

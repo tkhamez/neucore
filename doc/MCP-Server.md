@@ -22,11 +22,14 @@ The server supports only the modern protocol version 2026-07-28.
 | `get_groups`             | Get groups a player belongs to                                        |
 | `get_group_members`      | Get all players that belong to a group                                |
 | `get_service_accounts`   | Get all service accounts from active plugins for a player             |
-| `get_member_tracking`    | Get corporation member tracking data, with filters                    |
+| `get_member_tracking`    | Get corporation member tracking data, with filters (1)                |
 | `esi_request`            | Make authenticated ESI API requests using a character's ESI token.    |
 
-Filters for `get_member_tracking`: active days, inactive days, token status, token status changed date,
+(1) Filters for `get_member_tracking`: active days, inactive days, token status, token status changed date,
 missing character mail count, belongs to a player account.
+
+In addition, there are resources that provide documentation. 
+For clients that do not support resources, these are also available as tools.
 
 
 ## Usage
