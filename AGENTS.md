@@ -49,6 +49,7 @@ See `CONTRIBUTING.md` for full guidelines.
 - Do not install software on the host system.
 - Do not make changes to files outside this project.
 - Only work on files under version control.
+- Use Git read-only, the user commits and pushes.
 
 ## Environment / configuration
 
