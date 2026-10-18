@@ -47,10 +47,14 @@ Select and table to add and remove objects from other objects.
                 Managers can change the application secret.
             </p>
             <p v-cloak v-if="
-                (type === 'Group' || type === 'App') &&
+                (type === 'Group') &&
                 (contentType === 'alliances' || contentType === 'corporations')
             ">
                 Players in these {{contentType}} are automatically added to the group and removed when they leave.
+            </p>
+            <p v-cloak v-if="type === 'App' && contentType === 'corporations'">
+                If an app has corporations, it may only access data of players that have at least
+                one character in one of those corporations.
             </p>
             <p v-cloak v-if="type === 'Role' && contentType === 'requiredGroups'">
                 <strong>Required Groups</strong><br>
@@ -58,7 +62,7 @@ Select and table to add and remove objects from other objects.
             </p>
             <div class="row mb-1" v-cloak v-if="type === 'App' && contentType === 'groups'">
                 <p class="col-9">
-                    The application can only see the membership of players to groups that are listed here.
+                    The application can only see groups that are listed here.
                 </p>
                 <div class="col-3 text-end">
                     <button class="btn btn-sm btn-outline-warning" v-on:click="addAllGroupsToApp()">
