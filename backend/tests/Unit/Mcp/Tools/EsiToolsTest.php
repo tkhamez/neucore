@@ -9,10 +9,12 @@ use GuzzleHttp\Psr7\Request;
 use Neucore\Entity\Character;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
+use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Mcp\ResponseBuilder;
 use Neucore\Mcp\Tools\EsiTools;
 use Neucore\Repository\CharacterRepository;
+use Neucore\Service\AppAuth;
 use Neucore\Service\EsiClient;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -36,10 +38,15 @@ class EsiToolsTest extends TestCase
         $this->esiClient = $this->createMock(EsiClient::class);
         $this->responseBuilder = $this->createMock(ResponseBuilder::class);
 
+        // The app has no corporation restriction by default.
+        $appAuth = $this->createMock(AppAuth::class);
+        $appAuth->method('isPlayerAllowed')->willReturn(true);
+
         $this->tools = new EsiTools(
             $this->repositoryFactory,
             $this->esiClient,
             $this->responseBuilder,
+            $appAuth,
         );
     }
 
@@ -299,6 +306,45 @@ class EsiToolsTest extends TestCase
     }
 
     #[Test]
+    public function testEsiRequest_forbidden(): void
+    {
+        $character = $this->createMock(Character::class);
+        $this->repositoryFactory
+            ->method('getCharacterRepository')
+            ->willReturn($this->createCharacterRepository($character));
+
+        $appAuth = $this->createMock(AppAuth::class);
+        $appAuth->method('isPlayerAllowed')->willReturn(false);
+        $tools = new EsiTools(
+            $this->repositoryFactory,
+            $this->esiClient,
+            $this->responseBuilder,
+            $appAuth,
+        );
+
+        $this->esiClient
+            ->expects(self::never())
+            ->method('request');
+
+        $this->responseBuilder
+            ->expects(self::once())
+            ->method('error')
+            ->with(403, 'Forbidden')
+            ->willReturn([
+                'success' => false,
+                'statusCode' => 403,
+                'error' => 'Forbidden',
+                'headers' => [],
+            ]);
+
+        $result = $tools->esiRequest(12345, '/universe/stations/1');
+
+        self::assertFalse($result['success']);
+        self::assertSame(403, $result['statusCode']);
+        self::assertSame('Forbidden', $result['error']);
+    }
+
+    #[Test]
     public function testEsiRequest_noValidToken(): void
     {
         $character = $this->createCharacterWithToken(valid: false);
@@ -327,6 +373,7 @@ class EsiToolsTest extends TestCase
     public function testEsiRequest_noTokenAtAll(): void
     {
         $character = $this->createMock(Character::class);
+        $character->method('getPlayer')->willReturn($this->createPlayer(7));
         $character->expects(self::once())
             ->method('getEsiToken')
             ->with(EveLogin::NAME_DEFAULT)
@@ -529,9 +576,6 @@ class EsiToolsTest extends TestCase
                 'headers' => $headers,
             ]);
 
-        // Empty string decodes to null, but json_decode('') returns null with JSON_ERROR_NONE
-        // Actually, json_decode('') returns null with error JSON_ERROR_SYNTAX
-        // Let me just verify this test works with the actual behavior
         $result = $this->tools->esiRequest(12345, '/universe/stations/1');
 
         // Empty body should fail to decode
@@ -542,6 +586,7 @@ class EsiToolsTest extends TestCase
     private function createCharacterWithToken(bool $valid): Character
     {
         $character = $this->createMock(Character::class);
+        $character->method('getPlayer')->willReturn($this->createPlayer(8));
         $token = $this->createMock(EsiToken::class);
         $token->method('getValidToken')->willReturn($valid);
         $character->expects(self::once())
@@ -549,6 +594,13 @@ class EsiToolsTest extends TestCase
             ->with(EveLogin::NAME_DEFAULT)
             ->willReturn($token);
         return $character;
+    }
+
+    private function createPlayer(int $id): Player
+    {
+        $player = $this->createMock(Player::class);
+        $player->method('getId')->willReturn($id);
+        return $player;
     }
 
     private function createCharacterRepository(?Character $character): CharacterRepository

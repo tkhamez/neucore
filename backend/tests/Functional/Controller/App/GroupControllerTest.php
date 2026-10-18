@@ -603,7 +603,7 @@ class GroupControllerTest extends WebTestCase
 
         # app: g0, g1, g4, g5
         # corp 500: g1, g2, g4
-        # alli 100: g2, g4, g5
+        # alliance 100: g2, g4, g5
 
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -739,5 +739,56 @@ class GroupControllerTest extends WebTestCase
 
         $this->helper->getObjectManager()->flush();
         $this->helper->getObjectManager()->clear();
+    }
+
+    public function testGroupsV1403RestrictedApp()
+    {
+        $this->setUpDb();
+        $om = $this->helper->getObjectManager();
+        $app = $this->helper->addApp('A2', 's2', [Role::APP, Role::APP_GROUPS]);
+        $app->addCorporation($om->find(Corporation::class, 500) ?? throw new \RuntimeException());
+        $app->addGroup($om->find(Group::class, $this->group0Id) ?? throw new \RuntimeException());
+        $app->addGroup($om->find(Group::class, $this->group1Id) ?? throw new \RuntimeException());
+        $om->flush();
+
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s2')];
+
+        // char 123: player has no character in the app's corporation
+        $response1 = $this->runApp('GET', '/api/app/v1/groups/123', null, $headers);
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        // char 789: is in the app's corporation
+        $response2 = $this->runApp('GET', '/api/app/v1/groups/789', null, $headers);
+        $this->assertEquals(200, $response2->getStatusCode());
+        $this->assertSame([
+            ['id' => $this->group0Id, 'name' => 'g0', 'description' => null,
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                'isDefault' => false, 'isAutoManaged' => null],
+            ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
+                'isDefault' => false, 'isAutoManaged' => null],
+        ], $this->parseJsonBody($response2));
+    }
+
+    public function testMembers200RestrictedApp()
+    {
+        $this->setUpDb();
+        $om = $this->helper->getObjectManager();
+        $app = $this->helper->addApp('A2', 's2', [Role::APP, Role::APP_GROUPS]);
+        $app->addCorporation($om->find(Corporation::class, 500) ?? throw new \RuntimeException());
+        $app->addGroup($om->find(Group::class, $this->group1Id) ?? throw new \RuntimeException());
+        $om->flush();
+
+        // without restriction both members (123, 789) are returned
+        $headers1 = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
+        $response1 = $this->runApp('GET', "/api/app/v1/group-members/$this->group1Id", null, $headers1);
+        $this->assertEquals(200, $response1->getStatusCode());
+        $this->assertSame([123, 789], $this->parseJsonBody($response1));
+
+        // with the restriction only the member of a player with a character in corp 500 is returned
+        $headers2 = ['Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s2')];
+        $response2 = $this->runApp('GET', "/api/app/v1/group-members/$this->group1Id", null, $headers2);
+        $this->assertEquals(200, $response2->getStatusCode());
+        $this->assertSame([789], $this->parseJsonBody($response2));
     }
 }

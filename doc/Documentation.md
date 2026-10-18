@@ -91,6 +91,13 @@ Example:
 curl --header "Authorization: Bearer MTpteSBhd2Vzb21lIHNlY3JldA==" https://neucore.tld/api/app/v1/show
 ```
 
+### Corporation Restriction
+
+An app can be assigned one or more corporations (UI: Management → Apps → edit). If an app has
+corporations, it may only access data of players that have at least one character in one of those
+corporations. This applies to all character/player data API endpoints and MCP tools. Data of other
+players is not returned (403 status code or omitted from list results).
+
 ### Rate Limits
 
 If the *API rate limit for apps* is enabled (UI: Admin → Settings → Features), each response will contain 

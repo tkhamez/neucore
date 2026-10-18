@@ -20,6 +20,8 @@ class CharControllerTest extends WebTestCase
 
     private int $appId;
 
+    private int $playerId;
+
     protected function setUp(): void
     {
         $this->helper = new Helper();
@@ -711,5 +713,79 @@ class CharControllerTest extends WebTestCase
         $this->helper->emptyDb();
         $this->app0Id = $this->helper->addApp('A0', 's0', [Role::APP])->getId();
         $this->appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_CHARS])->getId();
+    }
+
+    public function testCharactersV1RestrictedApp()
+    {
+        $this->setUpRestrictedDb();
+
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
+
+        // char 456: player has no character in the app's corporation
+        $response1 = $this->runApp('GET', '/api/app/v1/characters/456', null, $headers);
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        // char 123: is in the app's corporation
+        $response2 = $this->runApp('GET', '/api/app/v1/characters/123', null, $headers);
+        $this->assertEquals(200, $response2->getStatusCode());
+        $body = $this->parseJsonBody($response2);
+        $this->assertSame(1, count($body));
+        $this->assertSame(123, $body[0]['id']);
+        $this->assertSame('C1', $body[0]['name']);
+    }
+
+    public function testPlayersV1RestrictedApp()
+    {
+        $this->setUpRestrictedDb();
+
+        $headers = [
+            'Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1'),
+            'Content-Type' => 'application/json',
+        ];
+        $response = $this->runApp('POST', '/api/app/v1/players', [123, 456, 789], $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(
+            [['id' => $this->playerId, 'name' => 'C1', 'characterId' => 123]],
+            $this->parseJsonBody($response),
+        );
+    }
+
+    public function testCharacterListV1RestrictedApp()
+    {
+        $this->setUpRestrictedDb();
+
+        $headers = [
+            'Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1'),
+            'Content-Type' => 'application/json',
+        ];
+        $response = $this->runApp('POST', '/api/app/v1/character-list', [123, 456, 789], $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $body = $this->parseJsonBody($response);
+        $this->assertSame(1, count($body));
+        $this->assertSame(123, $body[0]['id']);
+        $this->assertSame('C1', $body[0]['name']);
+    }
+
+    private function setUpRestrictedDb(): void
+    {
+        $this->helper->emptyDb();
+
+        $corp = (new Corporation())->setId(10)->setName('Corp ten');
+        $this->helper->getObjectManager()->persist($corp);
+
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_CHARS]);
+        $app->addCorporation($corp);
+        $this->appId = $app->getId();
+
+        $char1 = $this->helper->addCharacterMain('C1', 123);
+        $char1->setCorporation($corp);
+        $this->playerId = $char1->getPlayer()->getId();
+
+        // player without a character in the app's corporation
+        $this->helper->addCharacterMain('C2', 456);
+        $this->helper->getObjectManager()->flush();
+        $this->helper->getObjectManager()->clear();
     }
 }

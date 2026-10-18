@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Neucore\Controller\App;
 
 use Neucore\Controller\BaseController;
+use Neucore\Entity\Character;
 use Neucore\Entity\Group;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\AppAuth;
 use Neucore\Service\ObjectManager;
-use OpenApi\Attributes as OAT;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -94,8 +94,17 @@ class GroupController extends BaseController
     )]
     public function groupsV1(string $cid, ServerRequestInterface $request): ResponseInterface
     {
+        $character = $this->repositoryFactory->getCharacterRepository()->find((int) $cid);
+        if ($character === null) {
+            return $this->response->withStatus(404);
+        }
+
+        if (!$this->appAuthService->isPlayerAllowed($character->getPlayer()->getId())) {
+            return $this->response->withStatus(403);
+        }
+
         $appGroups = $this->getAppGroups($request);
-        $result = $this->getGroupsForPlayer((int) $cid, $appGroups);
+        $result = $this->getGroupsForPlayer((int) $cid, $appGroups, $character);
 
         if ($result === null) {
             return $this->response->withStatus(404);
@@ -457,6 +466,10 @@ class GroupController extends BaseController
 
         $characterResult = $this->getGroupsForPlayer($characterId, $appGroups);
         if ($characterResult !== null) {
+            // The character was found, check if the app is allowed to access it.
+            if (!$this->appAuthService->isCharacterAllowed($characterId)) {
+                return $this->response->withStatus(403);
+            }
             // could be an empty result
             return $this->withJson($characterResult[self::KEY_GROUPS]);
         }
@@ -536,6 +549,8 @@ class GroupController extends BaseController
             ->getCharacterRepository()
             ->getGroupMembersMainCharacter($group->getId(), $corporationId);
 
+        $members = $this->appAuthService->filterAllowedCharacterIds($members);
+
         return $this->withJson($members);
     }
 
@@ -572,6 +587,10 @@ class GroupController extends BaseController
                 continue;
             }
 
+            if ($type === 'Player' && !$this->appAuthService->isCharacterAllowed($id)) {
+                continue;
+            }
+
             if ($type === 'Player') {
                 $groups = $this->getGroupsForPlayer($id, $appGroups);
             } else {
@@ -591,9 +610,11 @@ class GroupController extends BaseController
      * @param Group[] $appGroups
      * @return ?array<string, mixed> Returns NULL if character was not found.
      */
-    private function getGroupsForPlayer(int $characterId, array $appGroups): ?array
+    private function getGroupsForPlayer(int $characterId, array $appGroups, ?Character $char = null): ?array
     {
-        $char = $this->repositoryFactory->getCharacterRepository()->find($characterId);
+        if ($char === null) {
+            $char = $this->repositoryFactory->getCharacterRepository()->find($characterId);
+        }
         if ($char === null) {
             return null;
         }

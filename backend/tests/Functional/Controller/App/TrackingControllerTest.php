@@ -79,4 +79,54 @@ class TrackingControllerTest extends WebTestCase
         $this->assertSame(null, $result2[0]['shipType']);
         $this->assertSame(null, $result2[0]['startDate']);
     }
+
+    public function testMemberTrackingV1403RestrictedApp()
+    {
+        $this->helper->emptyDb();
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_TRACKING]);
+        $corp = (new Corporation())->setId(10)->setTicker('t1')->setName('corp 1');
+        $this->helper->getObjectManager()->persist($corp);
+        $app->addCorporation($corp);
+        $this->helper->getObjectManager()->flush();
+
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s1')];
+
+        // corporation not in the app's corporation list
+        $response = $this->runApp('GET', '/api/app/v1/corporation/20/member-tracking', null, $headers);
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testMemberTrackingV1200RestrictedApp()
+    {
+        $this->helper->emptyDb();
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_TRACKING]);
+        $corp = (new Corporation())->setId(10)->setTicker('t1')->setName('corp 1');
+        $player = (new Player())->setName('p');
+        $char = (new Character())->setId(1)->setName('c')->setPlayer($player);
+        $member = (new CorporationMember())->setId($char->getId())->setName('m2')->setCorporation($corp)
+            ->setLogonDate(new \DateTime('now -10 days'));
+        $this->helper->getObjectManager()->persist($player);
+        $this->helper->getObjectManager()->persist($char);
+        $this->helper->getObjectManager()->persist($corp);
+        $this->helper->getObjectManager()->persist($member);
+        $app->addCorporation($corp);
+        $this->helper->getObjectManager()->flush();
+
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s1')];
+
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v1/corporation/10/member-tracking?inactive=7&active=12&account=true',
+            null,
+            $headers,
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+        $result = $this->parseJsonBody($response);
+        $this->assertSame(1, count($result));
+        $this->assertSame($char->getId(), $result[0]['id']);
+        $this->assertSame('m2', $result[0]['name']);
+    }
 }

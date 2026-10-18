@@ -143,6 +143,8 @@ class EsiController extends BaseController
             // Note: $this->eveLogin always exists at this point
             ->findCharacterIdsByLoginId((int) $this->eveLogin?->getId());
 
+        $charIds = $this->appAuth->filterAllowedCharacterIds($charIds);
+
         return $this->withJson($charIds);
     }
 
@@ -199,6 +201,15 @@ class EsiController extends BaseController
         $tokenData = $this->repositoryFactory->getEsiTokenRepository()
             // Note: $this->eveLogin always exists at this point
             ->findValidTokens((int) $this->eveLogin?->getId());
+
+        $allowedCharacterIds = $this->appAuth->filterAllowedCharacterIds(array_map(
+            fn(array $row) => $row['characterId'],
+            $tokenData,
+        ));
+        $tokenData = array_values(array_filter(
+            $tokenData,
+            fn(array $row) => in_array((int) $row['characterId'], $allowedCharacterIds, true),
+        ));
 
         return $this->withJson($tokenData);
     }
@@ -258,6 +269,10 @@ class EsiController extends BaseController
         $response = $this->validateTokenRequest($eveLoginName, $request);
         if ($response) {
             return $response;
+        }
+
+        if (!$this->appAuth->isCharacterAllowed($characterId)) {
+            return $this->response->withStatus(403);
         }
 
         $esiToken = $this->repositoryFactory->getEsiTokenRepository()->findOneBy([
@@ -706,6 +721,14 @@ class EsiController extends BaseController
         // Check app permission for EVE login
         if (!$this->hasEveLogin($eveLoginName)) {
             return $this->response->withStatus(403);
+        }
+
+        // Check app permission for the character
+        if (!$this->appAuth->isCharacterAllowed($characterId)) {
+            if ($version === 1) {
+                return $this->response->withStatus(403);
+            }
+            return $this->withJson('Forbidden', 403);
         }
 
         $body = $method === 'POST' ? $request->getBody()->__toString() : null;

@@ -8,6 +8,7 @@ use Mcp\Capability\Attribute\McpTool;
 use Neucore\Entity\EveLogin;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Mcp\ResponseBuilder;
+use Neucore\Service\AppAuth;
 use Neucore\Service\EsiClient;
 use Psr\Http\Client\ClientExceptionInterface;
 
@@ -19,6 +20,7 @@ class EsiTools
         private readonly RepositoryFactory $repositoryFactory,
         private readonly EsiClient $esiClient,
         private readonly ResponseBuilder $responseBuilder,
+        private readonly AppAuth $appAuth,
     ) {}
 
     /**
@@ -69,6 +71,10 @@ class EsiTools
         $character = $this->repositoryFactory->getCharacterRepository()->find($characterId);
         if ($character === null) {
             return $this->responseBuilder->error(0, 'Character not found');
+        }
+
+        if (!$this->appAuth->isPlayerAllowed($character->getPlayer()->getId())) {
+            return $this->responseBuilder->error(403, 'Forbidden');
         }
 
         $esiToken = $character->getEsiToken(self::DEFAULT_EVE_LOGIN);

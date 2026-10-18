@@ -11,6 +11,7 @@ use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Mcp\ResponseBuilder;
+use Neucore\Service\AppAuth;
 use Neucore\Service\PluginService;
 
 class PlayerTools
@@ -19,6 +20,7 @@ class PlayerTools
         private readonly RepositoryFactory $repositoryFactory,
         private readonly ResponseBuilder $responseBuilder,
         private readonly PluginService $pluginService,
+        private readonly AppAuth $appAuth,
     ) {}
 
     /**
@@ -37,6 +39,10 @@ class PlayerTools
             return $this->responseBuilder->error(0, 'Player not found');
         }
 
+        if (!$this->appAuth->isPlayerAllowed($playerId)) {
+            return $this->responseBuilder->error(403, 'Forbidden');
+        }
+
         return $this->responseBuilder->success($player->jsonSerialize(withoutInternalInfo: true));
     }
 
@@ -52,7 +58,7 @@ class PlayerTools
     )]
     public function findPlayers(string $name): array
     {
-        if (mb_strlen($name) < 2) {
+        if (mb_strlen($name) < 3) {
             return $this->responseBuilder->error(0, 'Name must be at least 3 characters long');
         }
 
@@ -62,6 +68,7 @@ class PlayerTools
            ->setParameter('name', '%' . $name . '%');
 
         $players = $qb->getQuery()->getResult();
+        $players = $this->appAuth->filterAllowedPlayers($players);
 
         return $this->responseBuilder->success(
             array_map(fn(Player $player) => $player->jsonSerialize(true), $players),
@@ -89,6 +96,7 @@ class PlayerTools
            ->setParameter('name', '%' . $name . '%');
 
         $characters = $qb->getQuery()->getResult();
+        $characters = $this->appAuth->filterAllowedCharacters($characters);
 
         return $this->responseBuilder->success(array_map(
             fn(Character $character) => $character->jsonSerialize(true, withPlayerId: true),
@@ -111,6 +119,10 @@ class PlayerTools
         $character = $this->repositoryFactory->getCharacterRepository()->find($characterId);
         if ($character === null) {
             return $this->responseBuilder->error(0, 'Character not found');
+        }
+
+        if (!$this->appAuth->isPlayerAllowed($character->getPlayer()->getId())) {
+            return $this->responseBuilder->error(403, 'Forbidden');
         }
 
         return $this->responseBuilder->success(
@@ -169,6 +181,10 @@ class PlayerTools
             return $this->responseBuilder->error(0, 'Player not found');
         }
 
+        if (!$this->appAuth->isPlayerAllowed($playerId)) {
+            return $this->responseBuilder->error(403, 'Forbidden');
+        }
+
         $groups = $player->getGroups();
 
         return $this->responseBuilder->success(
@@ -192,6 +208,7 @@ class PlayerTools
         }
 
         $players = $group->getPlayers();
+        $players = $this->appAuth->filterAllowedPlayers($players);
 
         return $this->responseBuilder->success(
             array_map(fn(Player $player) => [
@@ -214,6 +231,10 @@ class PlayerTools
         $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);
         if ($player === null) {
             return $this->responseBuilder->error(0, 'Player not found');
+        }
+
+        if (!$this->appAuth->isPlayerAllowed($playerId)) {
+            return $this->responseBuilder->error(403, 'Forbidden');
         }
 
         $accounts = $this->pluginService->getActiveServiceAccounts($player, true);

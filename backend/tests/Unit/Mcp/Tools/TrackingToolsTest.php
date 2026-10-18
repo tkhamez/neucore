@@ -11,6 +11,7 @@ use Neucore\Mcp\ResponseBuilder;
 use Neucore\Mcp\Tools\TrackingTools;
 use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Repository\CorporationRepository;
+use Neucore\Service\AppAuth;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -28,9 +29,14 @@ class TrackingToolsTest extends TestCase
         $this->repositoryFactory = $this->createMock(RepositoryFactory::class);
         $this->responseBuilder = $this->createMock(ResponseBuilder::class);
 
+        // The app has no corporation restriction by default.
+        $appAuth = $this->createMock(AppAuth::class);
+        $appAuth->method('isCorporationAllowed')->willReturn(true);
+
         $this->tools = new TrackingTools(
             $this->repositoryFactory,
             $this->responseBuilder,
+            $appAuth,
         );
     }
 
@@ -466,6 +472,48 @@ class TrackingToolsTest extends TestCase
 
         self::assertFalse($result['success']);
         self::assertSame('Corporation not found', $result['error']);
+    }
+
+    #[Test]
+    public function testGetMemberTracking_forbidden(): void
+    {
+        $corporation = $this->createMock(Corporation::class);
+
+        $repository = $this->createMock(CorporationMemberRepository::class);
+        $repository->expects(self::never())
+            ->method('resetCriteria');
+
+        $this->repositoryFactory
+            ->method('getCorporationRepository')
+            ->willReturn($this->createCorporationRepository($corporation));
+        $this->repositoryFactory
+            ->method('getCorporationMemberRepository')
+            ->willReturn($repository);
+
+        $appAuth = $this->createMock(AppAuth::class);
+        $appAuth->method('isCorporationAllowed')->willReturn(false);
+        $tools = new TrackingTools(
+            $this->repositoryFactory,
+            $this->responseBuilder,
+            $appAuth,
+        );
+
+        $this->responseBuilder
+            ->expects(self::once())
+            ->method('error')
+            ->with(403, 'Forbidden')
+            ->willReturn([
+                'success' => false,
+                'statusCode' => 403,
+                'error' => 'Forbidden',
+                'headers' => [],
+            ]);
+
+        $result = $tools->getMemberTracking(100);
+
+        self::assertFalse($result['success']);
+        self::assertSame(403, $result['statusCode']);
+        self::assertSame('Forbidden', $result['error']);
     }
 
     #[Test]

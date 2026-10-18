@@ -20,6 +20,7 @@ use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationRepository;
 use Neucore\Repository\GroupRepository;
 use Neucore\Repository\PlayerRepository;
+use Neucore\Service\AppAuth;
 use Neucore\Service\PluginService;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -40,12 +41,13 @@ class PlayerToolsTest extends TestCase
         $this->repositoryFactory = $this->createMock(RepositoryFactory::class);
         $this->responseBuilder = $this->createMock(ResponseBuilder::class);
         $this->pluginService = $this->createMock(PluginService::class);
+        $appAuth = $this->createMock(AppAuth::class);
+        $appAuth->method('isPlayerAllowed')->willReturn(true);
+        $appAuth->method('isCorporationAllowed')->willReturn(true);
+        $appAuth->method('filterAllowedPlayers')->willReturnArgument(0);
+        $appAuth->method('filterAllowedCharacters')->willReturnArgument(0);
 
-        $this->tools = new PlayerTools(
-            $this->repositoryFactory,
-            $this->responseBuilder,
-            $this->pluginService,
-        );
+        $this->tools = $this->createTools($appAuth);
     }
 
     #[Test]
@@ -353,6 +355,7 @@ class PlayerToolsTest extends TestCase
     public function testGetCharacter_success(): void
     {
         $character = $this->createMock(Character::class);
+        $character->method('getPlayer')->willReturn($this->createPlayer(8));
         $character->method('jsonSerialize')
             ->with(true, true, false, false, true, false)
             ->willReturn([
@@ -694,6 +697,263 @@ class PlayerToolsTest extends TestCase
         self::assertSame('Group not found', $result['error']);
     }
 
+    #[Test]
+    public function testGetPlayer_forbidden(): void
+    {
+        $player = $this->createMock(Player::class);
+
+        $this->repositoryFactory
+            ->method('getPlayerRepository')
+            ->willReturn($this->createPlayerRepository($player));
+
+        $appAuth = $this->createMock(AppAuth::class);
+        $appAuth->method('isPlayerAllowed')->willReturn(false);
+        $tools = $this->createTools($appAuth);
+
+        $this->responseBuilder
+            ->expects(self::once())
+            ->method('error')
+            ->with(403, 'Forbidden')
+            ->willReturn([
+                'success' => false,
+                'statusCode' => 403,
+                'error' => 'Forbidden',
+                'headers' => [],
+            ]);
+
+        $result = $tools->getPlayer(1);
+
+        self::assertFalse($result['success']);
+        self::assertSame(403, $result['statusCode']);
+        self::assertSame('Forbidden', $result['error']);
+    }
+
+    #[Test]
+    public function testGetCharacter_forbidden(): void
+    {
+        $character = $this->createMock(Character::class);
+        $character->method('getPlayer')->willReturn($this->createPlayer(7));
+
+        $this->repositoryFactory
+            ->method('getCharacterRepository')
+            ->willReturn($this->createCharacterRepository($character));
+
+        $appAuth = $this->createMock(AppAuth::class);
+        $appAuth->method('isPlayerAllowed')->willReturn(false);
+        $tools = $this->createTools($appAuth);
+
+        $this->responseBuilder
+            ->expects(self::once())
+            ->method('error')
+            ->with(403, 'Forbidden')
+            ->willReturn([
+                'success' => false,
+                'statusCode' => 403,
+                'error' => 'Forbidden',
+                'headers' => [],
+            ]);
+
+        $result = $tools->getCharacter(12345);
+
+        self::assertFalse($result['success']);
+        self::assertSame(403, $result['statusCode']);
+        self::assertSame('Forbidden', $result['error']);
+    }
+
+    #[Test]
+    public function testGetGroups_forbidden(): void
+    {
+        $player = $this->createMock(Player::class);
+
+        $this->repositoryFactory
+            ->method('getPlayerRepository')
+            ->willReturn($this->createPlayerRepository($player));
+
+        $appAuth = $this->createMock(AppAuth::class);
+        $appAuth->method('isPlayerAllowed')->willReturn(false);
+        $tools = $this->createTools($appAuth);
+
+        $this->responseBuilder
+            ->expects(self::once())
+            ->method('error')
+            ->with(403, 'Forbidden')
+            ->willReturn([
+                'success' => false,
+                'statusCode' => 403,
+                'error' => 'Forbidden',
+                'headers' => [],
+            ]);
+
+        $result = $tools->getGroups(1);
+
+        self::assertFalse($result['success']);
+        self::assertSame(403, $result['statusCode']);
+    }
+
+    #[Test]
+    public function testGetServiceAccounts_forbidden(): void
+    {
+        $player = $this->createMock(Player::class);
+
+        $this->repositoryFactory
+            ->method('getPlayerRepository')
+            ->willReturn($this->createPlayerRepository($player));
+
+        $appAuth = $this->createMock(AppAuth::class);
+        $appAuth->method('isPlayerAllowed')->willReturn(false);
+        $tools = $this->createTools($appAuth);
+
+        $this->responseBuilder
+            ->expects(self::once())
+            ->method('error')
+            ->with(403, 'Forbidden')
+            ->willReturn([
+                'success' => false,
+                'statusCode' => 403,
+                'error' => 'Forbidden',
+                'headers' => [],
+            ]);
+
+        $result = $tools->getServiceAccounts(1);
+
+        self::assertFalse($result['success']);
+        self::assertSame(403, $result['statusCode']);
+    }
+
+    #[Test]
+    public function testFindPlayers_filtersDisallowed(): void
+    {
+        $player1 = $this->createMock(Player::class);
+        $player2 = $this->createMock(Player::class);
+        $player1->method('getId')->willReturn(1);
+        $player2->method('getId')->willReturn(2);
+        $player1->method('jsonSerialize')->with(true)->willReturn(['id' => 1, 'name' => 'Test Player']);
+
+        $repository = $this->createMock(PlayerRepository::class);
+        $query = $this->createMock(Query::class);
+        $qb = $this->createMock(QueryBuilder::class);
+        $qb->method('andWhere')->willReturnSelf();
+        $qb->method('setParameter')->willReturnSelf();
+        $qb->method('getQuery')->willReturn($query);
+        $query->method('getResult')->willReturn([$player1, $player2]);
+        $repository->method('createQueryBuilder')->with('p')->willReturn($qb);
+
+        $this->repositoryFactory
+            ->method('getPlayerRepository')
+            ->willReturn($repository);
+
+        $appAuth = $this->createMock(AppAuth::class);
+        $appAuth->method('filterAllowedPlayers')->willReturn([$player1]);
+        $tools = $this->createTools($appAuth);
+
+        $this->responseBuilder
+            ->method('success')
+            ->willReturnCallback(fn($body) => [
+                'success' => true,
+                'statusCode' => 200,
+                'body' => $body,
+                'headers' => [],
+            ]);
+
+        $result = $tools->findPlayers('Test');
+
+        self::assertTrue($result['success']);
+        self::assertCount(1, $result['body']);
+        self::assertSame('Test Player', $result['body'][0]['name']);
+    }
+
+    #[Test]
+    public function testFindCharacters_filtersDisallowed(): void
+    {
+        $character1 = $this->createMock(Character::class);
+        $character2 = $this->createMock(Character::class);
+        $character1->method('getId')->willReturn(12345);
+        $character2->method('getId')->willReturn(67890);
+        $character1->method('jsonSerialize')
+            ->with(true, true, false, false, true, false)
+            ->willReturn(['id' => 12345, 'name' => 'Test Character']);
+
+        $repository = $this->createMock(CharacterRepository::class);
+        $query = $this->createMock(Query::class);
+        $qb = $this->createMock(QueryBuilder::class);
+        $qb->method('andWhere')->willReturnSelf();
+        $qb->method('setParameter')->willReturnSelf();
+        $qb->method('getQuery')->willReturn($query);
+        $query->method('getResult')->willReturn([$character1, $character2]);
+        $repository->method('createQueryBuilder')->with('c')->willReturn($qb);
+
+        $this->repositoryFactory
+            ->method('getCharacterRepository')
+            ->willReturn($repository);
+
+        $appAuth = $this->createMock(AppAuth::class);
+        $appAuth->method('filterAllowedCharacters')->willReturn([$character1]);
+        $tools = $this->createTools($appAuth);
+
+        $this->responseBuilder
+            ->method('success')
+            ->willReturnCallback(fn($body) => [
+                'success' => true,
+                'statusCode' => 200,
+                'body' => $body,
+                'headers' => [],
+            ]);
+
+        $result = $tools->findCharacters('Test');
+
+        self::assertTrue($result['success']);
+        self::assertCount(1, $result['body']);
+        self::assertSame('Test Character', $result['body'][0]['name']);
+    }
+
+    #[Test]
+    public function testGetGroupMembers_filtersDisallowed(): void
+    {
+        $player1 = $this->createMock(Player::class);
+        $player2 = $this->createMock(Player::class);
+        $player1->method('getId')->willReturn(1);
+        $player1->method('getName')->willReturn('Player One');
+        $player2->method('getId')->willReturn(2);
+        $player2->method('getName')->willReturn('Player Two');
+
+        $group = $this->createMock(Group::class);
+        $group->method('getPlayers')->willReturn([$player1, $player2]);
+
+        $this->repositoryFactory
+            ->method('getGroupRepository')
+            ->willReturn($this->createGroupRepository($group));
+
+        $appAuth = $this->createMock(AppAuth::class);
+        $appAuth->method('filterAllowedPlayers')->willReturn([$player1]);
+        $tools = $this->createTools($appAuth);
+
+        $this->responseBuilder
+            ->method('success')
+            ->willReturnCallback(fn($body) => [
+                'success' => true,
+                'statusCode' => 200,
+                'body' => $body,
+                'headers' => [],
+            ]);
+
+        $result = $tools->getGroupMembers(1);
+
+        self::assertTrue($result['success']);
+        self::assertSame([
+            ['id' => 1, 'name' => 'Player One'],
+        ], $result['body']);
+    }
+
+    private function createTools(AppAuth $appAuth): PlayerTools
+    {
+        return new PlayerTools(
+            $this->repositoryFactory,
+            $this->responseBuilder,
+            $this->pluginService,
+            $appAuth,
+        );
+    }
+
     private function createPlayerRepository(?Player $player): PlayerRepository
     {
         $repository = $this->createMock(PlayerRepository::class);
@@ -706,6 +966,13 @@ class PlayerToolsTest extends TestCase
         $repository = $this->createMock(CharacterRepository::class);
         $repository->method('find')->willReturn($character);
         return $repository;
+    }
+
+    private function createPlayer(int $id): Player
+    {
+        $player = $this->createMock(Player::class);
+        $player->method('getId')->willReturn($id);
+        return $player;
     }
 
     private function createCorporationRepository(?Corporation $corporation): CorporationRepository

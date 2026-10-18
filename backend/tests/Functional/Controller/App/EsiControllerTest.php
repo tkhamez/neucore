@@ -9,6 +9,7 @@ namespace Tests\Functional\Controller\App;
 use GuzzleHttp\Exception\TransferException;
 use Neucore\Controller\App\EsiController;
 use Neucore\Data\EsiRateLimit;
+use Neucore\Entity\Corporation;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
@@ -368,7 +369,7 @@ class EsiControllerTest extends WebTestCase
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY])->getId();
         $headers = ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')];
 
-        // without a version or a slash at the end (new openapi definition)
+        // without a version or a slash at the end (new OpenAPI definition)
         $response1a = $this->runApp('GET', '/api/app/v2/esi/alliances', null, $headers);
         $this->assertSame(400, $response1a?->getStatusCode());
         $this->assertSame('"Public ESI routes are not allowed."', $response1a->getBody()->__toString());
@@ -440,12 +441,12 @@ class EsiControllerTest extends WebTestCase
     {
         $this->helper->addCharacterMain('C1', 123, [Role::USER]);
         $appId = $this->helper
-            ->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], ['test-1'])
+            ->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], ['Test-1'])
             ->getId();
 
         $response = $this->runApp(
             'GET',
-            '/api/app/v1/esi/characters/96061222/stats/?datasource=123%3Atest-1',
+            '/api/app/v1/esi/characters/96061222/stats/?datasource=123%3ATest-1',
             null,
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
         );
@@ -458,12 +459,12 @@ class EsiControllerTest extends WebTestCase
     {
         $this->helper->addCharacterMain('C1', 123, [Role::USER]);
         $appId = $this->helper
-            ->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], ['test-1'])
+            ->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], ['Test-1'])
             ->getId();
 
         $response = $this->runApp(
             'GET',
-            '/api/app/v2/esi/characters/96061222/stats/?datasource=123%3Atest-1',
+            '/api/app/v2/esi/characters/96061222/stats/?datasource=123%3ATest-1',
             null,
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
         );
@@ -1004,5 +1005,74 @@ class EsiControllerTest extends WebTestCase
             [['item_id' => 12345, 'name' => 'Awesome Name']],
             \json_decode($response->getBody()->__toString(), true),
         );
+    }
+
+    public function testEsiV2403RestrictedApp(): void
+    {
+        $corp = (new Corporation())->setId(10)->setName('Corp ten');
+        $this->helper->getEm()->persist($corp);
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], [EveLogin::NAME_DEFAULT]);
+        $app->addCorporation($corp);
+
+        $charAllowed = $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
+        $charAllowed->setCorporation($corp);
+        $this->helper->addCharacterMain('C2', 456, [Role::USER], [], true, null, 123456, true);
+        $this->helper->getEm()->flush();
+        $this->helper->getEm()->clear();
+
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s1')];
+
+        // char 456: player has no character in the app's corporation
+        $response1 = $this->runApp(
+            'GET',
+            '/api/app/v2/esi/v3/characters/96061222/assets/?page=1&datasource=456',
+            null,
+            $headers,
+        );
+        $this->assertSame(403, $response1?->getStatusCode());
+        $this->assertSame('"Forbidden"', $response1->getBody()->__toString());
+
+        // char 123: is in the app's corporation
+        $httpClient = new Client();
+        $httpClient->setResponse(new Response(200, [], '{"key": "value"}'));
+        $response2 = $this->runApp(
+            'GET',
+            '/api/app/v2/esi/v3/characters/96061222/assets/?page=1&datasource=123',
+            null,
+            $headers,
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)],
+        );
+        $this->assertSame(200, $response2?->getStatusCode());
+        $this->assertSame('{"key": "value"}', $response2->getBody()->__toString());
+    }
+
+    public function testEveLoginCharacters200RestrictedApp(): void
+    {
+        $eveLogin = (new EveLogin())->setName('test-1');
+        $corp = (new Corporation())->setId(10)->setName('Corp ten');
+        $this->helper->getEm()->persist($eveLogin);
+        $this->helper->getEm()->persist($corp);
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_LOGIN]);
+        $app->addEveLogin($eveLogin);
+        $app->addCorporation($corp);
+
+        $charAllowed = $this->helper->addCharacterMain('Char 1', 123456);
+        $charAllowed->setCorporation($corp);
+        $esiToken1 = (new EsiToken())->setEveLogin($eveLogin)->setCharacter($charAllowed)
+            ->setRefreshToken('rt')->setAccessToken('at')->setExpires(0);
+        $this->helper->getEm()->persist($esiToken1);
+
+        $charDisallowed = $this->helper->addCharacterMain('Char 2', 234567);
+        $esiToken2 = (new EsiToken())->setEveLogin($eveLogin)->setCharacter($charDisallowed)
+            ->setRefreshToken('rt')->setAccessToken('at')->setExpires(0);
+        $this->helper->getEm()->persist($esiToken2);
+        $this->helper->getEm()->flush();
+        $this->helper->getEm()->clear();
+
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($app->getId() . ':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/characters', null, $headers);
+
+        $this->assertSame(200, $response?->getStatusCode());
+        $this->assertSame([123456], $this->parseJsonBody($response));
     }
 }

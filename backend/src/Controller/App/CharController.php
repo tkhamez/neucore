@@ -7,6 +7,9 @@ namespace Neucore\Controller\App;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Character;
 use Neucore\Entity\Player;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\AppAuth;
+use Neucore\Service\ObjectManager;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -24,6 +27,15 @@ use Psr\Http\Message\ServerRequestInterface;
 class CharController extends BaseController
 {
     public const ERROR_CHARACTER_NOT_FOUND = 'Character not found.';
+
+    public function __construct(
+        ResponseInterface $response,
+        ObjectManager $objectManager,
+        RepositoryFactory $repositoryFactory,
+        private readonly AppAuth $appAuth,
+    ) {
+        parent::__construct($response, $objectManager, $repositoryFactory);
+    }
 
     #[OA\Get(
         path: '/app/v1/main/{cid}',
@@ -63,6 +75,10 @@ class CharController extends BaseController
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $cid);
         if ($char === null) {
             return $this->response->withStatus(404);
+        }
+
+        if (!$this->appAuth->isPlayerAllowed($char->getPlayer()->getId())) {
+            return $this->response->withStatus(403);
         }
 
         $main = $char->getPlayer()->getMain();
@@ -154,6 +170,10 @@ class CharController extends BaseController
             return $this->response->withStatus(404, self::ERROR_CHARACTER_NOT_FOUND);
         }
 
+        if (!$this->appAuth->isPlayerAllowed($character->getPlayer()->getId())) {
+            return $this->response->withStatus(403);
+        }
+
         return $this->withJson($character->getPlayer()->jsonSerialize(true));
     }
 
@@ -199,6 +219,12 @@ class CharController extends BaseController
 
         $players = $this->repositoryFactory->getCharacterRepository()->findPlayersByCharacters($ids);
 
+        $allowedPlayerIds = $this->appAuth->filterAllowedPlayerIds(array_column($players, 'id'));
+        $players = array_values(array_filter(
+            $players,
+            fn(array $player) => in_array($player['id'], $allowedPlayerIds, true),
+        ));
+
         return $this->withJson($players);
     }
 
@@ -241,6 +267,10 @@ class CharController extends BaseController
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
         if ($char === null) {
             return $this->response->withStatus(404, self::ERROR_CHARACTER_NOT_FOUND);
+        }
+
+        if (!$this->appAuth->isPlayerAllowed($char->getPlayer()->getId())) {
+            return $this->response->withStatus(403);
         }
 
         return $this->withJson($char->getPlayer()->getCharacters());
@@ -287,11 +317,12 @@ class CharController extends BaseController
         }
 
         $playerIds = $this->repositoryFactory->getPlayerRepository()->findPlayersOfCharacters($ids);
+        $playerIds = $this->appAuth->filterAllowedPlayerIds($playerIds);
         $characters = $this->repositoryFactory->getCharacterRepository()->getAllCharactersFromPlayers($playerIds);
 
         $result = [];
         foreach ($characters as $character) {
-            $result[$character['playerId']][] = (int) $character['id'];
+            $result[$character['playerId']][] = $character['id'];
         }
 
         return $this->withJson(array_values($result));
@@ -337,6 +368,7 @@ class CharController extends BaseController
             return $this->response->withStatus(400);
         }
 
+        $ids = $this->appAuth->filterAllowedCharacterIds($ids);
         if (count($ids) === 0) {
             return $this->withJson([]);
         }
@@ -385,6 +417,10 @@ class CharController extends BaseController
             return $this->response->withStatus(404, 'Player not found.');
         }
 
+        if (!$this->appAuth->isPlayerAllowed($player->getId())) {
+            return $this->response->withStatus(403);
+        }
+
         return $this->withJson($player->getCharacters());
     }
 
@@ -420,6 +456,10 @@ class CharController extends BaseController
         $character = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
         if ($character === null) {
             return $this->response->withStatus(404, CharController::ERROR_CHARACTER_NOT_FOUND);
+        }
+
+        if (!$this->appAuth->isPlayerAllowed($character->getPlayer()->getId())) {
+            return $this->response->withStatus(403);
         }
 
         $player = $character->getPlayer();
@@ -468,6 +508,10 @@ class CharController extends BaseController
             return $this->response->withStatus(404, self::ERROR_CHARACTER_NOT_FOUND);
         }
 
+        if (!$this->appAuth->isPlayerAllowed($char->getPlayer()->getId())) {
+            return $this->response->withStatus(403);
+        }
+
         $result = [];
         foreach ($char->getPlayer()->getRemovedCharacters() as $character) {
             $result[] = $character;
@@ -514,6 +558,10 @@ class CharController extends BaseController
             return $this->response->withStatus(404, self::ERROR_CHARACTER_NOT_FOUND);
         }
 
+        if (!$this->appAuth->isPlayerAllowed($char->getPlayer()->getId())) {
+            return $this->response->withStatus(403);
+        }
+
         $result = [];
         foreach ($char->getPlayer()->getIncomingCharacters() as $character) {
             $result[] = $character;
@@ -554,6 +602,7 @@ class CharController extends BaseController
     public function corporationPlayersV1(string $corporationId): ResponseInterface
     {
         $players = $this->repositoryFactory->getPlayerRepository()->findInCorporation((int) $corporationId);
+        $players = $this->appAuth->filterAllowedPlayers($players);
 
         return $this->withJson(array_map(function (Player $player) {
             return $player->jsonSerialize(true);
@@ -596,8 +645,11 @@ class CharController extends BaseController
             return $this->withJson([]);
         }
 
+        $characters = $corporation->getCharacters();
+        $characters = $this->appAuth->filterAllowedCharacters($characters);
+
         return $this->withJson(array_map(function (Character $character) {
             return $character->jsonSerialize(false, false);
-        }, $corporation->getCharacters()));
+        }, $characters));
     }
 }

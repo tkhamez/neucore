@@ -9,12 +9,14 @@ use Mcp\Capability\Attribute\Schema;
 use Neucore\Entity\CorporationMember;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Mcp\ResponseBuilder;
+use Neucore\Service\AppAuth;
 
 class TrackingTools
 {
     public function __construct(
         private readonly RepositoryFactory $repositoryFactory,
         private readonly ResponseBuilder $responseBuilder,
+        private readonly AppAuth $appAuth,
     ) {}
 
     /**
@@ -51,6 +53,10 @@ class TrackingTools
         $corporation = $this->repositoryFactory->getCorporationRepository()->find($corporationId);
         if ($corporation === null) {
             return $this->responseBuilder->error(0, 'Corporation not found');
+        }
+
+        if (!$this->appAuth->isCorporationAllowed($corporationId)) {
+            return $this->responseBuilder->error(403, 'Forbidden');
         }
 
         $repository = $this->repositoryFactory->getCorporationMemberRepository();

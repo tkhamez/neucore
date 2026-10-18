@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Neucore\Controller\App;
 
 use Neucore\Controller\BaseController;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\AppAuth;
+use Neucore\Service\ObjectManager;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -12,6 +15,15 @@ use Psr\Http\Message\ServerRequestInterface;
 #[OA\Tag(name: 'Application - Tracking')]
 class TrackingController extends BaseController
 {
+    public function __construct(
+        ResponseInterface $response,
+        ObjectManager $objectManager,
+        RepositoryFactory $repositoryFactory,
+        private readonly AppAuth $appAuth,
+    ) {
+        parent::__construct($response, $objectManager, $repositoryFactory);
+    }
+
     #[OA\Get(
         path: '/app/v1/corporation/{id}/member-tracking',
         operationId: 'memberTrackingV1',
@@ -61,6 +73,10 @@ class TrackingController extends BaseController
     )]
     public function memberTrackingV1(string $id, ServerRequestInterface $request): ResponseInterface
     {
+        if (!$this->appAuth->isCorporationAllowed((int) $id)) {
+            return $this->response->withStatus(403);
+        }
+
         $inactive = $this->getQueryParam($request, 'inactive');
         $active = $this->getQueryParam($request, 'active');
         $accountParam = $this->getQueryParam($request, 'account');

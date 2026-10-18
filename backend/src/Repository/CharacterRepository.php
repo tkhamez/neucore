@@ -128,7 +128,7 @@ class CharacterRepository extends EntityRepository
 
     /**
      * @param int[] $characterIds
-     * @return array<string, int|string>[]
+     * @return array{id: int, name: string, characterId: int}[]
      */
     public function findPlayersByCharacters(array $characterIds): array
     {
@@ -146,7 +146,7 @@ class CharacterRepository extends EntityRepository
 
         return array_map(function (array $character) {
             return [
-                'id' => $character['id'],
+                'id' => (int) $character['id'],
                 'name' => $character['name'],
                 'characterId' => (int) $character['characterId'],
             ];
