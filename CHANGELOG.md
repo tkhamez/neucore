@@ -4,14 +4,15 @@
 - [2.0.0](#200)
 - [1.0.0](#100)
 
-## next
+## 3.1.0
 
-dd mm yyyy
+21 Okt 2026
 
 - New: Apps to which corporations have been added can now only access data from players 
   who have at least one character in one of those corporations. This applies to all API 
   endpoints for character and player data, as well as to MCP tools.
 - MCP server improvements
+- Docker: Important PHP security update
 
 ## 3.0.1
 
