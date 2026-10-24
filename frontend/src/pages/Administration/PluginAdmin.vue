@@ -6,6 +6,8 @@
           :functionDelete="deleteIt"
           :functionRename="rename"></edit>
 
+    <markdown-help-modal></markdown-help-modal>
+
     <div class="row mt-3">
         <div class="col-lg-12">
             <h1>Plugin Administration</h1>
@@ -141,25 +143,41 @@
                             Text Top
                             <textarea class="form-control" rows="5"
                                       v-model="activePlugin.configurationDatabase.textTop"></textarea>
-                            <span class="form-text lh-sm d-block">Text above the list of accounts.</span>
+                            <span class="form-text lh-sm d-block">
+                                Text above the list of accounts. Supports
+                                <a href="#" data-bs-toggle="modal"
+                                   data-bs-target="#markdownHelpModal">Markdown</a>.
+                            </span>
                         </label>
                         <label v-cloak v-if="isService" class="col-form-label w-100">
                             Text Account
                             <textarea class="form-control" rows="5"
                                       v-model="activePlugin.configurationDatabase.textAccount"></textarea>
-                            <span class="form-text lh-sm d-block">Text below account table.</span>
+                            <span class="form-text lh-sm d-block">
+                                Text below the account table. Supports
+                                <a href="#" data-bs-toggle="modal"
+                                   data-bs-target="#markdownHelpModal">Markdown</a>.
+                            </span>
                         </label>
                         <label v-cloak v-if="isService" class="col-form-label w-100">
                             Text Register
                             <textarea class="form-control" rows="5"
                                       v-model="activePlugin.configurationDatabase.textRegister"></textarea>
-                            <span class="form-text lh-sm d-block">Text below the registration form/button.</span>
+                            <span class="form-text lh-sm d-block">
+                                Text below the registration form/button. Supports
+                                <a href="#" data-bs-toggle="modal"
+                                   data-bs-target="#markdownHelpModal">Markdown</a>.
+                            </span>
                         </label>
                         <label v-cloak v-if="isService" class="col-form-label w-100">
                             Text Pending
                             <textarea class="form-control" rows="5"
                                       v-model="activePlugin.configurationDatabase.textPending"></textarea>
-                            <span class="form-text lh-sm d-block">Text below an account with status "pending".</span>
+                            <span class="form-text lh-sm d-block">
+                                Text below an account with status "pending". Supports
+                                <a href="#" data-bs-toggle="modal"
+                                   data-bs-target="#markdownHelpModal">Markdown</a>.
+                            </span>
                         </label>
                         <label class="col-form-label w-100">
                             Configuration Data
@@ -190,11 +208,13 @@ import {PluginAdminApi, GroupApi} from "neucore-js-client";
 import Helper from "../../classes/Helper";
 import Util from "../../classes/Util";
 import Edit from '../../components/EntityEdit.vue';
+import MarkdownHelpModal from '../../components/MarkdownHelpModal.vue';
 import Data from "../../classes/Data";
 
 export default {
     components: {
         Edit,
+        MarkdownHelpModal,
         Multiselect,
     },
 

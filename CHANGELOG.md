@@ -4,6 +4,12 @@
 - [2.0.0](#200)
 - [1.0.0](#100)
 
+## next
+
+dd mm yyyy
+
+- New: The text for service plugins now supports Markdown, such as for links.
+
 ## 3.1.0
 
 21 Okt 2026

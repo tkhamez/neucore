@@ -326,7 +326,7 @@ export default {
             .use(mdIns)
             .use(mdAbbr)
             .use(mdMark)
-            .use(mdAttrs) // for classes, like .text-warning, .bg-primary
+            .use(mdAttrs)
         ;
         this.md.renderer.rules.emoji = (token, idx) => {
             return `<span class="emoji">${token[idx].content}</span>`;

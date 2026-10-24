@@ -14,9 +14,8 @@
             <p v-if="service && !service.configurationFile.oneAccount">
                 A new account can only be registered for your main character.
             </p>
-            <p v-if="service && service.configurationDatabase.textTop">
-                <span style="white-space: pre-line;">{{ service.configurationDatabase.textTop }}</span>
-            </p>
+            <div v-if="service && service.configurationDatabase.textTop"
+                 v-html="renderServiceText('textTop')"></div>
         </div>
     </div>
 
@@ -41,9 +40,8 @@
                 </button>
                 <p v-if="!isAccount(account)" class="small text-muted">Create or request a new account.</p>
                 <p v-if="isInactive(account)" class="small text-muted">Reactivate account or request new account.</p>
-                <p v-if="service.configurationDatabase.textRegister" class="mt-3">
-                    <span style="white-space: pre-line;">{{ service.configurationDatabase.textRegister }}</span>
-                </p>
+                <div v-if="service.configurationDatabase.textRegister" class="mt-3"
+                     v-html="renderServiceText('textRegister')"></div>
             </div>
 
             <!-- new password -->
@@ -117,14 +115,12 @@
                     </tbody>
                 </table>
             </div>
-            <p v-if="isAccount(account) && service.configurationDatabase.textAccount" class="mt-3 mb-0">
-                <span style="white-space: pre-line;">{{ service.configurationDatabase.textAccount }}</span>
-            </p>
-            <p v-if="isAccount(account) &&
+            <div v-if="isAccount(account) && service.configurationDatabase.textAccount" class="mt-3 mb-0"
+                 v-html="renderServiceText('textAccount')"></div>
+            <div v-if="isAccount(account) &&
                     account.status === 'Pending' &&
-                    service.configurationDatabase.textPending" class="mt-3 mb-0">
-                <span style="white-space: pre-line;">{{ service.configurationDatabase.textPending }}</span>
-            </p>
+                    service.configurationDatabase.textPending" class="mt-3 mb-0"
+                 v-html="renderServiceText('textPending')"></div>
 
         </div>
     </div><!-- card -->
@@ -134,6 +130,14 @@
 
 <script>
 import {toRef} from "vue";
+import markdownIt from 'markdown-it';
+import {light as mdEmoji} from 'markdown-it-emoji'
+import mdSup from 'markdown-it-sup';
+import mdSub from 'markdown-it-sub';
+import mdIns from 'markdown-it-ins';
+import mdAbbr from 'markdown-it-abbr';
+import mdMark from 'markdown-it-mark';
+import mdAttrs from 'markdown-it-attrs';
 import {ServiceApi} from "neucore-js-client";
 import Helper from "../classes/Helper";
 import Util from "../classes/Util";
@@ -150,6 +154,7 @@ export default {
             h: new Helper(this),
             player: toRef(this.store.state, 'player'),
             service: null,
+            md: null,
             accounts: [],
             failedToLoadAccounts: false,
             registerSuccess: false,
@@ -160,6 +165,21 @@ export default {
             newPassword: {},
             formEmail: null,
         }
+    },
+
+    created() {
+        this.md = markdownIt({ typographer: true, breaks: true })
+            .use(mdEmoji)
+            .use(mdSup)
+            .use(mdSub)
+            .use(mdIns)
+            .use(mdAbbr)
+            .use(mdMark)
+            .use(mdAttrs)
+        ;
+        this.md.renderer.rules.emoji = (token, idx) => {
+            return `<span class="emoji">${token[idx].content}</span>`;
+        };
     },
 
     mounted() {
@@ -190,6 +210,11 @@ export default {
         },
         hasAction(name) {
             return this.service.configurationFile.actions.indexOf(name) !== -1;
+        },
+        renderServiceText(name) {
+            const text = this.service && this.service.configurationDatabase ?
+                this.service.configurationDatabase[name] : '';
+            return text ? this.md.render(text) : '';
         },
         urlReplace(url, account) {
             url = url.replace('{plugin_id}', getServiceId(this));

@@ -51,7 +51,10 @@
         <textarea id="customizationLoginText" class="form-control" rows="3"
                   v-model="settings.customization_login_text"
                v-on:input="$emit('changeSettingDelayed', 'customization_login_text', $event.target.value)"></textarea>
-        <div class="form-text ln-sm">Optional text below the login button, supports Markdown (see next field).</div>
+        <div class="form-text ln-sm">
+            Optional text below the login button. Supports
+            <a href="#" data-bs-toggle="modal" data-bs-target="#markdownHelpModal">Markdown</a>.
+        </div>
         <hr>
         <label for="customizationHomeMarkdown" class="col-form-label">Home Page Text Area</label><br>
         <textarea id="customizationHomeMarkdown" class="form-control" rows="9"
@@ -59,27 +62,7 @@
                   v-on:input="$emit('changeSettingDelayed', 'customization_home_markdown', $event.target.value)"></textarea>
         <div class="form-text lh-sm">
             Optional text area on the home page. Supports
-            <a class="external" href="https://markdown-it.github.io/" target="_blank"
-               rel="noopener noreferrer">Markdown</a>, with "typographer" enabled and these plugins:
-            <a class="external" href="https://github.com/arve0/markdown-it-attrs" target="_blank"
-               rel="noopener noreferrer">attrs</a>
-            (use, for example,  with Bootstrap classes "text-primary", "bg-warning"
-            <a class="external" href="https://getbootstrap.com/docs/" target="_blank"
-               rel="noopener noreferrer">etc.</a>),
-            <a class="external" href="https://github.com/markdown-it/markdown-it-emoji/blob/master/lib/data/light.mjs"
-               target="_blank" rel="noopener noreferrer">emoji</a> light,
-            <a class="external" href="https://github.com/markdown-it/markdown-it-mark"
-               target="_blank" rel="noopener noreferrer">mark</a>,
-            <a class="external" href="https://github.com/markdown-it/markdown-it-sub"
-               target="_blank" rel="noopener noreferrer">sub</a>,
-            <a class="external" href="https://github.com/markdown-it/markdown-it-sup"
-               target="_blank" rel="noopener noreferrer">sup</a>,
-            <a class="external" href="https://github.com/markdown-it/markdown-it-ins"
-               target="_blank" rel="noopener noreferrer">ins</a>,
-            <a class="external" href="https://github.com/markdown-it/markdown-it-abbr"
-               target="_blank" rel="noopener noreferrer">abbr</a>.<br>
-            Tip: You can create external links with an icon like this:
-            <code>[Neucore](https://github.com/tkhamez/neucore){target="_blank" rel="noopener noreferrer" class="external"}</code>
+            <a href="#" data-bs-toggle="modal" data-bs-target="#markdownHelpModal">Markdown</a>.
         </div>
         <br>
         <hr>
@@ -90,10 +73,19 @@
         <div class="form-text ln-sm">Text for the footer.</div>
     </div>
 </div>
+
+<markdown-help-modal></markdown-help-modal>
+
 </template>
 
 <script>
+import MarkdownHelpModal from "../../components/MarkdownHelpModal.vue";
+
 export default {
+    components: {
+        MarkdownHelpModal,
+    },
+
     inject: ['store'],
 
     data() {
