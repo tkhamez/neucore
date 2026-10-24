@@ -32,6 +32,7 @@ use Neucore\Storage\ApiRateLimitStoreInterface;
 use Neucore\Storage\DatabaseStorage;
 use Neucore\Storage\EsiHeaderStorageInterface;
 use Neucore\Storage\MemcachedStorage;
+use Pdo\Mysql;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -66,8 +67,10 @@ class Container
                 $verify = (bool) $options['mysql_verify_server_cert'];
                 if ($caFile !== '' && (!$verify || is_file($caFile))) {
                     $conf['connection']['driverOptions'] = [
-                        \PDO::MYSQL_ATTR_SSL_CA => $caFile,
-                        \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => $verify,
+                        // @phpstan-ignore class.notFound (provided via symfony/polyfill-php84)
+                        Mysql::ATTR_SSL_CA => $caFile,
+                        // @phpstan-ignore class.notFound (provided via symfony/polyfill-php84)
+                        Mysql::ATTR_SSL_VERIFY_SERVER_CERT => $verify,
                         // \Pdo\Mysql is available since 8.4.0, there's a polyfill for these,
                         // but use the old constants for now
                     ];

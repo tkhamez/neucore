@@ -48,6 +48,7 @@
         "symfony/console": "^6.0",
         "symfony/dotenv": "^6.0",
         "symfony/http-foundation": "^6.0",
+        "symfony/polyfill-php84": "^1.43",
         "symfony/yaml": "^6.0",
         "tkhamez/eve-api": "^15.20260818",
         "tkhamez/eve-sso": "^6.0",
