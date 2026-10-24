@@ -111,6 +111,7 @@ Tracked static ESI data files (regenerate with `bin/console generate-eve-api-fil
 ## Plugins
 
 - Plugins live under `NEUCORE_PLUGINS_INSTALL_DIR` (e.g. `/plugins`); each has a `plugin.yml`.
+- Service pages (`#Service/{id}`) map to the `plugins` table (id, name, configuration JSON).
 - Plugin frontends served from `web/plugin/{name}/` (symlink or mount).
 - Plugin code must **only** use classes from `tkhamez/neucore-plugin` and the `FactoryInterface`; never import Neucore app classes or the Neucore DB.
 - If you update a library also shipped in `tkhamez/neucore-plugin`, update it there and release together with Neucore.
