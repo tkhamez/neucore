@@ -277,6 +277,8 @@ App API
 - Remove an EVE login from an app. `PUT /user/app/{id}/remove-eve-login/{eveLoginId}`
 - Add a corporation to an app. `PUT /user/app/{id}/add-corporation/{corporationId}`
 - Remove a corporation from an app. `PUT /user/app/{id}/remove-corporation/{corporationId}`
+- Add an access group to an app. `PUT /user/app/{id}/add-access-group/{groupId}`
+- Remove an access group from an app. `PUT /user/app/{id}/remove-access-group/{groupId}`
 
 Group API
 - List all groups. `GET /user/group/all`

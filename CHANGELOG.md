@@ -9,6 +9,7 @@
 dd mm yyyy
 
 - New: The text for service plugins now supports Markdown, such as for links.
+- New: Apps can now be assigned access groups.
 
 ## 3.1.0
 

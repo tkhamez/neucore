@@ -105,6 +105,26 @@
                             </table>
                         </div>
 
+                        <h5>Access Groups</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover nc-table-sm" aria-describedby="accessGroups">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">visibility</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="group in app.accessGroups">
+                                        <td>{{ group.id }}</td>
+                                        <td>{{ group.name }}</td>
+                                        <td>{{ group.visibility }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
                         <h5>Roles</h5>
                         <table class="table table-hover nc-table-sm" aria-describedby="roles">
                             <thead>

@@ -26,6 +26,7 @@ class AppTest extends TestCase
             'name' => 'test app',
             'groups' => [],
             'corporations' => [],
+            'accessGroups' => [],
             'roles' => [],
             'eveLogins' => [],
         ], json_decode((string) json_encode($app), true));

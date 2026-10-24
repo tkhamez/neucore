@@ -104,7 +104,7 @@ class PlayerTest extends TestCase
                 'isAutoManaged' => null,
             ]],
             'managerApps' => [['id' => null, 'name' => 'app-one', 'groups' => [],
-                'corporations' => [], 'roles' => [], 'eveLogins' => []]],
+                'corporations' => [], 'accessGroups' => [], 'roles' => [], 'eveLogins' => []]],
         ];
         $this->assertSame($expected1, json_decode((string) json_encode($play), true));
 

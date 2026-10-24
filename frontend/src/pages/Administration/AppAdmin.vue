@@ -66,6 +66,11 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
+                       :class="{ 'active': contentType === 'accessGroups' }"
+                       :href="`#AppAdmin/${appId}/accessGroups`">Access Groups</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
                        :class="{ 'active': contentType === 'roles' }"
                        :href="`#AppAdmin/${appId}/roles`">Roles</a>
                 </li>

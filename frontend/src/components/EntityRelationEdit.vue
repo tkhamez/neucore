@@ -56,6 +56,9 @@ Select and table to add and remove objects from other objects.
                 If an app has corporations, it may only access data of players that have at least
                 one character in one of those corporations.
             </p>
+            <p v-cloak v-if="type === 'App' && contentType === 'accessGroups'">
+                The access groups of the app.
+            </p>
             <p v-cloak v-if="type === 'Role' && contentType === 'requiredGroups'">
                 <strong>Required Groups</strong><br>
                 Add groups that are required (<em>any one</em> of them) to keep the role.
@@ -123,15 +126,15 @@ Select and table to add and remove objects from other objects.
                         <th scope="col" :style="stickyTop" v-if="
                                 contentType === 'managers' || contentType === 'groups' ||
                                 contentType === 'requiredGroups' || contentType === 'forbiddenGroups' ||
-                                contentType === 'groupsManage' ||
+                                contentType === 'groupsManage' || contentType === 'accessGroups' ||
                                 contentType === 'corporations' || contentType === 'alliances'">
                             <span v-if="
                                 contentType === 'managers' || contentType === 'groups' ||
                                 contentType === 'requiredGroups' || contentType === 'forbiddenGroups' ||
-                                contentType === 'groupsManage'">
+                                contentType === 'groupsManage' || contentType === 'accessGroups'">
                                 ID
                             </span>
-                            <span v-if="contentType === 'corporations' || contentType === 'alliances'">EVE ID</span>
+                            <span v-else>EVE ID</span>
                         </th>
                         <th scope="col" :style="stickyTop" v-if="
                             contentType === 'corporations' || contentType === 'alliances'">Ticker</th>
@@ -151,7 +154,8 @@ Select and table to add and remove objects from other objects.
                         <td v-if="
                                 contentType === 'managers' || contentType === 'groups' ||
                                 contentType === 'requiredGroups' || contentType === 'forbiddenGroups' ||
-                                contentType === 'groupsManage' || contentType === 'corporations' ||
+                                contentType === 'groupsManage' || contentType === 'accessGroups' ||
+                                contentType === 'corporations' ||
                                 contentType === 'alliances'">
                             {{ row.id }}
                         </td>
@@ -163,6 +167,8 @@ Select and table to add and remove objects from other objects.
                                target="_blank" :href="`https://evewho.com/alliance/${row.id}`">{{ row.name }}</a>
                             <a v-else-if="contentType === 'managers' && h.hasRole('user-admin')"
                                :href="`#UserAdmin/${row.id}`" title="User Administration">{{ row.name }}</a>
+                            <a v-else-if="contentType === 'accessGroups' && h.hasRole('group-admin')"
+                               :href="`#GroupAdmin/${row.id}`">{{ row.name }}</a>
                             <span v-else>{{ row.name }}</span>
                         </td>
                         <td v-if="contentType === 'managers'">
@@ -191,7 +197,8 @@ Select and table to add and remove objects from other objects.
                                 <span v-if="contentType === 'alliances'">alliance</span>
                                 <span v-if="contentType === 'managers'">manager</span>
                                 <span v-if="contentType === 'groups' || contentType === 'requiredGroups' ||
-                                            contentType === 'forbiddenGroups'">group</span>
+                                            contentType === 'forbiddenGroups' ||
+                                            contentType === 'accessGroups'">group</span>
                                 <span v-if="contentType === 'roles'">role</span>
                                 <span v-if="contentType === 'eveLogins'">EVE login</span>
                             </button>
@@ -366,6 +373,8 @@ export default {
                 this.contentType === 'requiredGroups' || this.contentType === 'forbiddenGroups'
             ) {
                 this.placeholder = 'Add group';
+            } else if (this.contentType === 'accessGroups') {
+                this.placeholder = 'Add access group';
             } else if (this.contentType === 'roles') {
                 this.placeholder = 'Add role';
             } else if (this.contentType === 'eveLogins') {
@@ -425,7 +434,8 @@ export default {
                     this.contentType === 'groups' ||
                     this.contentType === 'groupsManage' ||
                     this.contentType === 'requiredGroups' ||
-                    this.contentType === 'forbiddenGroups'
+                    this.contentType === 'forbiddenGroups' ||
+                    this.contentType === 'accessGroups'
                 )
             ) {
                 api = new GroupApi();
@@ -490,7 +500,8 @@ export default {
             } else if (
                 this.type === 'App' &&
                 (this.contentType === 'groups' || this.contentType === 'roles' ||
-                    this.contentType === 'eveLogins' || this.contentType === 'corporations')
+                    this.contentType === 'eveLogins' || this.contentType === 'corporations' ||
+                    this.contentType === 'accessGroups')
             ) {
                 method = 'show';
             } else if ((this.type === 'App' || this.type === 'Player') && this.contentType === 'groups') {
@@ -554,6 +565,8 @@ export default {
                     this.tableContent = data.eveLogins;
                 } else if (this.type === 'App' && this.contentType === 'corporations') {
                     this.tableContent = data.corporations || [];
+                } else if (this.type === 'App' && this.contentType === 'accessGroups') {
+                    this.tableContent = data.accessGroups || [];
                 }  else if (this.type === 'Player') {
                     this.tableContent = data.groups;
                     this.$emit('activePlayer', data); // pass data to parent
@@ -672,6 +685,11 @@ export default {
             } else if (this.type === 'App' && this.contentType === 'corporations') {
                 api = new AppApi();
                 method = action === 'add' ? 'userAppAddCorporation' : 'userAppRemoveCorporation';
+                param1 = this.typeId;
+                param2 = id;
+            } else if (this.type === 'App' && this.contentType === 'accessGroups') {
+                api = new AppApi();
+                method = action === 'add' ? 'userAppAddAccessGroup' : 'userAppRemoveAccessGroup';
                 param1 = this.typeId;
                 param2 = id;
             } else if (this.contentType === 'managers') {

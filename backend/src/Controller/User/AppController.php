@@ -775,6 +775,88 @@ class AppController extends BaseController
     }
 
     #[OA\Put(
+        path: '/user/app/{id}/add-access-group/{groupId}',
+        operationId: 'userAppAddAccessGroup',
+        description: 'Needs role: app-admin<br>'
+            . 'Adds an access group to an app.',
+        summary: 'Add an access group to an app.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['App'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the app.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+            new OA\Parameter(
+                name: 'groupId',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Access group added.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'App and/or group not found.'),
+        ],
+    )]
+    public function addAccessGroup(string $id, string $groupId): ResponseInterface
+    {
+        if (!$this->findAppAndGroup($id, $groupId)) {
+            return $this->response->withStatus(404);
+        }
+
+        $this->application->addAccessGroup($this->group);
+
+        return $this->flushAndReturn(204);
+    }
+
+    #[OA\Put(
+        path: '/user/app/{id}/remove-access-group/{groupId}',
+        operationId: 'userAppRemoveAccessGroup',
+        description: 'Needs role: app-admin<br>'
+            . 'Removes an access group from an app.',
+        summary: 'Remove an access group from an app.',
+        security: [['Session' => [], 'CSRF' => []]],
+        tags: ['App'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'ID of the app.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+            new OA\Parameter(
+                name: 'groupId',
+                description: 'ID of the group.',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+        ],
+        responses: [
+            new OA\Response(response: '204', description: 'Access group removed.'),
+            new OA\Response(response: '403', description: 'Not authorized.'),
+            new OA\Response(response: '404', description: 'App and/or group not found.'),
+        ],
+    )]
+    public function removeAccessGroup(string $id, string $groupId): ResponseInterface
+    {
+        if (!$this->findAppAndGroup($id, $groupId)) {
+            return $this->response->withStatus(404);
+        }
+
+        $this->application->removeAccessGroup($this->group);
+
+        return $this->flushAndReturn(204);
+    }
+
+    #[OA\Put(
         path: '/user/app/{id}/change-secret',
         operationId: 'changeSecret',
         description: 'Needs role: app-manager',

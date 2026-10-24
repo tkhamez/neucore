@@ -161,7 +161,7 @@ class AppControllerTest extends WebTestCase
 
         $this->assertSame(
             ['id' => $na->getId(), 'name' => 'new app', 'groups' => [], 'corporations' => [],
-                'roles' => [Role::APP], 'eveLogins' => []],
+                'accessGroups' => [], 'roles' => [Role::APP], 'eveLogins' => []],
             $this->parseJsonBody($response),
         );
 
@@ -223,6 +223,7 @@ class AppControllerTest extends WebTestCase
                 'name' => 'n a n',
                 'groups' => [$expectedGroup],
                 'corporations' => [],
+                'accessGroups' => [],
                 'roles' => [Role::APP],
                 'eveLogins' => [[
                     'id' => $this->eveLoginId1,
@@ -240,6 +241,7 @@ class AppControllerTest extends WebTestCase
                 'name' => 'new name',
                 'groups' => [$expectedGroup],
                 'corporations' => [],
+                'accessGroups' => [],
                 'roles' => [Role::APP],
                 'eveLogins' => [[
                     'id' => $this->eveLoginId1,
@@ -453,6 +455,7 @@ class AppControllerTest extends WebTestCase
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
                     'isDefault' => false, 'isAutoManaged' => null]],
                 'corporations' => [],
+                'accessGroups' => [],
                 'roles' => [Role::APP],
                 'eveLogins' => [[
                     'id' => $this->eveLoginId1,
@@ -482,6 +485,7 @@ class AppControllerTest extends WebTestCase
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
                     'isDefault' => false, 'isAutoManaged' => null]],
                 'corporations' => [],
+                'accessGroups' => [],
                 'roles' => [Role::APP],
                 'eveLogins' => [[
                     'id' => $this->eveLoginId1,
@@ -937,6 +941,102 @@ class AppControllerTest extends WebTestCase
         $this->em->clear();
         $app = $this->appRepo->find($this->aid);
         $this->assertSame([], $app->getCorporations());
+    }
+
+    public function testAddAccessGroup403()
+    {
+        $response = $this->runApp('PUT', '/api/user/app/59/add-access-group/1');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-access-group/' . $this->gid);
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAddAccessGroup404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        // app not found
+        $response1 = $this->runApp('PUT', '/api/user/app/' . ($this->aid + 100) . '/add-access-group/' . $this->gid);
+        // group not found
+        $response2 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-access-group/' . ($this->gid + 100));
+
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals(404, $response2->getStatusCode());
+    }
+
+    public function testAddAccessGroup204()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        // Add the group
+        $response1 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-access-group/' . $this->gid);
+        $this->assertEquals(204, $response1->getStatusCode());
+
+        // Idempotent: adding again should also return 204
+        $response2 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-access-group/' . $this->gid);
+        $this->assertEquals(204, $response2->getStatusCode());
+
+        $this->em->clear();
+
+        $app = $this->appRepo->find($this->aid);
+        $groupIds = [];
+        foreach ($app->getAccessGroups() as $g) {
+            $groupIds[] = $g->getId();
+        }
+        $this->assertSame([$this->gid], $groupIds);
+    }
+
+    public function testRemoveAccessGroup403()
+    {
+        $response = $this->runApp('PUT', '/api/user/app/59/remove-access-group/1');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/remove-access-group/' . $this->gid);
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testRemoveAccessGroup404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        // app not found
+        $response1 = $this->runApp('PUT', '/api/user/app/' . ($this->aid + 100) . '/remove-access-group/' . $this->gid);
+        // group not found
+        $response2 = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/remove-access-group/' . ($this->gid + 100));
+
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals(404, $response2->getStatusCode());
+    }
+
+    public function testRemoveAccessGroup204()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        // First add a group
+        $this->runApp('PUT', '/api/user/app/' . $this->aid . '/add-access-group/' . $this->gid);
+
+        $this->em->clear();
+        $app = $this->appRepo->find($this->aid);
+        $this->assertSame(1, count($app->getAccessGroups()));
+
+        // Now remove it
+        $response = $this->runApp('PUT', '/api/user/app/' . $this->aid . '/remove-access-group/' . $this->gid);
+        $this->assertEquals(204, $response->getStatusCode());
+
+        $this->em->clear();
+        $app = $this->appRepo->find($this->aid);
+        $this->assertSame([], $app->getAccessGroups());
     }
 
     /**

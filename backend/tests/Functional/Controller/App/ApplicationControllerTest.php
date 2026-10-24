@@ -43,6 +43,7 @@ class ApplicationControllerTest extends WebTestCase
                 'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false,
                 'isDefault' => false, 'isAutoManaged' => null]],
             'corporations' => [],
+            'accessGroups' => [],
             'roles' => ['app'],
             'eveLogins' => [],
         ], $this->parseJsonBody($response));

@@ -71,6 +71,15 @@ class App implements \JsonSerializable
     private Collection $corporations;
 
     /**
+     * Access groups of the app.
+     */
+    #[ORM\ManyToMany(targetEntity: Group::class)]
+    #[ORM\JoinTable(name: "app_access_group")]
+    #[ORM\OrderBy(["name" => "ASC"])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/Group'))]
+    private Collection $accessGroups;
+
+    /**
      * Contains only information of interest to clients.
      *
      * @return array<string, mixed>
@@ -82,6 +91,7 @@ class App implements \JsonSerializable
             'name' => $this->name,
             'groups' => $this->getGroups(),
             'corporations' => $this->getCorporations(),
+            'accessGroups' => $this->getAccessGroups(),
             'roles' => $this->getRoles(),
             'eveLogins' => $this->getEveLogins(),
         ];
@@ -97,6 +107,7 @@ class App implements \JsonSerializable
         $this->managers = new ArrayCollection();
         $this->eveLogins = new ArrayCollection();
         $this->corporations = new ArrayCollection();
+        $this->accessGroups = new ArrayCollection();
     }
 
     public function getId(): int
@@ -263,5 +274,27 @@ class App implements \JsonSerializable
     public function getCorporations(): array
     {
         return array_values($this->corporations->toArray());
+    }
+
+    public function addAccessGroup(Group $group): self
+    {
+        if (!$this->accessGroups->contains($group)) {
+            $this->accessGroups[] = $group;
+        }
+
+        return $this;
+    }
+
+    public function removeAccessGroup(Group $group): bool
+    {
+        return $this->accessGroups->removeElement($group);
+    }
+
+    /**
+     * @return Group[]
+     */
+    public function getAccessGroups(): array
+    {
+        return array_values($this->accessGroups->toArray());
     }
 }

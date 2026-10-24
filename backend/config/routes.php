@@ -96,6 +96,8 @@ return [
     '/api/user/app/{id}/change-secret'                      => ['PUT',    [AppController::class, 'changeSecret']],
     '/api/user/app/{id}/add-corporation/{corporationId}'    => ['PUT',    [AppController::class, 'addCorporation']],
     '/api/user/app/{id}/remove-corporation/{corporationId}' => ['PUT',    [AppController::class, 'removeCorporation']],
+    '/api/user/app/{id}/add-access-group/{groupId}'         => ['PUT',    [AppController::class, 'addAccessGroup']],
+    '/api/user/app/{id}/remove-access-group/{groupId}'      => ['PUT',    [AppController::class, 'removeAccessGroup']],
 
     '/api/user/alliance/find/{query}'            => ['GET',  [AllianceController::class, 'find']],
     '/api/user/alliance/alliances'               => ['POST', [AllianceController::class, 'alliances']],
