@@ -49,9 +49,8 @@ Backend:
 - **Standard**: [PER Coding Style](https://www.php-fig.org/per/coding-style/) 
 - **Static Analysis**: PHPStan Level 8 (configured in `backend/phpstan.neon`)
 
-Run checks:
+Run checks - in the `neucore_php` container:
 ```bash
-cd backend
 composer style:check    # Check style
 composer style:fix      # Auto-fix style issues
 composer phpstan        # Static analysis
@@ -74,8 +73,11 @@ command or build scripts:
 
 When changing backend routes or OpenAPI annotations, regenerate in order:
 ```bash
-cd backend && composer openapi
-cd ../frontend && ./openapi.sh
+# in the neucore_php container
+composer openapi
+# on the host
+docker compose run --rm neucore_java /app/frontend/openapi.sh
+# in the neucore_node container
 cd neucore-js-client && npm install --ignore-scripts && npm run build
 cd .. && npm run build
 ```
