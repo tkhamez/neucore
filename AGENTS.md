@@ -75,12 +75,13 @@ When you change backend routes or OpenAPI annotations, regenerate **in this orde
 
 ```sh
 # 1. OpenAPI spec files
-cd backend && docker compose exec neucore_php composer openapi
-# 2. JS API client (needs Java)
-cd ../frontend && docker compose run --rm neucore_java /app/frontend/openapi.sh
-cd neucore-js-client && docker compose exec neucore_node npm install --ignore-scripts && npm run build
+docker compose exec neucore_php composer openapi
+# 2. JS API client
+docker compose run --rm neucore_java /app/frontend/openapi.sh
+docker compose exec neucore_node npm install --ignore-scripts --prefix /app/frontend/neucore-js-client
+docker compose exec neucore_node npm run build --prefix /app/frontend/neucore-js-client
 # 3. Frontend production build
-cd .. && docker compose exec neucore_node npm run build
+docker compose exec neucore_node npm run build
 ```
 
 Frontend production build writes to `web/dist/` and `web/index.html`.
@@ -113,7 +114,7 @@ Tracked static ESI data files (regenerate with `bin/console generate-eve-api-fil
 - Plugins live under `NEUCORE_PLUGINS_INSTALL_DIR` (e.g. `/plugins`); each has a `plugin.yml`.
 - Service pages (`#Service/{id}`) map to the `plugins` table (id, name, configuration JSON).
 - Plugin frontends served from `web/plugin/{name}/` (symlink or mount).
-- Plugin code must **only** use classes from `tkhamez/neucore-plugin` and the `FactoryInterface`; never import Neucore app classes or the Neucore DB.
+- Plugin code must **only** use classes and interfaces from `tkhamez/neucore-plugin`; never import Neucore app classes or the Neucore DB.
 - If you update a library also shipped in `tkhamez/neucore-plugin`, update it there and release together with Neucore.
 
 ## CI / release
