@@ -1,13 +1,18 @@
 # Content
 
-[Documentation](Documentation.md)
+[Main Documentation](Documentation.md)
 
-[Install](Install.md)
+[Installation Instructions](Install.md)
 
 [Plugins](Plugins.md)
 
 [API](API.md)
 
-[API Examples](api-examples)
+[MCP Server](MCP-Server.md)
 
-[Screenshots](screenshots)
+[Screenshots](screenshots/README.md)
+
+
+API Examples
+
+- [php](api-examples/php/README.md)

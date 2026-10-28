@@ -1,5 +1,7 @@
 # Screenshots
 
+As of January 2023
+
 <!-- toc -->
 
 - [Login](#login)
