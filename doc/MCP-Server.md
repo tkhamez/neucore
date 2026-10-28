@@ -3,11 +3,7 @@
 The MCP server provides tools that allow AI assistants to query player and corporation member
 tracking data and perform authenticated EVE API (ESI) requests for each character.
 
-Documentation on rate limits and ESI pagination is available as resources to clients that support 
-this feature. Alternatively, they are also available as tools.
-
 The server supports only the modern protocol version 2026-07-28.
-
 
 ## Tools Overview
 
@@ -28,9 +24,16 @@ The server supports only the modern protocol version 2026-07-28.
 (1) Filters for `get_member_tracking`: active days, inactive days, token status, token status changed date,
 missing character mail count, belongs to a player account.
 
-In addition, there are resources that provide documentation. 
-For clients that do not support resources, these are also available as tools.
+## Resources Overview
 
+| Resource                           | Purpose                              |
+|------------------------------------|--------------------------------------|
+| `neucore://doc/global-rate-limits` | Global Rate Limits documentation     |
+| `neucore://doc/esi-rate-limits`    | ESI Rate Limits documentation        |
+| `neucore://doc/esi-pagination`     | ESI Pagination documentation         |
+| `neucore://doc/esi-assets`         | ESI Asset List — build & parse guide |
+
+For clients that do not support resources, the documentation is also available as tools.
 
 ## Usage
 
