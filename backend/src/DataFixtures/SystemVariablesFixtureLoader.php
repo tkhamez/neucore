@@ -57,8 +57,7 @@ class SystemVariablesFixtureLoader
                 SystemVariable::SCOPE_PUBLIC,
             ],
             SystemVariable::CUSTOMIZATION_HOME_DESCRIPTION      => [
-                'An application for EVE Online communities to organise their members into groups, monitor them and '
-                    . 'provide access to external services.',
+                'A central identity and access management system for EVE Online communities.',
                 SystemVariable::SCOPE_PUBLIC,
             ],
             SystemVariable::CUSTOMIZATION_HOME_LOGO             => [

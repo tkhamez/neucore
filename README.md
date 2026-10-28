@@ -25,12 +25,12 @@
 
 ## Overview
 
-A web application for [EVE Online](https://www.eveonline.com) communities to organise their members into groups,
-monitor them and provide access to external services.
+Neucore is a central identity and access management system for EVE Online communities.
 
-This application focuses on providing core functionality related to player identities, 
-[ESI](https://developers.eveonline.com/api-explorer) access and an API that other applications can 
-build upon.
+It is a web application enabling organisations to manage player identities, automate group 
+memberships, provide a unified API for external tools, including 
+[ESI](https://developers.eveonline.com/api-explorer) access, and leverage AI assistant tools 
+via an MCP server.
 
 Main features:
 
