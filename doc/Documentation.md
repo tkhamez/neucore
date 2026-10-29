@@ -182,8 +182,8 @@ There are two account statuses: "standard" and "manually managed".
 Any number of EVE logins with different ESI scopes can be configured. Players can add ESI tokens to their 
 characters for each of these logins.
 
-EVE logins can be added to apps so that they can use their tokens. This also applied to the token of 
-the default login (core.default).
+EVE logins can be added to apps so that the apps can use their tokens. This also applies to the 
+token of the default login (`core.default`).
 
 There is also a separate build in login URL that does not require any ESI scopes (must be allowed in settings).
 

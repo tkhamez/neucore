@@ -91,23 +91,24 @@ cd .. && npm run build
 
 ## Documentation
 
-- Project documentation lives in `doc/`
+- Project documentation lives in [doc/](doc)
 - API documentation is generated from OpenAPI annotations
 - Update relevant documentation when changing features
 
 Key documentation files:
-- `doc/Install.md` — Installation guide
-- `doc/Documentation.md` — Features and API concepts
-- `doc/Plugins.md` — Plugin API contract
-- `backend/README.md` — Backend guide
-- `frontend/README.md` — Frontend guide
+- [doc/Install.md](doc/Install.md) — Installation guide
+- [doc/Documentation.md](doc/Documentation.md) — Features and API concepts
+- [doc/Plugins.md](doc/Plugins.md) — Plugin API contract
+- [backend/README.md](backend/README.md) — Backend guide
+- [frontend/README.md](frontend/README.md) — Frontend guide
 
 ## Getting Help
 
 - Join the [Neucore Discord Server](https://discord.gg/memUh56u8z)
-- Check existing documentation in `doc/`
+- Check existing documentation in [doc/](doc/README.md)
+- Ask [DeepWiki](https://deepwiki.com/tkhamez/neucore) (AI)
 
-## Licensing
+## Licencing
 
-By contributing, you agree that your contributions will be licensed under the MIT License 
-(see LICENSE file).
+By contributing, you agree that your contributions will be licenced under the 
+[MIT License](LICENSE).
