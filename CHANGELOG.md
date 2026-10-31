@@ -11,8 +11,9 @@ dd mm yyyy
 - New: The text for service plugins now supports Markdown, such as for links.
 - New: Apps can now be assigned access groups. Apps to which corporations and/or access groups
   have been added can now only access data from players who have at least one character in one of
-  those corporations or who are a member of one of those access groups. This applies to all API
-  endpoints for character and player data, as well as to MCP tools.
+  those corporations, who are a member of one of those access groups or who have applied to one of
+  those access groups (regardless of the application status). This applies to all API endpoints for
+  character and player data, as well as to MCP tools.
 - Updated rds-combined-ca-bundle.pem
 
 ## 3.1.0

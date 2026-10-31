@@ -95,8 +95,9 @@ curl --header "Authorization: Bearer MTpteSBhd2Vzb21lIHNlY3JldA==" https://neuco
 
 An app can be assigned one or more corporations and one or more access groups
 (UI: Administration → Apps). If an app has corporations and/or access groups, it may only access
-data of players that have at least one character in one of those corporations or that are a member
-of one of those access groups. A player meeting either condition is visible to the app.
+data of players that have at least one character in one of those corporations, that are a member of
+one of those access groups or that have applied to one of those access groups (regardless of the
+application status). A player meeting any of these conditions is visible to the app.
 This applies to all character/player data API endpoints and MCP tools. Data of other players is not
 returned (403 status code or omitted from list results).
 

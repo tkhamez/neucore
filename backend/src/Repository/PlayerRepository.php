@@ -147,6 +147,32 @@ class PlayerRepository extends EntityRepository
     }
 
     /**
+     * Returns the IDs of all players that have a group application for one of the
+     * provided groups, regardless of the application status.
+     *
+     * @param int[] $groupIds
+     * @return int[] Player IDs
+     */
+    public function findWithGroupApplications(array $groupIds): array
+    {
+        if (count($groupIds) === 0) {
+            return [];
+        }
+
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('p.id')
+            ->distinct()
+            ->leftJoin('p.groupApplications', 'ga')
+            ->andWhere($qb->expr()->in('ga.group', ':ids'))
+            ->orderBy('p.id')
+            ->setParameter('ids', $groupIds);
+
+        return array_map(function (array $player) {
+            return (int) $player['id'];
+        }, $qb->getQuery()->getResult());
+    }
+
+    /**
      * @param int[] $groupIds
      * @return Player[]
      */

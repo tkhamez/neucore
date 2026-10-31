@@ -55,11 +55,12 @@ Select and table to add and remove objects from other objects.
             <p v-cloak v-if="type === 'App' && contentType === 'corporations'">
                 If an app has corporations, it may only access data of players that have at least
                 one character in one of those corporations.
-                If access groups are assigned as well, a player is visible if it meets either condition.
+                If access groups are assigned as well, a player is visible if it either condition.
             </p>
             <p v-cloak v-if="type === 'App' && contentType === 'accessGroups'">
                 If an app has access groups, it may only access data of players that are a member
-                of at least one of those groups.
+                of at least one of those groups or that have applied to one of those groups
+                (regardless of the application status).
                 If corporations are assigned as well, a player is visible if it meets either condition.
             </p>
             <p v-cloak v-if="type === 'Role' && contentType === 'requiredGroups'">

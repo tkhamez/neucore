@@ -12,12 +12,12 @@ use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
+use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\PlayerRepository;
-use Neucore\Util\Database;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 
@@ -399,5 +399,69 @@ class PlayerRepositoryTest extends TestCase
     {
         $actual = $this->repo->findPlayersOfRecentlyAddedCharacters(30);
         $this->assertSame([self::$player1->getId(), self::$player4->getId()], $actual);
+    }
+
+    public function testFindWithGroupApplications()
+    {
+        $this->assertSame([], $this->repo->findWithGroupApplications([]));
+
+        $group1 = (new Group())->setName('ga-g1');
+        $group2 = (new Group())->setName('ga-g2');
+        $group3 = (new Group())->setName('ga-g3');
+        self::$em->persist($group1);
+        self::$em->persist($group2);
+        self::$em->persist($group3);
+
+        // pending application for group 1
+        $player1 = (new Player())->setName('ga-p1');
+        $application1 = (new GroupApplication())
+            ->setPlayer($player1)
+            ->setGroup($group1)
+            ->setStatus(GroupApplication::STATUS_PENDING)
+            ->setCreated(new \DateTime());
+        $player1->addGroupApplication($application1);
+        self::$em->persist($player1);
+        self::$em->persist($application1);
+
+        // denied application for group 2
+        $player2 = (new Player())->setName('ga-p2');
+        $application2 = (new GroupApplication())
+            ->setPlayer($player2)
+            ->setGroup($group2)
+            ->setStatus(GroupApplication::STATUS_DENIED)
+            ->setCreated(new \DateTime());
+        $player2->addGroupApplication($application2);
+        self::$em->persist($player2);
+        self::$em->persist($application2);
+
+        // application for a group that is not in the list
+        $player3 = (new Player())->setName('ga-p3');
+        $application3 = (new GroupApplication())
+            ->setPlayer($player3)
+            ->setGroup($group3)
+            ->setStatus(GroupApplication::STATUS_ACCEPTED)
+            ->setCreated(new \DateTime());
+        $player3->addGroupApplication($application3);
+        self::$em->persist($player3);
+        self::$em->persist($application3);
+
+        // applications for both groups
+        $player4 = (new Player())->setName('ga-p4');
+        $application4 = (new GroupApplication())->setPlayer($player4)->setGroup($group1)->setCreated(new \DateTime());
+        $application5 = (new GroupApplication())->setPlayer($player4)->setGroup($group2)->setCreated(new \DateTime());
+        $player4->addGroupApplication($application4);
+        $player4->addGroupApplication($application5);
+        self::$em->persist($player4);
+        self::$em->persist($application4);
+        self::$em->persist($application5);
+
+        self::$em->flush();
+        self::$em->clear();
+
+        // the application status is ignored and player 4 is returned only once
+        $this->assertSame(
+            [$player1->getId(), $player2->getId(), $player4->getId()],
+            $this->repo->findWithGroupApplications([$group1->getId(), $group2->getId()]),
+        );
     }
 }

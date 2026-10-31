@@ -7,6 +7,7 @@ namespace Tests\Functional\Controller\App;
 use Neucore\Controller\App\CharController;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
+use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
@@ -340,6 +341,24 @@ class CharControllerTest extends WebTestCase
         $this->assertEquals(403, $response2->getStatusCode());
     }
 
+    public function testCharactersV1RestrictedAppAccessGroupApplication()
+    {
+        $this->setUpAccessGroupDb();
+
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
+
+        // char 567: player has a pending application for the app's access group
+        $response1 = $this->runApp('GET', '/api/app/v1/characters/567', null, $headers);
+        $this->assertEquals(200, $response1->getStatusCode());
+        $body1 = $this->parseJsonBody($response1);
+        $this->assertSame(1, count($body1));
+        $this->assertSame(567, $body1[0]['id']);
+
+        // char 123: player has no membership and no application for the app's access group
+        $response2 = $this->runApp('GET', '/api/app/v1/characters/123', null, $headers);
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
     public function testCharacterListV1403()
     {
         $this->setUpDb();
@@ -438,6 +457,23 @@ class CharControllerTest extends WebTestCase
         $this->assertSame(1, count($body));
         $this->assertSame(456, $body[0]['id']);
         $this->assertSame('C2', $body[0]['name']);
+    }
+
+    public function testCharacterListV1RestrictedAppAccessGroupApplication()
+    {
+        $this->setUpAccessGroupDb();
+
+        $headers = [
+            'Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1'),
+            'Content-Type' => 'application/json',
+        ];
+        $response = $this->runApp('POST', '/api/app/v1/character-list', [123, 456, 567], $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $body = $this->parseJsonBody($response);
+        $ids = array_column($body, 'id');
+        sort($ids);
+        $this->assertSame([456, 567], $ids);
     }
 
     public function testPlayerCharactersV1403()
@@ -841,7 +877,16 @@ class CharControllerTest extends WebTestCase
         $char1->getPlayer()->addGroup($group);
         $this->playerId = $char1->getPlayer()->getId();
 
-        // player that is not a member of the app's access group
+        // player that has a pending application for the app's access group
+        $char2 = $this->helper->addCharacterMain('C3', 567);
+        $application = (new GroupApplication())
+            ->setPlayer($char2->getPlayer())
+            ->setGroup($group)
+            ->setCreated(new \DateTime());
+        $char2->getPlayer()->addGroupApplication($application);
+        $this->helper->getObjectManager()->persist($application);
+
+        // player that is not a member of the app's access group and has no application
         $this->helper->addCharacterMain('C1', 123);
         $this->helper->getObjectManager()->flush();
         $this->helper->getObjectManager()->clear();

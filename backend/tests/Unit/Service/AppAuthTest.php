@@ -7,6 +7,7 @@ namespace Tests\Unit\Service;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
+use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
 use Neucore\Repository\AppRepository;
 use Neucore\Factory\RepositoryFactory;
@@ -123,13 +124,15 @@ class AppAuthTest extends TestCase
     public function testIsPlayerAllowed()
     {
         $h = new Helper();
-        [$appId, , , $playerCorp, $playerGroup, $playerOut] = $this->createFixture($h);
+        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] = $this->createFixture($h);
         $this->authenticate($appId);
 
         // Player with a character in the app's corporation
         $this->assertTrue($this->service->isPlayerAllowed($playerCorp->getId()));
         // Player that is a member of a group, but the app has no access groups
         $this->assertFalse($this->service->isPlayerAllowed($playerGroup->getId()));
+        // Player that applied to a group, but the app has no access groups
+        $this->assertFalse($this->service->isPlayerAllowed($playerApplied->getId()));
         // Player without a character in the app's corporation
         $this->assertFalse($this->service->isPlayerAllowed($playerOut->getId()));
     }
@@ -155,27 +158,67 @@ class AppAuthTest extends TestCase
     public function testIsPlayerAllowedAccessGroupOnly()
     {
         $h = new Helper();
-        [$appId, , , $playerCorp, $playerGroup, $playerOut] = $this->createFixture($h, false, true);
+        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] =
+            $this->createFixture($h, false, true);
         $this->authenticate($appId);
 
         // Player that is a member of the app's access group
         $this->assertTrue($this->service->isPlayerAllowed($playerGroup->getId()));
+        // Player with a pending application for the app's access group
+        $this->assertTrue($this->service->isPlayerAllowed($playerApplied->getId()));
         // Player with a character in a corporation, but the app has no corporations
         $this->assertFalse($this->service->isPlayerAllowed($playerCorp->getId()));
-        // Player that is not a member of the app's access group
+        // Player that is not a member of the app's access group and has no application
         $this->assertFalse($this->service->isPlayerAllowed($playerOut->getId()));
+    }
+
+    public function testIsPlayerAllowedApplicationStatuses()
+    {
+        $h = new Helper();
+        [$appId, , $group, , , , , , , $playerApplied] = $this->createFixture($h, false, true);
+
+        $om = $h->getObjectManager();
+        $playerAccepted = (new Player())->setName('P5');
+        $applicationAccepted = (new GroupApplication())
+            ->setPlayer($playerAccepted)
+            ->setGroup($group)
+            ->setStatus(GroupApplication::STATUS_ACCEPTED)
+            ->setCreated(new \DateTime());
+        $playerAccepted->addGroupApplication($applicationAccepted);
+        $playerDenied = (new Player())->setName('P6');
+        $applicationDenied = (new GroupApplication())
+            ->setPlayer($playerDenied)
+            ->setGroup($group)
+            ->setStatus(GroupApplication::STATUS_DENIED)
+            ->setCreated(new \DateTime());
+        $playerDenied->addGroupApplication($applicationDenied);
+        $om->persist($playerAccepted);
+        $om->persist($applicationAccepted);
+        $om->persist($playerDenied);
+        $om->persist($applicationDenied);
+        $om->flush();
+
+        $this->authenticate($appId);
+
+        // The application status is irrelevant: pending, accepted and denied are all counted
+        $this->assertTrue($this->service->isPlayerAllowed($playerApplied->getId()));
+        $this->assertTrue($this->service->isPlayerAllowed($playerAccepted->getId()));
+        $this->assertTrue($this->service->isPlayerAllowed($playerDenied->getId()));
     }
 
     public function testIsPlayerAllowedCorporationAndAccessGroup()
     {
         $h = new Helper();
-        [$appId, , , $playerCorp, $playerGroup, $playerOut] = $this->createFixture($h, true, true);
+        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] =
+            $this->createFixture($h, true, true);
         $this->authenticate($appId);
 
         // Player with a character in the app's corporation
         $this->assertTrue($this->service->isPlayerAllowed($playerCorp->getId()));
         // Player that is a member of the app's access group
         $this->assertTrue($this->service->isPlayerAllowed($playerGroup->getId()));
+        // Player with a pending application for the app's access group
+        $this->assertTrue($this->service->isPlayerAllowed($playerApplied->getId()));
         // Player that matches neither restriction
         $this->assertFalse($this->service->isPlayerAllowed($playerOut->getId()));
     }
@@ -183,12 +226,14 @@ class AppAuthTest extends TestCase
     public function testIsCharacterAllowed()
     {
         $h = new Helper();
-        [$appId, , , , , , $charCorp, $charGroup, $charOut] = $this->createFixture($h);
+        [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h);
         $this->authenticate($appId);
 
         $this->assertTrue($this->service->isCharacterAllowed($charCorp->getId()));
         $this->assertFalse($this->service->isCharacterAllowed($charGroup->getId()));
         $this->assertFalse($this->service->isCharacterAllowed($charOut->getId()));
+        // Character of a player that applied to a group, but the app has no access groups
+        $this->assertFalse($this->service->isCharacterAllowed($charApplied->getId()));
         $this->assertFalse($this->service->isCharacterAllowed(999)); // Character not found
     }
 
@@ -214,11 +259,13 @@ class AppAuthTest extends TestCase
     public function testIsCharacterAllowedAccessGroupOnly()
     {
         $h = new Helper();
-        [$appId, , , , , , $charCorp, $charGroup, $charOut] = $this->createFixture($h, false, true);
+        [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h, false, true);
         $this->authenticate($appId);
 
         // Character of a player that is a member of the app's access group
         $this->assertTrue($this->service->isCharacterAllowed($charGroup->getId()));
+        // Character of a player with a pending application for the app's access group
+        $this->assertTrue($this->service->isCharacterAllowed($charApplied->getId()));
         // Character of a player that is not a member of the app's access group
         $this->assertFalse($this->service->isCharacterAllowed($charCorp->getId()));
         $this->assertFalse($this->service->isCharacterAllowed($charOut->getId()));
@@ -227,11 +274,12 @@ class AppAuthTest extends TestCase
     public function testIsCharacterAllowedCorporationAndAccessGroup()
     {
         $h = new Helper();
-        [$appId, , , , , , $charCorp, $charGroup, $charOut] = $this->createFixture($h, true, true);
+        [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h, true, true);
         $this->authenticate($appId);
 
         $this->assertTrue($this->service->isCharacterAllowed($charCorp->getId()));
         $this->assertTrue($this->service->isCharacterAllowed($charGroup->getId()));
+        $this->assertTrue($this->service->isCharacterAllowed($charApplied->getId()));
         $this->assertFalse($this->service->isCharacterAllowed($charOut->getId()));
     }
 
@@ -277,12 +325,14 @@ class AppAuthTest extends TestCase
     public function testFilterAllowedPlayerIds()
     {
         $h = new Helper();
-        [$appId, , , $playerCorp, $playerGroup, $playerOut] = $this->createFixture($h);
+        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] = $this->createFixture($h);
         $this->authenticate($appId);
 
         $this->assertSame(
             [$playerCorp->getId()],
-            $this->service->filterAllowedPlayerIds([$playerCorp->getId(), $playerGroup->getId(), $playerOut->getId()]),
+            $this->service->filterAllowedPlayerIds([
+                $playerCorp->getId(), $playerGroup->getId(), $playerApplied->getId(), $playerOut->getId(),
+            ]),
         );
     }
 
@@ -314,36 +364,42 @@ class AppAuthTest extends TestCase
     public function testFilterAllowedPlayerIdsAccessGroupOnly()
     {
         $h = new Helper();
-        [$appId, , , $playerCorp, $playerGroup, $playerOut] = $this->createFixture($h, false, true);
+        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] =
+            $this->createFixture($h, false, true);
         $this->authenticate($appId);
 
         $this->assertSame(
-            [$playerGroup->getId()],
-            $this->service->filterAllowedPlayerIds([$playerCorp->getId(), $playerGroup->getId(), $playerOut->getId()]),
+            [$playerGroup->getId(), $playerApplied->getId()],
+            $this->service->filterAllowedPlayerIds([
+                $playerCorp->getId(), $playerGroup->getId(), $playerApplied->getId(), $playerOut->getId(),
+            ]),
         );
     }
 
     public function testFilterAllowedPlayerIdsCorporationAndAccessGroup()
     {
         $h = new Helper();
-        [$appId, , , $playerCorp, $playerGroup, $playerOut] = $this->createFixture($h, true, true);
+        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] =
+            $this->createFixture($h, true, true);
         $this->authenticate($appId);
 
         $this->assertSame(
-            [$playerCorp->getId(), $playerGroup->getId()],
-            $this->service->filterAllowedPlayerIds([$playerCorp->getId(), $playerGroup->getId(), $playerOut->getId()]),
+            [$playerCorp->getId(), $playerGroup->getId(), $playerApplied->getId()],
+            $this->service->filterAllowedPlayerIds([
+                $playerCorp->getId(), $playerGroup->getId(), $playerApplied->getId(), $playerOut->getId(),
+            ]),
         );
     }
 
     public function testFilterAllowedPlayers()
     {
         $h = new Helper();
-        [$appId, , , $playerCorp, $playerGroup, $playerOut] = $this->createFixture($h);
+        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] = $this->createFixture($h);
         $this->authenticate($appId);
 
         $this->assertSame(
             [$playerCorp],
-            $this->service->filterAllowedPlayers([$playerCorp, $playerGroup, $playerOut]),
+            $this->service->filterAllowedPlayers([$playerCorp, $playerGroup, $playerApplied, $playerOut]),
         );
     }
 
@@ -370,36 +426,40 @@ class AppAuthTest extends TestCase
     public function testFilterAllowedPlayersAccessGroupOnly()
     {
         $h = new Helper();
-        [$appId, , , $playerCorp, $playerGroup, $playerOut] = $this->createFixture($h, false, true);
+        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] =
+            $this->createFixture($h, false, true);
         $this->authenticate($appId);
 
         $this->assertSame(
-            [$playerGroup],
-            $this->service->filterAllowedPlayers([$playerCorp, $playerGroup, $playerOut]),
+            [$playerGroup, $playerApplied],
+            $this->service->filterAllowedPlayers([$playerCorp, $playerGroup, $playerApplied, $playerOut]),
         );
     }
 
     public function testFilterAllowedPlayersCorporationAndAccessGroup()
     {
         $h = new Helper();
-        [$appId, , , $playerCorp, $playerGroup, $playerOut] = $this->createFixture($h, true, true);
+        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] =
+            $this->createFixture($h, true, true);
         $this->authenticate($appId);
 
         $this->assertSame(
-            [$playerCorp, $playerGroup],
-            $this->service->filterAllowedPlayers([$playerCorp, $playerGroup, $playerOut]),
+            [$playerCorp, $playerGroup, $playerApplied],
+            $this->service->filterAllowedPlayers([$playerCorp, $playerGroup, $playerApplied, $playerOut]),
         );
     }
 
     public function testFilterAllowedCharacterIds()
     {
         $h = new Helper();
-        [$appId, , , , , , $charCorp, $charGroup, $charOut] = $this->createFixture($h);
+        [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h);
         $this->authenticate($appId);
 
         $this->assertSame(
             [$charCorp->getId()],
-            $this->service->filterAllowedCharacterIds([$charCorp->getId(), $charGroup->getId(), $charOut->getId()]),
+            $this->service->filterAllowedCharacterIds([
+                $charCorp->getId(), $charGroup->getId(), $charApplied->getId(), $charOut->getId(),
+            ]),
         );
     }
 
@@ -431,36 +491,40 @@ class AppAuthTest extends TestCase
     public function testFilterAllowedCharacterIdsAccessGroupOnly()
     {
         $h = new Helper();
-        [$appId, , , , , , $charCorp, $charGroup, $charOut] = $this->createFixture($h, false, true);
+        [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h, false, true);
         $this->authenticate($appId);
 
         $this->assertSame(
-            [$charGroup->getId()],
-            $this->service->filterAllowedCharacterIds([$charCorp->getId(), $charGroup->getId(), $charOut->getId()]),
+            [$charGroup->getId(), $charApplied->getId()],
+            $this->service->filterAllowedCharacterIds([
+                $charCorp->getId(), $charGroup->getId(), $charApplied->getId(), $charOut->getId(),
+            ]),
         );
     }
 
     public function testFilterAllowedCharacterIdsCorporationAndAccessGroup()
     {
         $h = new Helper();
-        [$appId, , , , , , $charCorp, $charGroup, $charOut] = $this->createFixture($h, true, true);
+        [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h, true, true);
         $this->authenticate($appId);
 
         $this->assertSame(
-            [$charCorp->getId(), $charGroup->getId()],
-            $this->service->filterAllowedCharacterIds([$charCorp->getId(), $charGroup->getId(), $charOut->getId()]),
+            [$charCorp->getId(), $charGroup->getId(), $charApplied->getId()],
+            $this->service->filterAllowedCharacterIds([
+                $charCorp->getId(), $charGroup->getId(), $charApplied->getId(), $charOut->getId(),
+            ]),
         );
     }
 
     public function testFilterAllowedCharacters()
     {
         $h = new Helper();
-        [$appId, , , , , , $charCorp, $charGroup, $charOut] = $this->createFixture($h);
+        [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h);
         $this->authenticate($appId);
 
         $this->assertSame(
             [$charCorp],
-            $this->service->filterAllowedCharacters([$charCorp, $charGroup, $charOut]),
+            $this->service->filterAllowedCharacters([$charCorp, $charGroup, $charApplied, $charOut]),
         );
     }
 
@@ -487,36 +551,37 @@ class AppAuthTest extends TestCase
     public function testFilterAllowedCharactersAccessGroupOnly()
     {
         $h = new Helper();
-        [$appId, , , , , , $charCorp, $charGroup, $charOut] = $this->createFixture($h, false, true);
+        [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h, false, true);
         $this->authenticate($appId);
 
         $this->assertSame(
-            [$charGroup],
-            $this->service->filterAllowedCharacters([$charCorp, $charGroup, $charOut]),
+            [$charGroup, $charApplied],
+            $this->service->filterAllowedCharacters([$charCorp, $charGroup, $charApplied, $charOut]),
         );
     }
 
     public function testFilterAllowedCharactersCorporationAndAccessGroup()
     {
         $h = new Helper();
-        [$appId, , , , , , $charCorp, $charGroup, $charOut] = $this->createFixture($h, true, true);
+        [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h, true, true);
         $this->authenticate($appId);
 
         $this->assertSame(
-            [$charCorp, $charGroup],
-            $this->service->filterAllowedCharacters([$charCorp, $charGroup, $charOut]),
+            [$charCorp, $charGroup, $charApplied],
+            $this->service->filterAllowedCharacters([$charCorp, $charGroup, $charApplied, $charOut]),
         );
     }
 
     /**
-     * Creates a corporation, a group and three players:
+     * Creates a corporation, a group and four players:
      * - $playerCorp: has a character in the corporation, is not a member of the group
      * - $playerGroup: is a member of the group, has a character outside the corporation
      * - $playerOut: has no character in the corporation and is not a member of the group
+     * - $playerApplied: has a pending application for the group
      * The app is assigned the corporation and/or the group depending on the flags.
      *
      * @return array{0: int, 1: Corporation, 2: Group, 3: Player, 4: Player, 5: Player,
-     *               6: Character, 7: Character, 8: Character}
+     *               6: Character, 7: Character, 8: Character, 9: Player, 10: Character}
      */
     private function createFixture(Helper $h, bool $appCorp = true, bool $appGroup = false): array
     {
@@ -538,15 +603,27 @@ class AppAuthTest extends TestCase
         $charOut = (new Character())->setId(3)->setName('C3')->setPlayer($playerOut);
         $playerOut->addCharacter($charOut);
 
+        $playerApplied = (new Player())->setName('P4');
+        $charApplied = (new Character())->setId(4)->setName('C4')->setPlayer($playerApplied);
+        $playerApplied->addCharacter($charApplied);
+        $application = (new GroupApplication())
+            ->setPlayer($playerApplied)
+            ->setGroup($group)
+            ->setCreated(new \DateTime()); // status is pending by default
+        $playerApplied->addGroupApplication($application);
+
         $om = $h->getObjectManager();
         $om->persist($corp);
         $om->persist($group);
         $om->persist($playerCorp);
         $om->persist($playerGroup);
         $om->persist($playerOut);
+        $om->persist($playerApplied);
+        $om->persist($application);
         $om->persist($charCorp);
         $om->persist($charGroup);
         $om->persist($charOut);
+        $om->persist($charApplied);
 
         $app = $h->addApp('A1', 's1', ['app']);
         if ($appCorp) {
@@ -557,7 +634,10 @@ class AppAuthTest extends TestCase
         }
         $om->flush();
 
-        return [$app->getId(), $corp, $group, $playerCorp, $playerGroup, $playerOut, $charCorp, $charGroup, $charOut];
+        return [
+            $app->getId(), $corp, $group, $playerCorp, $playerGroup, $playerOut,
+            $charCorp, $charGroup, $charOut, $playerApplied, $charApplied,
+        ];
     }
 
     private function authenticate(int $appId): void

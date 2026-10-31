@@ -20,7 +20,8 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  * If the app has corporations and/or access groups, its access to player and character data
  * is restricted to players that have at least one character in one of those corporations or
- * that are a member of one of those access groups.
+ * that are a member of one of those access groups or that have applied to one of those
+ * access groups (regardless of the application status).
  * If the app has such restrictions, its access to corporation data (e.g. member tracking)
  * is restricted to the corporations that are assigned to the app.
  */
@@ -49,7 +50,8 @@ class AppAuth implements RoleProviderInterface
     /**
      * IDs of all players that have at least one character in one of the
      * corporations of the app or that are a member of one of the access
-     * groups of the app, NULL if not calculated yet.
+     * groups of the app or that have applied to one of those groups
+     * (regardless of the application status), NULL if not calculated yet.
      *
      * @var int[]|null
      */
@@ -94,7 +96,8 @@ class AppAuth implements RoleProviderInterface
      * If the app has no corporations and no access groups, access is allowed.
      * Otherwise, access is allowed only if the player has at least one
      * character in one of the corporations of the app or is a member of
-     * one of the access groups of the app.
+     * one of the access groups of the app or has applied to one of those
+     * groups (regardless of the application status).
      */
     public function isPlayerAllowed(int $playerId): bool
     {
@@ -310,7 +313,8 @@ class AppAuth implements RoleProviderInterface
 
     /**
      * @return int[] IDs of all players that have at least one character in one of the corporations
-     *               of the app or that are a member of one of the access groups of the app.
+     *               of the app or that are a member of one of the access groups of the app or
+     *               that have applied to one of those groups (regardless of the application status).
      */
     private function getAllowedPlayerIds(): array
     {
@@ -326,9 +330,11 @@ class AppAuth implements RoleProviderInterface
 
             $accessGroupIds = $this->getAccessGroupIds();
             if (count($accessGroupIds) > 0) {
+                $playerRepo = $this->repositoryFactory->getPlayerRepository();
                 $allowedPlayerIds = array_merge(
                     $allowedPlayerIds,
-                    $this->repositoryFactory->getPlayerRepository()->findInGroups($accessGroupIds),
+                    $playerRepo->findInGroups($accessGroupIds),
+                    $playerRepo->findWithGroupApplications($accessGroupIds),
                 );
             }
 
