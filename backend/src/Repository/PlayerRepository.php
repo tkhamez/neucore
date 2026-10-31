@@ -125,6 +125,29 @@ class PlayerRepository extends EntityRepository
 
     /**
      * @param int[] $groupIds
+     * @return int[] Player IDs
+     */
+    public function findInGroups(array $groupIds): array
+    {
+        if (count($groupIds) === 0) {
+            return [];
+        }
+
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('p.id')
+            ->distinct()
+            ->leftJoin('p.groups', 'g')
+            ->andWhere($qb->expr()->in('g.id', ':ids'))
+            ->orderBy('p.id')
+            ->setParameter('ids', $groupIds);
+
+        return array_map(function (array $player) {
+            return (int) $player['id'];
+        }, $qb->getQuery()->getResult());
+    }
+
+    /**
+     * @param int[] $groupIds
      * @return Player[]
      */
     public function findWithGroups(array $groupIds): array

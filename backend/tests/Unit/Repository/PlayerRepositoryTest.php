@@ -29,9 +29,9 @@ class PlayerRepositoryTest extends TestCase
 
     private static Group $group2;
 
-    private static Player$player1;
+    private static Player $player1;
 
-    private static Player$player4;
+    private static Player $player4;
 
     private static Player $player6;
 
@@ -203,6 +203,23 @@ class PlayerRepositoryTest extends TestCase
 
         $this->assertSame(1, count($actual));
         $this->assertSame('c1', $actual[0]->getName());
+    }
+
+    public function testFindInGroups()
+    {
+        $this->assertSame([], $this->repo->findInGroups([]));
+
+        $group = (new Group())->setName('g-fg');
+        self::$em->persist($group);
+        self::$player1->addGroup($group);
+        self::$player4->addGroup($group);
+        self::$em->flush();
+        self::$em->clear();
+
+        $this->assertSame(
+            [self::$player1->getId(), self::$player4->getId()],
+            $this->repo->findInGroups([$group->getId()]),
+        );
     }
 
     public function testFindWithGroups()

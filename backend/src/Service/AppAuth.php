@@ -18,9 +18,11 @@ use Psr\Http\Message\ServerRequestInterface;
  * Authentication is done via an "Authorization" request header.
  * Roles are loaded from the database.
  *
- * If the app has corporations, its access to player and character data is
- * restricted to players that have at least one character in one of those
- * corporations.
+ * If the app has corporations and/or access groups, its access to player and character data
+ * is restricted to players that have at least one character in one of those corporations or
+ * that are a member of one of those access groups.
+ * If the app has such restrictions, its access to corporation data (e.g. member tracking)
+ * is restricted to the corporations that are assigned to the app.
  */
 class AppAuth implements RoleProviderInterface
 {
@@ -38,8 +40,16 @@ class AppAuth implements RoleProviderInterface
     private ?array $corporationIds = null;
 
     /**
+     * Access group IDs of the app, NULL if not calculated yet.
+     *
+     * @var int[]|null
+     */
+    private ?array $accessGroupIds = null;
+
+    /**
      * IDs of all players that have at least one character in one of the
-     * corporations of the app, NULL if not calculated yet.
+     * corporations of the app or that are a member of one of the access
+     * groups of the app, NULL if not calculated yet.
      *
      * @var int[]|null
      */
@@ -81,16 +91,17 @@ class AppAuth implements RoleProviderInterface
      * Checks if the app may access data of the player.
      *
      * If no app is authenticated, access is denied.
-     * If the app has no corporations, access is allowed.
+     * If the app has no corporations and no access groups, access is allowed.
      * Otherwise, access is allowed only if the player has at least one
-     * character in one of the corporations of the app.
+     * character in one of the corporations of the app or is a member of
+     * one of the access groups of the app.
      */
     public function isPlayerAllowed(int $playerId): bool
     {
-        if (($corporationIds = $this->getCorporationIds()) === null) {
+        if ($this->app === null) {
             return false; // No app authenticated
         }
-        if (count($corporationIds) === 0) {
+        if (!$this->hasRestrictions()) {
             return true; // No restriction
         }
 
@@ -107,10 +118,10 @@ class AppAuth implements RoleProviderInterface
      */
     public function isCharacterAllowed(int $characterId): bool
     {
-        if (($corporationIds = $this->getCorporationIds()) === null) {
+        if ($this->app === null) {
             return false; // No app authenticated
         }
-        if (count($corporationIds) === 0) {
+        if (!$this->hasRestrictions()) {
             return true; // No restriction
         }
 
@@ -126,26 +137,27 @@ class AppAuth implements RoleProviderInterface
      * Checks if the app may access data of the corporation.
      *
      * If no app is authenticated, access is denied.
-     * If the app has no corporations, access is allowed.
-     * Otherwise, the corporation must be one of the corporations of the app.
+     * If the app has no corporations and no access groups, access is allowed.
+     * Otherwise, the corporation must be one of the corporations of the app,
+     * even if access groups are the only restriction.
      */
     public function isCorporationAllowed(int $corporationId): bool
     {
-        if (($corporationIds = $this->getCorporationIds()) === null) {
+        if ($this->app === null) {
             return false; // No app authenticated
         }
-        if (count($corporationIds) === 0) {
+        if (!$this->hasRestrictions()) {
             return true; // No restriction
         }
 
-        return in_array($corporationId, $corporationIds, true);
+        return in_array($corporationId, $this->getCorporationIds(), true);
     }
 
     /**
      * Returns the player IDs of the provided list that the app may access.
      *
      * If no app is authenticated, an empty array is returned.
-     * If the app has no corporations, the provided player IDs are returned unchanged.
+     * If the app has no corporations and no access groups, the provided player IDs are returned unchanged.
      *
      * @param int[] $playerIds
      * @return int[]
@@ -156,10 +168,10 @@ class AppAuth implements RoleProviderInterface
             return [];
         }
 
-        if (($corporationIds = $this->getCorporationIds()) === null) {
+        if ($this->app === null) {
             return []; // No app authenticated
         }
-        if (count($corporationIds) === 0) {
+        if (!$this->hasRestrictions()) {
             return $playerIds; // No restriction
         }
 
@@ -170,7 +182,7 @@ class AppAuth implements RoleProviderInterface
      * Returns the players of the provided list that the app may access.
      *
      * If no app is authenticated, an empty array is returned.
-     * If the app has no corporations, the provided player IDs are returned unchanged.
+     * If the app has no corporations and no access groups, the provided players are returned unchanged.
      *
      * @param Player[] $players
      * @return Player[]
@@ -192,7 +204,7 @@ class AppAuth implements RoleProviderInterface
      * Returns the character IDs of the provided list that the app may access.
      *
      * If no app is authenticated, an empty array is returned.
-     * If the app has no corporations, the provided character IDs are returned unchanged.
+     * If the app has no corporations and no access groups, the provided character IDs are returned unchanged.
      *
      * @param int[] $characterIds
      * @return int[]
@@ -203,10 +215,10 @@ class AppAuth implements RoleProviderInterface
             return [];
         }
 
-        if (($corporationIds = $this->getCorporationIds()) === null) {
+        if ($this->app === null) {
             return []; // No app authenticated
         }
-        if (count($corporationIds) === 0) {
+        if (!$this->hasRestrictions()) {
             return $characterIds; // No restriction
         }
 
@@ -227,7 +239,7 @@ class AppAuth implements RoleProviderInterface
      * Returns the characters of the provided list that the app may access.
      *
      * If no app is authenticated, an empty array is returned.
-     * If the app has no corporations, the provided character IDs are returned unchanged.
+     * If the app has no corporations and no access groups, the provided characters are returned unchanged.
      *
      * @param Character[] $characters
      * @return Character[]
@@ -248,13 +260,13 @@ class AppAuth implements RoleProviderInterface
     /**
      * Returns the corporation IDs of the app.
      *
-     * @return int[]|null NULL if no app is authenticated, an empty array if the app has no corporations.
+     * @return int[] empty array if the app has no corporations.
      */
-    private function getCorporationIds(): ?array
+    private function getCorporationIds(): array
     {
         if ($this->corporationIds === null) {
             if ($this->app === null) {
-                return null;
+                return [];
             }
 
             $this->corporationIds = [];
@@ -267,14 +279,61 @@ class AppAuth implements RoleProviderInterface
     }
 
     /**
-     * @return int[] IDs of all players that have at least one character in one of the corporations of the app.
+     * Returns the access group IDs of the app.
+     *
+     * @return int[] empty array if the app has no access groups.
+     */
+    private function getAccessGroupIds(): array
+    {
+        if ($this->accessGroupIds === null) {
+            if ($this->app === null) {
+                return [];
+            }
+
+            $this->accessGroupIds = [];
+            foreach ($this->app->getAccessGroups() as $group) {
+                $this->accessGroupIds[] = $group->getId();
+            }
+        }
+
+        return $this->accessGroupIds;
+    }
+
+    /**
+     * Checks if the app has any data restrictions (corporations and/or access groups).
+     */
+    private function hasRestrictions(): bool
+    {
+        return count($this->getCorporationIds()) > 0
+            || count($this->getAccessGroupIds()) > 0;
+    }
+
+    /**
+     * @return int[] IDs of all players that have at least one character in one of the corporations
+     *               of the app or that are a member of one of the access groups of the app.
      */
     private function getAllowedPlayerIds(): array
     {
         if ($this->allowedPlayerIds === null) {
-            $this->allowedPlayerIds = $this->repositoryFactory
-                ->getPlayerRepository()
-                ->findInCorporations($this->getCorporationIds() ?? []);
+            $allowedPlayerIds = [];
+
+            $corporationIds = $this->getCorporationIds();
+            if (count($corporationIds) > 0) {
+                $allowedPlayerIds = $this->repositoryFactory
+                    ->getPlayerRepository()
+                    ->findInCorporations($corporationIds);
+            }
+
+            $accessGroupIds = $this->getAccessGroupIds();
+            if (count($accessGroupIds) > 0) {
+                $allowedPlayerIds = array_merge(
+                    $allowedPlayerIds,
+                    $this->repositoryFactory->getPlayerRepository()->findInGroups($accessGroupIds),
+                );
+            }
+
+            // this is faster than array_unique() for big arrays.
+            $this->allowedPlayerIds = array_keys(array_flip($allowedPlayerIds));
         }
 
         return $this->allowedPlayerIds;

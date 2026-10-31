@@ -6,6 +6,7 @@ namespace Tests\Functional\Controller\App;
 
 use Neucore\Controller\App\CharController;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
@@ -302,6 +303,43 @@ class CharControllerTest extends WebTestCase
         $this->assertSame([[987], [123, 456]], $this->parseJsonBody($response));
     }
 
+    public function testCharactersV1RestrictedApp()
+    {
+        $this->setUpRestrictedDb();
+
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
+
+        // char 456: player has no character in the app's corporation
+        $response1 = $this->runApp('GET', '/api/app/v1/characters/456', null, $headers);
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        // char 123: is in the app's corporation
+        $response2 = $this->runApp('GET', '/api/app/v1/characters/123', null, $headers);
+        $this->assertEquals(200, $response2->getStatusCode());
+        $body = $this->parseJsonBody($response2);
+        $this->assertSame(1, count($body));
+        $this->assertSame(123, $body[0]['id']);
+        $this->assertSame('C1', $body[0]['name']);
+    }
+
+    public function testCharactersV1RestrictedAppAccessGroups()
+    {
+        $this->setUpAccessGroupDb();
+
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
+
+        // char 456: player is a member of the app's access group
+        $response1 = $this->runApp('GET', '/api/app/v1/characters/456', null, $headers);
+        $this->assertEquals(200, $response1->getStatusCode());
+        $body1 = $this->parseJsonBody($response1);
+        $this->assertSame(1, count($body1));
+        $this->assertSame(456, $body1[0]['id']);
+
+        // char 123: player is not a member of the app's access group
+        $response2 = $this->runApp('GET', '/api/app/v1/characters/123', null, $headers);
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
     public function testCharacterListV1403()
     {
         $this->setUpDb();
@@ -366,6 +404,40 @@ class CharControllerTest extends WebTestCase
                 'tokenLastChecked' => null,
             ],
         ], $this->parseJsonBody($response));
+    }
+
+    public function testCharacterListV1RestrictedApp()
+    {
+        $this->setUpRestrictedDb();
+
+        $headers = [
+            'Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1'),
+            'Content-Type' => 'application/json',
+        ];
+        $response = $this->runApp('POST', '/api/app/v1/character-list', [123, 456, 789], $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $body = $this->parseJsonBody($response);
+        $this->assertSame(1, count($body));
+        $this->assertSame(123, $body[0]['id']);
+        $this->assertSame('C1', $body[0]['name']);
+    }
+
+    public function testCharacterListV1RestrictedAppAccessGroups()
+    {
+        $this->setUpAccessGroupDb();
+
+        $headers = [
+            'Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1'),
+            'Content-Type' => 'application/json',
+        ];
+        $response = $this->runApp('POST', '/api/app/v1/character-list', [123, 456], $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $body = $this->parseJsonBody($response);
+        $this->assertSame(1, count($body));
+        $this->assertSame(456, $body[0]['id']);
+        $this->assertSame('C2', $body[0]['name']);
     }
 
     public function testPlayerCharactersV1403()
@@ -715,25 +787,6 @@ class CharControllerTest extends WebTestCase
         $this->appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_CHARS])->getId();
     }
 
-    public function testCharactersV1RestrictedApp()
-    {
-        $this->setUpRestrictedDb();
-
-        $headers = ['Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1')];
-
-        // char 456: player has no character in the app's corporation
-        $response1 = $this->runApp('GET', '/api/app/v1/characters/456', null, $headers);
-        $this->assertEquals(403, $response1->getStatusCode());
-
-        // char 123: is in the app's corporation
-        $response2 = $this->runApp('GET', '/api/app/v1/characters/123', null, $headers);
-        $this->assertEquals(200, $response2->getStatusCode());
-        $body = $this->parseJsonBody($response2);
-        $this->assertSame(1, count($body));
-        $this->assertSame(123, $body[0]['id']);
-        $this->assertSame('C1', $body[0]['name']);
-    }
-
     public function testPlayersV1RestrictedApp()
     {
         $this->setUpRestrictedDb();
@@ -749,23 +802,6 @@ class CharControllerTest extends WebTestCase
             [['id' => $this->playerId, 'name' => 'C1', 'characterId' => 123]],
             $this->parseJsonBody($response),
         );
-    }
-
-    public function testCharacterListV1RestrictedApp()
-    {
-        $this->setUpRestrictedDb();
-
-        $headers = [
-            'Authorization' => 'Bearer ' . base64_encode($this->appId . ':s1'),
-            'Content-Type' => 'application/json',
-        ];
-        $response = $this->runApp('POST', '/api/app/v1/character-list', [123, 456, 789], $headers);
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $body = $this->parseJsonBody($response);
-        $this->assertSame(1, count($body));
-        $this->assertSame(123, $body[0]['id']);
-        $this->assertSame('C1', $body[0]['name']);
     }
 
     private function setUpRestrictedDb(): void
@@ -785,6 +821,28 @@ class CharControllerTest extends WebTestCase
 
         // player without a character in the app's corporation
         $this->helper->addCharacterMain('C2', 456);
+        $this->helper->getObjectManager()->flush();
+        $this->helper->getObjectManager()->clear();
+    }
+
+    private function setUpAccessGroupDb(): void
+    {
+        $this->helper->emptyDb();
+
+        $group = (new Group())->setName('Group one');
+        $this->helper->getObjectManager()->persist($group);
+
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_CHARS]);
+        $app->addAccessGroup($group);
+        $this->appId = $app->getId();
+
+        // player that is a member of the app's access group
+        $char1 = $this->helper->addCharacterMain('C2', 456);
+        $char1->getPlayer()->addGroup($group);
+        $this->playerId = $char1->getPlayer()->getId();
+
+        // player that is not a member of the app's access group
+        $this->helper->addCharacterMain('C1', 123);
         $this->helper->getObjectManager()->flush();
         $this->helper->getObjectManager()->clear();
     }
