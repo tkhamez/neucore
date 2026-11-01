@@ -1550,7 +1550,10 @@ class WatchlistController extends BaseController
                 $watchlist->addKicklistAlliance($entity);
             } elseif ($entity instanceof Corporation && $type === Watchlist::ALLOWLIST_CORPORATION) {
                 $watchlist->addAllowlistCorporation($entity);
-            } elseif ($entity instanceof Alliance && $type === Watchlist::ALLOWLIST_ALLIANCE) {
+            } elseif (
+                /* @phpstan-ignore instanceof.alwaysTrue */ $entity instanceof Alliance
+                && /* @phpstan-ignore identical.alwaysTrue */ $type === Watchlist::ALLOWLIST_ALLIANCE
+            ) {
                 $watchlist->addAllowlistAlliance($entity);
             }
         } elseif ($action === self::ACTION_REMOVE) {
@@ -1570,7 +1573,10 @@ class WatchlistController extends BaseController
                 $watchlist->removeKicklistAlliance($entity);
             } elseif ($entity instanceof Corporation && $type === Watchlist::ALLOWLIST_CORPORATION) {
                 $watchlist->removeAllowlistCorporation($entity);
-            } elseif ($entity instanceof Alliance && $type === Watchlist::ALLOWLIST_ALLIANCE) {
+            } elseif (
+                /* @phpstan-ignore instanceof.alwaysTrue */ $entity instanceof Alliance
+                && /* @phpstan-ignore identical.alwaysTrue */ $type === Watchlist::ALLOWLIST_ALLIANCE
+            ) {
                 $watchlist->removeAllowlistAlliance($entity);
             }
         }
