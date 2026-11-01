@@ -25,19 +25,20 @@ use Neucore\Controller\User\SettingsController;
 use Neucore\Controller\User\SettingsEveLoginController;
 use Neucore\Controller\User\StatisticsController;
 use Neucore\Controller\User\WatchlistController;
+use Neucore\Middleware\Psr15\OAuthRedirect;
 
 return [
-    '/login/{name}'      => ['GET', [AuthController::class, 'login']],
-    '/login-callback'    => ['GET', [AuthController::class, 'callback']],
+    '/login/{name}'               => ['GET', [AuthController::class, 'login']],
+    OAuthRedirect::LOGIN_CALLBACK => ['GET', [AuthController::class, 'callback']],
 
     '/plugin/{id}/{name}'   => ['GET', [PluginController::class, 'request']],
 
-    '/api/user/auth/callback'   => ['GET',  [AuthController::class, 'callback']], // only for backwards compatibility
-    '/api/user/auth/result'     => ['GET',  [AuthController::class, 'result']],
-    '/api/user/auth/logout'     => ['POST', [AuthController::class, 'logout']],
-    '/api/user/auth/csrf-token' => ['GET',  [AuthController::class, 'csrfToken']],
-    '/api/user/auth/password-generate' => ['POST', [AuthPasswordController::class, 'generatePassword']],
-    '/api/user/auth/password-login'    => ['POST', [AuthPasswordController::class, 'login']],
+    OAuthRedirect::LOGIN_CALLBACK_LEGACY => ['GET', [AuthController::class, 'callback']],
+    '/api/user/auth/result'              => ['GET',  [AuthController::class, 'result']],
+    '/api/user/auth/logout'              => ['POST', [AuthController::class, 'logout']],
+    '/api/user/auth/csrf-token'          => ['GET',  [AuthController::class, 'csrfToken']],
+    '/api/user/auth/password-generate'   => ['POST', [AuthPasswordController::class, 'generatePassword']],
+    '/api/user/auth/password-login'      => ['POST', [AuthPasswordController::class, 'login']],
 
     '/api/app/v1/show' => ['GET', [ApplicationController::class, 'showV1']],
 

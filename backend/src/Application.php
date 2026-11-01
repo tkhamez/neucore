@@ -36,6 +36,7 @@ use Neucore\Middleware\Psr15\Cors;
 use Neucore\Middleware\Psr15\BodyParams;
 use Neucore\Middleware\Psr15\CSRFToken;
 use Neucore\Middleware\Psr15\DnsRebindingProtection;
+use Neucore\Middleware\Psr15\OAuthRedirect;
 use Neucore\Middleware\Psr15\RateLimitApp;
 use Neucore\Middleware\Psr15\RateLimitIP;
 use Neucore\Service\SessionData;
@@ -330,6 +331,9 @@ class Application
                 SessionMiddleware::OPTION_ROUTE_BLOCKING_PATTERN => ['/api/user/auth', '/login', '/plugin'],
             ],
         ));
+
+        // This must be executed before the session is started.
+        $app->add(new OAuthRedirect($this->getFromContainer(ResponseFactoryInterface::class)));
 
         $app->add($this->getFromContainer(DnsRebindingProtection::class));
 

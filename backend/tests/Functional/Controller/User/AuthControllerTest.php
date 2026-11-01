@@ -171,12 +171,38 @@ class AuthControllerTest extends WebTestCase
         $this->assertStringStartsWith($this->getStatePrefix(EveLogin::NAME_MAIL), $sess->get('auth_state'));
     }
 
+    public function testCallback_FirstHop_MetaRefresh()
+    {
+        $response = $this->runApp('GET', '/login-callback?code=abc&state=xyz');
+
+        // The first (cross-site) request is answered with a meta refresh to a same-site URL,
+        // so that the SameSite=Strict session cookie is sent on the second request.
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('text/html', $response->getHeader('Content-Type')[0]);
+        $this->assertStringContainsString(
+            '<meta http-equiv="refresh" content="0; url=/login-callback?code=abc&amp;state=xyz&amp;redirected=1">',
+            (string) $response->getBody(),
+        );
+    }
+
+    public function testCallback_LegacyPath_FirstHop_MetaRefresh()
+    {
+        $response = $this->runApp('GET', '/api/user/auth/callback?code=abc&state=xyz');
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString(
+            '<meta http-equiv="refresh" '
+            . 'content="0; url=/api/user/auth/callback?code=abc&amp;state=xyz&amp;redirected=1">',
+            (string) $response->getBody(),
+        );
+    }
+
     public function testCallback_EmptyState()
     {
         /** @noinspection PhpArrayWriteIsNotUsedInspection */
         $_SESSION = ['auth_state' => '', 'auth_result' => null];
 
-        $response = $this->runApp('GET', '/login-callback?state=123');
+        $response = $this->runApp('GET', '/login-callback?state=123&redirected=1');
         $this->assertSame(302, $response->getStatusCode());
 
         $this->assertSame(
@@ -190,7 +216,7 @@ class AuthControllerTest extends WebTestCase
         $state = self::$state;
         $_SESSION = ['auth_state' => $state, 'auth_result' => null];
 
-        $response = $this->runApp('GET', '/login-callback?state=INVALID'); // fail early
+        $response = $this->runApp('GET', '/login-callback?state=INVALID&redirected=1'); // fail early
         $this->assertSame(302, $response->getStatusCode());
 
         $this->assertfalse(isset($_SESSION['auth_state'])); // test that it was deleted
@@ -224,7 +250,7 @@ class AuthControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state=' . $state,
+            '/login-callback?state=' . $state . '&redirected=1',
             null,
             null,
             [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
@@ -263,7 +289,7 @@ class AuthControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state=' . $state,
+            '/login-callback?state=' . $state . '&redirected=1',
             null,
             null,
             [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
@@ -302,7 +328,7 @@ class AuthControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state=' . $state,
+            '/login-callback?state=' . $state . '&redirected=1',
             null,
             null,
             [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
@@ -347,7 +373,7 @@ class AuthControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state=' . $state,
+            '/login-callback?state=' . $state . '&redirected=1',
             null,
             null,
             [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
@@ -389,7 +415,7 @@ class AuthControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state=' . $state,
+            '/login-callback?state=' . $state . '&redirected=1',
             null,
             null,
             [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
@@ -428,7 +454,7 @@ class AuthControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state=' . $state,
+            '/login-callback?state=' . $state . '&redirected=1',
             null,
             null,
             [
@@ -473,7 +499,7 @@ class AuthControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state=' . $state,
+            '/login-callback?state=' . $state . '&redirected=1',
             null,
             null,
             [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
@@ -506,7 +532,7 @@ class AuthControllerTest extends WebTestCase
         self::$em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
         $response = $this->runApp(
             'GET',
-            '/login-callback?state=' . $state,
+            '/login-callback?state=' . $state . '&redirected=1',
             null,
             null,
             [
@@ -549,7 +575,7 @@ class AuthControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state=' . $state,
+            '/login-callback?state=' . $state . '&redirected=1',
             null,
             null,
             [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
@@ -594,7 +620,7 @@ class AuthControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state=' . $state,
+            '/login-callback?state=' . $state . '&redirected=1',
             null,
             null,
             [
@@ -638,7 +664,7 @@ class AuthControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state=' . $state,
+            '/login-callback?state=' . $state . '&redirected=1',
             null,
             null,
             [
@@ -681,7 +707,7 @@ class AuthControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state=' . $state,
+            '/login-callback?state=' . $state . '&redirected=1',
             null,
             null,
             [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
@@ -719,7 +745,7 @@ class AuthControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/login-callback?state=' . $state,
+            '/login-callback?state=' . $state . '&redirected=1',
             null,
             null,
             [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],

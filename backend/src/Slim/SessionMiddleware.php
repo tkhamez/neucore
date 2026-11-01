@@ -152,7 +152,7 @@ class SessionMiddleware implements MiddlewareInterface
                 'cookie_domain' => '',
                 'cookie_secure' => !isset($this->options[self::OPTION_SECURE]) || $this->options[self::OPTION_SECURE],
                 'cookie_httponly' => true,
-                'cookie_samesite' => 'Lax', // Needs to be Lax for OAuth to work.
+                'cookie_samesite' => 'Strict',
             ]);
 
             // write something to the session so that the Set-Cookie header is sent

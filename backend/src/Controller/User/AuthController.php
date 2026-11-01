@@ -105,6 +105,8 @@ class AuthController extends BaseController
     }
 
     /**
+     * GET /login-callback
+     *
      * EVE SSO callback URL.
      */
     public function callback(

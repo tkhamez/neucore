@@ -8,15 +8,23 @@
 
 dd mm yyyy
 
-- New: The text for service plugins now supports Markdown, such as for links.
-- New: Apps can now be assigned access groups. Apps to which corporations and/or access groups
+New
+- Apps can now be assigned access groups. Apps to which corporations and/or access groups
   have been added can now only access data from players who have at least one character in one of
   those corporations, who are a member of one of those access groups or who have applied to one of
   those access groups (regardless of the application status). This applies to all API endpoints for
   character and player data, as well as to MCP tools.
-- Change: The password of a service account is now hidden by default on the service plugin page and can be
+- The text for service plugins now supports Markdown, such as for links.
+
+Change
+- The password of a service account is now hidden by default on the service plugin page and can be
   shown or hidden with a button.
-- Change: Removed deprecated widths from integer columns.
+
+Security
+- Changed the OAuth login in a way that allows the session cookie to use SameSite=Strict.
+
+Maintenance
+- Database schema: Removed deprecated widths from integer columns.
 - Updated rds-combined-ca-bundle.pem
 
 ## 3.1.0
