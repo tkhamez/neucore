@@ -1,5 +1,5 @@
 
-// bootstrap JS (css is included via theme* entry point)
+// bootstrap JS
 import 'bootstrap';
 
 // Font Awesome (contains font files)
