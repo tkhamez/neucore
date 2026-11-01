@@ -13,7 +13,7 @@ use Tests\RequestHandler;
 class OAuthRedirectTest extends TestCase
 {
     private OAuthRedirect $middleware;
-    
+
     protected function setUp(): void
     {
         $this->middleware = new OAuthRedirect(new ResponseFactory());
