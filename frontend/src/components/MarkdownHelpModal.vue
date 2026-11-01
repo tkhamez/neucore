@@ -4,6 +4,11 @@ Plugin Administration pages. Open it with the Bootstrap data attributes:
 <a href="#" data-bs-toggle="modal" data-bs-target="#markdownHelpModal">
  -->
 
+<script setup>
+const externalLink = '[Neucore](https://github.com/tkhamez/neucore)'
+    + '{target="_blank" rel="noopener noreferrer" class="external"}';
+</script>
+
 <template>
 <div class="modal fade" id="markdownHelpModal">
     <div class="modal-dialog modal-lg">
@@ -38,8 +43,7 @@ Plugin Administration pages. Open it with the Bootstrap data attributes:
                 </p>
                 <p>
                     Tip: You can create external links with an icon like this:
-                    <code>[Neucore](https://github.com/tkhamez/neucore)
-                    {target="_blank" rel="noopener noreferrer" class="external"}</code>
+                    <code v-text="externalLink"></code>
                 </p>
                 <p>
                     Note: In the plugin service text fields, single line breaks are preserved.
