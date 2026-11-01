@@ -26,6 +26,7 @@ Security
 Maintenance
 - Database schema: Removed deprecated widths from integer columns.
 - Updated rds-combined-ca-bundle.pem
+- Updated dependencies
 
 ## 3.1.0
 

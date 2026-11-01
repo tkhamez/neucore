@@ -31,7 +31,7 @@
         "guzzlehttp/psr7": "^2.13",
         "kevinrob/guzzle-cache-middleware": "^7.0",
         "league/oauth2-client": "^2.2",
-        "mcp/sdk": "^0.8.1",
+        "mcp/sdk": "^0.9.0",
         "monolog/monolog": "^3.8",
         "php-di/php-di": "^7.0",
         "php-di/slim-bridge": "^3.0",

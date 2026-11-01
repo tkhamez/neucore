@@ -20,6 +20,10 @@ use Psr\Http\Server\RequestHandlerInterface;
  *
  * Adapted from `Mcp\Server\Transport\Http\Middleware\DnsRebindingProtectionMiddleware`
  * in `mcp/sdk` (Apache License 2.0).
+ * This class has been intentionally diverged from that implementation: it is opt-in
+ * (an empty `allowed_hosts` disables it), matches hostnames only (no scheme or port),
+ * and validates `Origin` in preference to `Host`, while the SDK middleware is always active,
+ * compares full origins and validates both headers.
  * @copyright Original © The MCP SDK contributors
  * @license Apache-2.0 (original)
  * @see \Mcp\Server\Transport\Http\Middleware\DnsRebindingProtectionMiddleware
