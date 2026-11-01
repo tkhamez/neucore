@@ -19,7 +19,7 @@ final class Version20181226133040 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('ALTER TABLE characters CHANGE valid_token valid_token TINYINT(1) DEFAULT NULL');
+        $this->addSql('ALTER TABLE characters CHANGE valid_token valid_token TINYINT DEFAULT NULL');
     }
 
     /**
@@ -29,6 +29,6 @@ final class Version20181226133040 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('ALTER TABLE characters CHANGE valid_token valid_token TINYINT(1) NOT NULL');
+        $this->addSql('ALTER TABLE characters CHANGE valid_token valid_token TINYINT NOT NULL');
     }
 }

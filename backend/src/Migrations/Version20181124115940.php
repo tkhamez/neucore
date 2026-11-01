@@ -19,7 +19,7 @@ final class Version20181124115940 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('ALTER TABLE players ADD deactivation_mail_sent TINYINT(1) NOT NULL');
+        $this->addSql('ALTER TABLE players ADD deactivation_mail_sent TINYINT NOT NULL');
     }
 
     /**

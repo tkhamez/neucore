@@ -29,6 +29,6 @@ class Version20180505173050 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('ALTER TABLE `groups` ADD public TINYINT(1) NOT NULL, DROP visibility');
+        $this->addSql('ALTER TABLE `groups` ADD public TINYINT NOT NULL, DROP visibility');
     }
 }

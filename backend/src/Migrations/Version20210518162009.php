@@ -22,12 +22,12 @@ final class Version20210518162009 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE watchlists CHANGE lockwatchlistsettings lock_watchlist_settings TINYINT(1) NOT NULL');
+        $this->addSql('ALTER TABLE watchlists CHANGE lockwatchlistsettings lock_watchlist_settings TINYINT NOT NULL');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE watchlists CHANGE lock_watchlist_settings lockWatchlistSettings TINYINT(1) NOT NULL');
+        $this->addSql('ALTER TABLE watchlists CHANGE lock_watchlist_settings lockWatchlistSettings TINYINT NOT NULL');
     }
 }

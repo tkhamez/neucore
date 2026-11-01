@@ -19,7 +19,7 @@ final class Version20210730144706 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // Add columns
-        $this->addSql('ALTER TABLE esi_tokens ADD valid_token TINYINT(1) DEFAULT NULL, 
+        $this->addSql('ALTER TABLE esi_tokens ADD valid_token TINYINT DEFAULT NULL, 
                         ADD valid_token_time DATETIME DEFAULT NULL');
 
         // Copy data
@@ -40,7 +40,7 @@ final class Version20210730144706 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // Add columns
-        $this->addSql('ALTER TABLE characters ADD valid_token TINYINT(1) DEFAULT NULL, 
+        $this->addSql('ALTER TABLE characters ADD valid_token TINYINT DEFAULT NULL, 
                         ADD valid_token_time DATETIME DEFAULT NULL');
 
         // Copy data

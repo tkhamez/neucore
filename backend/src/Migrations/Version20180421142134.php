@@ -19,7 +19,7 @@ class Version20180421142134 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('ALTER TABLE `groups` ADD public TINYINT(1) NOT NULL');
+        $this->addSql('ALTER TABLE `groups` ADD public TINYINT NOT NULL');
     }
 
     /**

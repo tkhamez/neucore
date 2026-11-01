@@ -23,7 +23,7 @@ final class Version20200125180327 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('ALTER TABLE corporations ADD auto_whitelist TINYINT(1) DEFAULT \'0\' NOT NULL');
+        $this->addSql('ALTER TABLE corporations ADD auto_whitelist TINYINT DEFAULT \'0\' NOT NULL');
     }
 
     public function down(Schema $schema): void

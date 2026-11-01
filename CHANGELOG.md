@@ -16,6 +16,7 @@ dd mm yyyy
   character and player data, as well as to MCP tools.
 - Change: The password of a service account is now hidden by default on the service plugin page and can be
   shown or hidden with a button.
+- Change: Removed deprecated widths from integer columns.
 - Updated rds-combined-ca-bundle.pem
 
 ## 3.1.0

@@ -14,7 +14,8 @@ final class Version20220108104037 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE groups_tbl ADD is_default TINYINT(1) NOT NULL');
+        #$this->addSql('ALTER TABLE groups_tbl ADD is_default TINYINT NOT NULL');
+        $this->addSql('ALTER TABLE groups_tbl ADD is_default TINYINT NOT NULL');
     }
 
     public function down(Schema $schema): void
