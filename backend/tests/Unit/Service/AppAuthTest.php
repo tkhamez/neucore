@@ -158,8 +158,8 @@ class AppAuthTest extends TestCase
     public function testIsPlayerAllowedAccessGroupOnly()
     {
         $h = new Helper();
-        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] =
-            $this->createFixture($h, false, true);
+        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied]
+            = $this->createFixture($h, false, true);
         $this->authenticate($appId);
 
         // Player that is a member of the app's access group
@@ -209,8 +209,8 @@ class AppAuthTest extends TestCase
     public function testIsPlayerAllowedCorporationAndAccessGroup()
     {
         $h = new Helper();
-        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] =
-            $this->createFixture($h, true, true);
+        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied]
+            = $this->createFixture($h, true, true);
         $this->authenticate($appId);
 
         // Player with a character in the app's corporation
@@ -364,8 +364,8 @@ class AppAuthTest extends TestCase
     public function testFilterAllowedPlayerIdsAccessGroupOnly()
     {
         $h = new Helper();
-        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] =
-            $this->createFixture($h, false, true);
+        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied]
+            = $this->createFixture($h, false, true);
         $this->authenticate($appId);
 
         $this->assertSame(
@@ -379,8 +379,8 @@ class AppAuthTest extends TestCase
     public function testFilterAllowedPlayerIdsCorporationAndAccessGroup()
     {
         $h = new Helper();
-        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] =
-            $this->createFixture($h, true, true);
+        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied]
+            = $this->createFixture($h, true, true);
         $this->authenticate($appId);
 
         $this->assertSame(
@@ -426,8 +426,8 @@ class AppAuthTest extends TestCase
     public function testFilterAllowedPlayersAccessGroupOnly()
     {
         $h = new Helper();
-        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] =
-            $this->createFixture($h, false, true);
+        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied]
+            = $this->createFixture($h, false, true);
         $this->authenticate($appId);
 
         $this->assertSame(
@@ -439,8 +439,8 @@ class AppAuthTest extends TestCase
     public function testFilterAllowedPlayersCorporationAndAccessGroup()
     {
         $h = new Helper();
-        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] =
-            $this->createFixture($h, true, true);
+        [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied]
+            = $this->createFixture($h, true, true);
         $this->authenticate($appId);
 
         $this->assertSame(
