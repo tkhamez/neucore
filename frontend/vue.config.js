@@ -23,9 +23,6 @@ module.exports = defineConfig(() => {
             },
         },
         configureWebpack: config => {
-            config.resolve = {
-                fallback: { 'querystring': require.resolve('querystring-es3') },
-            };
             config.entry = {
                 main: './src/main.js',
             };

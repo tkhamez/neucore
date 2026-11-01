@@ -28,7 +28,6 @@
     "markdown-it-sup": "^2.0.0",
     "mitt": "^3.0.1",
     "neucore-js-client": "file:neucore-js-client",
-    "querystring-es3": "^0.2.1",
     "swagger-ui-dist": "^5.32.0",
     "vue": "^3.5.30"
   },
