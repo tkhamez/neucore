@@ -74,7 +74,18 @@
                             <td v-if="hasProperty('name')">{{ account.name }}</td>
                             <td v-if="hasProperty('username')">{{ account.username }}</td>
                             <td v-if="hasProperty('password') &&
-                                      service.configurationFile.showPassword">{{ account.password }}</td>
+                                      service.configurationFile.showPassword">
+                                <template v-if="isPasswordShown(account.characterId)">
+                                    <code>{{ account.password }}</code>
+                                </template>
+                                <span v-else class="text-muted">••••••••</span>
+                                <button type="button" class="btn btn-sm btn-link p-0 ms-1"
+                                        title="Show or hide password"
+                                        v-on:click.prevent="togglePassword(account.characterId)">
+                                    <i v-if="isPasswordShown(account.characterId)" class="fa fa-eye-slash"></i>
+                                    <i v-else class="fa fa-eye"></i>
+                                </button>
+                            </td>
                             <td v-if="hasProperty('email')">{{ account.email }}</td>
                             <td v-if="hasProperty('status')">{{ account.status }}</td>
                             <td v-if="service.configurationDatabase.URLs.length > 0">
@@ -163,6 +174,7 @@ export default {
             resetPasswordButtonDisabled: false,
             registerButtonDisabled: false,
             newPassword: {},
+            showPasswords: {},
             formEmail: null,
         }
     },
@@ -198,6 +210,7 @@ export default {
     watch: {
         route() {
             this.newPassword = {};
+            this.showPasswords = {};
             this.formEmail = null;
             this.registerSuccess = false;
             getData(this);
@@ -275,6 +288,12 @@ export default {
         isInactive(account) {
             // other status are: Pending, null
             return account.status === 'Deactivated' || account.status === 'Unknown';
+        },
+        isPasswordShown(characterId) {
+            return this.showPasswords[characterId] === true;
+        },
+        togglePassword(characterId) {
+            this.showPasswords[characterId] = !this.isPasswordShown(characterId);
         },
 
         register() {

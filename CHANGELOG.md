@@ -14,6 +14,8 @@ dd mm yyyy
   those corporations, who are a member of one of those access groups or who have applied to one of
   those access groups (regardless of the application status). This applies to all API endpoints for
   character and player data, as well as to MCP tools.
+- Change: The password of a service account is now hidden by default on the service plugin page and can be
+  shown or hidden with a button.
 - Updated rds-combined-ca-bundle.pem
 
 ## 3.1.0
