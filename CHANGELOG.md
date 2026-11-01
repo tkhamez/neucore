@@ -4,9 +4,9 @@
 - [2.0.0](#200)
 - [1.0.0](#100)
 
-## next
+## 3.2.0
 
-dd mm yyyy
+1 Nov 2026
 
 New
 - Apps can now be assigned access groups. Apps to which corporations and/or access groups
