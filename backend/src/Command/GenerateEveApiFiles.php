@@ -223,7 +223,7 @@ class GenerateEveApiFiles extends Command
         if (file_put_contents($file, $data) === false) {
             $this->output->writeln("Failed to write $file.");
         } else {
-            $this->output->writeln("Wrote $file.");
+            $this->output->writeln("Wrote $file");
         }
     }
 }

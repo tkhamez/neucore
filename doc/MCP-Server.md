@@ -1,5 +1,14 @@
 # MCP Server
 
+<!-- toc -->
+
+- [Tools Overview](#tools-overview)
+- [Resources Overview](#resources-overview)
+- [Usage](#usage)
+  * [Test it manually](#test-it-manually)
+
+<!-- tocstop -->
+
 The MCP server provides tools that allow AI assistants to query player and corporation member
 tracking data and perform authenticated EVE API (ESI) requests for each character.
 

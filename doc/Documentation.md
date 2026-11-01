@@ -6,6 +6,7 @@
 - [Installation and Configuration](#installation-and-configuration)
 - [Application API](#application-api)
   * [Authentication](#authentication)
+  * [Data Restriction](#data-restriction)
   * [Rate Limits](#rate-limits)
   * [ESI Proxy](#esi-proxy)
   * [Access Token](#access-token)
