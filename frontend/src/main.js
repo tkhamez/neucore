@@ -14,14 +14,14 @@ import '@suadelabs/vue3-multiselect/dist/vue3-multiselect.css';
 
 // app
 
-import mitt from 'mitt';
+import {createNanoEvents} from 'nanoevents';
 import store from "./store";
 import "./index.scss";
 import App from './App.vue';
 
 const app = createApp(App);
 
-app.config.globalProperties.emitter = mitt();
+app.config.globalProperties.emitter = createNanoEvents();
 app.config.globalProperties.globalStore = store;
 
 app.provide('store', store)
