@@ -50,7 +50,7 @@
         "symfony/http-foundation": "^6.0",
         "symfony/polyfill-php84": "^1.43",
         "symfony/yaml": "^6.0",
-        "tkhamez/eve-api": "^15.20260818",
+        "tkhamez/eve-api": "^16.20260818",
         "tkhamez/eve-sso": "^6.0",
         "tkhamez/neucore-plugin": "^6.1",
         "tkhamez/slim-role-auth": "^6.0",
