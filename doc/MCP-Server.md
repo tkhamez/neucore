@@ -49,16 +49,17 @@ For clients that do not support resources, the documentation is also available a
 1. Create app and token
 
 Create a new app in Neucore with the role `app-mcp` and generate a secret for it.
-Then create the token like this:
+Then create the token like this (see also [Documentation.md](Documentation.md#authentication)):
 
 ```bash
+# bash
 echo -n "<app id>:<app secret>" | base64
 ```
 
 2. Configure your agent
  
 - URL: `https://neucore.domain.tld/api/app/v1/mcp`
-- HTTP header: `Authorization: Bearer <token>`.
+- HTTP header: `Authorization: Bearer <token>`
 
 The model used by the agent must support tool calling.
 
