@@ -32,7 +32,8 @@ See `CONTRIBUTING.md` for full guidelines.
 
 ## Docker development environment
 
-`setup/compose.yaml` defines services: `neucore_db` (MariaDB/MySQL), `neucore_php`, `neucore_node`, `neucore_http`, `neucore_memcached`, `neucore_java` (for OpenAPI codegen).
+`setup/compose.yaml` defines services: `neucore_db` (MariaDB/MySQL), `neucore_php`, `neucore_node`, `neucore_http`, `neucore_memcached`.
+Java is available in the `neucore_node` container.
 
 - The root `compose.yaml` is a **gitignored local copy** with user-specific mounts (plugin dirs, PHP Dockerfile selection).
 - Setup: `docker compose build` → `docker compose up` → `setup/install-docker.sh` → `docker compose exec neucore_node npm run build`.
@@ -42,10 +43,9 @@ See `CONTRIBUTING.md` for full guidelines.
 
 ### Rules
 
-- **NEVER** run `composer`, `npm`, `node`, `php`, `phpunit`, etc. on the host. Always use `docker compose exec` or `docker compose run`:
+- **NEVER** run `composer`, `npm`, `node`, `php`, `phpunit`, etc. on the host. Always use `docker compose exec`:
   - PHP/Composer/PHPUnit: `docker compose exec neucore_php <command>`
   - npm/node: `docker compose exec neucore_node <command>`
-  - Java (OpenAPI codegen): `docker compose run --rm neucore_java <command>`
 - Do not install software on the host system.
 - Do not make changes to files outside this project.
 - Only work on files under version control.
@@ -77,7 +77,7 @@ When you change backend routes or OpenAPI annotations, regenerate **in this orde
 # 1. OpenAPI spec files
 docker compose exec neucore_php composer openapi
 # 2. JS API client
-docker compose run --rm neucore_java /app/frontend/openapi.sh
+docker compose exec neucore_node /app/frontend/openapi.sh
 docker compose exec neucore_node npm install --ignore-scripts --prefix /app/frontend/neucore-js-client
 docker compose exec neucore_node npm run build --prefix /app/frontend/neucore-js-client
 # 3. Frontend production build
@@ -125,10 +125,10 @@ Tracked static ESI data files (regenerate with `bin/console generate-eve-api-fil
 
 ## Toolchain versions
 
-- PHP: 8.1–8.5 (platform 8.1.0 in composer).
-- Node: 24.14, npm 11.11 (`frontend/package.json` engines).
-- Java: Temurin 17 (OpenAPI generator, used via `neucore_java` Docker service).
-- DB: MariaDB 10.11/11.4/11.8/12.3 or MySQL 8.0.22/8.4/9.7.
+- PHP: 8.1–8.5 (platform 8.1.0 in composer)
+- Node: 24 with npm 11 (`frontend/package.json` engines)
+- Java: 17 (OpenAPI Generator, used via `neucore_node` Docker service)
+- DB: MariaDB 10.11/11.4/11.8/12.3 or MySQL 8.0.22/8.4/9.7
 
 ## References
 

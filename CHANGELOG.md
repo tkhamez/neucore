@@ -4,6 +4,14 @@
 - [2.0.0](#200)
 - [1.0.0](#100)
 
+## next
+
+dd mm yyyy
+
+Misc
+- Docker Development Environment: Java container removed; Java installed in the Node container instead
+- Fixed permission problems in dist-docker.sh
+
 ## 3.2.0
 
 1 Nov 2026

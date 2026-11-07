@@ -249,10 +249,10 @@ To run the application:
     * For Nginx there's a sample [configuration](../setup/docker-nginx.conf) file in the `setup` directory.
 
 Additionally, for a development environment and to build the application:
-* PHP extensions: pdo_sqlite (optional for unit tests), xdebug (optional for debugging).
-* Composer 2.
-* Node.js, only tested with version 24.14.
-* Java runtime >=11 (but only tested with v17) to generate the OpenAPI JavaScript client.
+* PHP extensions: pdo_sqlite (optional for unit tests), xdebug (optional for debugging)
+* Composer 2
+* Node.js 24
+* Java runtime >=11 (but only tested with v17) to generate the OpenAPI JavaScript client
 
 #### Install/Update
 

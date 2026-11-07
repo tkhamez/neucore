@@ -25,13 +25,6 @@ services:
     ports: ["30306:3306"]
     networks: [neucore]
 
-  neucore_java:
-    container_name: neucore_dev_java
-    image: eclipse-temurin:17-jre-alpine
-    platform: linux/amd64 # Force amd64 as there no ARM compatible manifest
-    volumes: [".:/app"]
-    networks: [neucore]
-
   neucore_node:
     container_name: neucore_dev_node
     build:

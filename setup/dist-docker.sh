@@ -2,10 +2,18 @@
 
 DIR=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 
-export UID
+dist_clean() {
+    docker compose exec neucore_php sh -c "rm -Rf ../dist/build/backend"
+    docker compose exec neucore_node sh -c "rm -Rf ../dist/build/frontend"
+    docker compose exec neucore_node sh -c "rm -Rf ../dist/build/web"
+    rm -Rf "${DIR}"/../dist/build
+    rm -Rf "${DIR}"/../dist/neucore
+}
 
 mkdir -p "${DIR}"/../dist
-rm -Rf "${DIR}"/../dist/*
+dist_clean
+rm -f "${DIR}"/../dist/neucore-*.sha256
+rm -f "${DIR}"/../dist/neucore-*.tar.gz
 
 git checkout-index -a -f --prefix="${DIR}"/../dist/build/
 
@@ -21,7 +29,7 @@ docker compose exec neucore_php sh -c "cd ../dist/build/backend && composer open
 
 # OpenAPI JS client
 cd "${DIR}"/.. || exit
-docker compose run --rm neucore_java /app/dist/build/frontend/openapi.sh
+docker compose exec neucore_node /app/dist/build/frontend/openapi.sh
 docker compose exec neucore_node sh -c "cd ../dist/build/frontend/neucore-js-client && npm install --ignore-scripts"
 docker compose exec neucore_node sh -c "cd ../dist/build/frontend/neucore-js-client && npm run build"
 
@@ -42,5 +50,4 @@ cd "${DIR}"/../dist || exit
 tar -czf neucore-"${NAME}".tar.gz neucore
 sha256sum neucore-"${NAME}".tar.gz > neucore-"${NAME}".sha256
 
-rm -Rf "${DIR}"/../dist/build
-rm -Rf "${DIR}"/../dist/neucore
+dist_clean

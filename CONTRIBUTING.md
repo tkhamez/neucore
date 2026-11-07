@@ -76,7 +76,7 @@ When changing backend routes or OpenAPI annotations, regenerate in order:
 # in the neucore_php container
 composer openapi
 # on the host
-docker compose run --rm neucore_java /app/frontend/openapi.sh
+docker compose exec neucore_node /app/frontend/openapi.sh
 # in the neucore_node container
 cd neucore-js-client && npm install --ignore-scripts && npm run build
 cd .. && npm run build
