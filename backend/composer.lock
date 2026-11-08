@@ -5752,16 +5752,16 @@
         },
         {
             "name": "tkhamez/neucore-plugin",
-            "version": "6.1.0",
+            "version": "6.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/neucore-plugin.git",
-                "reference": "99ca52d274934a6a3cd0d16e903f00a5433d8eff"
+                "reference": "61f4ead7a1944bc65781418eb0c0613adcf03712"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/neucore-plugin/zipball/99ca52d274934a6a3cd0d16e903f00a5433d8eff",
-                "reference": "99ca52d274934a6a3cd0d16e903f00a5433d8eff",
+                "url": "https://api.github.com/repos/tkhamez/neucore-plugin/zipball/61f4ead7a1944bc65781418eb0c0613adcf03712",
+                "reference": "61f4ead7a1944bc65781418eb0c0613adcf03712",
                 "shasum": ""
             },
             "require": {
@@ -5789,9 +5789,9 @@
             "description": "Necessary classes to write a Neucore plugin.",
             "support": {
                 "issues": "https://github.com/tkhamez/neucore-plugin/issues",
-                "source": "https://github.com/tkhamez/neucore-plugin/tree/6.1.0"
+                "source": "https://github.com/tkhamez/neucore-plugin/tree/6.2.0"
             },
-            "time": "2026-01-04T13:49:29+00:00"
+            "time": "2026-11-08T16:25:21+00:00"
         },
         {
             "name": "tkhamez/slim-role-auth",
