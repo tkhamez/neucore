@@ -74,7 +74,7 @@ class SettingsControllerTest extends WebTestCase
             'monolog' => ['path' => Application::ROOT_DIR . '/var/logs'],
             'repository' => 'https://github.com/tkhamez/neucore',
             'CORS' => ['allow_origin' => ''],
-            'session' => ['secure' => '1'],
+            'session' => ['secure' => '1', 'same_site' => 'Strict'],
             'eve' => Helper::getFullEveConfig(),
             'guzzle' => [
                 'cache' => [

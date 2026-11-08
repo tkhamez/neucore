@@ -8,6 +8,10 @@
 
 dd mm yyyy
 
+Fix
+- The environment variable `NEUCORE_SESSION_SAME_SITE` has been added to control the `SameSite` setting of the
+  session cookie. The default setting is "Strict", but it can be changed to "Lax" if a plugin requires it.
+
 Misc
 - Docker Development Environment: Java container removed; Java installed in the Node container instead
 - Fixed permission problems in dist-docker.sh
