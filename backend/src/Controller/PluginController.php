@@ -30,7 +30,7 @@ class PluginController extends BaseController
         LoggerInterface        $logger,
         AccountGroup           $accountGroup,
     ): ResponseInterface {
-        $plugin = $this->repositoryFactory->getPluginRepository()->find((int) $id);
+        $plugin = $pluginService->getPlugin((int) $id);
         if ($plugin === null) {
             $this->response->getBody()->write($this->getBodyWithHomeLink('Plugin not found.'));
             return $this->response->withStatus(404);
@@ -40,8 +40,6 @@ class PluginController extends BaseController
             $this->response->getBody()->write($this->getBodyWithHomeLink('Plugin is not active.'));
             return $this->response->withStatus(404);
         }
-
-        $player = $userAuth->getUser()?->getPlayer();
 
         if (!$userAuth->hasRequiredGroups($plugin, true)) {
             $this->response->getBody()->write($this->getBodyWithHomeLink('Not allowed to use this plugin.'));
@@ -54,6 +52,7 @@ class PluginController extends BaseController
             return $this->response->withStatus(404);
         }
 
+        $player = $userAuth->getUser()?->getPlayer();
         $coreAccount = $player?->toCoreAccount();
         if ($coreAccount) {
             $coreAccount->groupsDeactivated = $accountGroup->groupsDeactivated($player);

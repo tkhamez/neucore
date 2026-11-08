@@ -11,8 +11,8 @@
 
 <!-- tocstop -->
 
-_The following is valid for Neucore 1.42.0 and [neucore-plugin](https://github.com/tkhamez/neucore-plugin)
-0.10.0 and above._
+_The following is valid for Neucore 3.3.0 and [neucore-plugin](https://github.com/tkhamez/neucore-plugin)
+6.2.0 and above._
 
 
 ## Intro
@@ -42,12 +42,6 @@ The following steps are the same for all plugins. See the respective plugin docu
 
 ## Overview for plugin creators
 
-For each plugin created in Neucore there is one distinct URL `/plugin/{plugin_id}/{name}`.
-The {name} part can be anything and is passed to the method that implements the request. This method will also 
-get information about the logged-in user.
-
-All plugins have access to a couple objects from Neucore, e.g. to parse YAML files, get various data like 
-group members or make ESI requests with tokens from any character that is available on Neucore.
 
 ### General plugins
 
@@ -56,19 +50,39 @@ implement console commands via Neucore (`backend/bin/console plugin {plugin_id} 
 
 See this [example plugin](https://github.com/tkhamez/neucore-example-plugin) for a simple demo.
 
-#### ESI Limits
-
-Both the [ESI error limit](https://developers.eveonline.com/docs/services/esi/best-practices/#error-limit)
-and the [ESI rate limit](https://developers.eveonline.com/docs/services/esi/rate-limiting/) are 
-reduced to 85% of the actual ESI limits.
-
-The time returned after reaching the permissible rate limit is only a suggestion for a 
-minimum delay. The current implementation does not know when tokens will be returned.
 
 ### Service plugins
 
-They are available to users from the "Services" menu. They provide configuration data to customise the 
+They are available to users from the "Services" menu. They provide configuration data to customise the
 user interface and implement a couple of methods to create and update external service accounts via Neucore.
+
+
+### URLs
+
+For each plugin created in Neucore there is one distinct URL `/plugin/{plugin_id}/{name}`.
+The `{name}` part can be anything and is passed to the method that implements the request. This method will also 
+get information about the logged-in user.
+
+A plugin can list request names in the `redirectRequestNames` entry of its `plugin.yml`. When one of these
+names is requested, Neucore first redirects to the same URL with the `redirected=1` parameter appended before
+the request is passed to the plugin. This allows the request to be reached from an external page (for example,
+the callback of an external OAuth provider) while the session cookie uses `SameSite=Strict`.
+
+
+### ESI Limits
+
+Both the [ESI error limit](https://developers.eveonline.com/docs/services/esi/best-practices/#error-limit)
+and the [ESI rate limit](https://developers.eveonline.com/docs/services/esi/rate-limiting/) are
+reduced to 85% of the actual ESI limits.
+
+The time returned after reaching the permissible rate limit is only a suggestion for a
+minimum delay. The current implementation does not know when tokens will be returned.
+
+
+### Misc
+
+All plugins have access to a couple objects from Neucore, e.g. to parse YAML files, get various data like
+group members or make ESI requests with tokens from any character that is available on Neucore.
 
 
 ## Create a plugin

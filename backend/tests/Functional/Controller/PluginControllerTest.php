@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller;
 
+require_once __DIR__ . '/PluginController/plugin1/src/TestService1.php';
+
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Data\PluginConfigurationDatabase;
 use Neucore\Entity\Corporation;
@@ -225,6 +227,71 @@ class PluginControllerTest extends WebTestCase
         $this->assertStringStartsWith('Response from plugin.', $response->getBody()->__toString());
         $this->assertSame('test', TestService1::$data['name']);
         $this->assertNull(TestService1::$data['main']);
+    }
+
+    public function testRequest_Redirect()
+    {
+        $configuration = new PluginConfigurationDatabase();
+        $configuration->directoryName = 'plugin1';
+        $configuration->active = true;
+        $plugin = (new Plugin())->setName('Plugin 1')->setConfigurationDatabase($configuration);
+        $this->om->persist($plugin);
+        $this->om->flush();
+
+        TestService1::$data = [];
+        $response = $this->runApp(
+            'GET',
+            '/plugin/' . $plugin->getId() . '/redirect',
+            envVars: [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginController']],
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString(
+            '<meta http-equiv="refresh" content="0; url=/plugin/'
+            . $plugin->getId() . '/redirect?redirected=1">',
+            (string) $response->getBody(),
+        );
+        // The request was intercepted before the controller, so the plugin was not invoked.
+        $this->assertSame([], TestService1::$data);
+    }
+
+    public function testRequest_Redirect_WithRedirectedFlag()
+    {
+        $configuration = new PluginConfigurationDatabase();
+        $configuration->directoryName = 'plugin1';
+        $configuration->active = true;
+        $plugin = (new Plugin())->setName('Plugin 1')->setConfigurationDatabase($configuration);
+        $this->om->persist($plugin);
+        $this->om->flush();
+
+        $response = $this->runApp(
+            'GET',
+            '/plugin/' . $plugin->getId() . '/redirect?redirected=1',
+            envVars: [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginController']],
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('Response from plugin.', $response->getBody()->__toString());
+        $this->assertSame('redirect', TestService1::$data['name']);
+    }
+
+    public function testRequest_NoRedirectForUnconfiguredRequestName()
+    {
+        $configuration = new PluginConfigurationDatabase();
+        $configuration->directoryName = 'plugin1';
+        $configuration->active = true;
+        $plugin = (new Plugin())->setName('Plugin 1')->setConfigurationDatabase($configuration);
+        $this->om->persist($plugin);
+        $this->om->flush();
+
+        $response = $this->runApp(
+            'GET',
+            '/plugin/' . $plugin->getId() . '/auth',
+            envVars: [['NEUCORE_PLUGINS_INSTALL_DIR', __DIR__ . '/PluginController']],
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('Response from plugin.', $response->getBody()->__toString());
     }
 
     public function testRequest302_Exception_ServicePlugin()

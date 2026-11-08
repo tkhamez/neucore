@@ -26,12 +26,13 @@ use Neucore\Controller\User\SettingsEveLoginController;
 use Neucore\Controller\User\StatisticsController;
 use Neucore\Controller\User\WatchlistController;
 use Neucore\Middleware\Psr15\OAuthRedirect;
+use Neucore\Middleware\Psr15\PluginRedirect;
 
 return [
     '/login/{name}'               => ['GET', [AuthController::class, 'login']],
     OAuthRedirect::LOGIN_CALLBACK => ['GET', [AuthController::class, 'callback']],
 
-    '/plugin/{id}/{name}'   => ['GET', [PluginController::class, 'request']],
+    PluginRedirect::PLUGIN_PREFIX . '/{id}/{name}' => ['GET', [PluginController::class, 'request']],
 
     OAuthRedirect::LOGIN_CALLBACK_LEGACY => ['GET', [AuthController::class, 'callback']],
     '/api/user/auth/result'              => ['GET',  [AuthController::class, 'result']],

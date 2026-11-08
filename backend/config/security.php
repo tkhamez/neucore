@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Neucore\Entity\Role;
+use Neucore\Middleware\Psr15\PluginRedirect;
 
 /**
  * Required roles for routes.
@@ -10,7 +11,7 @@ use Neucore\Entity\Role;
  * First match will be used, matched by "starts-with"
  */
 return [
-    '/plugin/{id}/{name}'       => [Role::ANONYMOUS, Role::USER],
+    PluginRedirect::PLUGIN_PREFIX . '/{id}/{name}' => [Role::ANONYMOUS, Role::USER],
 
     '/api/app/v1/main'                             => [Role::APP_CHARS],
     '/api/app/v2/main'                             => [Role::APP_CHARS],

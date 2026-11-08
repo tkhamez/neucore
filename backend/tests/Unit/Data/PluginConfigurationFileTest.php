@@ -33,6 +33,7 @@ class PluginConfigurationFileTest extends TestCase
             'properties' => [PluginConfigurationFile::PROPERTY_USERNAME],
             'showPassword' => true,
             'actions' => [PluginConfigurationFile::ACTION_UPDATE_ACCOUNT],
+            'redirectRequestNames' => ['redirect1', 'redirect2'],
             'directoryName' => 'dir',
             'URLs' => [['url' => 'http', 'title' => 'title', 'target' => '_blank']],
             'textTop' => 'text t',
@@ -51,6 +52,7 @@ class PluginConfigurationFileTest extends TestCase
         $this->assertSame([PluginConfigurationFile::PROPERTY_USERNAME], $obj->properties);
         $this->assertTrue($obj->showPassword);
         $this->assertSame([PluginConfigurationFile::ACTION_UPDATE_ACCOUNT], $obj->actions);
+        $this->assertSame(['redirect1', 'redirect2'], $obj->redirectRequestNames);
         $this->assertSame('dir', $obj->directoryName);
         $this->assertSame(1, count($obj->URLs));
         $this->assertSame('http', $obj->URLs[0]->url);
@@ -75,6 +77,7 @@ class PluginConfigurationFileTest extends TestCase
         $obj->properties = [PluginConfigurationFile::PROPERTY_USERNAME];
         $obj->showPassword = true;
         $obj->actions = [PluginConfigurationFile::ACTION_UPDATE_ACCOUNT];
+        $obj->redirectRequestNames = ['redirect1'];
         $obj->directoryName = 'dir';
 
         $url = new PluginConfigurationURL();
@@ -99,6 +102,7 @@ class PluginConfigurationFileTest extends TestCase
                 'properties' => [PluginConfigurationFile::PROPERTY_USERNAME],
                 'showPassword' => true,
                 'actions' => [PluginConfigurationFile::ACTION_UPDATE_ACCOUNT],
+                # "redirectRequestNames" is intentionally not part of the serialized data
 
                 'directoryName' => 'dir',
                 'URLs' => [['url' => 'http', 'title' => 'title', 'target' => '_blank']],

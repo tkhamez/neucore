@@ -4,9 +4,13 @@
 - [2.0.0](#200)
 - [1.0.0](#100)
 
-## next
+## 3.3.0
 
 dd mm yyyy
+
+New
+- Plugins can now be reached from external pages while the session cookie uses SameSite=Strict.
+  Add request names to the `redirectRequestNames` entry in `plugin.yml` (see [Plugins](doc/Plugins.md))
 
 Fix
 - The environment variable `NEUCORE_SESSION_SAME_SITE` has been added to control the `SameSite` setting of the

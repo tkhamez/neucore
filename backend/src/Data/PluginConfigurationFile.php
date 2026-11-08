@@ -69,6 +69,11 @@ class PluginConfigurationFile extends PluginConfiguration implements \JsonSerial
     public array $actions = [];
 
     /**
+     * @var string[]
+     */
+    public array $redirectRequestNames = [];
+
+    /**
      * @param array<string, mixed> $data Array created from jsonSerialize(), except "types".
      */
     public static function fromArray(array $data): self
@@ -83,6 +88,7 @@ class PluginConfigurationFile extends PluginConfiguration implements \JsonSerial
         $obj->properties = $data['properties'] ?? [];
         $obj->showPassword = $data['showPassword'] ?? false;
         $obj->actions = $data['actions'] ?? [];
+        $obj->redirectRequestNames = $data['redirectRequestNames'] ?? [];
 
         self::fromArrayCommon($obj, $data);
 
@@ -104,6 +110,7 @@ class PluginConfigurationFile extends PluginConfiguration implements \JsonSerial
             'properties' => $this->properties,
             'showPassword' => $this->showPassword,
             'actions' => $this->actions,
+            # "redirectRequestNames" is not needed here
         ];
 
         return $this->jsonSerializeCommon($result, $fullConfig, $includeBackendOnly);

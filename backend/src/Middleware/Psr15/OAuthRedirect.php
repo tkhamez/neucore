@@ -11,10 +11,9 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * Issues a redirect for the OAuth login callback in a way that allows the session cookie to use SameSite=Strict.
- * This must happen before the PHP session is started; a standard HTTP redirect header cannot be used here.
+ * Issues a redirect for the OAuth login callback.
  */
-class OAuthRedirect implements MiddlewareInterface
+class OAuthRedirect extends AbstractRedirect implements MiddlewareInterface
 {
     public const LOGIN_CALLBACK = '/login-callback';
 
@@ -37,21 +36,6 @@ class OAuthRedirect implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        $queryParams = $request->getQueryParams();
-        if (($queryParams['redirected'] ?? null) !== '1') {
-            // Forward the original query string, so that no parameter is lost (e.g. error parameters).
-            $query = $request->getUri()->getQuery();
-            $redirectUrl = $path . '?' . $query . ($query === '' ? '' : '&') . 'redirected=1';
-            $response = $this->responseFactory->createResponse()->withHeader('Content-Type', 'text/html');
-            $response->getBody()->write(
-                '<!DOCTYPE html>
-				<meta http-equiv="refresh" content="0; url='
-                    . htmlspecialchars($redirectUrl, ENT_QUOTES, 'UTF-8') . '">
-				<title>Neucore</title>',
-            );
-            return $response;
-        }
-
-        return $handler->handle($request);
+        return $this->respond($request, $this->responseFactory, $handler);
     }
 }

@@ -37,8 +37,10 @@ use Neucore\Middleware\Psr15\BodyParams;
 use Neucore\Middleware\Psr15\CSRFToken;
 use Neucore\Middleware\Psr15\DnsRebindingProtection;
 use Neucore\Middleware\Psr15\OAuthRedirect;
+use Neucore\Middleware\Psr15\PluginRedirect;
 use Neucore\Middleware\Psr15\RateLimitApp;
 use Neucore\Middleware\Psr15\RateLimitIP;
+use Neucore\Service\PluginService;
 use Neucore\Service\SessionData;
 use Neucore\Slim\SessionMiddleware;
 use Neucore\Service\AppAuth;
@@ -318,7 +320,7 @@ class Application
         $app->add(new RoleMiddleware($this->getFromContainer(AppAuth::class), ['route_pattern' => ['/api/app']]));
         $app->add(new RoleMiddleware(
             $this->getFromContainer(UserAuth::class),
-            ['route_pattern' => ['/api/user', '/plugin']],
+            ['route_pattern' => ['/api/user', PluginRedirect::PLUGIN_PREFIX]],
         ));
 
         $app->add(new SessionMiddleware(
@@ -328,13 +330,19 @@ class Application
                 SessionMiddleware::OPTION_NAME                   => 'neucore_session',
                 SessionMiddleware::OPTION_SECURE                 => $config['session']['secure'],
                 SessionMiddleware::OPTION_SAME_SITE              => $config['session']['same_site'],
-                SessionMiddleware::OPTION_ROUTE_INCLUDE_PATTERN  => ['/api/user', '/login', '/plugin'],
-                SessionMiddleware::OPTION_ROUTE_BLOCKING_PATTERN => ['/api/user/auth', '/login', '/plugin'],
+                SessionMiddleware::OPTION_ROUTE_INCLUDE_PATTERN
+                    => ['/api/user', '/login', PluginRedirect::PLUGIN_PREFIX],
+                SessionMiddleware::OPTION_ROUTE_BLOCKING_PATTERN
+                    => ['/api/user/auth', '/login', PluginRedirect::PLUGIN_PREFIX],
             ],
         ));
 
-        // This must be executed before the session is started.
+        // These must be executed before the session is started.
         $app->add(new OAuthRedirect($this->getFromContainer(ResponseFactoryInterface::class)));
+        $app->add(new PluginRedirect(
+            $this->getFromContainer(ResponseFactoryInterface::class),
+            $this->getFromContainer(PluginService::class),
+        ));
 
         $app->add($this->getFromContainer(DnsRebindingProtection::class));
 

@@ -28,6 +28,11 @@ use Symfony\Component\Yaml\Parser;
 
 class PluginService
 {
+    /**
+     * @var array<int, Plugin>
+     */
+    private array $plugins = [];
+
     private LoggerInterface $log;
 
     private RepositoryFactory $repositoryFactory;
@@ -92,6 +97,10 @@ class PluginService
 
     public function getPlugin(int $id, bool $ignoreFileError = false): ?Plugin
     {
+        if (isset($this->plugins[$id])) {
+            return $this->plugins[$id];
+        }
+
         $plugin = $this->repositoryFactory->getPluginRepository()->find($id);
         if (!$plugin) {
             return null;
@@ -103,6 +112,10 @@ class PluginService
             if (!$ignoreFileError) {
                 return null;
             }
+        }
+
+        if (!$ignoreFileError) {
+            $this->plugins[$id] = $plugin;
         }
 
         return $plugin;

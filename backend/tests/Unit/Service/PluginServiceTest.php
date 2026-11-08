@@ -139,6 +139,7 @@ class PluginServiceTest extends TestCase
         $this->assertSame(['username'], $actual->properties);
         $this->assertSame(true, $actual->showPassword);
         $this->assertSame(['update-account'], $actual->actions);
+        $this->assertSame(['redirect'], $actual->redirectRequestNames);
         $this->assertSame(1, count($actual->URLs));
         $this->assertSame('/plugin/{plugin_id}/action', $actual->URLs[0]->url);
         $this->assertSame('Example', $actual->URLs[0]->title);
@@ -212,6 +213,64 @@ class PluginServiceTest extends TestCase
 
         // from database
         $this->assertSame('top text', $actual->getConfigurationDatabase()?->textTop);
+    }
+
+    public function testGetPlugin_CacheIfNotIgnoreFileError()
+    {
+        $this->helper->emptyDb();
+        $conf = new PluginConfigurationDatabase();
+        $conf->directoryName = 'plugin-name';
+        $conf->textTop = 'top text';
+        $service = (new Plugin())->setName('S1')->setConfigurationDatabase($conf);
+        $this->om->persist($service);
+        $this->om->flush();
+        $id = $service->getId();
+        $this->om->clear();
+
+        // The first call loads the plugin from the database and caches it.
+        $first = $this->pluginService->getPlugin($id);
+        $this->assertNotNull($first);
+        $this->assertSame('S1', $first->getName());
+
+        // Change the database entry directly so that a fresh lookup would return a different name.
+        $this->updatePluginName($id, 'S1 changed');
+
+        // The second call returns the cached plugin.
+        $second = $this->pluginService->getPlugin($id);
+        $this->assertSame($first, $second);
+        $this->assertSame('S1', $second->getName());
+
+        // With $ignoreFileError the plugin is not cached, so the change becomes visible.
+        $service2 = (new Plugin())->setName('S2')->setConfigurationDatabase($conf);
+        $this->om->persist($service2);
+        $this->om->flush();
+        $id2 = $service2->getId();
+        $this->om->clear();
+
+        $first2 = $this->pluginService->getPlugin($id2, true);
+        $this->assertNotNull($first2);
+        $this->assertSame('S2', $first2->getName());
+        $this->om->clear();
+
+        $this->updatePluginName($id2, 'S2 changed');
+
+        $second2 = $this->pluginService->getPlugin($id2, true);
+        $this->assertNotSame($first2, $second2);
+        $this->assertSame('S2 changed', $second2->getName());
+    }
+
+    private function updatePluginName(int $id, string $name): void
+    {
+        // Use DQL instead of an entity to bypass the identity map, so that already loaded
+        // (and possibly cached) instances are not affected.
+        $this->helper->getEm()->createQueryBuilder()
+            ->update(Plugin::class, 'p')
+            ->set('p.name', ':name')
+            ->where('p.id = :id')
+            ->setParameter('name', $name)
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->execute();
     }
 
     public function testGetPluginImplementation_InvalidConfiguration()

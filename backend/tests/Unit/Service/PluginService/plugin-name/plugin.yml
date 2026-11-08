@@ -8,6 +8,8 @@ properties:
 showPassword: true
 actions:
   - update-account
+redirectRequestNames:
+  - redirect
 URLs:
   -
     url: /plugin/{plugin_id}/action

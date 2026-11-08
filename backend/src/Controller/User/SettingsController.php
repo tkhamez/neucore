@@ -9,6 +9,7 @@ use Neucore\Entity\Group;
 use Neucore\Entity\Plugin;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
+use Neucore\Middleware\Psr15\PluginRedirect;
 use Neucore\Plugin\Data\NavigationItem;
 use Neucore\Service\AccountGroup;
 use Neucore\Service\Config;
@@ -291,7 +292,7 @@ class SettingsController extends BaseController
                 $navigationItems[] = new NavigationItem(
                     $item->getParent(),
                     $item->getName(),
-                    '/plugin/' . $plugin->getId() . $item->getUrl(),
+                    PluginRedirect::PLUGIN_PREFIX . '/' . $plugin->getId() . $item->getUrl(),
                     $item->getTarget(),
                     [],
                 );
