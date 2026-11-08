@@ -4,9 +4,12 @@
 
 - [Intro](#intro)
 - [Install a plugin](#install-a-plugin)
-- [Overview for plugin creators](#overview-for-plugin-creators)
+- [Documentation for plugin creators](#documentation-for-plugin-creators)
   * [General plugins](#general-plugins)
   * [Service plugins](#service-plugins)
+  * [URLs](#urls)
+  * [ESI Limits](#esi-limits)
+  * [Misc](#misc)
 - [Create a plugin](#create-a-plugin)
 
 <!-- tocstop -->
@@ -40,7 +43,7 @@ The following steps are the same for all plugins. See the respective plugin docu
 - Configure the plugin, at the very least choose the plugin from the dropdown list. Remember to save your changes.
 
 
-## Overview for plugin creators
+## Documentation for plugin creators
 
 
 ### General plugins

@@ -372,6 +372,7 @@ markdown-toc ../doc/Install.md -i --maxdepth 3
 markdown-toc ../doc/Documentation.md -i --maxdepth 3
 markdown-toc ../doc/API.md -i
 markdown-toc ../doc/MCP-Server.md -i --maxdepth 3
+markdown-toc ../doc/Plugins.md -i
 markdown-toc ../backend/README.md -i
 markdown-toc ../frontend/README.md -i
 ```
