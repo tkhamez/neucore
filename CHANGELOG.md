@@ -6,7 +6,7 @@
 
 ## 3.3.0
 
-dd mm yyyy
+8 Nov 2026
 
 New
 - Plugins can now be reached from external pages while the session cookie uses SameSite=Strict.
@@ -16,8 +16,8 @@ Fix
 - The environment variable `NEUCORE_SESSION_SAME_SITE` has been added to control the `SameSite` setting of the
   session cookie. The default setting is "Strict", but it can be changed to "Lax" if a plugin requires it.
 
-Misc
-- Docker Development Environment: Java container removed; Java installed in the Node container instead
+Development
+- Docker Java container removed; Java installed in the Node container instead
 - Fixed permission problems in dist-docker.sh
 
 ## 3.2.0
