@@ -8,6 +8,9 @@
 
 dd mm yyyy
 
+Security
+- Improved nginx configuration example
+
 Development
 - compose.yaml: Exposed the Docker service ports only on localhost instead of all interfaces
 
