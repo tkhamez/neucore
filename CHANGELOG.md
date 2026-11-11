@@ -4,6 +4,13 @@
 - [2.0.0](#200)
 - [1.0.0](#100)
 
+## next 
+
+dd mm yyyy
+
+Development
+- compose.yaml: Exposed the Docker service ports only on localhost instead of all interfaces
+
 ## 3.3.0
 
 8 Nov 2026

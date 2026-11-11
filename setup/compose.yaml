@@ -22,7 +22,7 @@ services:
       MYSQL_USER: neucore
       MYSQL_PASSWORD: neucore
       MYSQL_DATABASE: neucore
-    ports: ["30306:3306"]
+    ports: ["127.0.0.1:30306:3306"]
     networks: [neucore]
 
   neucore_node:
@@ -36,7 +36,7 @@ services:
     volumes: [".:/app"]
     environment:
       BACKEND_HOST: http://localhost:8080
-    ports: ["3000:8080"]
+    ports: ["127.0.0.1:3000:8080"]
     working_dir: /app/frontend
     networks: [neucore]
 
@@ -69,7 +69,7 @@ services:
       "./setup/docker-nginx.conf:/etc/nginx/conf.d/default.conf",
       #"/path/to/plugin/frontend:/app/web/plugin/plugin-name",
     ]
-    ports: ["8080:80"]
+    ports: ["127.0.0.1:8080:80"]
     networks: [neucore]
 
   neucore_memcached:
