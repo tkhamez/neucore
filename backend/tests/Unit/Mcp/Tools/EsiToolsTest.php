@@ -12,9 +12,11 @@ use Neucore\Entity\Character;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
+use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Mcp\ResponseBuilder;
 use Neucore\Mcp\Tools\EsiTools;
+use Neucore\Plugin\Core\EsiClientInterface;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Service\AppAuth;
 use Neucore\Service\EsiClient;
@@ -311,6 +313,70 @@ class EsiToolsTest extends TestCase
 
         self::assertFalse($result['success']);
         self::assertSame('Character not found', $result['error']);
+    }
+
+    #[Test]
+    public function testEsiRequest_invalidPath(): void
+    {
+        $character = $this->createCharacterWithToken(valid: true);
+
+        $this->repositoryFactory
+            ->method('getCharacterRepository')
+            ->willReturn($this->createCharacterRepository($character));
+
+        $this->esiClient
+            ->expects(self::once())
+            ->method('request')
+            ->willThrowException(new RuntimeException(EsiClientInterface::ERROR_INVALID_ESI_PATH, 568422));
+
+        $this->responseBuilder
+            ->expects(self::once())
+            ->method('error')
+            ->with(400, EsiClientInterface::ERROR_INVALID_ESI_PATH)
+            ->willReturn([
+                'success' => false,
+                'statusCode' => 400,
+                'error' => EsiClientInterface::ERROR_INVALID_ESI_PATH,
+                'headers' => [],
+            ]);
+
+        $result = $this->tools->esiRequest(12345, 'evil.com/characters/12345/');
+
+        self::assertFalse($result['success']);
+        self::assertSame(400, $result['statusCode']);
+        self::assertSame(EsiClientInterface::ERROR_INVALID_ESI_PATH, $result['error']);
+    }
+
+    #[Test]
+    public function testEsiRequest_characterNotFoundInRequest(): void
+    {
+        $character = $this->createCharacterWithToken(valid: true);
+
+        $this->repositoryFactory
+            ->method('getCharacterRepository')
+            ->willReturn($this->createCharacterRepository($character));
+
+        $this->esiClient
+            ->expects(self::once())
+            ->method('request')
+            ->willThrowException(new RuntimeException(EsiClientInterface::ERROR_CHARACTER_NOT_FOUND, 568420));
+
+        $this->responseBuilder
+            ->expects(self::once())
+            ->method('error')
+            ->with(400, EsiClientInterface::ERROR_CHARACTER_NOT_FOUND)
+            ->willReturn([
+                'success' => false,
+                'statusCode' => 400,
+                'error' => EsiClientInterface::ERROR_CHARACTER_NOT_FOUND,
+                'headers' => [],
+            ]);
+
+        $result = $this->tools->esiRequest(12345, '/universe/stations/1');
+
+        self::assertFalse($result['success']);
+        self::assertSame(400, $result['statusCode']);
+        self::assertSame(EsiClientInterface::ERROR_CHARACTER_NOT_FOUND, $result['error']);
     }
 
     #[Test]

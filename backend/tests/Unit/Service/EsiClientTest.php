@@ -11,6 +11,7 @@ use Neucore\Data\EsiErrorLimit;
 use Neucore\Data\EsiRateLimit;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Plugin\Core\EsiClientInterface;
 use Neucore\Service\EsiClient;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\Implementation\DatabaseStorage;
@@ -212,6 +213,17 @@ class EsiClientTest extends TestCase
         self::assertFalse(EsiClient::isPublicPath('/invalid'));
     }
 
+    public function testIsValidPath(): void
+    {
+        self::assertTrue(EsiClient::isValidPath('/characters/123456789'));
+        self::assertTrue(EsiClient::isValidPath('/characters/123456789/'));
+        self::assertTrue(EsiClient::isValidPath('/characters/123456789?a=b'));
+        self::assertFalse(EsiClient::isValidPath(''));
+        self::assertFalse(EsiClient::isValidPath('characters/123456789'));
+        self::assertFalse(EsiClient::isValidPath('evil.com/characters/123456789'));
+        self::assertFalse(EsiClient::isValidPath('//evil.com/characters/123456789'));
+    }
+
     public function testGetRateLimitGroup(): void
     {
         self::assertNull(EsiClient::getRateLimitGroup('/invalid', 'GET'));
@@ -310,5 +322,29 @@ class EsiClientTest extends TestCase
             ],
             $this->httpClient->getHeaders(),
         );
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    public function testRequest_InvalidPath(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(568422);
+        $this->expectExceptionMessage(EsiClientInterface::ERROR_INVALID_ESI_PATH);
+
+        $this->esiClient->request('evil.com/characters/102003000/', 'GET', null, null);
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    public function testRequest_InvalidPathProtocolRelative(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(568422);
+        $this->expectExceptionMessage(EsiClientInterface::ERROR_INVALID_ESI_PATH);
+
+        $this->esiClient->request('//evil.com/characters/102003000/', 'GET', null, null);
     }
 }

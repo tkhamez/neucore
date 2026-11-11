@@ -6,8 +6,10 @@ namespace Neucore\Mcp\Tools;
 
 use Mcp\Capability\Attribute\McpTool;
 use Neucore\Entity\EveLogin;
+use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Mcp\ResponseBuilder;
+use Neucore\Plugin\Core\EsiClientInterface;
 use Neucore\Service\AppAuth;
 use Neucore\Service\EsiClient;
 use Neucore\Storage\Interface\EsiHeaderStorage;
@@ -120,6 +122,18 @@ class EsiTools
                 false,
                 $compatibilityDate,
             );
+        } catch (RuntimeException $e) {
+            $statusCode = match ($e->getCode()) {
+                568420, 568421, 568422 => 400,
+                default => 500,
+            };
+            $errorMessage = match ($e->getCode()) {
+                568420 => EsiClientInterface::ERROR_CHARACTER_NOT_FOUND,
+                568421 => EsiClientInterface::ERROR_INVALID_TOKEN,
+                568422 => EsiClientInterface::ERROR_INVALID_ESI_PATH,
+                default => EsiClientInterface::ERROR_UNKNOWN,
+            };
+            return $this->responseBuilder->error($statusCode, $errorMessage);
         } catch (ClientExceptionInterface $e) {
             return $this->responseBuilder->error(0, 'ESI request failed: ' . $e->getMessage());
         }

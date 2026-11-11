@@ -91,6 +91,8 @@ class EsiClient implements EsiClientInterface
                 throw new Exception(EsiClientInterface::ERROR_CHARACTER_NOT_FOUND);
             } elseif ($e->getCode() === 568421) {
                 throw new Exception(EsiClientInterface::ERROR_INVALID_TOKEN);
+            } elseif ($e->getCode() === 568422) {
+                throw new Exception(EsiClientInterface::ERROR_INVALID_ESI_PATH);
             } else {
                 throw new Exception(EsiClientInterface::ERROR_UNKNOWN);
             }

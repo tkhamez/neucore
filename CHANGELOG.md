@@ -47,6 +47,8 @@ Fix
   consistent at all font sizes.
 
 Security
+- Fix: SSRF (Server-side request forgery) / ESI token exfiltration:
+  Apps with the `app-esi-proxy` role could be used to extract ESI access tokens.
 - DNS rebinding protection: Requests without a Host header are now rejected with a 403 response when
   allowed hosts are configured.
 - Outgoing HTTP requests no longer follow redirects. None of the endpoints used

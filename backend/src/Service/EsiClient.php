@@ -12,6 +12,7 @@ use Neucore\Entity\EveLogin;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Plugin\Core\EsiClientInterface;
 use Neucore\Storage\Interface\EsiHeaderStorage;
 use Neucore\Storage\Variables;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -219,6 +220,19 @@ class EsiClient
         return EsiRateLimit::fromJson((string) $storage->get(Variables::ESI_RATE_LIMIT));
     }
 
+    /**
+     * Checks whether the given ESI path is syntactically valid.
+     *
+     * The path must start with exactly one forward slash. A path without a
+     * leading slash would change the host of the outgoing request, because it
+     * is concatenated directly onto the ESI host URL, which has no trailing
+     * slash.
+     */
+    public static function isValidPath(string $esiPathQuery): bool
+    {
+        return str_starts_with($esiPathQuery, '/') && !str_starts_with($esiPathQuery, '//');
+    }
+
     public static function isPublicPath(string $esiPathQuery): bool
     {
         $path = $esiPathQuery;
@@ -302,7 +316,7 @@ class EsiClient
     }
 
     /**
-     * @throws RuntimeException If character or a valid token could not be found.
+     * @throws RuntimeException If the path is invalid or a character or a valid token could not be found.
      * @throws ClientExceptionInterface On request error.
      */
     public function request(
@@ -315,18 +329,22 @@ class EsiClient
         ?string $compatibilityDate = null,
         ?string $acceptLanguage = null,
     ): ResponseInterface {
+        if (!self::isValidPath($esiPathQuery)) {
+            throw new RuntimeException(EsiClientInterface::ERROR_INVALID_ESI_PATH, 568422);
+        }
+
         $isPublicPath = self::isPublicPath($esiPathQuery);
 
         $token = null;
         if ($characterId) {
             $character = $this->repositoryFactory->getCharacterRepository()->find($characterId);
             if ($character === null) {
-                throw new RuntimeException('Character not found.', 568420);
+                throw new RuntimeException(EsiClientInterface::ERROR_CHARACTER_NOT_FOUND, 568420);
             }
 
             $token = $this->tokenService->getToken($character, $eveLoginName);
             if ($token === '') {
-                throw new RuntimeException('Character has no valid token.', 568421);
+                throw new RuntimeException(EsiClientInterface::ERROR_INVALID_TOKEN, 568421);
             }
         } elseif ($isPublicPath) {
             if ($this->config['eve']['use_mail_token_for_unauthenticated_requests'] === '1') {

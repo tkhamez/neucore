@@ -10,6 +10,7 @@ use Neucore\Entity\EveLogin;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Plugin\Core\EsiClientInterface;
 use Neucore\Service\AppAuth;
 use Neucore\Service\EsiClient;
 use Neucore\Service\OAuthToken;
@@ -753,20 +754,26 @@ class EsiController extends BaseController
             );
         } catch (RuntimeException $e) {
             if ($e->getCode() === 568420) {
-                $errorMessage = 'Character not found.';
+                $errorMessage = EsiClientInterface::ERROR_CHARACTER_NOT_FOUND;
                 if ($version === 1) {
                     return $this->response->withStatus(400, $errorMessage);
                 }
                 return $this->withJson($errorMessage, 400);
             } elseif ($e->getCode() === 568421) {
-                $errorMessage = 'Character has no valid token.';
+                $errorMessage = EsiClientInterface::ERROR_INVALID_TOKEN;
+                if ($version === 1) {
+                    return $this->response->withStatus(400, $errorMessage);
+                }
+                return $this->withJson($errorMessage, 400);
+            } elseif ($e->getCode() === 568422) {
+                $errorMessage = EsiClientInterface::ERROR_INVALID_ESI_PATH;
                 if ($version === 1) {
                     return $this->response->withStatus(400, $errorMessage);
                 }
                 return $this->withJson($errorMessage, 400);
             } else {
                 // should not happen
-                return $this->withJson('Unknown error.', 400);
+                return $this->withJson(EsiClientInterface::ERROR_UNKNOWN, 400);
             }
         } catch (ClientExceptionInterface $e) {
             $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . '): ' . $e->getMessage());
