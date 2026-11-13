@@ -84,8 +84,10 @@ Java is available in the `neucore_node` container for the OpenAPI Generator.
 When you change backend routes or OpenAPI annotations, regenerate **in this order**:
 
 ```sh
-# 1. OpenAPI spec files
+# 1. OpenAPI spec files and documentation
 docker compose exec neucore_php composer openapi
+docker compose exec neucore_php bin/doc-api-gen.php
+docker compose exec neucore_node markdown-toc ../doc/API.md -i
 # 2. JS API client
 docker compose exec neucore_node /app/frontend/openapi.sh
 docker compose exec neucore_node npm install --ignore-scripts --prefix /app/frontend/neucore-js-client

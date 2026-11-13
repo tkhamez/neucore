@@ -359,20 +359,3 @@ Note: `Cross-Origin-Embedder-Policy "credentialless"` is necessary to load image
 
 There is a script that builds the distribution package, `setup/dist-docker.sh`. It needs a 
 working development environment.
-
-## Generate TOC
-
-(This is not part of the installation process, but I have no better place for it.)
-
-To generate the table of contents for various files, use the following commands in the `neucore_node` container:
-
-```
-markdown-toc ../README.md -i
-markdown-toc ../doc/Install.md -i --maxdepth 3
-markdown-toc ../doc/Documentation.md -i --maxdepth 3
-markdown-toc ../doc/API.md -i
-markdown-toc ../doc/MCP-Server.md -i --maxdepth 3
-markdown-toc ../doc/Plugins.md -i
-markdown-toc ../backend/README.md -i
-markdown-toc ../frontend/README.md -i
-```

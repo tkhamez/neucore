@@ -9,15 +9,16 @@ The project language is **English (British spelling)**.
 
 ## Principles
 
-- **AI assistance** is acceptable, but you must fully understand and be able to justify all code
+- **AI assistance** is acceptable, attribution of it in the branch name, the commit trailer or the 
+  pull request body is not. You must fully understand and be able to justify all code
   you submit.
-- **Inclusive language** — use it throughout code, documentation, and communication.
+- **Inclusive language** - use it throughout code, documentation, and communication.
 
 Backend: 
 
-- **Dependency Injection** — use it whenever possible.
+- **Dependency Injection** - use it whenever possible.
 - **Program against interfaces**, not concrete classes.
-- **PSRs (PHP Standards Recommendations)** — follow them where applicable.
+- **PSRs (PHP Standards Recommendations)** - follow them where applicable.
 - **All code must have unit tests**.
 
 ## How to Contribute
@@ -27,7 +28,7 @@ Backend:
 - Check existing issues first to avoid duplicates
 - Provide clear steps to reproduce the problem
 - Include relevant environment details (PHP version, database, etc.)
-- AI assistance is acceptable, but keep issues **concise and precise** — no unnecessary verbosity.
+- AI assistance is acceptable, but keep issues **concise and precise** - no unnecessary verbosity.
 
 ### Suggesting Enhancements
 
@@ -75,9 +76,10 @@ When changing backend routes or OpenAPI annotations, regenerate in order:
 ```bash
 # in the neucore_php container
 composer openapi
-# on the host
-docker compose exec neucore_node /app/frontend/openapi.sh
+bin/doc-api-gen.php
 # in the neucore_node container
+markdown-toc ../doc/API.md -i
+./openapi.sh
 cd neucore-js-client && npm install --ignore-scripts && npm run build
 cd .. && npm run build
 ```
@@ -96,16 +98,31 @@ cd .. && npm run build
 - Update relevant documentation when changing features
 
 Key documentation files:
-- [doc/Install.md](doc/Install.md) — Installation guide
-- [doc/Documentation.md](doc/Documentation.md) — Features and API concepts
-- [doc/Plugins.md](doc/Plugins.md) — Plugin API contract
-- [backend/README.md](backend/README.md) — Backend guide
-- [frontend/README.md](frontend/README.md) — Frontend guide
+- [doc/Install.md](doc/Install.md) - Installation guide
+- [doc/Documentation.md](doc/Documentation.md) - Features and API concepts
+- [doc/Plugins.md](doc/Plugins.md) - Plugin API contract
+- [backend/README.md](backend/README.md) - Backend guide
+- [frontend/README.md](frontend/README.md) - Frontend guide
+
+### Generate TOC
+
+To generate the table of contents for various files, use the following commands in the `neucore_node` container:
+
+```
+markdown-toc ../README.md -i
+markdown-toc ../doc/Install.md -i --maxdepth 3
+markdown-toc ../doc/Documentation.md -i --maxdepth 3
+markdown-toc ../doc/API.md -i
+markdown-toc ../doc/MCP-Server.md -i --maxdepth 3
+markdown-toc ../doc/Plugins.md -i
+markdown-toc ../backend/README.md -i
+markdown-toc ../frontend/README.md -i
+```
 
 ## Getting Help
 
 - Join the [Neucore Discord Server](https://discord.gg/memUh56u8z)
-- Check existing documentation in [doc/](doc/README.md)
+- Check existing documentation (see above)
 - Ask [DeepWiki](https://deepwiki.com/tkhamez/neucore) (AI)
 
 ## Licencing
