@@ -22,6 +22,7 @@ use Neucore\Service\ObjectManager;
 use Neucore\Storage\EsiHeaderStorageInterface;
 use Neucore\Storage\Variables;
 use Neucore\Storage\DatabaseStorage;
+use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\HttpClientFactory;
@@ -401,6 +402,52 @@ class EsiControllerTest extends WebTestCase
         );
         $this->assertSame(400, $response3?->getStatusCode());
         $this->assertSame('"Public ESI routes are not allowed."', $response3->getBody()->__toString());
+    }
+
+    public function testEsiV2400_QueryParamArray(): void
+    {
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY])->getId();
+        $headers = ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')];
+
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v2/esi/characters/96061222/stats/?page[]=1&datasource=123',
+            null,
+            $headers,
+        );
+        $this->assertSame(400, $response?->getStatusCode());
+        $this->assertSame('"Query parameter \'page\' must not be an array."', $response->getBody()->__toString());
+    }
+
+    public function testEsiV2200_QueryParamsEncoded(): void
+    {
+        $this->helper->addCharacterMain('C1', 123, [Role::USER], [], true, null, 123456, true);
+        $appId = $this->helper
+            ->addApp('A1', 's1', [Role::APP, Role::APP_ESI_PROXY], [EveLogin::NAME_DEFAULT])
+            ->getId();
+
+        $capturedUri = '';
+        $httpClient = new Client();
+        $httpClient->setMiddleware(function () use (&$capturedUri) {
+            return function (RequestInterface $request) use (&$capturedUri) {
+                $capturedUri = (string) $request->getUri();
+            };
+        });
+        $httpClient->setResponse(new Response(200, [], '{"key": "value"}'));
+
+        // The "page" value contains "&" and "=" characters. They must not be re-interpreted as
+        // delimiters of the outgoing ESI request.
+        $response = $this->runApp(
+            'GET',
+            #                                                    1&  x=  2&
+            '/api/app/v2/esi/v3/characters/96061222/assets/?page=1%26x%3D2&datasource=123',
+            null,
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)],
+        );
+
+        $this->assertSame(200, $response?->getStatusCode());
+        $this->assertSame('https://esi.evetech.net/v3/characters/96061222/assets/?page=1%26x%3D2', $capturedUri);
     }
 
     public function testEsiV1400_CharacterNotFound_ReasonPhrase(): void

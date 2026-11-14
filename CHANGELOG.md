@@ -12,6 +12,8 @@ Fix
 - The MCP tools `get_groups` and `get_group_members` now respect the groups assigned to the app, 
   which were ignored before.
 - Added missing ESI error and rate limit checks to the MCP ESI tool.
+- ESI proxy: All query parameters will now be validated and properly encoded
+  (only relevant if they contain invalid values).
 
 Security
 - Improved nginx configuration example

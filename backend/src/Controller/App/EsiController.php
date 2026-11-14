@@ -685,7 +685,14 @@ class EsiController extends BaseController
         $this->app = $this->appAuth->getApp($request);
 
         // get input
-        $esiPathQuery = $this->getEsiPathWithQueryParams($request, $path);
+        try {
+            $esiPathQuery = $this->getEsiPathWithQueryParams($request, $path);
+        } catch (\InvalidArgumentException $e) {
+            if ($version === 1) {
+                return $this->response->withStatus(400, $e->getMessage());
+            }
+            return $this->withJson($e->getMessage(), 400);
+        }
         $dataSource = $this->getDataSource($request);
         if (str_contains($dataSource, ':')) {
             $dataSourceTmp = explode(':', $dataSource);
@@ -772,7 +779,9 @@ class EsiController extends BaseController
 
         if ($esiResponse->getStatusCode() < 200 || $esiResponse->getStatusCode() > 299) {
             $message = $esiResponse->getBody()->getContents();
-            $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . ') ' . "$esiPathQuery: $message");
+            $this->log->error(
+                self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . ') ' . "$esiPathQuery: $message",
+            );
         }
 
         return $this->buildResponse($esiResponse);
@@ -836,6 +845,9 @@ class EsiController extends BaseController
         }
     }
 
+    /**
+     * @throws \InvalidArgumentException If a query parameter value is not a scalar.
+     */
     private function getEsiPathWithQueryParams(ServerRequestInterface $request, ?string $path): string
     {
         if (empty($path)) {
@@ -846,9 +858,13 @@ class EsiController extends BaseController
             $esiPath = $path;
             $esiParams = [];
             foreach ($request->getQueryParams() as $key => $value) {
-                if ($key !== self::PARAM_DATASOURCE) {
-                    $esiParams[] = $key . '=' . $value;
+                if ($key === self::PARAM_DATASOURCE) {
+                    continue;
                 }
+                if (!is_scalar($value)) {
+                    throw new \InvalidArgumentException("Query parameter '$key' must not be an array.");
+                }
+                $esiParams[] = rawurlencode((string) $key) . '=' . rawurlencode((string) $value);
             }
             if (!empty($esiParams)) {
                 $esiPath .= '?' . implode('&', $esiParams);
