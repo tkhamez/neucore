@@ -32,8 +32,11 @@ use Neucore\Storage\ApiRateLimitStoreInterface;
 use Neucore\Storage\DatabaseStorage;
 use Neucore\Storage\EsiHeaderStorageInterface;
 use Neucore\Storage\MemcachedStorage;
+use Neucore\Storage\StorageInterface;
 use Pdo\Mysql;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -41,13 +44,12 @@ use Slim\Psr7\Factory\ResponseFactory;
 
 class Container
 {
-    public const ESI_HEADER_STORAGE_DATABASE = 'database';
-    public const ESI_HEADER_STORAGE_APC = 'apc';
-    public const ESI_HEADER_STORAGE_MEMCACHED = 'memcached';
+    public const STORAGE_DATABASE = 'database';
+    public const STORAGE_APC = 'apc';
+    public const STORAGE_MEMCACHED = 'memcached';
 
     /**
      * @return array<string, callable>
-     * @noinspection PhpComposerExtensionStubsInspection
      */
     public static function getDefinitions(): array
     {
@@ -184,45 +186,67 @@ class Container
 
             // Storages
             ApiRateLimitStoreInterface::class => function (ContainerInterface $c) {
+                $storageName = $c->get(Config::class)['rate_limit']['storage'];
                 // Note: This is not used for the CLI.
-                if (function_exists('apcu_store') && ini_get('apc.enabled') === '1') {
-                    return new ApcuStorage();
-                } else {
-                    return new DatabaseStorage(
-                        $c->get(RepositoryFactory::class),
-                        $c->get(Service\ObjectManager::class),
-                    );
+                $storage = Container::getStorage($c, $storageName, true);
+                if ($storage instanceof ApiRateLimitStoreInterface) {
+                    return $storage;
                 }
+                throw new RuntimeException("Invalid storage type $storageName.");
             },
             EsiHeaderStorageInterface::class => function (ContainerInterface $c) {
-                $storage = $c->get(Config::class)['eve']['esi_header_storage'];
-                # Note: "self" does not work here when compiling for production.
-                if ($storage === Container::ESI_HEADER_STORAGE_DATABASE) {
+                $storageName = $c->get(Config::class)['eve']['esi_header_storage'];
+                $storage = Container::getStorage($c, $storageName);
+                if ($storage instanceof EsiHeaderStorageInterface) {
+                    return $storage;
+                }
+                throw new RuntimeException("Invalid storage type $storageName.");
+            },
+        ];
+    }
+
+    /**
+     * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     */
+    private static function getStorage(
+        ContainerInterface $c,
+        string $storageName,
+        bool $apcFallback = false,
+    ): ?StorageInterface {
+        # Note: "self" does not work here when compiling for production.
+        if ($storageName === Container::STORAGE_DATABASE) {
+            return new DatabaseStorage(
+                $c->get(RepositoryFactory::class),
+                $c->get(Service\ObjectManager::class),
+            );
+        } elseif ($storageName === Container::STORAGE_APC) {
+            if (
+                !function_exists('apcu_store')
+                || (php_sapi_name() === 'cli' && ini_get('apc.enable_cli') !== '1')
+                || (php_sapi_name() !== 'cli' && ini_get('apc.enabled') !== '1')
+            ) {
+                if ($apcFallback) {
                     return new DatabaseStorage(
                         $c->get(RepositoryFactory::class),
                         $c->get(Service\ObjectManager::class),
                     );
-                } elseif ($storage === Container::ESI_HEADER_STORAGE_APC) {
-                    if (
-                        !function_exists('apcu_store')
-                        || (php_sapi_name() === 'cli' && ini_get('apc.enable_cli') !== '1')
-                        || (php_sapi_name() !== 'cli' && ini_get('apc.enabled') !== '1')
-                    ) {
-                        throw new RuntimeException('APC not available or enabled.');
-                    }
-                    return new ApcuStorage();
-                } elseif ($storage === Container::ESI_HEADER_STORAGE_MEMCACHED) {
-                    $server = $c->get(Config::class)['memcached']['server'];
-                    [$host, $port] = explode(':', $server);
-                    $memcached = new \Memcached();
-                    if (!$memcached->addServer($host, (int) $port)) {
-                        throw new RuntimeException('Failed to add Memcached server.');
-                    }
-                    return new MemcachedStorage($memcached);
-                } else {
-                    throw new RuntimeException("Invalid storage type $storage.");
                 }
-            },
-        ];
+                throw new RuntimeException('APC not available or enabled.');
+            }
+            return new ApcuStorage();
+        } elseif ($storageName === Container::STORAGE_MEMCACHED) {
+            if (!extension_loaded('memcached')) {
+                throw new RuntimeException('The Memcached extension is not available.');
+            }
+            $server = $c->get(Config::class)['memcached']['server'];
+            [$host, $port] = explode(':', $server);
+            $memcached = new \Memcached();
+            if (!$memcached->addServer($host, (int) $port)) {
+                throw new RuntimeException('Failed to add Memcached server.');
+            }
+            return new MemcachedStorage($memcached);
+        }
+        return null;
     }
 }

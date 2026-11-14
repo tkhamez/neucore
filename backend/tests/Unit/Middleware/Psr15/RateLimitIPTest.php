@@ -6,15 +6,21 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Middleware\Psr15;
 
+use Neucore\Application;
+use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Psr15\RateLimit;
 use Neucore\Middleware\Psr15\RateLimitIP;
 use Neucore\Service\Config;
+use Neucore\Service\ObjectManager;
 use Neucore\Service\RateLimitState;
 use Neucore\Storage\ApcuStorage;
+use Neucore\Storage\DatabaseStorage;
+use Neucore\Storage\MemcachedStorage;
 use Neucore\Storage\Variables;
 use Neucore\Util\Http;
 use PHPUnit\Framework\TestCase;
 use Slim\Psr7\Factory\ResponseFactory;
+use Tests\Helper;
 use Tests\Logger;
 use Tests\RequestFactory;
 use Tests\RequestHandler;
@@ -157,5 +163,48 @@ class RateLimitIPTest extends TestCase
         $response2 = $middleware->process($request, new RequestHandler());
         $_SERVER['REMOTE_ADDR'] = $remoteAddr;
         $this->assertSame(429, $response2->getStatusCode());
+    }
+
+    public function testProcess_DatabaseStorage_IPLimitSkipped(): void
+    {
+        $om = (new Helper())->getObjectManager();
+        $logger = new Logger();
+        $storage = new DatabaseStorage(new RepositoryFactory($om), new ObjectManager($om, $logger));
+
+        // an exhausted limit is ignored, the IP rate limit needs a fast storage driver
+        $storage->set(self::$key, (string) \json_encode((object) ['remaining' => 0, 'created' => time()]));
+
+        $config = new Config(['rate_limit' => ['max' => 50, 'time' => 10]]);
+        $middleware = new RateLimitIP($storage, $config, new ResponseFactory(), $logger, new RateLimitState());
+        $response = $middleware->process(RequestFactory::createRequest(), new RequestHandler());
+        $this->assertSame(200, $response->getStatusCode());
+    }
+
+    public function testProcess_MemcachedStorage(): void
+    {
+        $config = (new Application())->loadSettings(true);
+        $server = $config['memcached']['server'];
+        if (!class_exists(\Memcached::class) || !str_contains($server, ':')) {
+            self::markTestSkipped('Memcached not available or missing server configuration.');
+        }
+
+        [$host, $port] = explode(':', $server);
+        $memcached = new \Memcached();
+        $memcached->addServer($host, (int) $port);
+        $storage = new MemcachedStorage($memcached);
+
+        $logger = new Logger();
+        $request = RequestFactory::createRequest();
+
+        try {
+            $storage->set(self::$key, (string) \json_encode((object) ['remaining' => 0, 'created' => time()]));
+
+            $config = new Config(['rate_limit' => ['max' => 50, 'time' => 10]]);
+            $middleware = new RateLimitIP($storage, $config, new ResponseFactory(), $logger, new RateLimitState());
+            $response = $middleware->process($request, new RequestHandler());
+            $this->assertSame(429, $response->getStatusCode());
+        } finally {
+            $memcached->delete(MemcachedStorage::PREFIX . self::$key);
+        }
     }
 }

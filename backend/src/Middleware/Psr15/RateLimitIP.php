@@ -8,6 +8,7 @@ use Neucore\Service\Config;
 use Neucore\Service\RateLimitState;
 use Neucore\Storage\ApcuStorage;
 use Neucore\Storage\ApiRateLimitStoreInterface;
+use Neucore\Storage\MemcachedStorage;
 use Neucore\Storage\Variables;
 use Neucore\Util\Http;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -40,9 +41,9 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        // Do not check the IP base rate limit unless a fast storage driver is used,
-        // especially one that does not need a database connection.
-        if (get_class($this->storage) !== ApcuStorage::class) {
+        // Do not check the IP base rate limit if the database storage driver is used,
+        // as it is slow and would need a database connection per request.
+        if (!in_array(get_class($this->storage), [MemcachedStorage::class, ApcuStorage::class])) {
             return $handler->handle($request);
         }
 

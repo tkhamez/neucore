@@ -17,10 +17,11 @@ return [
         'NEUCORE_SESSION_SECURE'     => '1',
         'NEUCORE_SESSION_SAME_SITE' => 'Strict',
         'NEUCORE_ERROR_REPORTING'    => (string)(E_ALL & ~E_DEPRECATED),
+        'NEUCORE_RATE_LIMIT_STORAGE' => Container::STORAGE_APC,
         'NEUCORE_RATE_LIMIT_MAX'     => '0',
         'NEUCORE_RATE_LIMIT_TIME'    => '0',
         'NEUCORE_USE_MAIL_TOKEN_FOR_UNAUTHENTICATED_REQUESTS' => '0',
-        'NEUCORE_ESI_HEADER_STORAGE' => Container::ESI_HEADER_STORAGE_DATABASE,
+        'NEUCORE_ESI_HEADER_STORAGE' => Container::STORAGE_DATABASE,
         'NEUCORE_TRUSTED_PROXIES'    => '',
     ],
 
@@ -104,6 +105,7 @@ return [
     'rate_limit' => [
         'max' => '${NEUCORE_RATE_LIMIT_MAX}',
         'time' => '${NEUCORE_RATE_LIMIT_TIME}',
+        'storage' => '${NEUCORE_RATE_LIMIT_STORAGE}',
     ],
 
     'plugins_install_dir' => '${NEUCORE_PLUGINS_INSTALL_DIR}',

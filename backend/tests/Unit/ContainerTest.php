@@ -8,11 +8,17 @@ use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Application;
 use Neucore\Container;
 use Neucore\Exception\RuntimeException;
+use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Config;
-use Neucore\Storage\EsiHeaderStorageInterface;
+use Neucore\Service\ObjectManager;
+use Neucore\Storage\ApcuStorage;
+use Neucore\Storage\ApiRateLimitStoreInterface;
+use Neucore\Storage\DatabaseStorage;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Tests\Helper;
+use Tests\Logger;
 
 class ContainerTest extends TestCase
 {
@@ -91,5 +97,43 @@ class ContainerTest extends TestCase
 
             $this->assertInstanceOf(LoggerInterface::class, $logger);
         }
+    }
+
+    public function testApiRateLimitStoreFactory(): void
+    {
+        // apc
+        $config = new Config(['rate_limit' => ['storage' => Container::STORAGE_APC]]);
+        $configContainer = $this->createMock(ContainerInterface::class);
+        $configContainer->method('get')->willReturn($config);
+        $factory = Container::getDefinitions()[ApiRateLimitStoreInterface::class];
+        $this->assertInstanceOf(ApcuStorage::class, $factory($configContainer));
+
+        // database
+        $om = (new Helper())->getObjectManager();
+        $logger = new Logger();
+        $config = new Config(['rate_limit' => ['storage' => Container::STORAGE_DATABASE]]);
+        $configContainer = $this->createMock(ContainerInterface::class);
+        $configContainer->method('get')->willReturnCallback(
+            fn(string $id) => match ($id) {
+                Config::class => $config,
+                RepositoryFactory::class => new RepositoryFactory($om),
+                ObjectManager::class => new ObjectManager($om, $logger),
+                default => throw new RuntimeException("Unexpected container entry $id."),
+            },
+        );
+        $factory = Container::getDefinitions()[ApiRateLimitStoreInterface::class];
+        $this->assertInstanceOf(DatabaseStorage::class, $factory($configContainer));
+    }
+
+    public function testApiRateLimitStoreFactoryInvalid(): void
+    {
+        $config = new Config(['rate_limit' => ['storage' => 'invalid']]);
+        $configContainer = $this->createMock(ContainerInterface::class);
+        $configContainer->method('get')->willReturn($config);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Invalid storage type invalid.');
+        $factory = Container::getDefinitions()[ApiRateLimitStoreInterface::class];
+        $factory($configContainer);
     }
 }

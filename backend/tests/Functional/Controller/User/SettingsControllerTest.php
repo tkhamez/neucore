@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Application;
+use Neucore\Container;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
@@ -73,6 +74,7 @@ class SettingsControllerTest extends WebTestCase
         $this->config = new Config([
             'monolog' => ['path' => Application::ROOT_DIR . '/var/logs'],
             'repository' => 'https://github.com/tkhamez/neucore',
+            'rate_limit' => ['storage' => Container::STORAGE_APC],
             'CORS' => ['allow_origin' => ''],
             'session' => ['secure' => '1', 'same_site' => 'Strict'],
             'eve' => Helper::getFullEveConfig(),

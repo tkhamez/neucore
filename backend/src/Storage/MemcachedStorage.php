@@ -6,7 +6,7 @@ namespace Neucore\Storage;
 
 use Neucore\Exception\RuntimeException;
 
-class MemcachedStorage implements EsiHeaderStorageInterface
+class MemcachedStorage implements EsiHeaderStorageInterface, ApiRateLimitStoreInterface
 {
     public const PREFIX = '__neucore__';
 

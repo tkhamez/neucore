@@ -116,7 +116,8 @@ If it is configured only, but not active, it is logged when an app exceeds the l
 If the *IP-based rate limit* is also active (environment variable), the headers contain the values of the rate limit 
 with the lower "remain" value.
 
-Note that the IP-based rate limit works without a database connection and needs the APCu PHP extension.
+Note that the IP-based rate limit works without a database connection. It only works with a fast storage 
+backend (`apc` or `memcached`) and is skipped if the rate limit storage is set to `database`.
 
 ### ESI Proxy
 
