@@ -12,6 +12,7 @@ use Neucore\Service\Config;
 use Neucore\Service\RateLimitState;
 use Neucore\Storage\ApcuStorage;
 use Neucore\Storage\Variables;
+use Neucore\Util\Http;
 use PHPUnit\Framework\TestCase;
 use Slim\Psr7\Factory\ResponseFactory;
 use Tests\Logger;
@@ -32,7 +33,9 @@ class RateLimitIPTest extends TestCase
 
         $_SERVER['REMOTE_ADDR'] = self::$ip;
         $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer ' . base64_encode(self::$appIdp . ':abc');
-        self::$key = Variables::RATE_LIMIT_IP . '_' . str_replace('.', '', self::$ip);
+        $ipBinary = inet_pton(self::$ip);
+        self::assertIsString($ipBinary);
+        self::$key = Variables::RATE_LIMIT_IP . '_' . bin2hex($ipBinary);
     }
 
     public static function tearDownAfterClass(): void
@@ -93,5 +96,66 @@ class RateLimitIPTest extends TestCase
                 . 'limit exceeded with 51 request in ', // ... ~5.5 seconds.
             $logs[0],
         );
+    }
+
+    public function testProcess_UnknownIp_UsesSharedBucket(): void
+    {
+        $storage = new ApcuStorage();
+        $logger = new Logger();
+        $request = RequestFactory::createRequest();
+
+        $unknownKey = Variables::RATE_LIMIT_IP . '_' . Http::IP_UNKNOWN;
+
+        $config = new Config(['rate_limit' => ['max' => 5, 'time' => 10]]);
+        $middleware = new RateLimitIP($storage, $config, new ResponseFactory(), $logger, new RateLimitState());
+
+        $remoteAddr = $_SERVER['REMOTE_ADDR'];
+        $_SERVER['REMOTE_ADDR'] = '';
+
+        // all unknown IPs are treated as the same IP address: they share a single bucket
+        // with the normal limit
+        $response1 = $middleware->process($request, new RequestHandler());
+        $this->assertSame(200, $response1->getStatusCode());
+
+        $storage->set($unknownKey, (string) \json_encode((object) ['remaining' => 0, 'created' => time()]));
+        $response2 = $middleware->process($request, new RequestHandler());
+        $_SERVER['REMOTE_ADDR'] = $remoteAddr;
+        $this->assertSame(429, $response2->getStatusCode());
+        $this->assertStringContainsString('6 requests', $response2->getBody()->__toString());
+
+        $logs = $logger->getMessages();
+        $this->assertSame(1, count($logs));
+        $this->assertStringStartsWith(
+            'IP Rate Limit: ' . Http::IP_UNKNOWN . ', App-ID ' . self::$appIdp . ', limit exceeded with 6 request in ',
+            $logs[0],
+        );
+    }
+
+    public function testProcess_IpKey_CanonicalForm(): void
+    {
+        $storage = new ApcuStorage();
+        $logger = new Logger();
+        $request = RequestFactory::createRequest();
+
+        $config = new Config(['rate_limit' => ['max' => 50, 'time' => 10]]);
+        $middleware = new RateLimitIP($storage, $config, new ResponseFactory(), $logger, new RateLimitState());
+
+        $remoteAddr = $_SERVER['REMOTE_ADDR'];
+
+        // an IPv4-mapped IPv6 address uses the same bucket as the plain IPv4 address
+        $storage->set(self::$key, (string) \json_encode((object) ['remaining' => 0, 'created' => time()]));
+        $_SERVER['REMOTE_ADDR'] = '::ffff:' . self::$ip;
+        $response1 = $middleware->process($request, new RequestHandler());
+        $this->assertSame(429, $response1->getStatusCode());
+
+        // an IPv6 address is keyed by its binary form, independent of the compression format
+        $ipv6Binary = inet_pton('2001:db8::2');
+        self::assertIsString($ipv6Binary);
+        $ipv6Key = Variables::RATE_LIMIT_IP . '_' . bin2hex($ipv6Binary);
+        $storage->set($ipv6Key, (string) \json_encode((object) ['remaining' => 0, 'created' => time()]));
+        $_SERVER['REMOTE_ADDR'] = '2001:0db8:0000:0000:0000:0000:0000:0002';
+        $response2 = $middleware->process($request, new RequestHandler());
+        $_SERVER['REMOTE_ADDR'] = $remoteAddr;
+        $this->assertSame(429, $response2->getStatusCode());
     }
 }

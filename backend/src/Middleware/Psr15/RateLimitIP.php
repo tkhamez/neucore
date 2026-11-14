@@ -59,7 +59,7 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
         }
 
         $ip = Http::ipAddress($trustedProxies);
-        $key = Variables::RATE_LIMIT_IP . '_' . str_replace(['.', ':', ','], '', $ip);
+        $key = Variables::RATE_LIMIT_IP . '_' . self::ipKey($ip);
         [$remaining, $resetIn, $numRequests, $elapsedTime]
             = $this->checkLimit($key, $this->storage, $maxRequests, $resetTime);
 
@@ -81,5 +81,18 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
         }
 
         return $this->addHeader($response);
+    }
+
+    /**
+     * Returns the unique, collision-free key component for an IP address.
+     *
+     * The binary (canonical) representation is used, so the key is the same for plain IPv4 and
+     * IPv4-mapped IPv6 addresses and independent of the IPv6 compression format.
+     */
+    private static function ipKey(string $ip): string
+    {
+        $binary = Http::ipNormalizeBinary($ip);
+
+        return $binary === false ? Http::IP_UNKNOWN : bin2hex($binary);
     }
 }

@@ -6,7 +6,7 @@ namespace Neucore\Util;
 
 abstract class Http
 {
-    private const IP_UNKNOWN = 'unknown';
+    public const IP_UNKNOWN = 'unknown';
 
     /**
      * Retrieve the client IP address considering trusted reverse proxies and X-Forwarded-For header.
@@ -59,26 +59,10 @@ abstract class Http
     }
 
     /**
-     * @param string[] $ipList
-     */
-    private static function ipIsContainedIn(string $ip, array $ipList): bool
-    {
-        foreach ($ipList as $ipCheck) {
-            $binary1 = self::ipNormalizeBinary($ip);
-            $binary2 = self::ipNormalizeBinary($ipCheck);
-            if ($binary1 !== false && $binary2 !== false && $binary1 === $binary2) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * @param string $ip A human readable IPv4 or IPv6 address.
      * @return string|false the in_addr representation of the given address or false
      */
-    private static function ipNormalizeBinary(string $ip): string|false
+    public static function ipNormalizeBinary(string $ip): string|false
     {
         $binary = inet_pton($ip);
 
@@ -131,5 +115,21 @@ abstract class Http
         }
 
         return (int) $parts[0];
+    }
+
+    /**
+     * @param string[] $ipList
+     */
+    private static function ipIsContainedIn(string $ip, array $ipList): bool
+    {
+        foreach ($ipList as $ipCheck) {
+            $binary1 = self::ipNormalizeBinary($ip);
+            $binary2 = self::ipNormalizeBinary($ipCheck);
+            if ($binary1 !== false && $binary2 !== false && $binary1 === $binary2) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

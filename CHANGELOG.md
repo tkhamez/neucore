@@ -19,6 +19,7 @@ Fix
   which were ignored before.
 - Added missing ESI error and rate limit checks to the MCP ESI tool.
 - Fixed the mail token being stored again on every access, although it had not changed.
+- Fixed IP address collisions and double limits in the IP rate limit key.
 
 Security
 - DnsRebindingProtection: Requests without a Host header are now rejected with a 403 response when 
