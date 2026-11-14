@@ -19,6 +19,9 @@ Security
 Development
 - compose.yaml: Exposed the Docker service ports only on localhost instead of all interfaces
 
+Maintenance
+- Updated dependencies
+
 ## 3.3.0
 
 8 Nov 2026

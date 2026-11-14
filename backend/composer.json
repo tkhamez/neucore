@@ -21,7 +21,6 @@
         "ext-simplexml": "*",
         "ext-zlib": "*",
         "doctrine/collections": "^2.2",
-        "doctrine/common": "^3.3",
         "doctrine/dbal": "^4.1",
         "doctrine/migrations": "^3.5",
         "doctrine/orm": "^3.2",
