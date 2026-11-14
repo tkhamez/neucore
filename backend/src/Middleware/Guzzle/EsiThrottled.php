@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Middleware\Guzzle;
 
+use Neucore\Service\EsiClient;
 use Neucore\Storage\EsiHeaderStorageInterface;
 use Neucore\Storage\Variables;
 use Psr\Http\Message\RequestInterface;
@@ -36,7 +37,7 @@ class EsiThrottled
                 str_contains($body, 'Undefined 429 response.')
                 && str_contains($body, 'Original message:')
                 && str_contains($body, 'Too many errors.')
-                && str_contains($body, 'You have been temporarily throttled.')
+                && str_contains($body, EsiClient::MESSAGE_THROTTLED)
             ) {
                 $this->storage->set(Variables::ESI_THROTTLED, (string) (time() + 60));
             }

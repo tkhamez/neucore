@@ -48,6 +48,55 @@ class EsiClient
      */
     private const PATH_PATTERN = "@^{REG_EXP}(/)?([?].*)?$@";
 
+    /**
+     * The number of ESI error limit remaining that should remain.
+     *
+     * @see \Neucore\Plugin\Core\EsiClient::$errorLimitRemaining
+     */
+    public const DEFAULT_ERROR_LIMIT_REMAIN = 20;
+
+    /**
+     * The percentage of ESI rate limit tokens that should remain.
+     *
+     * @see \Neucore\Plugin\Core\EsiClient::$rateLimitRemainPercent
+     */
+    public const DEFAULT_RATE_LIMIT_REMAIN_PERCENT = 20;
+
+    public const REASON_ERROR_LIMIT = 'error-limit';
+
+    public const REASON_RATE_LIMITED = 'rate-limited';
+
+    public const REASON_THROTTLED = 'throttled';
+
+    public const REASON_RATE_LIMIT_GROUP = 'rate-limit-group';
+
+    /**
+     * Message: the ESI error limit is about to be reached.
+     *
+     * Callers may append further details, e.g. the remaining header value.
+     */
+    public const MESSAGE_ERROR_LIMIT_REACHED = 'Maximum permissible ESI error limit reached.';
+
+    /**
+     * Message: ESI rate limiting was triggered by a previous 429 response.
+     */
+    public const MESSAGE_RATE_LIMITED = 'ESI rate limit reached.';
+
+    /**
+     * Message: ESI returned an undefined 429 response and requests must be throttled.
+     *
+     * This is also part of the error body ESI sends, so it must stay in sync with
+     * \Neucore\Middleware\Guzzle\EsiThrottled.
+     */
+    public const MESSAGE_THROTTLED = 'You have been temporarily throttled.';
+
+    /**
+     * Message: the token bucket of an ESI rate limit group is exhausted.
+     *
+     * Use sprintf() to insert the group name at the %s placeholder.
+     */
+    public const MESSAGE_RATE_LIMIT_GROUP_REACHED = "Maximum permissible ESI rate limit reached for group '%s'.";
+
     public function __construct(
         private readonly RepositoryFactory          $repositoryFactory,
         private readonly Config                     $config,
@@ -204,6 +253,49 @@ class EsiClient
                     return $data[strtolower($httpMethod)]['group'];
                 }
             }
+        }
+
+        return null;
+    }
+
+    /**
+     * Checks all ESI limits and returns the time to wait until another request
+     * may be made, or NULL if no limit was reached.
+     *
+     * The reason is one of "error-limit", "rate-limited", "throttled" or
+     * "rate-limit-group".
+     *
+     * @return array{reason: string, retryAt: int}|null
+     */
+    public static function getLimitWaitTime(
+        EsiHeaderStorageInterface $storage,
+        string $pathQuery,
+        string $httpMethod,
+        ?int $characterId,
+        int $errorLimitRemain,
+        int $rateLimitRemainPercent,
+    ): ?array {
+        if (($retryAt = self::getErrorLimitWaitTime($storage, $errorLimitRemain)) > 0) {
+            return ['reason' => self::REASON_ERROR_LIMIT, 'retryAt' => $retryAt];
+        }
+
+        if (($retryAt = self::getRateLimitedWaitTime($storage)) > time()) {
+            return ['reason' => self::REASON_RATE_LIMITED, 'retryAt' => $retryAt];
+        }
+
+        if (($retryAt = self::getThrottledWaitTime($storage)) > time()) {
+            return ['reason' => self::REASON_THROTTLED, 'retryAt' => $retryAt];
+        }
+
+        $retryAt = self::getRateLimitWaitTime(
+            $storage,
+            $pathQuery,
+            $httpMethod,
+            $characterId,
+            $rateLimitRemainPercent,
+        );
+        if ($retryAt > time()) {
+            return ['reason' => self::REASON_RATE_LIMIT_GROUP, 'retryAt' => $retryAt];
         }
 
         return null;

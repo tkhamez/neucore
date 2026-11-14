@@ -11,6 +11,7 @@ dd mm yyyy
 Fix
 - The MCP tools `get_groups` and `get_group_members` now respect the groups assigned to the app, 
   which were ignored before.
+- Added missing ESI error and rate limit checks to the MCP ESI tool.
 
 Security
 - Improved nginx configuration example

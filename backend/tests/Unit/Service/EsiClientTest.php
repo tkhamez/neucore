@@ -144,6 +144,50 @@ class EsiClientTest extends TestCase
         self::assertSame($time + 60, EsiClient::getThrottledWaitTime($this->storage));
     }
 
+    public function testGetLimitWaitTime(): void
+    {
+        $time = time();
+        $charId = 1234;
+        $path = "/characters/$charId/roles";
+
+        self::assertNull(EsiClient::getLimitWaitTime($this->storage, $path, 'GET', $charId, 15, 20));
+
+        // Error limit has the highest priority.
+        $this->storage->set(Variables::ESI_ERROR_LIMIT, (string) json_encode(new EsiErrorLimit($time, 15, 50)));
+        $this->storage->set(Variables::ESI_RATE_LIMITED, (string) ($time + 70));
+        self::assertSame(
+            ['reason' => 'error-limit', 'retryAt' => $time + 50],
+            EsiClient::getLimitWaitTime($this->storage, $path, 'GET', $charId, 15, 20),
+        );
+
+        // Rate limited.
+        $this->storage->set(Variables::ESI_ERROR_LIMIT, '');
+        self::assertSame(
+            ['reason' => 'rate-limited', 'retryAt' => $time + 70],
+            EsiClient::getLimitWaitTime($this->storage, $path, 'GET', $charId, 15, 20),
+        );
+
+        // Throttled.
+        $this->storage->set(Variables::ESI_RATE_LIMITED, '');
+        $this->storage->set(Variables::ESI_THROTTLED, (string) ($time + 80));
+        self::assertSame(
+            ['reason' => 'throttled', 'retryAt' => $time + 80],
+            EsiClient::getLimitWaitTime($this->storage, $path, 'GET', $charId, 15, 20),
+        );
+
+        // Rate limit group.
+        $this->storage->set(Variables::ESI_THROTTLED, '');
+        $this->storage->set(Variables::ESI_RATE_LIMIT, EsiRateLimit::toJson([
+            "char-detail:$charId" => new EsiRateLimit('char-detail', '600/15m', 100, 2, time() - 3),
+        ]));
+        $limit = EsiClient::getLimitWaitTime($this->storage, $path, 'GET', $charId, 15, 20);
+        // @phpstan-ignore staticMethod.alreadyNarrowedType
+        self::assertNotNull($limit);
+        self::assertSame('rate-limit-group', $limit['reason']);
+        self::assertGreaterThan(time(), $limit['retryAt']);
+        self::assertLessThanOrEqual(time() + 900, $limit['retryAt']);
+    }
+
     public function testGetRateLimits(): void
     {
         self::assertSame([], EsiClient::getRateLimits($this->storage));

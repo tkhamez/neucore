@@ -10,6 +10,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Mcp\ResponseBuilder;
 use Neucore\Service\AppAuth;
 use Neucore\Service\EsiClient;
+use Neucore\Storage\EsiHeaderStorageInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 
 class EsiTools
@@ -21,6 +22,7 @@ class EsiTools
         private readonly EsiClient $esiClient,
         private readonly ResponseBuilder $responseBuilder,
         private readonly AppAuth $appAuth,
+        private readonly EsiHeaderStorageInterface $storage,
     ) {}
 
     /**
@@ -80,6 +82,32 @@ class EsiTools
         $esiToken = $character->getEsiToken(self::DEFAULT_EVE_LOGIN);
         if ($esiToken === null || $esiToken->getValidToken() !== true) {
             return $this->responseBuilder->error(0, 'Character has no valid ESI token for the default login');
+        }
+
+        $limit = EsiClient::getLimitWaitTime(
+            $this->storage,
+            $path,
+            $method,
+            $characterId,
+            EsiClient::DEFAULT_ERROR_LIMIT_REMAIN,
+            EsiClient::DEFAULT_RATE_LIMIT_REMAIN_PERCENT,
+        );
+        $message = match ($limit['reason'] ?? null) {
+            EsiClient::REASON_ERROR_LIMIT => EsiClient::MESSAGE_ERROR_LIMIT_REACHED,
+            EsiClient::REASON_RATE_LIMITED => EsiClient::MESSAGE_RATE_LIMITED,
+            EsiClient::REASON_THROTTLED => EsiClient::MESSAGE_THROTTLED,
+            EsiClient::REASON_RATE_LIMIT_GROUP => sprintf(
+                EsiClient::MESSAGE_RATE_LIMIT_GROUP_REACHED,
+                (string) EsiClient::getRateLimitGroup($path, $method),
+            ),
+            default => null,
+        };
+        if ($message !== null) {
+            return $this->responseBuilder->error(
+                429,
+                $message,
+                [EsiClient::HEADER_RETRY_AFTER => (string) max(1, $limit['retryAt'] - time())],
+            );
         }
 
         try {

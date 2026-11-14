@@ -519,14 +519,13 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame(429, $response?->getStatusCode());
         $this->assertGreaterThan('84', $response->getHeaderLine('Retry-After'));
         $this->assertLessThanOrEqual('86', $response->getHeaderLine('Retry-After'));
-        $headerRemain = EsiClient::HEADER_ERROR_LIMIT_REMAIN;
         $this->assertSame(
-            "\"Maximum permissible ESI error limit reached ($headerRemain <= 20).\"",
+            '"Maximum permissible ESI error limit reached."',
             $response->getBody()->__toString(),
         );
         $this->assertSame(
             'App\EsiController: application ' . $appId
-            . " \"A1\": Maximum permissible ESI error limit reached ($headerRemain <= 20).",
+            . ' "A1": Maximum permissible ESI error limit reached.',
             $this->logger->getHandler()?->getRecords()[0]['message'],
         );
     }

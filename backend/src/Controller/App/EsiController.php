@@ -70,13 +70,13 @@ class EsiController extends BaseController
      * @see \Neucore\Plugin\Core\EsiClient::$errorLimitRemaining
      * @see \Neucore\Command\Traits\EsiLimits::$errorLimitRemaining
      */
-    private int $errorLimitRemain = 20;
+    private int $errorLimitRemain = EsiClient::DEFAULT_ERROR_LIMIT_REMAIN;
 
     /**
      * @see \Neucore\Plugin\Core\EsiClient::$rateLimitRemainPercent
      * @see \Neucore\Command\Traits\EsiLimits::$rateLimitRemainPercent
      */
-    private int $rateLimitRemainPercent = 20;
+    private int $rateLimitRemainPercent = EsiClient::DEFAULT_RATE_LIMIT_REMAIN_PERCENT;
 
     public function __construct(
         ResponseInterface $response,
@@ -784,63 +784,54 @@ class EsiController extends BaseController
         string $httpMethod,
         int $characterId,
     ): bool {
-        // Check error limit.
-        if (($retryAt1 = EsiClient::getErrorLimitWaitTime($this->storage, $this->errorLimitRemain)) > 0) {
-            $errorMessage = 'Maximum permissible ESI error limit reached';
-            $headerRemain = EsiClient::HEADER_ERROR_LIMIT_REMAIN;
-            $this->build429Response(
-                "$errorMessage ($headerRemain <= $this->errorLimitRemain).",
-                $retryAt1,
-                $version,
-                "$errorMessage.",
-            );
-            return true;
-        }
-
-        // Check 429 rate limited.
-        if (($retryAt2 = EsiClient::getRateLimitedWaitTime($this->storage)) > time()) {
-            $this->build429Response('ESI rate limit reached.', $retryAt2, $version);
-            return true;
-        }
-
-        // Check throttled.
-        if (($retryAt3 = EsiClient::getThrottledWaitTime($this->storage)) > time()) {
-            $this->build429Response(
-                'Undefined 429 response. You have been temporarily throttled.',
-                $retryAt3,
-                $version,
-            );
-            return true;
-        }
-
-        // Check rate limits
-        $retryAt4 = EsiClient::getRateLimitWaitTime(
+        $limit = EsiClient::getLimitWaitTime(
             $this->storage,
             $pathQuery,
             $httpMethod,
             $characterId,
+            $this->errorLimitRemain,
             $this->rateLimitRemainPercent,
         );
-        if ($retryAt4 > time()) {
-            $group = EsiClient::getRateLimitGroup($pathQuery, $httpMethod);
+
+        $reason = $limit['reason'] ?? null;
+        if ($reason === EsiClient::REASON_ERROR_LIMIT) {
             $this->build429Response(
-                "Maximum permissible ESI rate limit reached for group '$group'.",
-                $retryAt4,
+                EsiClient::MESSAGE_ERROR_LIMIT_REACHED,
+                $limit['retryAt'],
                 $version,
             );
-            return true;
+        } elseif ($reason === EsiClient::REASON_RATE_LIMITED) {
+            $this->build429Response(EsiClient::MESSAGE_RATE_LIMITED, $limit['retryAt'], $version);
+        } elseif ($reason === EsiClient::REASON_THROTTLED) {
+            $this->build429Response(
+                'Undefined 429 response. ' . EsiClient::MESSAGE_THROTTLED,
+                $limit['retryAt'],
+                $version,
+            );
+        } elseif ($reason === EsiClient::REASON_RATE_LIMIT_GROUP) {
+            $group = EsiClient::getRateLimitGroup($pathQuery, $httpMethod);
+            $this->build429Response(
+                sprintf(EsiClient::MESSAGE_RATE_LIMIT_GROUP_REACHED, (string) $group),
+                $limit['retryAt'],
+                $version,
+            );
+        } else {
+            return false;
         }
 
-        return false;
+        return true;
     }
 
-    private function build429Response(string $message, int $retryAfter, int $version, ?string $messageV1 = null): void
+    private function build429Response(string $message, int $retryAfter, int $version): void
     {
         $this->log->warning(self::ERROR_MESSAGE_PREFIX . $this->appString() . ": $message");
         if ($version === 1) {
-            $this->response = $this->response->withStatus(429, $messageV1 ?: $message);
+            $this->response = $this->response->withStatus(429, $message);
         } else {
-            $this->response = $this->response->withHeader(EsiClient::HEADER_RETRY_AFTER, (string) max(1, $retryAfter - time()));
+            $this->response = $this->response->withHeader(
+                EsiClient::HEADER_RETRY_AFTER,
+                (string) max(1, $retryAfter - time()),
+            );
             $this->response = $this->withJson($message, 429);
         }
     }

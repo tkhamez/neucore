@@ -6,6 +6,8 @@ namespace Tests\Unit\Mcp\Tools;
 
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request;
+use Neucore\Data\EsiErrorLimit;
+use Neucore\Data\EsiRateLimit;
 use Neucore\Entity\Character;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
@@ -16,6 +18,8 @@ use Neucore\Mcp\Tools\EsiTools;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Service\AppAuth;
 use Neucore\Service\EsiClient;
+use Neucore\Storage\EsiHeaderStorageInterface;
+use Neucore\Storage\Variables;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -32,11 +36,14 @@ class EsiToolsTest extends TestCase
 
     private ResponseBuilder&MockObject $responseBuilder;
 
+    private EsiHeaderStorageInterface&MockObject $storage;
+
     protected function setUp(): void
     {
         $this->repositoryFactory = $this->createMock(RepositoryFactory::class);
         $this->esiClient = $this->createMock(EsiClient::class);
         $this->responseBuilder = $this->createMock(ResponseBuilder::class);
+        $this->storage = $this->createMock(EsiHeaderStorageInterface::class);
 
         // The app has no corporation restriction by default.
         $appAuth = $this->createMock(AppAuth::class);
@@ -47,6 +54,7 @@ class EsiToolsTest extends TestCase
             $this->esiClient,
             $this->responseBuilder,
             $appAuth,
+            $this->storage,
         );
     }
 
@@ -320,6 +328,7 @@ class EsiToolsTest extends TestCase
             $this->esiClient,
             $this->responseBuilder,
             $appAuth,
+            $this->storage,
         );
 
         $this->esiClient
@@ -342,6 +351,94 @@ class EsiToolsTest extends TestCase
         self::assertFalse($result['success']);
         self::assertSame(403, $result['statusCode']);
         self::assertSame('Forbidden', $result['error']);
+    }
+
+    #[Test]
+    public function testEsiRequest_errorLimitReached(): void
+    {
+        $character = $this->createCharacterWithToken(valid: true);
+        $this->repositoryFactory
+            ->method('getCharacterRepository')
+            ->willReturn($this->createCharacterRepository($character));
+
+        $this->storage
+            ->method('get')
+            ->willReturnCallback(
+                fn(string $key) => $key === Variables::ESI_ERROR_LIMIT
+                    ? (string) json_encode(new EsiErrorLimit(time(), 10, 60))
+                    : '',
+            );
+
+        $this->esiClient
+            ->expects(self::never())
+            ->method('request');
+
+        $this->responseBuilder
+            ->expects(self::once())
+            ->method('error')
+            ->with(
+                429,
+                'Maximum permissible ESI error limit reached.',
+                self::callback(fn(array $headers) => (int) ($headers[EsiClient::HEADER_RETRY_AFTER] ?? 0) >= 1
+                    && (int) ($headers[EsiClient::HEADER_RETRY_AFTER] ?? 0) <= 60),
+            )
+            ->willReturn([
+                'success' => false,
+                'statusCode' => 429,
+                'error' => 'Maximum permissible ESI error limit reached.',
+                'headers' => [EsiClient::HEADER_RETRY_AFTER => '60'],
+            ]);
+
+        $result = $this->tools->esiRequest(12345, '/universe/stations/1');
+
+        self::assertFalse($result['success']);
+        self::assertSame(429, $result['statusCode']);
+        self::assertSame('Maximum permissible ESI error limit reached.', $result['error']);
+    }
+
+    #[Test]
+    public function testEsiRequest_rateLimitGroupReached(): void
+    {
+        $character = $this->createCharacterWithToken(valid: true);
+        $this->repositoryFactory
+            ->method('getCharacterRepository')
+            ->willReturn($this->createCharacterRepository($character));
+
+        $this->storage
+            ->method('get')
+            ->willReturnCallback(
+                fn(string $key) => $key === Variables::ESI_RATE_LIMIT
+                    ? EsiRateLimit::toJson([
+                        'char-detail:12345' => new EsiRateLimit('char-detail', '600/15m', 100, 2, time() - 3),
+                    ])
+                    : '',
+            );
+
+        $this->esiClient
+            ->expects(self::never())
+            ->method('request');
+
+        $this->responseBuilder
+            ->expects(self::once())
+            ->method('error')
+            ->with(
+                429,
+                "Maximum permissible ESI rate limit reached for group 'char-detail'.",
+                self::callback(fn(array $headers) => (int) ($headers[EsiClient::HEADER_RETRY_AFTER] ?? 0) >= 1
+                    && (int) ($headers[EsiClient::HEADER_RETRY_AFTER] ?? 0) <= 900),
+            )
+            ->willReturn([
+                'success' => false,
+                'statusCode' => 429,
+                'error' => "Maximum permissible ESI rate limit reached for group 'char-detail'.",
+                'headers' => [EsiClient::HEADER_RETRY_AFTER => '900'],
+            ]);
+
+        $result = $this->tools->esiRequest(12345, '/characters/12345/roles');
+
+        self::assertFalse($result['success']);
+        self::assertSame(429, $result['statusCode']);
+        self::assertSame("Maximum permissible ESI rate limit reached for group 'char-detail'.", $result['error']);
     }
 
     #[Test]
