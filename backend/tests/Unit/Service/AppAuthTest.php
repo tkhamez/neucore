@@ -32,14 +32,14 @@ class AppAuthTest extends TestCase
         $this->service = new AppAuth($repositoryFactory, $helper->getObjectManager());
     }
 
-    public function testGetRolesNoAuth()
+    public function testGetRolesNoAuth(): void
     {
         $roles = $this->service->getRoles($this->getRequest());
 
         $this->assertSame([], $roles);
     }
 
-    public function testGetRoles()
+    public function testGetRoles(): void
     {
         $h = new Helper();
         $h->emptyDb();
@@ -51,7 +51,7 @@ class AppAuthTest extends TestCase
         $this->assertSame(['app'], $roles);
     }
 
-    public function testGetAppNoAuth()
+    public function testGetAppNoAuth(): void
     {
         $req = RequestFactory::createRequest();
         $app = $this->service->getApp($req);
@@ -59,25 +59,25 @@ class AppAuthTest extends TestCase
         $this->assertNull($app);
     }
 
-    public function testGetAppBrokenAuth()
+    public function testGetAppBrokenAuth(): void
     {
         $header = 'Bearer not:b64-encoded';
         $this->assertNull($this->service->getApp($this->getRequest($header)));
     }
 
-    public function testGetAppBrokenAuth2()
+    public function testGetAppBrokenAuth2(): void
     {
         $header = 'Bearer ' . base64_encode('no-id');
         $this->assertNull($this->service->getApp($this->getRequest($header)));
     }
 
-    public function testGetAppInvalidPass()
+    public function testGetAppInvalidPass(): void
     {
         $header = 'Bearer ' . base64_encode('1:invalid-secret');
         $this->assertNull($this->service->getApp($this->getRequest($header)));
     }
 
-    public function testGetApp()
+    public function testGetApp(): void
     {
         $h = new Helper();
         $h->emptyDb();
@@ -90,7 +90,22 @@ class AppAuthTest extends TestCase
         $this->assertSame('Test App', $app->getName());
     }
 
-    public function testGetAppTokenWithNewLine()
+    public function testGetCurrentApp(): void
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $appId = $h->addApp('Test App', 'my-test-secret', ['app'])->getId();
+
+        $this->assertNull($this->service->getCurrentApp());
+
+        $header = 'Bearer ' . base64_encode($appId . ':my-test-secret');
+        $app = $this->service->getApp($this->getRequest($header));
+
+        $this->assertNotNull($app);
+        $this->assertSame($app, $this->service->getCurrentApp());
+    }
+
+    public function testGetAppTokenWithNewLine(): void
     {
         $h = new Helper();
         $h->emptyDb();
@@ -103,7 +118,7 @@ class AppAuthTest extends TestCase
         $this->assertSame('Test App', $app->getName());
     }
 
-    public function testGetAppAuthenticateUpgradesPasswordHash()
+    public function testGetAppAuthenticateUpgradesPasswordHash(): void
     {
         $h = new Helper();
         $h->emptyDb();
@@ -121,7 +136,7 @@ class AppAuthTest extends TestCase
         $this->assertStringStartsNotWith('$1$', $newHash);
     }
 
-    public function testIsPlayerAllowed()
+    public function testIsPlayerAllowed(): void
     {
         $h = new Helper();
         [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] = $this->createFixture($h);
@@ -137,7 +152,7 @@ class AppAuthTest extends TestCase
         $this->assertFalse($this->service->isPlayerAllowed($playerOut->getId()));
     }
 
-    public function testIsPlayerAllowedNoApp()
+    public function testIsPlayerAllowedNoApp(): void
     {
         $h = new Helper();
         [, , , , , $playerOut] = $this->createFixture($h);
@@ -145,17 +160,17 @@ class AppAuthTest extends TestCase
         $this->assertFalse($this->service->isPlayerAllowed($playerOut->getId()));
     }
 
-    public function testIsPlayerAllowedNoRestrictions()
+    public function testIsPlayerAllowedNoRestrictions(): void
     {
         $h = new Helper();
-        [$appId] = $this->createFixture($h, false, false);
+        [$appId] = $this->createFixture($h, false);
         $this->authenticate($appId);
 
         $this->assertTrue($this->service->isPlayerAllowed(1));
         $this->assertTrue($this->service->isPlayerAllowed(2));
     }
 
-    public function testIsPlayerAllowedAccessGroupOnly()
+    public function testIsPlayerAllowedAccessGroupOnly(): void
     {
         $h = new Helper();
         [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied]
@@ -172,7 +187,7 @@ class AppAuthTest extends TestCase
         $this->assertFalse($this->service->isPlayerAllowed($playerOut->getId()));
     }
 
-    public function testIsPlayerAllowedApplicationStatuses()
+    public function testIsPlayerAllowedApplicationStatuses(): void
     {
         $h = new Helper();
         [$appId, , $group, , , , , , , $playerApplied] = $this->createFixture($h, false, true);
@@ -206,7 +221,7 @@ class AppAuthTest extends TestCase
         $this->assertTrue($this->service->isPlayerAllowed($playerDenied->getId()));
     }
 
-    public function testIsPlayerAllowedCorporationAndAccessGroup()
+    public function testIsPlayerAllowedCorporationAndAccessGroup(): void
     {
         $h = new Helper();
         [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied]
@@ -223,7 +238,7 @@ class AppAuthTest extends TestCase
         $this->assertFalse($this->service->isPlayerAllowed($playerOut->getId()));
     }
 
-    public function testIsCharacterAllowed()
+    public function testIsCharacterAllowed(): void
     {
         $h = new Helper();
         [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h);
@@ -237,7 +252,7 @@ class AppAuthTest extends TestCase
         $this->assertFalse($this->service->isCharacterAllowed(999)); // Character not found
     }
 
-    public function testIsCharacterAllowedNoApp()
+    public function testIsCharacterAllowedNoApp(): void
     {
         $h = new Helper();
         [, , , , , , , , $charOut] = $this->createFixture($h);
@@ -245,10 +260,10 @@ class AppAuthTest extends TestCase
         $this->assertFalse($this->service->isCharacterAllowed($charOut->getId()));
     }
 
-    public function testIsCharacterAllowedNoRestrictions()
+    public function testIsCharacterAllowedNoRestrictions(): void
     {
         $h = new Helper();
-        [$appId, , , , , , $charCorp, $charGroup, $charOut] = $this->createFixture($h, false, false);
+        [$appId, , , , , , $charCorp, $charGroup, $charOut] = $this->createFixture($h, false);
         $this->authenticate($appId);
 
         $this->assertTrue($this->service->isCharacterAllowed($charCorp->getId()));
@@ -256,7 +271,7 @@ class AppAuthTest extends TestCase
         $this->assertTrue($this->service->isCharacterAllowed($charOut->getId()));
     }
 
-    public function testIsCharacterAllowedAccessGroupOnly()
+    public function testIsCharacterAllowedAccessGroupOnly(): void
     {
         $h = new Helper();
         [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h, false, true);
@@ -271,7 +286,7 @@ class AppAuthTest extends TestCase
         $this->assertFalse($this->service->isCharacterAllowed($charOut->getId()));
     }
 
-    public function testIsCharacterAllowedCorporationAndAccessGroup()
+    public function testIsCharacterAllowedCorporationAndAccessGroup(): void
     {
         $h = new Helper();
         [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h, true, true);
@@ -283,7 +298,7 @@ class AppAuthTest extends TestCase
         $this->assertFalse($this->service->isCharacterAllowed($charOut->getId()));
     }
 
-    public function testIsCorporationAllowed()
+    public function testIsCorporationAllowed(): void
     {
         $h = new Helper();
         [$appId, $corp] = $this->createFixture($h);
@@ -293,7 +308,7 @@ class AppAuthTest extends TestCase
         $this->assertFalse($this->service->isCorporationAllowed(999));
     }
 
-    public function testIsCorporationAllowedNoApp()
+    public function testIsCorporationAllowedNoApp(): void
     {
         $h = new Helper();
         [, $corp] = $this->createFixture($h);
@@ -301,16 +316,16 @@ class AppAuthTest extends TestCase
         $this->assertFalse($this->service->isCorporationAllowed($corp->getId()));
     }
 
-    public function testIsCorporationAllowedNoRestrictions()
+    public function testIsCorporationAllowedNoRestrictions(): void
     {
         $h = new Helper();
-        [$appId, $corp] = $this->createFixture($h, false, false);
+        [$appId, $corp] = $this->createFixture($h, false);
         $this->authenticate($appId);
 
         $this->assertTrue($this->service->isCorporationAllowed($corp->getId()));
     }
 
-    public function testIsCorporationAllowedAccessGroupOnly()
+    public function testIsCorporationAllowedAccessGroupOnly(): void
     {
         $h = new Helper();
         [$appId, $corp] = $this->createFixture($h, false, true);
@@ -322,7 +337,7 @@ class AppAuthTest extends TestCase
         $this->assertFalse($this->service->isCorporationAllowed(999));
     }
 
-    public function testFilterAllowedPlayerIds()
+    public function testFilterAllowedPlayerIds(): void
     {
         $h = new Helper();
         [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] = $this->createFixture($h);
@@ -336,12 +351,12 @@ class AppAuthTest extends TestCase
         );
     }
 
-    public function testFilterAllowedPlayerIdsNoPlayers()
+    public function testFilterAllowedPlayerIdsNoPlayers(): void
     {
         $this->assertSame([], $this->service->filterAllowedPlayerIds([]));
     }
 
-    public function testFilterAllowedPlayerIdsNoApp()
+    public function testFilterAllowedPlayerIdsNoApp(): void
     {
         $h = new Helper();
         [, , , $playerCorp] = $this->createFixture($h);
@@ -349,10 +364,10 @@ class AppAuthTest extends TestCase
         $this->assertSame([], $this->service->filterAllowedPlayerIds([$playerCorp->getId()]));
     }
 
-    public function testFilterAllowedPlayerIdsNoRestrictions()
+    public function testFilterAllowedPlayerIdsNoRestrictions(): void
     {
         $h = new Helper();
-        [$appId, , , $playerCorp, $playerGroup, $playerOut] = $this->createFixture($h, false, false);
+        [$appId, , , $playerCorp, $playerGroup, $playerOut] = $this->createFixture($h, false);
         $this->authenticate($appId);
 
         $this->assertSame(
@@ -361,7 +376,7 @@ class AppAuthTest extends TestCase
         );
     }
 
-    public function testFilterAllowedPlayerIdsAccessGroupOnly()
+    public function testFilterAllowedPlayerIdsAccessGroupOnly(): void
     {
         $h = new Helper();
         [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied]
@@ -376,7 +391,7 @@ class AppAuthTest extends TestCase
         );
     }
 
-    public function testFilterAllowedPlayerIdsCorporationAndAccessGroup()
+    public function testFilterAllowedPlayerIdsCorporationAndAccessGroup(): void
     {
         $h = new Helper();
         [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied]
@@ -391,7 +406,7 @@ class AppAuthTest extends TestCase
         );
     }
 
-    public function testFilterAllowedPlayers()
+    public function testFilterAllowedPlayers(): void
     {
         $h = new Helper();
         [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied] = $this->createFixture($h);
@@ -403,7 +418,7 @@ class AppAuthTest extends TestCase
         );
     }
 
-    public function testFilterAllowedPlayersNoApp()
+    public function testFilterAllowedPlayersNoApp(): void
     {
         $h = new Helper();
         [, , , $playerCorp] = $this->createFixture($h);
@@ -411,10 +426,10 @@ class AppAuthTest extends TestCase
         $this->assertSame([], $this->service->filterAllowedPlayers([$playerCorp]));
     }
 
-    public function testFilterAllowedPlayersNoRestrictions()
+    public function testFilterAllowedPlayersNoRestrictions(): void
     {
         $h = new Helper();
-        [$appId, , , $playerCorp, $playerGroup, $playerOut] = $this->createFixture($h, false, false);
+        [$appId, , , $playerCorp, $playerGroup, $playerOut] = $this->createFixture($h, false);
         $this->authenticate($appId);
 
         $this->assertSame(
@@ -423,7 +438,7 @@ class AppAuthTest extends TestCase
         );
     }
 
-    public function testFilterAllowedPlayersAccessGroupOnly()
+    public function testFilterAllowedPlayersAccessGroupOnly(): void
     {
         $h = new Helper();
         [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied]
@@ -436,7 +451,7 @@ class AppAuthTest extends TestCase
         );
     }
 
-    public function testFilterAllowedPlayersCorporationAndAccessGroup()
+    public function testFilterAllowedPlayersCorporationAndAccessGroup(): void
     {
         $h = new Helper();
         [$appId, , , $playerCorp, $playerGroup, $playerOut, , , , $playerApplied]
@@ -449,7 +464,7 @@ class AppAuthTest extends TestCase
         );
     }
 
-    public function testFilterAllowedCharacterIds()
+    public function testFilterAllowedCharacterIds(): void
     {
         $h = new Helper();
         [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h);
@@ -463,12 +478,12 @@ class AppAuthTest extends TestCase
         );
     }
 
-    public function testFilterAllowedCharacterIdsNoCharacters()
+    public function testFilterAllowedCharacterIdsNoCharacters(): void
     {
         $this->assertSame([], $this->service->filterAllowedCharacterIds([]));
     }
 
-    public function testFilterAllowedCharacterIdsNoApp()
+    public function testFilterAllowedCharacterIdsNoApp(): void
     {
         $h = new Helper();
         [, , , , , , , , $charOut] = $this->createFixture($h);
@@ -476,10 +491,10 @@ class AppAuthTest extends TestCase
         $this->assertSame([], $this->service->filterAllowedCharacterIds([$charOut->getId()]));
     }
 
-    public function testFilterAllowedCharacterIdsNoRestrictions()
+    public function testFilterAllowedCharacterIdsNoRestrictions(): void
     {
         $h = new Helper();
-        [$appId, , , , , , $charCorp, $charGroup, $charOut] = $this->createFixture($h, false, false);
+        [$appId, , , , , , $charCorp, $charGroup, $charOut] = $this->createFixture($h, false);
         $this->authenticate($appId);
 
         $this->assertSame(
@@ -488,7 +503,7 @@ class AppAuthTest extends TestCase
         );
     }
 
-    public function testFilterAllowedCharacterIdsAccessGroupOnly()
+    public function testFilterAllowedCharacterIdsAccessGroupOnly(): void
     {
         $h = new Helper();
         [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h, false, true);
@@ -502,7 +517,7 @@ class AppAuthTest extends TestCase
         );
     }
 
-    public function testFilterAllowedCharacterIdsCorporationAndAccessGroup()
+    public function testFilterAllowedCharacterIdsCorporationAndAccessGroup(): void
     {
         $h = new Helper();
         [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h, true, true);
@@ -516,7 +531,7 @@ class AppAuthTest extends TestCase
         );
     }
 
-    public function testFilterAllowedCharacters()
+    public function testFilterAllowedCharacters(): void
     {
         $h = new Helper();
         [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h);
@@ -528,7 +543,7 @@ class AppAuthTest extends TestCase
         );
     }
 
-    public function testFilterAllowedCharactersNoApp()
+    public function testFilterAllowedCharactersNoApp(): void
     {
         $h = new Helper();
         [, , , , , , , , $charOut] = $this->createFixture($h);
@@ -536,10 +551,10 @@ class AppAuthTest extends TestCase
         $this->assertSame([], $this->service->filterAllowedCharacters([$charOut]));
     }
 
-    public function testFilterAllowedCharactersNoRestrictions()
+    public function testFilterAllowedCharactersNoRestrictions(): void
     {
         $h = new Helper();
-        [$appId, , , , , , $charCorp, $charGroup, $charOut] = $this->createFixture($h, false, false);
+        [$appId, , , , , , $charCorp, $charGroup, $charOut] = $this->createFixture($h, false);
         $this->authenticate($appId);
 
         $this->assertSame(
@@ -548,7 +563,7 @@ class AppAuthTest extends TestCase
         );
     }
 
-    public function testFilterAllowedCharactersAccessGroupOnly()
+    public function testFilterAllowedCharactersAccessGroupOnly(): void
     {
         $h = new Helper();
         [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h, false, true);
@@ -560,7 +575,7 @@ class AppAuthTest extends TestCase
         );
     }
 
-    public function testFilterAllowedCharactersCorporationAndAccessGroup()
+    public function testFilterAllowedCharactersCorporationAndAccessGroup(): void
     {
         $h = new Helper();
         [$appId, , , , , , $charCorp, $charGroup, $charOut, , $charApplied] = $this->createFixture($h, true, true);

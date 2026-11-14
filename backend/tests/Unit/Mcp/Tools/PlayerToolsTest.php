@@ -8,6 +8,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Neucore\Data\ServiceAccount;
 use Neucore\Entity\Alliance;
+use Neucore\Entity\App;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
@@ -36,16 +37,20 @@ class PlayerToolsTest extends TestCase
 
     private PluginService&MockObject $pluginService;
 
+    private App&MockObject $app;
+
     protected function setUp(): void
     {
         $this->repositoryFactory = $this->createMock(RepositoryFactory::class);
         $this->responseBuilder = $this->createMock(ResponseBuilder::class);
         $this->pluginService = $this->createMock(PluginService::class);
+        $this->app = $this->createMock(App::class);
         $appAuth = $this->createMock(AppAuth::class);
         $appAuth->method('isPlayerAllowed')->willReturn(true);
         $appAuth->method('isCorporationAllowed')->willReturn(true);
         $appAuth->method('filterAllowedPlayers')->willReturnArgument(0);
         $appAuth->method('filterAllowedCharacters')->willReturnArgument(0);
+        $appAuth->method('getCurrentApp')->willReturn($this->app);
 
         $this->tools = $this->createTools($appAuth);
     }
@@ -539,9 +544,12 @@ class PlayerToolsTest extends TestCase
         $player = $this->createMock(Player::class);
         $group1 = $this->createMock(Group::class);
         $group2 = $this->createMock(Group::class);
+        $group1->method('getId')->willReturn(1);
+        $group2->method('getId')->willReturn(2);
         $group1->method('jsonSerialize')->with(true)->willReturn(['id' => 1, 'name' => 'Group 1']);
         $group2->method('jsonSerialize')->with(true)->willReturn(['id' => 2, 'name' => 'Group 2']);
         $player->method('getGroups')->willReturn([$group1, $group2]);
+        $this->app->method('getGroups')->willReturn([$group1, $group2]);
 
         $this->repositoryFactory
             ->method('getPlayerRepository')
@@ -624,7 +632,9 @@ class PlayerToolsTest extends TestCase
         $player2->method('getName')->willReturn('Player Two');
 
         $group = $this->createMock(Group::class);
+        $group->method('getId')->willReturn(1);
         $group->method('getPlayers')->willReturn([$player1, $player2]);
+        $this->app->method('getGroups')->willReturn([$group]);
 
         $this->repositoryFactory
             ->method('getGroupRepository')
@@ -652,7 +662,9 @@ class PlayerToolsTest extends TestCase
     public function testGetGroupMembers_empty(): void
     {
         $group = $this->createMock(Group::class);
+        $group->method('getId')->willReturn(1);
         $group->method('getPlayers')->willReturn([]);
+        $this->app->method('getGroups')->willReturn([$group]);
 
         $this->repositoryFactory
             ->method('getGroupRepository')
@@ -917,7 +929,9 @@ class PlayerToolsTest extends TestCase
         $player2->method('getName')->willReturn('Player Two');
 
         $group = $this->createMock(Group::class);
+        $group->method('getId')->willReturn(1);
         $group->method('getPlayers')->willReturn([$player1, $player2]);
+        $this->app->method('getGroups')->willReturn([$group]);
 
         $this->repositoryFactory
             ->method('getGroupRepository')
@@ -925,6 +939,7 @@ class PlayerToolsTest extends TestCase
 
         $appAuth = $this->createMock(AppAuth::class);
         $appAuth->method('filterAllowedPlayers')->willReturn([$player1]);
+        $appAuth->method('getCurrentApp')->willReturn($this->app);
         $tools = $this->createTools($appAuth);
 
         $this->responseBuilder
@@ -942,6 +957,72 @@ class PlayerToolsTest extends TestCase
         self::assertSame([
             ['id' => 1, 'name' => 'Player One'],
         ], $result['body']);
+    }
+
+    #[Test]
+    public function testGetGroups_onlyAppGroups(): void
+    {
+        $player = $this->createMock(Player::class);
+        $group1 = $this->createMock(Group::class);
+        $group2 = $this->createMock(Group::class);
+        $group3 = $this->createMock(Group::class);
+        $group1->method('getId')->willReturn(1);
+        $group2->method('getId')->willReturn(2);
+        $group3->method('getId')->willReturn(3);
+        $group1->method('jsonSerialize')->with(true)->willReturn(['id' => 1, 'name' => 'Group 1']);
+        $group3->method('jsonSerialize')->with(true)->willReturn(['id' => 3, 'name' => 'Group 3']);
+        $player->method('getGroups')->willReturn([$group1, $group2, $group3]);
+        $this->app->method('getGroups')->willReturn([$group1, $group3]);
+
+        $this->repositoryFactory
+            ->method('getPlayerRepository')
+            ->willReturn($this->createPlayerRepository($player));
+
+        $this->responseBuilder
+            ->method('success')
+            ->willReturnCallback(fn($body) => [
+                'success' => true,
+                'statusCode' => 200,
+                'body' => $body,
+                'headers' => [],
+            ]);
+
+        $result = $this->tools->getGroups(1);
+
+        self::assertTrue($result['success']);
+        self::assertSame([
+            ['id' => 1, 'name' => 'Group 1'],
+            ['id' => 3, 'name' => 'Group 3'],
+        ], $result['body']);
+    }
+
+    #[Test]
+    public function testGetGroupMembers_notAssignedToApp(): void
+    {
+        $group = $this->createMock(Group::class);
+        $group->method('getId')->willReturn(5);
+
+        $this->repositoryFactory
+            ->method('getGroupRepository')
+            ->willReturn($this->createGroupRepository($group));
+
+        $this->app->method('getGroups')->willReturn([]);
+
+        $this->responseBuilder
+            ->expects(self::once())
+            ->method('error')
+            ->with(0, 'Group not found')
+            ->willReturn([
+                'success' => false,
+                'statusCode' => 0,
+                'error' => 'Group not found',
+                'headers' => [],
+            ]);
+
+        $result = $this->tools->getGroupMembers(5);
+
+        self::assertFalse($result['success']);
+        self::assertSame('Group not found', $result['error']);
     }
 
     private function createTools(AppAuth $appAuth): PlayerTools
@@ -1018,8 +1099,10 @@ class PlayerToolsTest extends TestCase
 
         self::assertTrue($result['success']);
         self::assertEquals([
-            ['serviceId' => 1, 'serviceName' => 'S1', 'characterId' => 101, 'username' => 'u1', 'status' => 'Active', 'name' => 'Account 1'],
-            ['serviceId' => 2, 'serviceName' => 'S2', 'characterId' => 102, 'username' => 'u2', 'status' => 'Pending', 'name' => 'Account 2'],
+            ['serviceId' => 1, 'serviceName' => 'S1', 'characterId' => 101,
+                'username' => 'u1', 'status' => 'Active', 'name' => 'Account 1'],
+            ['serviceId' => 2, 'serviceName' => 'S2', 'characterId' => 102,
+                'username' => 'u2', 'status' => 'Pending', 'name' => 'Account 2'],
         ], $result['body']);
     }
 

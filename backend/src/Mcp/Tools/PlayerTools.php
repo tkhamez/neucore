@@ -185,7 +185,21 @@ class PlayerTools
             return $this->responseBuilder->error(403, 'Forbidden');
         }
 
-        $groups = $player->getGroups();
+        $app = $this->appAuth->getCurrentApp();
+        if ($app === null) {
+            // This should not happen, isPlayerAllowed() requires an app.
+            return $this->responseBuilder->error(403, 'Forbidden');
+        }
+
+        // Only groups that are assigned to the app are returned (same as the REST endpoint).
+        $appGroupIds = [];
+        foreach ($app->getGroups() as $appGroup) {
+            $appGroupIds[] = $appGroup->getId();
+        }
+        $groups = array_values(array_filter(
+            $player->getGroups(),
+            fn(Group $group) => in_array($group->getId(), $appGroupIds, true),
+        ));
 
         return $this->responseBuilder->success(
             array_map(fn(Group $group) => $group->jsonSerialize(true), $groups),
@@ -203,7 +217,7 @@ class PlayerTools
     public function getGroupMembers(int $groupId): array
     {
         $group = $this->repositoryFactory->getGroupRepository()->find($groupId);
-        if ($group === null) {
+        if ($group === null || !$this->isGroupAssignedToApp($group)) {
             return $this->responseBuilder->error(0, 'Group not found');
         }
 
@@ -216,6 +230,25 @@ class PlayerTools
                 'name' => $player->getName(),
             ], $players),
         );
+    }
+
+    /**
+     * Checks if the group is assigned to the app, same as the REST endpoint.
+     */
+    private function isGroupAssignedToApp(Group $group): bool
+    {
+        $app = $this->appAuth->getCurrentApp();
+        if ($app === null) {
+            return false;
+        }
+
+        foreach ($app->getGroups() as $appGroup) {
+            if ($appGroup->getId() === $group->getId()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

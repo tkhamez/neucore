@@ -8,6 +8,10 @@
 
 dd mm yyyy
 
+Fix
+- The MCP tools `get_groups` and `get_group_members` now respect the groups assigned to the app, 
+  which were ignored before.
+
 Security
 - Improved nginx configuration example
 

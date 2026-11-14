@@ -90,6 +90,18 @@ class AppAuth implements RoleProviderInterface
     }
 
     /**
+     * Returns the app that was authenticated during the current request or NULL.
+     *
+     * Unlike getApp(), this does not authenticate a request and does not need the
+     * ServerRequestInterface object.
+     * It only returns the app that was already authenticated, e.g. by the role middleware.
+     */
+    public function getCurrentApp(): ?App
+    {
+        return $this->app;
+    }
+
+    /**
      * Checks if the app may access data of the player.
      *
      * If no app is authenticated, access is denied.
