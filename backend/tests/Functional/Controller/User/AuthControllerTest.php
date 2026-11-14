@@ -135,6 +135,44 @@ class AuthControllerTest extends WebTestCase
         $this->assertStringStartsWith($this->getStatePrefix(EveLogin::NAME_DEFAULT), $sess->get('auth_state'));
     }
 
+    public function testLogin_RedirectParam(): void
+    {
+        // a valid value is stored
+        $this->runApp('GET', '/login/' . EveLogin::NAME_DEFAULT . '?redirect=Service/42');
+        $session = (new SessionData())->getAll() ?? [];
+        $this->assertSame('Service/42', $session['auth_redirect']);
+
+        // an absolute URL is discarded
+        $this->runApp('GET', '/login/' . EveLogin::NAME_DEFAULT . '?redirect=https://evil.com');
+        $session = (new SessionData())->getAll() ?? [];
+        $this->assertSame('', $session['auth_redirect']);
+
+        // a protocol-relative URL is discarded
+        $this->runApp('GET', '/login/' . EveLogin::NAME_DEFAULT . '?redirect=//evil.com');
+        $session = (new SessionData())->getAll() ?? [];
+        $this->assertSame('', $session['auth_redirect']);
+
+        // a URL with a javascript: scheme is discarded
+        $this->runApp('GET', '/login/' . EveLogin::NAME_DEFAULT . '?redirect=javascript:alert(1)');
+        $session = (new SessionData())->getAll() ?? [];
+        $this->assertSame('', $session['auth_redirect']);
+
+        // a value that is too long is discarded
+        $this->runApp('GET', '/login/' . EveLogin::NAME_DEFAULT . '?redirect=' . str_repeat('a', 201));
+        $session = (new SessionData())->getAll() ?? [];
+        $this->assertSame('', $session['auth_redirect']);
+
+        // an array value is discarded
+        $this->runApp('GET', '/login/' . EveLogin::NAME_DEFAULT . '?redirect[]=x');
+        $session = (new SessionData())->getAll() ?? [];
+        $this->assertSame('', $session['auth_redirect']);
+
+        // a missing parameter is discarded
+        $this->runApp('GET', '/login/' . EveLogin::NAME_DEFAULT);
+        $session = (new SessionData())->getAll() ?? [];
+        $this->assertSame('', $session['auth_redirect']);
+    }
+
     public function testLogin_NoScopesForbidden()
     {
         $response = $this->runApp('GET', '/login/' . EveLogin::NAME_NO_SCOPES);
@@ -236,7 +274,7 @@ class AuthControllerTest extends WebTestCase
         $this->helper->addCharacterMain('Test User', $charId, [Role::USER], [], false); // without ESI token
         $this->loginUser($charId);
 
-        list($token, $keySet) = Helper::generateToken([]);
+        [$token, $keySet] = Helper::generateToken([]);
         $state = $this->getStatePrefix('custom1') . self::$state;
         $_SESSION['auth_state'] = $state;
 
@@ -275,7 +313,7 @@ class AuthControllerTest extends WebTestCase
         $this->helper->addCharacterMain('Test User', $charId, [Role::USER], [], false); // without ESI token
         // not logged in
 
-        list($token, $keySet) = Helper::generateToken(['scope1']);
+        [$token, $keySet] = Helper::generateToken(['scope1']);
         $state = $this->getStatePrefix($loginId) . self::$state;
         $_SESSION['auth_state'] = $state;
 
@@ -314,7 +352,7 @@ class AuthControllerTest extends WebTestCase
         $this->helper->addCharacterMain('Test User', $charId, [Role::USER], [], false); // without ESI token
         $this->loginUser($charId);
 
-        list($token, $keySet) = Helper::generateToken(['scope1']);
+        [$token, $keySet] = Helper::generateToken(['scope1']);
         $state = $this->getStatePrefix($loginId) . self::$state;
         $_SESSION['auth_state'] = $state;
 
@@ -358,7 +396,7 @@ class AuthControllerTest extends WebTestCase
         $this->helper->addCharacterMain('Test User', $charId, [Role::USER], [], false); // without ESI token
         $this->loginUser($charId);
 
-        list($token, $keySet) = Helper::generateToken(['scope1']);
+        [$token, $keySet] = Helper::generateToken(['scope1']);
         $state = $this->getStatePrefix($loginId) . self::$state;
         $_SESSION['auth_state'] = $state;
 
@@ -400,7 +438,7 @@ class AuthControllerTest extends WebTestCase
         $this->helper->addCharacterMain('Test User', $charId, [Role::USER], [], false); // without ESI token
         $this->loginUser($charId);
 
-        list($token, $keySet) = Helper::generateToken(['scope1']);
+        [$token, $keySet] = Helper::generateToken(['scope1']);
         $state = $this->getStatePrefix($loginId) . self::$state;
         $_SESSION['auth_state'] = $state;
 
@@ -439,13 +477,56 @@ class AuthControllerTest extends WebTestCase
     /**
      * @throws \Exception
      */
+    public function testCallback_RedirectParam(): void
+    {
+        // add EveLogin
+        $loginId = 'custom1';
+        $charId = 123; // the ID used in Helper::generateToken
+        $this->helper->getEm()->persist(
+            (new EveLogin())->setName($loginId)->setEsiScopes('scope1')->setEveRoles(['Auditor']),
+        );
+        $this->helper->addCharacterMain('Test User', $charId, [Role::USER], [], false); // without ESI token
+        $this->loginUser($charId);
+
+        [$token, $keySet] = Helper::generateToken(['scope1']);
+        $state = $this->getStatePrefix($loginId) . self::$state;
+        $_SESSION['auth_state'] = $state;
+        $_SESSION['auth_redirect'] = 'Service/42';
+
+        $this->client->setResponse(
+            new Response(200, [], // for getAccessToken()
+                '{"access_token": ' . json_encode($token) . ',
+                "expires_in": 1200,
+                "refresh_token": "gEy...fM0"}', ),
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
+            new Response(200, [], '{"roles": ["Auditor"]}'), // getCharactersCharacterIdRoles
+        );
+
+        $response = $this->runApp(
+            'GET',
+            '/login-callback?state=' . $state . '&redirected=1',
+            null,
+            null,
+            [HttpClientFactoryInterface::class => new HttpClientFactory($this->client)],
+        );
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame('/#login-custom?redirect=Service/42', $response->getHeader('Location')[0]);
+
+        // the value is deleted after use
+        $this->assertArrayNotHasKey('auth_redirect', $_SESSION);
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function testCallback_DefaultAuthError()
     {
         $state = $this->getStatePrefix(EveLogin::NAME_DEFAULT) . self::$state;
         /** @noinspection PhpArrayWriteIsNotUsedInspection */
         $_SESSION = ['auth_state' => $state, 'auth_result' => null];
 
-        list($token, $keySet) = Helper::generateToken(['read-this']);
+        [$token, $keySet] = Helper::generateToken(['read-this']);
 
         $this->client->setResponse(
             new Response(200, [], '{"access_token": ' . json_encode($token) . '}'), // for getAccessToken
@@ -483,7 +564,7 @@ class AuthControllerTest extends WebTestCase
             [Role::USER, Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER, Role::GROUP_MANAGER],
         );
 
-        list($token, $keySet) = Helper::generateToken(['read-this', 'and-this']);
+        [$token, $keySet] = Helper::generateToken(['read-this', 'and-this']);
         $state = $this->getStatePrefix(EveLogin::NAME_DEFAULT) . self::$state;
         /** @noinspection PhpArrayWriteIsNotUsedInspection */
         $_SESSION = ['auth_state' => $state, 'auth_result' => null, CSRFToken::CSRF_SESSION_NAME => 'token'];
@@ -520,7 +601,7 @@ class AuthControllerTest extends WebTestCase
         $this->helper->addCharacterMain('User1', 654);
         $this->loginUser(654);
 
-        list($token, $keySet) = Helper::generateToken(['read-this']);
+        [$token, $keySet] = Helper::generateToken(['read-this']);
         $state = $this->getStatePrefix(EveLogin::NAME_DEFAULT) . self::$state;
         $_SESSION['auth_state'] = $state;
 
@@ -561,7 +642,7 @@ class AuthControllerTest extends WebTestCase
         $this->helper->addCharacterMain('User1', 654, [Role::USER], ['group1']);
         $this->loginUser(654);
 
-        list($token, $keySet) = Helper::generateToken(['read-this']);
+        [$token, $keySet] = Helper::generateToken(['read-this']);
         $state = $this->getStatePrefix(EveLogin::NAME_DEFAULT) . self::$state;
         $_SESSION['auth_state'] = $state;
 
@@ -601,7 +682,7 @@ class AuthControllerTest extends WebTestCase
         $main = $this->helper->addCharacterMain('User1', 654, [Role::USER], ['group1']);
         $alt = $this->helper->addCharacterToPlayer('Alt1', 987, $main->getPlayer());
 
-        list($token, $keySet) = Helper::generateToken(
+        [$token, $keySet] = Helper::generateToken(
             ['read-this'],
             'Alt1',
             (string) $alt->getCharacterOwnerHash(),
@@ -649,7 +730,7 @@ class AuthControllerTest extends WebTestCase
         $this->loginUser(654);
 
         // 123 is the character owner hash used in addCharacterMain()
-        list($token, $keySet) = Helper::generateToken(['read-this'], 'Name', '123');
+        [$token, $keySet] = Helper::generateToken(['read-this'], 'Name', '123');
 
         $state = $this->getStatePrefix(EveLogin::NAME_DEFAULT) . self::$state;
         $_SESSION['auth_state'] = $state;
@@ -696,7 +777,7 @@ class AuthControllerTest extends WebTestCase
         $this->helper->addCharacterMain('Test User', 123456, [Role::USER]);
         $this->loginUser(123456);
 
-        list($token, $keySet) = Helper::generateToken([EveLogin::SCOPE_MAIL]);
+        [$token, $keySet] = Helper::generateToken([EveLogin::SCOPE_MAIL]);
         $state = $this->getStatePrefix(EveLogin::NAME_MAIL) . self::$state;
         $_SESSION['auth_state'] = $state;
 
@@ -734,7 +815,7 @@ class AuthControllerTest extends WebTestCase
         $this->helper->addCharacterMain('Test User', 123456, [Role::USER, Role::SETTINGS]);
         $this->loginUser(123456);
 
-        list($token, $keySet) = Helper::generateToken([EveLogin::SCOPE_MAIL]);
+        [$token, $keySet] = Helper::generateToken([EveLogin::SCOPE_MAIL]);
         $state = $this->getStatePrefix(EveLogin::NAME_MAIL) . self::$state;
         $_SESSION['auth_state'] = $state;
 

@@ -60,6 +60,11 @@ class AuthController extends BaseController
 
     private const STATE_PREFIX_SEPARATOR = '*';
 
+    /**
+     * Maximum length of the "redirect" query parameter.
+     */
+    private const REDIRECT_MAX_LENGTH = 200;
+
     public function __construct(
         ResponseInterface                       $response,
         ObjectManager                           $objectManager,
@@ -99,7 +104,11 @@ class AuthController extends BaseController
             }
         }
 
-        $this->session->set(self::SESS_AUTH_REDIRECT, $this->getQueryParam($request, 'redirect'));
+        $redirect = $this->getQueryParam($request, 'redirect');
+        if (!is_string($redirect) || !$this->isValidRedirect($redirect)) {
+            $redirect = '';
+        }
+        $this->session->set(self::SESS_AUTH_REDIRECT, $redirect);
 
         return $this->redirectToLoginUrl($loginName);
     }
@@ -365,6 +374,21 @@ class AuthController extends BaseController
             return '';
         }
         return substr($state, 0, (int) strpos($state, self::STATE_PREFIX_SEPARATOR));
+    }
+
+    /**
+     * Validates the "redirect" query parameter.
+     *
+     * The value is used as the hash part of the SPA URL after login. It must be a
+     * relative path (no URL scheme, no protocol-relative URL) and must not exceed
+     * a reasonable length.
+     */
+    private function isValidRedirect(string $redirect): bool
+    {
+        return $redirect !== ''
+            && strlen($redirect) <= self::REDIRECT_MAX_LENGTH
+            && !preg_match('@^[a-z][a-z0-9+.\-]*:@i', $redirect)
+            && !str_starts_with($redirect, '//');
     }
 
     private function redirect(string $path): ResponseInterface

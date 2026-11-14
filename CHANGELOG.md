@@ -14,9 +14,10 @@ Fix
 - Added missing ESI error and rate limit checks to the MCP ESI tool.
 - ESI proxy: All query parameters will now be validated and properly encoded
   (only relevant if they contain invalid values).
+- The redirect parameter of the login flow is now validated before being stored in the session.
 
 Security
-- Improved nginx configuration example
+- Improved/fixed nginx configuration example
 
 Development
 - compose.yaml: Exposed the Docker service ports only on localhost instead of all interfaces
