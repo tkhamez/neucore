@@ -34,7 +34,7 @@ class AuthPasswordController extends BaseController
         $user = $this->getUser($userAuth);
 
         try {
-            $password = Crypto::chars(20, Crypto::CHARS_PASSWORD);
+            $password = Crypto::chars(rand(16, 19), Crypto::CHARS_PASSWORD);
         } catch (\Exception) {
             return $this->response->withStatus(500);
         }

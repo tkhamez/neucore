@@ -8,6 +8,9 @@
 
 dd mm yyyy
 
+Change
+- The length of the generated password is now randomly determined within certain limits.
+
 Fix
 - The MCP tools `get_groups` and `get_group_members` now respect the groups assigned to the app, 
   which were ignored before.
