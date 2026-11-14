@@ -223,10 +223,10 @@ class DnsRebindingProtectionTest extends TestCase
     }
 
     // ------------------------------------------------------------------
-    // Host header — empty (no Host header → pass through)
+    // Host header — missing → denied (fail closed)
     // ------------------------------------------------------------------
 
-    public function testNoHostHeaderPassesThrough()
+    public function testNoHostHeaderDenied()
     {
         $request = RequestFactory::createRequest();
         // Deliberately no Host header.
@@ -236,7 +236,8 @@ class DnsRebindingProtectionTest extends TestCase
         $middleware = $this->createMiddleware(['myapp.example.com']);
         $response = $middleware->process($request, $handler);
 
-        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertSame('Forbidden: Invalid Host header.', $response->getBody()->__toString());
     }
 
     // ------------------------------------------------------------------
@@ -440,10 +441,10 @@ class DnsRebindingProtectionTest extends TestCase
     }
 
     // ------------------------------------------------------------------
-    // Host header — Host header empty when Origin also absent → pass
+    // Host header — Host header empty when Origin also absent → denied
     // ------------------------------------------------------------------
 
-    public function testEmptyHostHeaderPassesThrough()
+    public function testEmptyHostHeaderDenied()
     {
         $request = RequestFactory::createRequest();
         $request = $request->withHeader('Host', '');
@@ -452,7 +453,8 @@ class DnsRebindingProtectionTest extends TestCase
         $middleware = $this->createMiddleware(['myapp.example.com']);
         $response = $middleware->process($request, $handler);
 
-        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertSame('Forbidden: Invalid Host header.', $response->getBody()->__toString());
     }
 
     // ------------------------------------------------------------------

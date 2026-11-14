@@ -12,11 +12,13 @@ Fix
 - The MCP tools `get_groups` and `get_group_members` now respect the groups assigned to the app, 
   which were ignored before.
 - Added missing ESI error and rate limit checks to the MCP ESI tool.
+
+Security
+- DnsRebindingProtection: Requests without a Host header are now rejected with a 403 response when 
+  allowed hosts are configured.
 - ESI proxy: All query parameters will now be validated and properly encoded
   (only relevant if they contain invalid values).
 - The redirect parameter of the login flow is now validated before being stored in the session.
-
-Security
 - Improved/fixed nginx configuration example
 
 Development

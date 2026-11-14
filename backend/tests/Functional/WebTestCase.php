@@ -90,6 +90,13 @@ class WebTestCase extends TestCase
             $_ENV[$envVar[0]] = $envVar[1];
         }
 
+        // Real HTTP requests always carry a Host header, so set one. If the
+        // DnsRebindingProtection middleware is active (allowed hosts configured),
+        // use the first allowed host, so that the test requests pass.
+        $allowedHosts = (string) ($_ENV['NEUCORE_ALLOWED_HOSTS'] ?? '');
+        $host = trim(explode(',', $allowedHosts)[0]);
+        $request = $request->withHeader('Host', $host !== '' ? $host : 'localhost');
+
         // Add existing db connection
         $mocks = (new Helper())->addEm($mocks);
 

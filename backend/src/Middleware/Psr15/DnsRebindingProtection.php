@@ -18,6 +18,9 @@ use Psr\Http\Server\RequestHandlerInterface;
  * allowlist; otherwise the `Host` header is validated. Both checks are
  * case-insensitive and ignore port.
  *
+ * When protection is active, requests without a `Host` header are rejected
+ * (fail closed); browsers always send a `Host` header.
+ *
  * Adapted from `Mcp\Server\Transport\Http\Middleware\DnsRebindingProtectionMiddleware`
  * in `mcp/sdk` (Apache License 2.0).
  * This class has been intentionally diverged from that implementation: it is opt-in
@@ -65,8 +68,9 @@ class DnsRebindingProtection implements MiddlewareInterface
             return $handler->handle($request);
         }
 
+        // Fail closed: a missing Host header is rejected.
         $host = $request->getHeaderLine('Host');
-        if ($host !== '' && !$this->isAllowedHost($host)) {
+        if ($host === '' || !$this->isAllowedHost($host)) {
             return $this->createForbiddenResponse('Forbidden: Invalid Host header.');
         }
 
