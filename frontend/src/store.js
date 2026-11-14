@@ -11,6 +11,7 @@ const state = reactive({
     player: {
         id: 0,
         name: '',
+        hasPassword: false,
         status: '',
         roles: [],
         characters: [],

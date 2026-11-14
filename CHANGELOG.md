@@ -9,6 +9,9 @@
 dd mm yyyy
 
 Change
+- The navigation menu entry "Generate password" has been renamed to "Setup password login".
+  It now only opens a dialogue; the password is generated with a button inside the dialogue, which
+  also indicates whether a password already exists.
 - The length of the generated password is now randomly determined within certain limits.
 
 Fix

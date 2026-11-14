@@ -92,6 +92,7 @@ class PlayerTest extends TestCase
                 'isDefault' => false,
                 'isAutoManaged' => null,
             ]],
+            'hasPassword' => false,
             'status' => Player::STATUS_STANDARD,
             'roles' => ['rName', 'role2'],
             'managerGroups' => [[
@@ -132,6 +133,7 @@ class PlayerTest extends TestCase
         );
 
         $expected4 = $expected1;
+        unset($expected4['hasPassword']);
         unset($expected4['status']);
         unset($expected4['roles']);
         unset($expected4['managerGroups']);
@@ -140,6 +142,11 @@ class PlayerTest extends TestCase
             $expected4,
             json_decode((string) json_encode($play->jsonSerialize(withoutInternalInfo: true)), true),
         );
+
+        $play->setPassword('123456');
+        $expected5 = $expected1;
+        $expected5['hasPassword'] = true;
+        $this->assertSame($expected5, json_decode((string) json_encode($play), true));
     }
 
     public function testToString()

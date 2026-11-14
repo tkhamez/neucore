@@ -1,21 +1,39 @@
 <!--suppress HtmlUnknownAnchorTarget -->
 <template>
-<div v-cloak v-if="authChar" class="modal" id="generatePasswordModal">
+<div v-cloak v-if="authChar" class="modal" id="setupPasswordLoginModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Generate Password</h5>
+                <h5 class="modal-title">Setup password login</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <p>
-                    This password can be used together with your account ID
-                    <span>{{ player.id }}</span> to log in instead of using EVE SSO:
+                    You can use a password together with your account ID
+                    <code>{{ player.id }}</code> to log in instead of using EVE SSO.
                 </p>
-                <code>{{ newPassword }}</code>
+                <div v-if="hasPassword" class="alert alert-info mb-0">
+                    You already have a password. Generating a new password will replace the existing one.
+                </div>
+                <div v-else-if="player.id" class="alert alert-secondary mb-0">
+                    You do not have a password yet.
+                </div>
+                <div v-if="newPassword" class="alert alert-success mt-3">
+                    New password:
+                    <code>{{ newPassword }}</code><br>
+                    <small>Make a note of the password, it will not be displayed again!</small>
+                </div>
+                <div v-if="passwordError" class="alert alert-warning mt-3">
+                    {{ passwordError }}
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary"
+                        v-on:click.prevent="generatePassword()"
+                        :disabled="generatePasswordButtonDisabled">
+                    Generate password
+                </button>
             </div>
         </div>
     </div>
@@ -74,12 +92,9 @@
                                        :checked="isDark" @change="toggleTheme">
                                 <span class="ms-2">Dark Mode</span>
                             </label>
-                            <a v-if="authChar" href="#" class="dropdown-item generate-password" @click.stop>
-                                <span role="img" class="fa-regular fa-circle-question"
-                                      data-bs-toggle="tooltip" data-bs-placement="left"
-                                      :title="'Generates a password that you can use to login. '
-                                        + 'Your password will be reset if you already have one.'"></span>
-                                <span class="ms-2 label" @click.prevent="generatePassword()">Generate password</span>
+                            <a v-if="authChar" href="#" class="dropdown-item" @click.prevent="showPasswordLoginModal()">
+                                <span role="img" class="fas fa-key"></span>
+                                <span class="ms-2">Setup password login</span>
                             </a>
                             <a v-if="authChar" href="#" @click.prevent="logout()" class="dropdown-item">
                                 <span role="img" class="fas fa-sign-out"></span>
@@ -96,7 +111,7 @@
 
 <script>
 import {toRef} from "vue";
-import {Collapse, Dropdown, Modal, Tooltip} from 'bootstrap';
+import {Collapse, Dropdown, Modal} from 'bootstrap';
 import { AuthApi } from 'neucore-js-client';
 import Data from '../classes/Data';
 import Helper from "../classes/Helper";
@@ -152,9 +167,17 @@ export default {
             },
             page: '',
             isDark: false,
-            generatePasswordModal: null,
+            setupPasswordLoginModal: null,
             newPassword: '',
+            passwordError: '',
+            generatePasswordButtonDisabled: false,
         }
+    },
+
+    computed: {
+        hasPassword() {
+            return this.player.hasPassword === true;
+        },
     },
 
     mounted() {
@@ -172,11 +195,6 @@ export default {
                 roles: ['user'],
             });
         }
-    },
-
-    updated() {
-        document.querySelectorAll('.navbar [data-bs-toggle="tooltip"]')
-            .forEach(tooltip => new Tooltip(tooltip));
     },
 
     watch: {
@@ -257,18 +275,25 @@ export default {
             return items;
         },
 
-        generatePassword() {
-            if (!this.generatePasswordModal) {
-                this.generatePasswordModal = new Modal('#generatePasswordModal');
+        showPasswordLoginModal() {
+            this.newPassword = '';
+            this.passwordError = '';
+            if (!this.setupPasswordLoginModal) {
+                this.setupPasswordLoginModal = new Modal('#setupPasswordLoginModal');
             }
-            this.generatePasswordModal.show();
+            this.setupPasswordLoginModal.show();
+        },
 
+        generatePassword() {
+            this.generatePasswordButtonDisabled = true;
             new AuthApi().userAuthPasswordGenerate((error, data) => {
                 if (error) {
-                    this.newPassword = 'Error, please try again.';
-                    return;
+                    this.passwordError = 'Error, please try again.';
+                } else {
+                    this.newPassword = data;
+                    this.store.setPlayer({...this.player, hasPassword: true});
                 }
-                this.newPassword = data;
+                this.generatePasswordButtonDisabled = false;
             });
         },
     },
@@ -329,12 +354,6 @@ function addNavBehaviour() {
         cursor: pointer;
         padding-left: 3.5rem;
         .form-check-input {
-            cursor: pointer;
-        }
-    }
-    .generate-password {
-        cursor: default;
-        .label {
             cursor: pointer;
         }
     }

@@ -20,6 +20,11 @@ use OpenApi\Attributes as OA;
     required: ['id', 'name'],
     properties: [
         new OA\Property(
+            property: 'hasPassword',
+            description: 'Whether a password for password login has been set.',
+            type: 'boolean',
+        ),
+        new OA\Property(
             property: 'serviceAccounts',
             description: 'External service accounts (API: not included by default)',
             type: 'array',
@@ -191,6 +196,7 @@ class Player implements \JsonSerializable
         ];
 
         if (!$withoutInternalInfo) {
+            $result['hasPassword'] = (string) $this->password !== '';
             $result['status'] = $this->status;
             $result['roles'] = $this->getRoles();
             $result['managerGroups'] = $this->getManagerGroups();
