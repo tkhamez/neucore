@@ -12,6 +12,7 @@ Fix
 - The MCP tools `get_groups` and `get_group_members` now respect the groups assigned to the app, 
   which were ignored before.
 - Added missing ESI error and rate limit checks to the MCP ESI tool.
+- Fixed the mail token being stored again on every access, although it had not changed.
 
 Security
 - DnsRebindingProtection: Requests without a Host header are now rejected with a 403 response when 

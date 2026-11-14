@@ -104,7 +104,7 @@ class EveMailToken
             $accessToken = $existingToken;
         }
 
-        if ($tokenValues[SystemVariable::TOKEN_REFRESH] !== $accessToken->getExpires()) {
+        if ($tokenValues[SystemVariable::TOKEN_EXPIRES] !== $accessToken->getExpires()) {
             $this->updateToken($accessToken, (int) $tokenValues[SystemVariable::TOKEN_ID]);
         }
 
