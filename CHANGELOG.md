@@ -11,9 +11,10 @@ dd mm yyyy
 New
 - The storage for the API rate limit counters is now explicitly configured with the new
   `NEUCORE_RATE_LIMIT_STORAGE` environment variable. Memcached is now supported in addition to APCu.
-  APC is the default. Previously the storage was selected automatically: APCu if available, database otherwise.
+  APCu is the default. Previously the storage was selected automatically: APCu if available, database otherwise.
   For backwards compatibility reasons the database storage will still be selected if APCu was configured
   but is not available.
+- Memcached: Reduced the timeouts and made them configurable, see [.env.dist](backend/.env.dist).
 
 Change
 - The navigation menu entry "Generate password" has been renamed to "Setup password login".

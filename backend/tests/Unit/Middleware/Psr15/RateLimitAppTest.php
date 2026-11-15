@@ -8,13 +8,17 @@ namespace Tests\Unit\Middleware\Psr15;
 
 use Neucore\Entity\App;
 use Neucore\Entity\SystemVariable;
+use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Middleware\Psr15\RateLimitApp;
 use Neucore\Middleware\Psr15\RateLimit;
+use Neucore\Middleware\Psr15\RateLimitApp;
 use Neucore\Service\AppAuth;
-use Neucore\Service\RateLimitState;
 use Neucore\Service\ObjectManager;
+use Neucore\Service\RateLimitState;
+use Neucore\Storage\ApiRateLimitStoreInterface;
 use Neucore\Storage\DatabaseStorage;
+use Neucore\Storage\EsiHeaderStorageInterface;
+use Neucore\Storage\RateLimitCounter;
 use Neucore\Storage\Variables;
 use Neucore\Util\Crypto;
 use PHPUnit\Framework\TestCase;
@@ -162,5 +166,50 @@ class RateLimitAppTest extends TestCase
         $response = $this->middleware->process($request, new RequestHandler());
 
         $this->assertSame(200, $response->getStatusCode());
+    }
+
+    public function testProcess_StorageFails_FailOpen()
+    {
+        $sysRepo = $this->repoFactory->getSystemVariableRepository();
+        $sysRepo->find(SystemVariable::RATE_LIMIT_APP_MAX_REQUESTS)->setValue('50');
+        $sysRepo->find(SystemVariable::RATE_LIMIT_APP_RESET_TIME)->setValue('10');
+        $sysRepo->find(SystemVariable::RATE_LIMIT_APP_ACTIVE)->setValue('1');
+        $this->om->flush();
+
+        $storage = new class implements EsiHeaderStorageInterface, ApiRateLimitStoreInterface {
+            public function set(string $key, string $value): bool
+            {
+                return true;
+            }
+            public function get(string $key): ?string
+            {
+                return null;
+            }
+            public function consume(string $key, int $maxRequests, int $resetTime): RateLimitCounter
+            {
+                throw new RuntimeException('Storage not available.');
+            }
+        };
+
+        $middleware = new RateLimitApp(
+            new AppAuth($this->repoFactory, $this->om),
+            $storage,
+            new ResponseFactory(),
+            $this->logger,
+            $this->repoFactory,
+            new RateLimitState(),
+        );
+        $request = RequestFactory::createRequest();
+        $request = $request->withHeader('Authorization', 'Bearer ' . base64_encode($this->appId . ':secret'));
+        $response = $middleware->process($request, new RequestHandler());
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertFalse($response->hasHeader(RateLimit::HEADER_REMAIN));
+        $logs = $this->logger->getMessages();
+        $this->assertCount(1, $logs);
+        $this->assertStringContainsString(
+            "API Rate Limit (app $this->appId): Storage not available.",
+            $logs[0],
+        );
     }
 }

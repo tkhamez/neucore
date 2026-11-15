@@ -184,16 +184,18 @@ class RateLimitIPTest extends TestCase
     {
         $config = (new Application())->loadSettings(true);
         $server = $config['memcached']['server'];
-        if (!class_exists(\Memcached::class) || !str_contains($server, ':')) {
+        if (!extension_loaded('memcached') || !str_contains($server, ':')) {
             self::markTestSkipped('Memcached not available or missing server configuration.');
         }
 
+        $logger = new Logger();
+
         [$host, $port] = explode(':', $server);
+        /** @noinspection PhpComposerExtensionStubsInspection */
         $memcached = new \Memcached();
         $memcached->addServer($host, (int) $port);
-        $storage = new MemcachedStorage($memcached);
+        $storage = new MemcachedStorage($memcached, $logger);
 
-        $logger = new Logger();
         $request = RequestFactory::createRequest();
 
         try {
@@ -206,5 +208,32 @@ class RateLimitIPTest extends TestCase
         } finally {
             $memcached->delete(MemcachedStorage::PREFIX . self::$key);
         }
+    }
+
+    public function testProcess_StorageFails_FailOpen(): void
+    {
+        if (!extension_loaded('memcached')) {
+            self::markTestSkipped('Memcached extension not available.');
+        }
+
+        $logger = new Logger();
+
+        // An unreachable Memcached server: the counter update fails and the request passes (fail-open)
+        /** @noinspection PhpComposerExtensionStubsInspection */
+        $memcached = new \Memcached();
+        $memcached->addServer('127.0.0.1', 1);
+        $storage = new MemcachedStorage($memcached, $logger);
+
+        $config = new Config(['rate_limit' => ['max' => 50, 'time' => 10]]);
+        $middleware = new RateLimitIP($storage, $config, new ResponseFactory(), $logger, new RateLimitState());
+        $response = $middleware->process(RequestFactory::createRequest(), new RequestHandler());
+
+        $this->assertSame(200, $response->getStatusCode());
+        $logs = $logger->getMessages();
+        $this->assertCount(1, $logs);
+        $this->assertStringContainsString(
+            'IP Rate Limit (127.0.0.1): Failed to consume the rate limit counter (2).',
+            $logs[0],
+        );
     }
 }

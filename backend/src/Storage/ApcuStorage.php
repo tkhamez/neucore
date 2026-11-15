@@ -29,4 +29,20 @@ class ApcuStorage implements EsiHeaderStorageInterface, ApiRateLimitStoreInterfa
 
         return (string) $value;
     }
+
+    public function consume(string $key, int $maxRequests, int $resetTime): RateLimitCounter
+    {
+        if (mb_strlen($key) > 112) {
+            throw new RuntimeException('Key too long.');
+        }
+
+        // APCu is process-local and a process handles only one request at a time,
+        // so the read-modify-write is race-free without a compare-and-swap.
+        $now = microtime(true);
+        $counter = RateLimitCounter::next($this->get($key), $maxRequests, $resetTime, $now);
+
+        $this->set($key, $counter->toJson());
+
+        return $counter;
+    }
 }

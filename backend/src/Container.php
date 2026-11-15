@@ -32,7 +32,6 @@ use Neucore\Storage\ApiRateLimitStoreInterface;
 use Neucore\Storage\DatabaseStorage;
 use Neucore\Storage\EsiHeaderStorageInterface;
 use Neucore\Storage\MemcachedStorage;
-use Neucore\Storage\StorageInterface;
 use Pdo\Mysql;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -190,7 +189,7 @@ class Container
                 if ($storage instanceof ApiRateLimitStoreInterface) {
                     return $storage;
                 }
-                throw new RuntimeException("Invalid storage type $storageName.");
+                throw new RuntimeException("Api RateLimit Storage: Invalid storage type $storageName.");
             },
             EsiHeaderStorageInterface::class => function (ContainerInterface $c) {
                 $storageName = $c->get(Config::class)['eve']['esi_header_storage'];
@@ -198,7 +197,7 @@ class Container
                 if ($storage instanceof EsiHeaderStorageInterface) {
                     return $storage;
                 }
-                throw new RuntimeException("Invalid storage type $storageName.");
+                throw new RuntimeException("Esi Header Storage: Invalid storage type $storageName.");
             },
         ];
     }
@@ -211,7 +210,7 @@ class Container
         ContainerInterface $c,
         string $storageName,
         bool $apcFallback = false,
-    ): ?StorageInterface {
+    ): EsiHeaderStorageInterface|ApiRateLimitStoreInterface|null {
         # Note: "self" does not work here when compiling for production.
         if ($storageName === Container::STORAGE_DATABASE) {
             return new DatabaseStorage(
@@ -237,13 +236,15 @@ class Container
             if (!extension_loaded('memcached')) {
                 throw new RuntimeException('The Memcached extension is not available.');
             }
-            $server = $c->get(Config::class)['memcached']['server'];
-            [$host, $port] = explode(':', $server);
+            $config = $c->get(Config::class)['memcached'];
+            [$host, $port] = explode(':', $config['server']);
             $memcached = new \Memcached();
+            $memcached->setOption(\Memcached::OPT_CONNECT_TIMEOUT, (int) $config['connect_timeout']);
+            $memcached->setOption(\Memcached::OPT_POLL_TIMEOUT, (int) $config['poll_timeout']);
             if (!$memcached->addServer($host, (int) $port)) {
                 throw new RuntimeException('Failed to add Memcached server.');
             }
-            return new MemcachedStorage($memcached);
+            return new MemcachedStorage($memcached, $c->get(LoggerInterface::class));
         }
         return null;
     }

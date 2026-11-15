@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Middleware\Psr15;
 
+use Neucore\Exception\RuntimeException;
 use Neucore\Service\RateLimitState;
 use Neucore\Storage\ApiRateLimitStoreInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -20,6 +21,7 @@ abstract class RateLimit
 
     /**
      * @return array{int, float, int, float}
+     * @throws RuntimeException if the operation failed
      */
     protected function checkLimit(
         string $key,
@@ -27,29 +29,14 @@ abstract class RateLimit
         int $maxRequests,
         int $resetTime,
     ): array {
-        $value = $storage->get($key);
-        $variable = $value ? \json_decode($value) : null;
-        if ($variable === null) {
-            $variable = new \stdClass();
-            $variable->remaining = $maxRequests - 1;
-            $variable->created = microtime(true);
-        } else {
-            $variable->remaining--;
-        }
+        $counter = $storage->consume($key, $maxRequests, $resetTime);
 
-        $resetIn = ceil(($variable->created + $resetTime - microtime(true)) * 10) / 10; // HTTP response header value
-        $numRequests = $maxRequests - $variable->remaining;
-        $elapsedTime = round(microtime(true) - $variable->created, 1); // log value
+        $now = microtime(true);
+        $resetIn = ceil(($counter->created + $resetTime - $now) * 10) / 10; // HTTP response header value
+        $numRequests = $maxRequests - $counter->remaining;
+        $elapsedTime = round($now - $counter->created, 1); // log value
 
-        if ($resetIn <= 0) {
-            $variable->remaining = $maxRequests - 1;
-            $variable->created = microtime(true);
-            $resetIn = $resetTime;
-        }
-
-        $storage->set($key, (string) \json_encode($variable));
-
-        return [$variable->remaining, (float) sprintf("%.1F", $resetIn), $numRequests, $elapsedTime];
+        return [$counter->remaining, (float) sprintf("%.1F", $resetIn), $numRequests, $elapsedTime];
     }
 
     protected function addHeader(ResponseInterface $response): ResponseInterface

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Neucore\Middleware\Psr15;
 
+use Neucore\Exception\RuntimeException;
+use Neucore\Log\Context;
 use Neucore\Service\Config;
 use Neucore\Service\RateLimitState;
 use Neucore\Storage\ApcuStorage;
@@ -61,8 +63,17 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
 
         $ip = Http::ipAddress($trustedProxies);
         $key = Variables::RATE_LIMIT_IP . '_' . self::ipKey($ip);
-        [$remaining, $resetIn, $numRequests, $elapsedTime]
-            = $this->checkLimit($key, $this->storage, $maxRequests, $resetTime);
+        try {
+            [$remaining, $resetIn, $numRequests, $elapsedTime]
+                = $this->checkLimit($key, $this->storage, $maxRequests, $resetTime);
+        } catch (RuntimeException $e) {
+            // The rate limit storage is not available, let the request pass without a rate limit (fail-open).
+            $this->logger->error("IP Rate Limit ($ip): {$e->getMessage()}", [
+                Context::EXCEPTION => $e,
+            ]);
+
+            return $handler->handle($request);
+        }
 
         $this->rateLimitState->setIp((int) $remaining, (float) $resetIn);
 

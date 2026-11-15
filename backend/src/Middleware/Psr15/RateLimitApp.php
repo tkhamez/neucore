@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Neucore\Middleware\Psr15;
 
 use Neucore\Entity\SystemVariable;
+use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Log\Context;
 use Neucore\Service\AppAuth;
 use Neucore\Service\RateLimitState;
 use Neucore\Storage\ApiRateLimitStoreInterface;
@@ -52,8 +54,17 @@ class RateLimitApp extends RateLimit implements MiddlewareInterface
         }
 
         $key = Variables::RATE_LIMIT_APP . '_' . $app->getId();
-        [$remaining, $resetIn, $numRequests, $elapsedTime]
-            = $this->checkLimit($key, $this->storage, $this->maxRequests, $this->resetTime);
+        try {
+            [$remaining, $resetIn, $numRequests, $elapsedTime]
+                = $this->checkLimit($key, $this->storage, $this->maxRequests, $this->resetTime);
+        } catch (RuntimeException $e) {
+            // The rate limit storage is not available, let the request pass without a rate limit (fail-open).
+            $this->logger->error("API Rate Limit (app {$app->getId()}): {$e->getMessage()}", [
+                Context::EXCEPTION => $e,
+            ]);
+
+            return $handler->handle($request);
+        }
 
         $this->rateLimitState->setApp((int) $remaining, (float) $resetIn);
 

@@ -44,4 +44,18 @@ class DatabaseStorage implements EsiHeaderStorageInterface, ApiRateLimitStoreInt
         $variable = $this->systemVariableRepository->find(self::PREFIX . $key);
         return $variable?->getValue();
     }
+
+    /**
+     * Note: This is not atomic, as it is implemented with get() and set().
+     * This storage is therefore not suitable for rate limiting with high traffic.
+     */
+    public function consume(string $key, int $maxRequests, int $resetTime): RateLimitCounter
+    {
+        $now = microtime(true);
+        $counter = RateLimitCounter::next($this->get($key), $maxRequests, $resetTime, $now);
+
+        $this->set($key, $counter->toJson());
+
+        return $counter;
+    }
 }
