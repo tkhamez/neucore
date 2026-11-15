@@ -4,11 +4,11 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Storage;
+namespace Tests\Unit\Storage\Implementation;
 
 use Neucore\Application;
 use Neucore\Exception\RuntimeException;
-use Neucore\Storage\MemcachedStorage;
+use Neucore\Storage\Implementation\MemcachedStorage;
 use PHPUnit\Framework\TestCase;
 use Tests\Logger;
 

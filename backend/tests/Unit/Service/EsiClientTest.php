@@ -13,8 +13,8 @@ use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EsiClient;
 use Neucore\Service\ObjectManager;
-use Neucore\Storage\EsiHeaderStorageInterface;
-use Neucore\Storage\DatabaseStorage;
+use Neucore\Storage\Implementation\DatabaseStorage;
+use Neucore\Storage\Interface\EsiHeaderStorage;
 use Neucore\Storage\Variables;
 use PHPUnit\Framework\TestCase;
 use Tests\Client;
@@ -29,7 +29,7 @@ class EsiClientTest extends TestCase
 
     private EsiClient $esiClient;
 
-    private EsiHeaderStorageInterface $storage;
+    private EsiHeaderStorage $storage;
 
     protected function setUp(): void
     {

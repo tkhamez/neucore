@@ -7,7 +7,7 @@ namespace Neucore\Plugin\Core;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Service\EsiClient as EsiClientService;
-use Neucore\Storage\EsiHeaderStorageInterface;
+use Neucore\Storage\Interface\EsiHeaderStorage;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -30,7 +30,7 @@ class EsiClient implements EsiClientInterface
     public function __construct(
         private readonly EsiClientService           $esiClient,
         private readonly HttpClientFactoryInterface $httpClientFactory,
-        private readonly EsiHeaderStorageInterface   $storage,
+        private readonly EsiHeaderStorage   $storage,
     ) {}
 
     public function getErrorLimitRemaining(): int

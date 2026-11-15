@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests;
 
 use Doctrine\DBAL\Exception;
+use Doctrine\Migrations\Configuration\EntityManager\ExistingEntityManager;
 use Doctrine\Migrations\Configuration\Migration\YamlFile;
 use Doctrine\Migrations\DependencyFactory;
-use Doctrine\Migrations\Configuration\EntityManager\ExistingEntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Persistence\ObjectManager;
@@ -35,9 +35,9 @@ use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
 use Neucore\Entity\PlayerLogins;
+use Neucore\Entity\Plugin;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
-use Neucore\Entity\Plugin;
 use Neucore\Entity\Session;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
@@ -57,8 +57,8 @@ use Neucore\Service\OAuthToken;
 use Neucore\Service\PluginService;
 use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
-use Neucore\Storage\EsiHeaderStorageInterface;
-use Neucore\Storage\DatabaseStorage;
+use Neucore\Storage\Implementation\DatabaseStorage;
+use Neucore\Storage\Interface\EsiHeaderStorage;
 use Neucore\Util\Crypto;
 use Neucore\Util\Database;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -156,7 +156,7 @@ class Helper
     public static function getPluginFactory(
         ?Client $client = null,
         ?Logger $logger = null,
-        ?EsiHeaderStorageInterface $storage = null,
+        ?EsiHeaderStorage $storage = null,
     ): Factory {
         if (!$client) {
             $client = new Client();

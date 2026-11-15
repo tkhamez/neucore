@@ -27,11 +27,11 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\FluentdFormatter;
 use Neucore\Log\GelfMessageFormatter;
 use Neucore\Service\Config;
-use Neucore\Storage\ApcuStorage;
-use Neucore\Storage\ApiRateLimitStorageInterface;
-use Neucore\Storage\DatabaseStorage;
-use Neucore\Storage\EsiHeaderStorageInterface;
-use Neucore\Storage\MemcachedStorage;
+use Neucore\Storage\Implementation\ApcuStorage;
+use Neucore\Storage\Implementation\DatabaseStorage;
+use Neucore\Storage\Implementation\MemcachedStorage;
+use Neucore\Storage\Interface\ApiRateLimitStorage;
+use Neucore\Storage\Interface\EsiHeaderStorage;
 use Pdo\Mysql;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -182,19 +182,19 @@ class Container
             },
 
             // Storages
-            ApiRateLimitStorageInterface::class => function (ContainerInterface $c) {
+            ApiRateLimitStorage::class => function (ContainerInterface $c) {
                 $storageName = $c->get(Config::class)['rate_limit']['storage'];
                 // Note: This is not used for the CLI.
                 $storage = Container::getStorage($c, $storageName, true);
-                if ($storage instanceof ApiRateLimitStorageInterface) {
+                if ($storage instanceof ApiRateLimitStorage) {
                     return $storage;
                 }
                 throw new RuntimeException("Api RateLimit Storage: Invalid storage type $storageName.");
             },
-            EsiHeaderStorageInterface::class => function (ContainerInterface $c) {
+            EsiHeaderStorage::class => function (ContainerInterface $c) {
                 $storageName = $c->get(Config::class)['eve']['esi_header_storage'];
                 $storage = Container::getStorage($c, $storageName);
-                if ($storage instanceof EsiHeaderStorageInterface) {
+                if ($storage instanceof EsiHeaderStorage) {
                     return $storage;
                 }
                 throw new RuntimeException("Esi Header Storage: Invalid storage type $storageName.");
@@ -210,7 +210,7 @@ class Container
         ContainerInterface $c,
         string $storageName,
         bool $apcFallback = false,
-    ): EsiHeaderStorageInterface|ApiRateLimitStorageInterface|null {
+    ): EsiHeaderStorage|ApiRateLimitStorage|null {
         # Note: "self" does not work here when compiling for production.
         if ($storageName === Container::STORAGE_DATABASE) {
             return new DatabaseStorage(

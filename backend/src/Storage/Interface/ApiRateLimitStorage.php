@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Neucore\Storage;
+namespace Neucore\Storage\Interface;
 
 use Neucore\Exception\RuntimeException;
+use Neucore\Storage\RateLimitCounter;
 
 /**
  * A (preferably very fast) volatile memory shared by multiple requests.
  */
-interface ApiRateLimitStorageInterface
+interface ApiRateLimitStorage
 {
     /**
      * Atomically consume one request of the rate limit counter.

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Neucore\Storage;
+namespace Neucore\Storage\Interface;
 
 use Neucore\Exception\RuntimeException;
 
 /**
  * A (preferably very fast) volatile memory shared by multiple requests.
  */
-interface EsiHeaderStorageInterface
+interface EsiHeaderStorage
 {
     /**
      * @param string $key max. length = 112

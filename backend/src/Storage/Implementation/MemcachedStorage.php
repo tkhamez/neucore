@@ -2,12 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Neucore\Storage;
+namespace Neucore\Storage\Implementation;
 
 use Neucore\Exception\RuntimeException;
+use Neucore\Storage\Interface\ApiRateLimitStorage;
+use Neucore\Storage\Interface\EsiHeaderStorage;
+use Neucore\Storage\RateLimitCounter;
 use Psr\Log\LoggerInterface;
 
-class MemcachedStorage implements EsiHeaderStorageInterface, ApiRateLimitStorageInterface
+class MemcachedStorage implements EsiHeaderStorage, ApiRateLimitStorage
 {
     public const PREFIX = '__neucore__';
 

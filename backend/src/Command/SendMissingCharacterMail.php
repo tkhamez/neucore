@@ -6,15 +6,15 @@ namespace Neucore\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Api;
-use Neucore\Entity\CorporationMember;
-use Neucore\Entity\SystemVariable;
-use Neucore\Repository\CorporationMemberRepository;
-use Neucore\Repository\SystemVariableRepository;
 use Neucore\Command\Traits\EsiLimits;
 use Neucore\Command\Traits\LogOutput;
+use Neucore\Entity\CorporationMember;
+use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\CorporationMemberRepository;
+use Neucore\Repository\SystemVariableRepository;
 use Neucore\Service\EveMail;
-use Neucore\Storage\EsiHeaderStorageInterface;
+use Neucore\Storage\Interface\EsiHeaderStorage;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -41,7 +41,7 @@ class SendMissingCharacterMail extends Command
         RepositoryFactory $repositoryFactory,
         EntityManagerInterface $entityManager,
         LoggerInterface $logger,
-        EsiHeaderStorageInterface $storage,
+        EsiHeaderStorage $storage,
     ) {
         parent::__construct();
         $this->logOutput($logger);

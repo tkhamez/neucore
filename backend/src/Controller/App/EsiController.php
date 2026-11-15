@@ -14,7 +14,7 @@ use Neucore\Service\AppAuth;
 use Neucore\Service\EsiClient;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
-use Neucore\Storage\EsiHeaderStorageInterface;
+use Neucore\Storage\Interface\EsiHeaderStorage;
 use OpenApi\Attributes as OA;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -52,7 +52,7 @@ class EsiController extends BaseController
 
     private const PARAM_DATASOURCE = 'datasource';
 
-    private EsiHeaderStorageInterface $storage;
+    private EsiHeaderStorage $storage;
 
     private LoggerInterface $log;
 
@@ -82,7 +82,7 @@ class EsiController extends BaseController
         ResponseInterface $response,
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
-        EsiHeaderStorageInterface $storage,
+        EsiHeaderStorage $storage,
         LoggerInterface $log,
         HttpClientFactoryInterface $httpClientFactory,
         AppAuth $appAuth,

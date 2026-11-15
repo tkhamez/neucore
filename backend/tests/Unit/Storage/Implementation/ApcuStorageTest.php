@@ -2,30 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Storage;
+namespace Tests\Unit\Storage\Implementation;
 
-use Neucore\Entity\SystemVariable;
 use Neucore\Exception\RuntimeException;
-use Neucore\Factory\RepositoryFactory;
-use Neucore\Service\ObjectManager;
-use Neucore\Storage\DatabaseStorage;
+use Neucore\Storage\Implementation\ApcuStorage;
 use PHPUnit\Framework\TestCase;
-use Tests\Helper;
-use Tests\Logger;
 
-class DatabaseStorageTest extends TestCase
+class ApcuStorageTest extends TestCase
 {
-    private DatabaseStorage $storage;
-
-    private RepositoryFactory $repoFactory;
+    private ApcuStorage $storage;
 
     protected function setup(): void
     {
-        $helper = new Helper();
-        $helper->emptyDb();
-        $om = $helper->getObjectManager();
-        $this->repoFactory = new RepositoryFactory($om);
-        $this->storage = new DatabaseStorage($this->repoFactory, new ObjectManager($om, new Logger()));
+        if (!function_exists('apcu_store')) {
+            $this->markTestSkipped('APCu is not installed.');
+        }
+        if (ini_get('apc.enable_cli') === '0') {
+            $this->markTestSkipped('APCu for CLI is not enabled.');
+        }
+
+        /** @noinspection PhpComposerExtensionStubsInspection */
+        apcu_clear_cache();
+        $this->storage = new ApcuStorage();
     }
 
     public function testSetException1(): void
@@ -38,9 +36,8 @@ class DatabaseStorageTest extends TestCase
     {
         $this->assertTrue($this->storage->set('key', 'value'));
 
-        $var = $this->repoFactory->getSystemVariableRepository()->find(DatabaseStorage::PREFIX . 'key');
-        $this->assertSame('value', $var?->getValue());
-        $this->assertSame(SystemVariable::SCOPE_BACKEND, $var->getScope());
+        /** @noinspection PhpComposerExtensionStubsInspection */
+        $this->assertSame('value', apcu_fetch(ApcuStorage::PREFIX . 'key'));
     }
 
     public function testGet(): void

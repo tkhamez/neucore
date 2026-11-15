@@ -1,10 +1,13 @@
 <?php
 
-namespace Neucore\Storage;
+namespace Neucore\Storage\Implementation;
 
 use Neucore\Exception\RuntimeException;
+use Neucore\Storage\Interface\ApiRateLimitStorage;
+use Neucore\Storage\Interface\EsiHeaderStorage;
+use Neucore\Storage\RateLimitCounter;
 
-class ApcuStorage implements EsiHeaderStorageInterface, ApiRateLimitStorageInterface
+class ApcuStorage implements EsiHeaderStorage, ApiRateLimitStorage
 {
     public const PREFIX = '__neucore__';
 

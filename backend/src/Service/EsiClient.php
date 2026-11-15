@@ -12,7 +12,7 @@ use Neucore\Entity\EveLogin;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Storage\EsiHeaderStorageInterface;
+use Neucore\Storage\Interface\EsiHeaderStorage;
 use Neucore\Storage\Variables;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -114,7 +114,7 @@ class EsiClient
      * @return int Unix timestamp up to which must be waited.
      * @see https://developers.eveonline.com/docs/services/esi/best-practices/#error-limit
      */
-    public static function getErrorLimitWaitTime(EsiHeaderStorageInterface $storage, int $limitRemain): int
+    public static function getErrorLimitWaitTime(EsiHeaderStorage $storage, int $limitRemain): int
     {
         $data = EsiErrorLimit::fromJson((string) $storage->get(Variables::ESI_ERROR_LIMIT));
 
@@ -143,7 +143,7 @@ class EsiClient
      * Returns 0 if the limit has not yet been reached.
      */
     public static function getRateLimitWaitTime(
-        EsiHeaderStorageInterface $storage,
+        EsiHeaderStorage $storage,
         string $pathQuery,
         string $httpMethod,
         ?int $characterId,
@@ -198,7 +198,7 @@ class EsiClient
     /**
      * Returns the time (Unix timestamp) to wait until when the ESI rate limit was reached.
      */
-    public static function getRateLimitedWaitTime(EsiHeaderStorageInterface $storage): int
+    public static function getRateLimitedWaitTime(EsiHeaderStorage $storage): int
     {
         return (int) $storage->get(Variables::ESI_RATE_LIMITED);
     }
@@ -206,7 +206,7 @@ class EsiClient
     /**
      * Returns the time (Unix timestamp) to wait until when temporarily throttled.
      */
-    public static function getThrottledWaitTime(EsiHeaderStorageInterface $storage): int
+    public static function getThrottledWaitTime(EsiHeaderStorage $storage): int
     {
         return (int) $storage->get(Variables::ESI_THROTTLED);
     }
@@ -214,7 +214,7 @@ class EsiClient
     /**
      * @return array<string, EsiRateLimit>
      */
-    public static function getRateLimits(EsiHeaderStorageInterface $storage): array
+    public static function getRateLimits(EsiHeaderStorage $storage): array
     {
         return EsiRateLimit::fromJson((string) $storage->get(Variables::ESI_RATE_LIMIT));
     }
@@ -268,7 +268,7 @@ class EsiClient
      * @return array{reason: string, retryAt: int}|null
      */
     public static function getLimitWaitTime(
-        EsiHeaderStorageInterface $storage,
+        EsiHeaderStorage $storage,
         string $pathQuery,
         string $httpMethod,
         ?int $characterId,

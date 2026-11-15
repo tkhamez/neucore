@@ -11,9 +11,9 @@ use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Config;
 use Neucore\Service\ObjectManager;
-use Neucore\Storage\ApcuStorage;
-use Neucore\Storage\ApiRateLimitStorageInterface;
-use Neucore\Storage\DatabaseStorage;
+use Neucore\Storage\Implementation\ApcuStorage;
+use Neucore\Storage\Implementation\DatabaseStorage;
+use Neucore\Storage\Interface\ApiRateLimitStorage;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -105,7 +105,7 @@ class ContainerTest extends TestCase
         $config = new Config(['rate_limit' => ['storage' => Container::STORAGE_APC]]);
         $configContainer = $this->createMock(ContainerInterface::class);
         $configContainer->method('get')->willReturn($config);
-        $factory = Container::getDefinitions()[ApiRateLimitStorageInterface::class];
+        $factory = Container::getDefinitions()[ApiRateLimitStorage::class];
         $this->assertInstanceOf(ApcuStorage::class, $factory($configContainer));
 
         // database
@@ -121,7 +121,7 @@ class ContainerTest extends TestCase
                 default => throw new RuntimeException("Unexpected container entry $id."),
             },
         );
-        $factory = Container::getDefinitions()[ApiRateLimitStorageInterface::class];
+        $factory = Container::getDefinitions()[ApiRateLimitStorage::class];
         $this->assertInstanceOf(DatabaseStorage::class, $factory($configContainer));
     }
 
@@ -133,7 +133,7 @@ class ContainerTest extends TestCase
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Invalid storage type invalid.');
-        $factory = Container::getDefinitions()[ApiRateLimitStorageInterface::class];
+        $factory = Container::getDefinitions()[ApiRateLimitStorage::class];
         $factory($configContainer);
     }
 }

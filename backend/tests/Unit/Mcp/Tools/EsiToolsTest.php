@@ -18,7 +18,7 @@ use Neucore\Mcp\Tools\EsiTools;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Service\AppAuth;
 use Neucore\Service\EsiClient;
-use Neucore\Storage\EsiHeaderStorageInterface;
+use Neucore\Storage\Interface\EsiHeaderStorage;
 use Neucore\Storage\Variables;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -36,14 +36,14 @@ class EsiToolsTest extends TestCase
 
     private ResponseBuilder&MockObject $responseBuilder;
 
-    private EsiHeaderStorageInterface&MockObject $storage;
+    private EsiHeaderStorage&MockObject $storage;
 
     protected function setUp(): void
     {
         $this->repositoryFactory = $this->createMock(RepositoryFactory::class);
         $this->esiClient = $this->createMock(EsiClient::class);
         $this->responseBuilder = $this->createMock(ResponseBuilder::class);
-        $this->storage = $this->createMock(EsiHeaderStorageInterface::class);
+        $this->storage = $this->createMock(EsiHeaderStorage::class);
 
         // The app has no corporation restriction by default.
         $appAuth = $this->createMock(AppAuth::class);

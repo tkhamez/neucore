@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Command;
 
+use Neucore\Command\Traits\EsiLimits;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
@@ -12,8 +13,7 @@ use Neucore\Service\EsiData;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\Watchlist;
-use Neucore\Command\Traits\EsiLimits;
-use Neucore\Storage\EsiHeaderStorageInterface;
+use Neucore\Storage\Interface\EsiHeaderStorage;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -55,7 +55,7 @@ class AutoAllowlist extends Command
         EsiData $esiData,
         ObjectManager $objectManager,
         OAuthToken $tokenService,
-        EsiHeaderStorageInterface $storage,
+        EsiHeaderStorage $storage,
     ) {
         parent::__construct();
         $this->logOutput($logger);

@@ -11,7 +11,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Guzzle\EsiRateLimits;
 use Neucore\Service\EsiClient;
 use Neucore\Service\ObjectManager;
-use Neucore\Storage\DatabaseStorage;
+use Neucore\Storage\Implementation\DatabaseStorage;
 use Neucore\Storage\Variables;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
@@ -38,7 +38,7 @@ class EsiRateLimitsTest extends TestCase
             new ObjectManager($om, $logger),
         );
         #apcu_clear_cache();
-        #$this->storage = new \Neucore\Storage\ApcuStorage();
+        #$this->storage = new \Neucore\Storage\Implementation\ApcuStorage();
 
         $this->obj = new EsiRateLimits($logger, $this->storage);
     }

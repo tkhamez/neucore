@@ -10,7 +10,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Mcp\ResponseBuilder;
 use Neucore\Service\AppAuth;
 use Neucore\Service\EsiClient;
-use Neucore\Storage\EsiHeaderStorageInterface;
+use Neucore\Storage\Interface\EsiHeaderStorage;
 use Psr\Http\Client\ClientExceptionInterface;
 
 class EsiTools
@@ -22,7 +22,7 @@ class EsiTools
         private readonly EsiClient $esiClient,
         private readonly ResponseBuilder $responseBuilder,
         private readonly AppAuth $appAuth,
-        private readonly EsiHeaderStorageInterface $storage,
+        private readonly EsiHeaderStorage $storage,
     ) {}
 
     /**

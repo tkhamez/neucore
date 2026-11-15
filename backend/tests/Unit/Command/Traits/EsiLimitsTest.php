@@ -10,8 +10,8 @@ use Neucore\Data\EsiErrorLimit;
 use Neucore\Data\EsiRateLimit;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\ObjectManager;
+use Neucore\Storage\Implementation\DatabaseStorage;
 use Neucore\Storage\Variables;
-use Neucore\Storage\DatabaseStorage;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Tests\Logger;
@@ -36,7 +36,7 @@ class EsiLimitsTest extends TestCase
             new ObjectManager($om, $this->testLogger),
         );
         #apcu_clear_cache();
-        #self::$testStorage = new \Neucore\Storage\ApcuStorage();
+        #self::$testStorage = new \Neucore\Storage\Implementation\ApcuStorage();
     }
 
     public function testCheckForErrors_RateLimited(): void

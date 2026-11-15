@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Neucore\Command\Traits;
 
 use Neucore\Service\EsiClient;
-use Neucore\Storage\EsiHeaderStorageInterface;
+use Neucore\Storage\Interface\EsiHeaderStorage;
 use Psr\Log\LoggerInterface;
 
 trait EsiLimits
 {
-    private EsiHeaderStorageInterface $storage;
+    private EsiHeaderStorage $storage;
 
     private LoggerInterface $logger;
 
@@ -31,7 +31,7 @@ trait EsiLimits
     private int $rateLimitRemainPercent = 10;
 
     protected function esiLimits(
-        EsiHeaderStorageInterface $storage,
+        EsiHeaderStorage $storage,
         LoggerInterface $logger,
         bool $simulate = false,
     ): void {
