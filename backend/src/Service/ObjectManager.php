@@ -19,11 +19,6 @@ class ObjectManager extends ObjectManagerDecorator
         $this->log = $log;
     }
 
-    public function isUninitializedObject(mixed $value): bool
-    {
-        return $this->wrapped->isUninitializedObject($value);
-    }
-
     public function flush(): void
     {
         try {
