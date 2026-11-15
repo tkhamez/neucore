@@ -10,25 +10,27 @@ dd mm yyyy
 
 New
 - The storage for the API rate limit counters is now explicitly configured with the new
-  `NEUCORE_RATE_LIMIT_STORAGE` environment variable. Memcached is now supported in addition to APCu.
+  `NEUCORE_RATE_LIMIT_STORAGE` environment variable. Memcached is now also supported.
   APCu is the default. Previously the storage was selected automatically: APCu if available, database otherwise.
-  For backwards compatibility reasons the database storage will still be selected if APCu was configured
+  For backward compatibility, the database will still be used for storage if APCu has been configured 
   but is not available.
-- Memcached: Reduced the timeouts and made them configurable, see [.env.dist](backend/.env.dist).
+- Memcached: Reduced the timeouts and made them configurable with `NEUCORE_MEMCACHED_CONNECT_TIMEOUT` 
+  and `NEUCORE_MEMCACHED_POLL_TIMEOUT`, see [.env.dist](backend/.env.dist) for more information.
 - All outgoing HTTP requests (ESI proxy, EVE API, SSO) are now bounded by timeouts:
   `NEUCORE_HTTP_CONNECT_TIMEOUT` (default 5 s) for establishing the connection and
   `NEUCORE_HTTP_TIMEOUT` (default 30 s) for the whole request. Previously a request
   to an unresponsive endpoint could stall indefinitely.
-- Outgoing HTTP requests no longer follow redirects. None of the endpoints used
-  (ESI proxy, EVE API, SSO) are expected to redirect, so a redirect indicates a
-  hijacked endpoint or a misconfigured proxy and is now handled by the caller as a
-  normal response.
 
 Change
 - The navigation menu entry "Generate password" has been renamed to "Setup password login".
   It now only opens a dialogue; the password is generated with a button inside the dialogue, which
   also indicates whether a password already exists.
 - The length of the generated password is now randomly determined within certain limits.
+- ESI header cache: Memcached failures are now logged instead of failing silently.
+- Outgoing HTTP requests no longer follow redirects. None of the endpoints used
+  (ESI proxy, EVE API, SSO) are expected to redirect, so a redirect indicates a
+  hijacked endpoint or a misconfigured proxy and is now handled by the caller as a
+  normal response.
 
 Fix
 - The MCP tools `get_groups` and `get_group_members` now respect the groups assigned to the app, 
@@ -40,15 +42,13 @@ Fix
   library and for SSO requests. The ESI proxy was already retrying them.
 
 Security
-- DnsRebindingProtection: Requests without a Host header are now rejected with a 403 response when 
+- DnsRebindingProtection: Requests without a Host header are now rejected with a 403 response when
   allowed hosts are configured.
 - ESI proxy: All query parameters will now be validated and properly encoded
   (only relevant if they contain invalid values).
 - The redirect parameter of the login flow is now validated before being stored in the session.
 - Improved/fixed nginx configuration example
-
-Development
-- compose.yaml: Exposed the Docker service ports only on localhost instead of all interfaces
+- Development: Exposed the Docker service ports only on localhost instead of all interfaces in compose.yaml
 
 Maintenance
 - Updated dependencies
