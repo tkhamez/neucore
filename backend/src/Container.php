@@ -73,8 +73,6 @@ class Container
                         Mysql::ATTR_SSL_CA => $caFile,
                         // @phpstan-ignore class.notFound (provided via symfony/polyfill-php84)
                         Mysql::ATTR_SSL_VERIFY_SERVER_CERT => $verify,
-                        // \Pdo\Mysql is available since 8.4.0, there's a polyfill for these,
-                        // but use the old constants for now
                     ];
                 }
                 $metaConfig = ORMSetup::createAttributeMetadataConfiguration(
