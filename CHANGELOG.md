@@ -15,6 +15,14 @@ New
   For backwards compatibility reasons the database storage will still be selected if APCu was configured
   but is not available.
 - Memcached: Reduced the timeouts and made them configurable, see [.env.dist](backend/.env.dist).
+- All outgoing HTTP requests (ESI proxy, EVE API, SSO) are now bounded by timeouts:
+  `NEUCORE_HTTP_CONNECT_TIMEOUT` (default 5 s) for establishing the connection and
+  `NEUCORE_HTTP_TIMEOUT` (default 30 s) for the whole request. Previously a request
+  to an unresponsive endpoint could stall indefinitely.
+- Outgoing HTTP requests no longer follow redirects. None of the endpoints used
+  (ESI proxy, EVE API, SSO) are expected to redirect, so a redirect indicates a
+  hijacked endpoint or a misconfigured proxy and is now handled by the caller as a
+  normal response.
 
 Change
 - The navigation menu entry "Generate password" has been renamed to "Setup password login".
@@ -28,6 +36,8 @@ Fix
 - Added missing ESI error and rate limit checks to the MCP ESI tool.
 - Fixed the mail token being stored again on every access, although it had not changed.
 - Fixed IP address collisions and double limits in the IP rate limit key.
+- Fixed 5xx responses not being retried for ESI requests made through the EVE API
+  library and for SSO requests. The ESI proxy was already retrying them.
 
 Security
 - DnsRebindingProtection: Requests without a Host header are now rejected with a 403 response when 

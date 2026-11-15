@@ -55,6 +55,8 @@ class EsiDataRealTest extends TestCase
                     'dir' => $cacheDir,
                 ],
                 'user_agent' => $settings['env_var_defaults']['NEUCORE_USER_AGENT'],
+                'connect_timeout' => $settings['env_var_defaults']['NEUCORE_HTTP_CONNECT_TIMEOUT'],
+                'timeout' => $settings['env_var_defaults']['NEUCORE_HTTP_TIMEOUT'],
             ],
         ]);
 

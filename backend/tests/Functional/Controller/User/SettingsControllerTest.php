@@ -83,6 +83,8 @@ class SettingsControllerTest extends WebTestCase
                     'dir' => Application::ROOT_DIR . '/var/cache',
                 ],
                 'user_agent' => '',
+                'connect_timeout' => 5,
+                'timeout' => 30,
             ],
             'plugins_install_dir' => __DIR__ . '/SettingsController',
         ]);

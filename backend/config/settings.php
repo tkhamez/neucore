@@ -25,6 +25,8 @@ return [
         'NEUCORE_TRUSTED_PROXIES'           => '',
         'NEUCORE_MEMCACHED_CONNECT_TIMEOUT' => '200',
         'NEUCORE_MEMCACHED_POLL_TIMEOUT'    => '500',
+        'NEUCORE_HTTP_CONNECT_TIMEOUT'      => '5',
+        'NEUCORE_HTTP_TIMEOUT'              => '30',
     ],
 
     'monolog' => [
@@ -98,6 +100,8 @@ return [
             'dir' => '${NEUCORE_CACHE_DIR}/http',
         ],
         'user_agent' => '${NEUCORE_USER_AGENT}',
+        'connect_timeout' => '${NEUCORE_HTTP_CONNECT_TIMEOUT}',
+        'timeout' => '${NEUCORE_HTTP_TIMEOUT}',
     ],
 
     'di' => [

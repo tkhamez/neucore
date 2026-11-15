@@ -7,8 +7,10 @@ namespace Neucore\Factory;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
+use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Kevinrob\GuzzleCache\CacheMiddleware;
@@ -30,6 +32,12 @@ class HttpClientFactory implements HttpClientFactoryInterface
 {
     public const HTTP_CLIENT_OPTIONS_KEY = 'x-neucore';
 
+    /**
+     * @var callable(RequestInterface, array<string, mixed>): PromiseInterface|null Underlying
+     *     HTTP handler. Injected in tests to mock the network; null uses the default cURL handler.
+     */
+    private $handler;
+
     public function __construct(
         private readonly Config $config,
         private readonly EsiErrorLimit $esiHeaders,
@@ -38,7 +46,10 @@ class HttpClientFactory implements HttpClientFactoryInterface
         private readonly EsiThrottled $esiThrottled,
         private readonly LoggerInterface $logger,
         private readonly int $retryDelay = 300,
-    ) {}
+        ?callable $handler = null,
+    ) {
+        $this->handler = $handler;
+    }
 
     public function get(
         ?string $cacheKey = 'default',
@@ -99,7 +110,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
             return $r;
         };
 
-        $stack = HandlerStack::create();
+        $stack = HandlerStack::create($this->handler);
         #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
 
         if (!empty($cacheKey)) {
@@ -132,7 +143,13 @@ class HttpClientFactory implements HttpClientFactoryInterface
                     return true;
                 }
 
-                // Retry on server errors (5xx)
+                // Retry on server errors (5xx). sendRequest() (PSR-18) passes the 5xx response
+                // directly, while for send()/request() the "http_errors" middleware below turns
+                // it into an exception, so in that case the response must be derived from the
+                // exception.
+                if ($response === null && $exception instanceof RequestException) {
+                    $response = $exception->getResponse();
+                }
                 if ($response && $response->getStatusCode() >= 500) {
                     return true;
                 }
@@ -159,6 +176,16 @@ class HttpClientFactory implements HttpClientFactoryInterface
 
         return new Client([
             'version' => '1.1',
+            'connect_timeout' => (int) $this->config['guzzle']['connect_timeout'],
+            'timeout' => (int) $this->config['guzzle']['timeout'],
+            // None of the endpoints this client talks to (ESI, EVE API, SSO) are expected to
+            // redirect, so a redirect is a sign of a hijacked endpoint or misconfigured proxy.
+            // sendRequest() (PSR-18) already forces this to false; this covers send()/request().
+            'allow_redirects' => false,
+            // Make the default explicit: 4xx/5xx throw an exception for send()/request()
+            // (EVE API, SSO). sendRequest() (PSR-18) forces this to false per request, so ESI
+            // error responses are returned as responses and handled by the caller.
+            'http_errors' => true,
             CURLOPT_FORBID_REUSE => true,
             CURLOPT_FRESH_CONNECT => true,
             'handler' => $stack,
