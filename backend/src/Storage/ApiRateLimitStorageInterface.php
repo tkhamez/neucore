@@ -9,7 +9,7 @@ use Neucore\Exception\RuntimeException;
 /**
  * A (preferably very fast) volatile memory shared by multiple requests.
  */
-interface ApiRateLimitStoreInterface
+interface ApiRateLimitStorageInterface
 {
     /**
      * Atomically consume one request of the rate limit counter.

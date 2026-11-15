@@ -28,7 +28,7 @@ use Neucore\Log\FluentdFormatter;
 use Neucore\Log\GelfMessageFormatter;
 use Neucore\Service\Config;
 use Neucore\Storage\ApcuStorage;
-use Neucore\Storage\ApiRateLimitStoreInterface;
+use Neucore\Storage\ApiRateLimitStorageInterface;
 use Neucore\Storage\DatabaseStorage;
 use Neucore\Storage\EsiHeaderStorageInterface;
 use Neucore\Storage\MemcachedStorage;
@@ -182,11 +182,11 @@ class Container
             },
 
             // Storages
-            ApiRateLimitStoreInterface::class => function (ContainerInterface $c) {
+            ApiRateLimitStorageInterface::class => function (ContainerInterface $c) {
                 $storageName = $c->get(Config::class)['rate_limit']['storage'];
                 // Note: This is not used for the CLI.
                 $storage = Container::getStorage($c, $storageName, true);
-                if ($storage instanceof ApiRateLimitStoreInterface) {
+                if ($storage instanceof ApiRateLimitStorageInterface) {
                     return $storage;
                 }
                 throw new RuntimeException("Api RateLimit Storage: Invalid storage type $storageName.");
@@ -210,7 +210,7 @@ class Container
         ContainerInterface $c,
         string $storageName,
         bool $apcFallback = false,
-    ): EsiHeaderStorageInterface|ApiRateLimitStoreInterface|null {
+    ): EsiHeaderStorageInterface|ApiRateLimitStorageInterface|null {
         # Note: "self" does not work here when compiling for production.
         if ($storageName === Container::STORAGE_DATABASE) {
             return new DatabaseStorage(

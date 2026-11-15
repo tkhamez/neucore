@@ -4,7 +4,7 @@ namespace Neucore\Storage;
 
 use Neucore\Exception\RuntimeException;
 
-class ApcuStorage implements EsiHeaderStorageInterface, ApiRateLimitStoreInterface
+class ApcuStorage implements EsiHeaderStorageInterface, ApiRateLimitStorageInterface
 {
     public const PREFIX = '__neucore__';
 

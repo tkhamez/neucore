@@ -12,7 +12,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Config;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\ApcuStorage;
-use Neucore\Storage\ApiRateLimitStoreInterface;
+use Neucore\Storage\ApiRateLimitStorageInterface;
 use Neucore\Storage\DatabaseStorage;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -99,13 +99,13 @@ class ContainerTest extends TestCase
         }
     }
 
-    public function testApiRateLimitStoreFactory(): void
+    public function testApiRateLimitStorageFactory(): void
     {
         // apc
         $config = new Config(['rate_limit' => ['storage' => Container::STORAGE_APC]]);
         $configContainer = $this->createMock(ContainerInterface::class);
         $configContainer->method('get')->willReturn($config);
-        $factory = Container::getDefinitions()[ApiRateLimitStoreInterface::class];
+        $factory = Container::getDefinitions()[ApiRateLimitStorageInterface::class];
         $this->assertInstanceOf(ApcuStorage::class, $factory($configContainer));
 
         // database
@@ -121,11 +121,11 @@ class ContainerTest extends TestCase
                 default => throw new RuntimeException("Unexpected container entry $id."),
             },
         );
-        $factory = Container::getDefinitions()[ApiRateLimitStoreInterface::class];
+        $factory = Container::getDefinitions()[ApiRateLimitStorageInterface::class];
         $this->assertInstanceOf(DatabaseStorage::class, $factory($configContainer));
     }
 
-    public function testApiRateLimitStoreFactoryInvalid(): void
+    public function testApiRateLimitStorageFactoryInvalid(): void
     {
         $config = new Config(['rate_limit' => ['storage' => 'invalid']]);
         $configContainer = $this->createMock(ContainerInterface::class);
@@ -133,7 +133,7 @@ class ContainerTest extends TestCase
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Invalid storage type invalid.');
-        $factory = Container::getDefinitions()[ApiRateLimitStoreInterface::class];
+        $factory = Container::getDefinitions()[ApiRateLimitStorageInterface::class];
         $factory($configContainer);
     }
 }

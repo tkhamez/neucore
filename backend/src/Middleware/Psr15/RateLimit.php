@@ -6,7 +6,7 @@ namespace Neucore\Middleware\Psr15;
 
 use Neucore\Exception\RuntimeException;
 use Neucore\Service\RateLimitState;
-use Neucore\Storage\ApiRateLimitStoreInterface;
+use Neucore\Storage\ApiRateLimitStorageInterface;
 use Psr\Http\Message\ResponseInterface;
 
 abstract class RateLimit
@@ -25,7 +25,7 @@ abstract class RateLimit
      */
     protected function checkLimit(
         string $key,
-        ApiRateLimitStoreInterface $storage,
+        ApiRateLimitStorageInterface $storage,
         int $maxRequests,
         int $resetTime,
     ): array {

@@ -15,7 +15,7 @@ use Neucore\Middleware\Psr15\RateLimitApp;
 use Neucore\Service\AppAuth;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\RateLimitState;
-use Neucore\Storage\ApiRateLimitStoreInterface;
+use Neucore\Storage\ApiRateLimitStorageInterface;
 use Neucore\Storage\DatabaseStorage;
 use Neucore\Storage\EsiHeaderStorageInterface;
 use Neucore\Storage\RateLimitCounter;
@@ -176,7 +176,7 @@ class RateLimitAppTest extends TestCase
         $sysRepo->find(SystemVariable::RATE_LIMIT_APP_ACTIVE)->setValue('1');
         $this->om->flush();
 
-        $storage = new class implements EsiHeaderStorageInterface, ApiRateLimitStoreInterface {
+        $storage = new class implements EsiHeaderStorageInterface, ApiRateLimitStorageInterface {
             public function set(string $key, string $value): bool
             {
                 return true;

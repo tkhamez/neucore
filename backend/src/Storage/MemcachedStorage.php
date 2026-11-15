@@ -7,7 +7,7 @@ namespace Neucore\Storage;
 use Neucore\Exception\RuntimeException;
 use Psr\Log\LoggerInterface;
 
-class MemcachedStorage implements EsiHeaderStorageInterface, ApiRateLimitStoreInterface
+class MemcachedStorage implements EsiHeaderStorageInterface, ApiRateLimitStorageInterface
 {
     public const PREFIX = '__neucore__';
 

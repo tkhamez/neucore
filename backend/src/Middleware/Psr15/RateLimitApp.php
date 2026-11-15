@@ -10,7 +10,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Neucore\Service\AppAuth;
 use Neucore\Service\RateLimitState;
-use Neucore\Storage\ApiRateLimitStoreInterface;
+use Neucore\Storage\ApiRateLimitStorageInterface;
 use Neucore\Storage\Variables;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -29,7 +29,7 @@ class RateLimitApp extends RateLimit implements MiddlewareInterface
 
     public function __construct(
         private readonly AppAuth $appAuth,
-        private readonly ApiRateLimitStoreInterface $storage,
+        private readonly ApiRateLimitStorageInterface $storage,
         private readonly ResponseFactoryInterface $responseFactory,
         private readonly LoggerInterface $logger,
         private readonly RepositoryFactory $repositoryFactory,

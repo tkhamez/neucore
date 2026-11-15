@@ -9,7 +9,7 @@ use Neucore\Log\Context;
 use Neucore\Service\Config;
 use Neucore\Service\RateLimitState;
 use Neucore\Storage\ApcuStorage;
-use Neucore\Storage\ApiRateLimitStoreInterface;
+use Neucore\Storage\ApiRateLimitStorageInterface;
 use Neucore\Storage\MemcachedStorage;
 use Neucore\Storage\Variables;
 use Neucore\Util\Http;
@@ -28,7 +28,7 @@ class RateLimitIP extends RateLimit implements MiddlewareInterface
     public static bool $active = true;
 
     public function __construct(
-        private readonly ApiRateLimitStoreInterface $storage,
+        private readonly ApiRateLimitStorageInterface $storage,
         private readonly Config $config,
         private readonly ResponseFactoryInterface $responseFactory,
         private readonly LoggerInterface $logger,
