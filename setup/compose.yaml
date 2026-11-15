@@ -44,11 +44,10 @@ services:
     container_name: neucore_dev_php
     build:
       context: setup
-      #dockerfile: Dockerfile-php81-fpm
-      #dockerfile: Dockerfile-php82-fpm
-      #dockerfile: Dockerfile-php83-fpm
-      #dockerfile: Dockerfile-php84-fpm
-      dockerfile: Dockerfile-php85-fpm
+      dockerfile: Dockerfile-php
+      args:
+        # PHP version 8.1 ... 8.5
+        PHP_MAJOR_VERSION: "8.5"
       network: host
     depends_on: [neucore_db]
     volumes: [

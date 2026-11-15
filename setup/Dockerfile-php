@@ -1,4 +1,8 @@
-FROM php:8.3-fpm-alpine
+ARG PHP_MAJOR_VERSION=8.5
+FROM php:${PHP_MAJOR_VERSION}-fpm-alpine
+
+# needs to be defined again to be available after FROM
+ARG PHP_MAJOR_VERSION
 
 RUN apk add --no-cache \
         libmemcached-libs \
@@ -19,8 +23,12 @@ RUN docker-php-ext-install \
     gmp \
     zip \
     intl \
-    opcache \
     mysqli
+
+# opcache is not installable as a separate extension in PHP 8.5
+RUN if [ "${PHP_MAJOR_VERSION}" != "8.5" ]; then  \
+        docker-php-ext-install opcache;  \
+    fi
 
 RUN --mount=type=bind,from=ghcr.io/php/pie:bin,source=/pie,target=/usr/local/bin/pie \
     pie install --no-cache \
