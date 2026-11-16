@@ -36,10 +36,11 @@ Fix
 - The MCP tools `get_groups` and `get_group_members` now respect the groups assigned to the app, 
   which were ignored before.
 - Added missing ESI error and rate limit checks to the MCP ESI tool.
-- Fixed the mail token being stored again on every access, although it had not changed.
 - Fixed IP address collisions and double limits in the IP rate limit key.
 - Fixed 5xx responses not being retried for ESI requests made through the EVE API
   library and for SSO requests. The ESI proxy was already retrying them.
+- Fixed the mail token being stored again on every access, although it had not changed.
+- Fixed duplicate DIV with id="app".
 
 Security
 - DnsRebindingProtection: Requests without a Host header are now rejected with a 403 response when

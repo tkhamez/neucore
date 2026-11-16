@@ -1,42 +1,40 @@
 <template>
-    <div id="app">
-        <div v-if="loadingCount > 0" v-cloak id="loader"></div>
+    <div v-if="loadingCount > 0" v-cloak id="loader"></div>
 
-        <div v-if="messageTxt" v-cloak class="alert alert-dismissible fade show app-alert" :class="[messageType]">
-            {{ messageTxt }}
-            <button type="button" class="btn-close" v-on:click="messageTxt = ''" aria-label="Close"></button>
-        </div>
-
-        <nav-bar v-if="settingsLoaded" v-cloak :auth-char="authChar" :logout="logout" :route="route"></nav-bar>
-
-        <playerModal ref="playerModal"></playerModal>
-        <copy-text ref="copyText"></copy-text>
-
-        <component v-if="settingsLoaded" v-cloak v-bind:is="page"
-                   :route="route"
-                   :auth-char="authChar"
-                   :authLoaded="authLoaded"
-        ></component>
-
-        <footer class="footer border-top text-muted small">
-            <div class="container-fluid">
-                <span v-cloak>{{ settings.customization_footer_text }}</span>
-            </div>
-            <div class="container-fluid small">
-                <div class="second-row">
-                    EVE Online® and related materials are trademarks of
-                    <a class="external" href="https://fenriscreations.com/" target="_blank"
-                       rel="noopener noreferrer">Fenris Creations</a>.
-                    <span class="brand">
-                        <a :href="settings.repository" class="text-muted"
-                           target="_blank" rel="noopener noreferrer" title="Neucore on GitHub">
-                            <img :src="logo" alt=""> Neucore
-                        </a>
-                    </span>
-                </div>
-            </div>
-        </footer>
+    <div v-if="messageTxt" v-cloak class="alert alert-dismissible fade show app-alert" :class="[messageType]">
+        {{ messageTxt }}
+        <button type="button" class="btn-close" v-on:click="messageTxt = ''" aria-label="Close"></button>
     </div>
+
+    <nav-bar v-if="settingsLoaded" v-cloak :auth-char="authChar" :logout="logout" :route="route"></nav-bar>
+
+    <playerModal ref="playerModal"></playerModal>
+    <copy-text ref="copyText"></copy-text>
+
+    <component v-if="settingsLoaded" v-cloak v-bind:is="page"
+               :route="route"
+               :auth-char="authChar"
+               :authLoaded="authLoaded"
+    ></component>
+
+    <footer class="footer border-top text-muted small">
+        <div class="container-fluid">
+            <span v-cloak>{{ settings.customization_footer_text }}</span>
+        </div>
+        <div class="container-fluid small">
+            <div class="second-row">
+                EVE Online® and related materials are trademarks of
+                <a class="external" href="https://fenriscreations.com/" target="_blank"
+                   rel="noopener noreferrer">Fenris Creations</a>.
+                <span class="brand">
+                    <a :href="settings.repository" class="text-muted"
+                       target="_blank" rel="noopener noreferrer" title="Neucore on GitHub">
+                        <img :src="logo" alt=""> Neucore
+                    </a>
+                </span>
+            </div>
+        </div>
+    </footer>
 </template>
 
 <script>
