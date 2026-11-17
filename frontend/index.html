@@ -12,21 +12,7 @@
         <meta property="og:description" content="A central identity and access management system for EVE Online communities.">
         <meta property="og:type" content="website">
         <meta property="og:image" content="https://raw.githubusercontent.com/tkhamez/neucore/refs/heads/main/frontend/public/img/logo.png">
-        <%
-        if (!htmlWebpackPlugin.options.inject) {
-            for (let i = 0; i < htmlWebpackPlugin.files.js.length; i++) {
-                const file = htmlWebpackPlugin.files.js[i];
-                %><script defer src="<%= file %>"></script><%
-            }
-            for (let i = 0; i < htmlWebpackPlugin.files.css.length; i++) {
-                const file = htmlWebpackPlugin.files.css[i];
-                %><link href="<%= file %>" rel="stylesheet"><%
-            }
-        }
-        %>
-        <script type="text/javascript" src="<%= BASE_URL %>browser-check.js"></script>
-        <script type="text/javascript" src="<%= BASE_URL %>setup.js"></script>
-        <script type="text/javascript" src="<%= BASE_URL %>custom.js"></script>
+        <script type="module" src="/src/main.js"></script>
     </head>
 
     <body class="neucore">

@@ -3,8 +3,8 @@
   "private": true,
   "scripts": {
     "postinstall": "node bin/install-swagger-ui.js",
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "serve": "vite",
+    "build": "vite build",
     "license-checker": "license-checker-rseidelsohn --summary --onlyAllow 'MIT;Apache-2.0;0BSD;BSD-2-Clause;BSD-3-Clause;ISC;Python-2.0;PSF-2.0;CC-BY-3.0;CC-BY-4.0;CC0-1.0;MPL-2.0;BlueOak-1.0.0;Unlicense'",
     "license-checker:unknown": "license-checker-rseidelsohn --onlyunknown"
   },
@@ -31,17 +31,14 @@
     "vue": "^3.5.30"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^5.0.9",
-    "@vue/cli-service": "^5.0.8",
+    "@vitejs/plugin-vue": "^6.0.11",
     "@vue/compiler-sfc": "^3.5.30",
-    "compression-webpack-plugin": "^12.0.0",
-    "core-js": "^3.48.0",
-    "imports-loader": "^5.0.0",
+    "dotenv": "^18.0.10",
+    "dotenv-expand": "^1000.0.0",
     "license-checker-rseidelsohn": "^5.0.1",
-    "license-webpack-plugin": "^4.0.2",
+    "rollup-plugin-license": "^3.7.2",
     "sass": "^1.98.0",
-    "sass-loader": "^17.0.1",
-    "webpack": "^5.105.4"
+    "vite": "^7.3.8"
   },
   "bundleDependencies": [
     "neucore-js-client"

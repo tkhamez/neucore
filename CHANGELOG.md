@@ -49,8 +49,11 @@ Security
 - Improved/fixed nginx configuration example
 
 Development
+- The frontend is now built with Vite instead of Vue CLI (Webpack). [#42][i42]
 - Exposed the Docker service ports only on localhost instead of all interfaces in the compose.yaml example.
 - Updated dependencies
+
+[i42]: https://github.com/tkhamez/neucore/issues/42
 
 ## 3.3.0
 

@@ -169,9 +169,9 @@ export default {
     created() {
         // environment variables
         Data.envVars = {
-            baseUrl: process.env.BASE_URL,
-            eveImageServer: process.env.VUE_APP_EVE_IMAGE_SERVER,
-            backendHost: process.env.VUE_APP_BACKEND_HOST,
+            baseUrl: import.meta.env.BASE_URL,
+            eveImageServer: import.meta.env.VUE_APP_EVE_IMAGE_SERVER,
+            backendHost: import.meta.env.VUE_APP_BACKEND_HOST,
         };
         if (!Data.envVars.backendHost) {
             const winLocation = window.location;
