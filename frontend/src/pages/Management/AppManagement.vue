@@ -37,7 +37,7 @@
                             This will <em>invalidate</em> the existing secret.<br>
                             See also
                             <a v-cloak class="external" target="_blank" rel="noopener noreferrer"
-                               :href="`${settings.repository}/blob/master/doc/Documentation.md#authentication`">
+                               :href="`${settings.repository}/blob/main/doc/Documentation.md#authentication`">
                                 Authentication for applications</a>.
                         </p>
                         <p>

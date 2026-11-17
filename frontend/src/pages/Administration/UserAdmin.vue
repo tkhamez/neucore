@@ -124,7 +124,7 @@
                 <div class="card-body">
                     <p v-cloak>
                         See
-                        <a class="external" :href="`${settings.repository}/blob/master/doc/API.md`"
+                        <a class="external" :href="`${settings.repository}/blob/main/doc/API.md`"
                            target="_blank" rel="noopener noreferrer">doc/API.md</a>
                         for permissions for each role.
                     </p>
