@@ -249,6 +249,10 @@ body.neucore {
 }
 a {
     text-decoration-style: dotted;
+    // Chrome's "auto" underline offset leaves no visible gap between the
+    // dotted line and the text at larger font sizes (e.g. 16px); an explicit
+    // font-size-relative offset renders consistently across sizes and browsers.
+    text-underline-offset: 0.1em;
 }
 a.external:after {
     font-family: 'Font Awesome 7 Free', serif;

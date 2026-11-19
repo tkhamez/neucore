@@ -35,6 +35,10 @@ Fix
   library and for SSO requests. The ESI proxy was already retrying them.
 - Fixed IP address collisions and double limits in the IP rate limit key.
 - Fixed the mail token being stored again on every access, although it had not changed.
+- Fixed the dotted underline of links touching the text without any visible gap in
+  some browsers (e.g. Chrome) at larger font sizes: the underline is now drawn with
+  an explicit font-size-relative offset, so the gap between text and dotted line is
+  consistent at all font sizes.
 
 Security
 - DNS rebinding protection: Requests without a Host header are now rejected with a 403 response when
