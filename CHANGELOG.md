@@ -51,6 +51,8 @@ Security
 
 Development
 - The frontend is now built with Vite instead of Vue CLI (Webpack). [#42][i42]
+- The generated JavaScript API client (`neucore-js-client`) is now ESM-native: it ships
+  its `src/` directory directly and the obsolete Babel build step was removed.
 - Exposed the Docker service ports only on localhost instead of all interfaces in the compose.yaml example.
 - Updated dependencies
 

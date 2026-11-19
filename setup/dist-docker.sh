@@ -31,7 +31,6 @@ docker compose exec neucore_php sh -c "cd ../dist/build/backend && composer open
 cd "${DIR}"/.. || exit
 docker compose exec neucore_node /app/dist/build/frontend/openapi.sh
 docker compose exec neucore_node sh -c "cd ../dist/build/frontend/neucore-js-client && npm install --ignore-scripts"
-docker compose exec neucore_node sh -c "cd ../dist/build/frontend/neucore-js-client && npm run build"
 
 # Frontend
 cd "${DIR}"/.. || exit

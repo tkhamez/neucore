@@ -135,16 +135,6 @@ export default defineConfig(({mode}) => {
             // The CSP of the app does not allow inline scripts; all supported browsers
             // implement modulepreload, so the polyfill is not needed.
             modulePreloadPolyfill: false,
-            // neucore-js-client is a local (file:) package with a CJS entry whose real
-            // path is outside of node_modules; make sure it is CJS-transformed as well.
-            commonjsOptions: {
-                include: [/node_modules/, /neucore-js-client/],
-            },
-        },
-        optimizeDeps: {
-            // neucore-js-client is a local (file:) package with a CJS entry; force
-            // pre-bundling so that it is served as ESM by the dev server.
-            include: ['neucore-js-client'],
         },
         css: {
             preprocessorOptions: {

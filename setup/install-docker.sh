@@ -12,10 +12,9 @@ else
     docker compose exec neucore_php composer compile
 fi
 
-# Generate and build OpenAPI JavaScript client
+# Generate OpenAPI JavaScript client
 docker compose exec neucore_node /app/frontend/openapi.sh
 docker compose exec neucore_node npm install --ignore-scripts --prefix /app/frontend/neucore-js-client
-docker compose exec neucore_node npm run build --prefix /app/frontend/neucore-js-client
 
 # Build frontend
 docker compose exec neucore_node npm ci
