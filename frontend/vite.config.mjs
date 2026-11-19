@@ -128,6 +128,22 @@ export default defineConfig(({mode}) => {
             hmr: {
                 clientPort: 3000,
             },
+            // The ESI path files (Member Data -> ESI page) are static files in
+            // web/, served by the backend (nginx) in production. In dev the page
+            // runs on :3000, so the app fetches them same-origin and the dev
+            // server proxies the requests to the backend container. The target
+            // must be the docker network address: from inside the container,
+            // "localhost:8080" would point back to this dev server.
+            proxy: {
+                '/esi-paths-http-get.json': {
+                    target: 'http://neucore_http:80',
+                    changeOrigin: true,
+                },
+                '/esi-paths-http-post.json': {
+                    target: 'http://neucore_http:80',
+                    changeOrigin: true,
+                },
+            },
         },
         build: {
             outDir,

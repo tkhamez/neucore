@@ -208,11 +208,14 @@ function getEveLogin(vm) {
 }
 
 function getPaths(vm) {
-    vm.h.fetch(`${Data.envVars.backendHost}/esi-paths-http-get.json`).then(async response => {
+    // Relative URL, so the request is same-origin: in production the files are
+    // served from the app root (web/esi-paths-*.json); in dev the Vite dev
+    // server proxies them to the backend (see vite.config.mjs).
+    vm.h.fetch('esi-paths-http-get.json').then(async response => {
         vm.pathsGet = await response.json();
         result();
     });
-    vm.h.fetch(`${Data.envVars.backendHost}/esi-paths-http-post.json`).then(async response => {
+    vm.h.fetch('esi-paths-http-post.json').then(async response => {
         vm.pathsPost = await response.json();
         result();
     });
