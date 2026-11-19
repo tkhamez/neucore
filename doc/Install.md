@@ -250,7 +250,7 @@ To run the application:
 
 Additionally, for a development environment and to build the application:
 * PHP extensions: pdo_sqlite (optional for unit tests), xdebug (optional for debugging)
-* Composer 2
+* Composer >= 2.11
 * Node.js 24
 * Java runtime >=11 (but only tested with v17) to generate the OpenAPI JavaScript client
 

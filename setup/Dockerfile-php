@@ -38,7 +38,7 @@ RUN --mount=type=bind,from=ghcr.io/php/pie:bin,source=/pie,target=/usr/local/bin
 
 RUN apk del .build-deps
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.11 /usr/bin/composer /usr/bin/composer
 RUN mkdir -p /home/www-data/.composer && chmod 0777 /home/www-data/.composer
 ENV COMPOSER_HOME /home/www-data/.composer
 
