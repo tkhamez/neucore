@@ -47,6 +47,7 @@ Security
   (only relevant if they contain invalid values).
 - The redirect parameter of the login flow is now validated before being stored in the session.
 - Improved/fixed nginx configuration example
+- Added a minimum release age for packages from Composer and npm. 
 
 Development
 - The frontend is now built with Vite instead of Vue CLI (Webpack). [#42][i42]
