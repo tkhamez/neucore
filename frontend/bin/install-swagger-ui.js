@@ -1,9 +1,13 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const sourcePath = `${__dirname}/../node_modules/swagger-ui-dist`;
-const targetPath = `${__dirname}/../../web/swagger-ui-dist`;
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const sourcePath = `${dirname}/../node_modules/swagger-ui-dist`;
+const targetPath = `${dirname}/../../web/swagger-ui-dist`;
 
 if (fs.existsSync(targetPath)) {
     fs.rmSync(targetPath, { recursive: true });

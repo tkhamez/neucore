@@ -1,6 +1,7 @@
 {
   "name": "tkhamez-neucore",
   "private": true,
+  "type": "module",
   "scripts": {
     "postinstall": "node bin/install-swagger-ui.js",
     "serve": "vite",
