@@ -38,7 +38,28 @@
 
 <script>
 import {StatisticsApi} from "neucore-js-client";
-import * as echarts from 'echarts';
+import * as echarts from 'echarts/core';
+import {LineChart} from 'echarts/charts';
+import {
+    TitleComponent,
+    TooltipComponent,
+    GridComponent,
+    LegendComponent,
+    ToolboxComponent,
+    AxisPointerComponent
+} from 'echarts/components';
+import {CanvasRenderer} from 'echarts/renderers';
+
+echarts.use([
+    LineChart,
+    TitleComponent,
+    TooltipComponent,
+    GridComponent,
+    LegendComponent,
+    ToolboxComponent,
+    AxisPointerComponent,
+    CanvasRenderer
+]);
 
 export default {
     data() {
