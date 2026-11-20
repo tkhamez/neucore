@@ -50,50 +50,48 @@ import CopyText    from './components/CopyText.vue';
 import Home    from './pages/Home.vue';
 import Groups  from './pages/Groups.vue';
 import Service from './pages/Service.vue';
-import GroupManagement       from './pages/Management/GroupManagement.vue';
-import AppManagement         from './pages/Management/AppManagement.vue';
-import PlayerManagement from './pages/Management/PlayerManagement.vue';
-import GroupAdmin     from './pages/Administration/GroupAdmin.vue';
-import AppAdmin       from './pages/Administration/AppAdmin.vue';
-import PluginAdmin   from './pages/Administration/PluginAdmin.vue';
-import UserAdmin      from './pages/Administration/UserAdmin.vue';
-import RoleAdmin      from './pages/Administration/RoleAdmin.vue';
-import TrackingAdmin  from './pages/Administration/TrackingAdmin.vue';
-import WatchlistAdmin from './pages/Administration/WatchlistAdmin.vue';
-import SystemSettings from './pages/Administration/SystemSettings.vue';
-import EVELoginAdmin  from './pages/Administration/EVELoginAdmin.vue';
-import Watchlist  from './pages/MemberData/Watchlist.vue';
-import Characters from './pages/MemberData/Characters.vue';
-import Esi        from './pages/MemberData/Esi.vue';
 import logo from "../../setup/logo-small.svg";
+
+const lazyPage = name => defineAsyncComponent(
+    () => import('./pages/lazyPages.js').then(m => m[name])
+);
 
 export default {
     name: 'app',
 
     components: {
+        // components
         NavBar,
         PlayerModal,
         CopyText,
+
+        // Pages
         Home,
         Groups,
         Service,
-        GroupManagement,
-        AppManagement,
-        PlayerManagement,
-        GroupAdmin,
-        AppAdmin,
-        PluginAdmin,
-        UserAdmin,
-        RoleAdmin,
-        TrackingAdmin,
-        WatchlistAdmin,
-        SystemSettings,
-        EVELoginAdmin,
+
+        // Management
+        GroupManagement: lazyPage('GroupManagement'),
+        AppManagement: lazyPage('AppManagement'),
+        PlayerManagement: lazyPage('PlayerManagement'),
+
+        // Administration
+        GroupAdmin: lazyPage('GroupAdmin'),
+        AppAdmin: lazyPage('AppAdmin'),
+        UserAdmin: lazyPage('UserAdmin'),
+        RoleAdmin: lazyPage('RoleAdmin'),
+        PluginAdmin: lazyPage('PluginAdmin'),
+        TrackingAdmin: lazyPage('TrackingAdmin'),
+        WatchlistAdmin: lazyPage('WatchlistAdmin'),
+        SystemSettings: lazyPage('SystemSettings'),
+        EVELoginAdmin: lazyPage('EVELoginAdmin'),
         Statistics: defineAsyncComponent(() => import('./pages/Administration/Statistics.vue')),
+
+        // MemberData
         Tracking: defineAsyncComponent(() => import('./pages/MemberData/Tracking.vue')),
-        Watchlist,
-        Characters,
-        Esi,
+        Watchlist: lazyPage('Watchlist'),
+        Characters: lazyPage('Characters'),
+        Esi: lazyPage('Esi'),
     },
 
     inject: ['store'],

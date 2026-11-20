@@ -27,6 +27,8 @@ Change
   It now only opens a dialogue. The password is generated with a button inside the dialogue.
 - The length of the generated password is now randomly determined within certain limits.
 - Removed custom colours from the Swagger UI (URL `/api`).
+- The application now loads significantly less data when starting up (code splitting). This means shorter
+  loading times and faster access to the application. Additional sections are only loaded when needed.
 
 Fix
 - The MCP tools `get_groups` and `get_group_members` now respect the groups assigned to the app, 
@@ -63,7 +65,6 @@ Development
 - The generated JavaScript API client (`neucore-js-client`) is now ESM-native: it ships
   its `src/` directory directly and the obsolete Babel build step was removed.
 - Converted frontend tooling to ESM
-- Reduced the initial bundle size via code splitting.
 - "debounce" from Lodash was replaced with a local implementation and Lodash was removed.
 - Fixed the Member Data -> ESI page failing to load the list of ESI paths in the
   development environment: the `esi-paths-*.json` files are now fetched same-origin
