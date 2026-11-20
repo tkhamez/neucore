@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import _ from 'lodash';
+import {debounce} from "../../classes/Debounce";
 import Multiselect from '@suadelabs/vue3-multiselect';
 import {ESIApi, CharacterApi, SettingsApi} from 'neucore-js-client';
 import Data from "../../classes/Data";
@@ -152,7 +152,7 @@ export default {
             this.charSearchDelayed(this, query);
         },
 
-        charSearchDelayed: _.debounce((vm, searchTerm) => {
+        charSearchDelayed: debounce((vm, searchTerm) => {
             vm.charSearchResult = [];
             vm.charSearchIsLoading = true;
             new CharacterApi().findCharacter(searchTerm, { currentOnly: 'true' }, (error, data) => {

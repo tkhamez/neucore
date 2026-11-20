@@ -34,7 +34,7 @@ Modal window to add alliances or corporations to the database.
 
 <script>
 import {toRef} from "vue";
-import _ from 'lodash';
+import {debounce} from "../classes/Debounce";
 import {Modal} from "bootstrap";
 import Multiselect from '@suadelabs/vue3-multiselect';
 import {AllianceApi, CorporationApi} from 'neucore-js-client';
@@ -85,7 +85,7 @@ export default {
     }
 }
 
-const searchAlliCorpDelayed = _.debounce((vm, query) => {
+const searchAlliCorpDelayed = debounce((vm, query) => {
     let category;
     if (vm.addType === 'Corporation') {
         category = 'corporations';

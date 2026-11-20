@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import _ from 'lodash';
+import {debounce} from "../../classes/Debounce";
 import {SettingsApi} from 'neucore-js-client';
 import Helper from "../../classes/Helper";
 import Customization from './SystemSettings--Customization.vue';
@@ -84,7 +84,7 @@ export default {
             this.changeSettingDebounced(this, name, value);
         },
 
-        changeSettingDebounced: _.debounce((vm, name, value) => {
+        changeSettingDebounced: debounce((vm, name, value) => {
             vm.changeSetting(name, value);
         }, 250),
 

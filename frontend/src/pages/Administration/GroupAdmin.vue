@@ -146,7 +146,7 @@
 </template>
 
 <script>
-import _ from "lodash";
+import {debounce} from "../../classes/Debounce";
 import {GroupApi} from 'neucore-js-client';
 import Helper from "../../classes/Helper";
 import Util from "../../classes/Util";
@@ -276,7 +276,7 @@ export default {
     },
 }
 
-const changeDescriptionDebounced = _.debounce((vm, value) => {
+const changeDescriptionDebounced = debounce((vm, value) => {
     new GroupApi().userGroupUpdateDescription(vm.groupId, value, (error, data, response) => {
         if (error && response.statusCode === 403) {
             vm.h.message('Unauthorized.', 'error');

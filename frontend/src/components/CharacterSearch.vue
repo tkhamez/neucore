@@ -18,7 +18,7 @@ Input element to search for characters
 </template>
 
 <script>
-import _  from 'lodash';
+import {debounce} from '../classes/Debounce';
 import {CharacterApi} from 'neucore-js-client';
 import Util from '../classes/Util';
 
@@ -60,7 +60,7 @@ export default {
     },
 }
 
-const findCharacter = _.debounce(vm => {
+const findCharacter = debounce(vm => {
     const api = new CharacterApi();
     const callback = (error, data) => {
         if (error) {

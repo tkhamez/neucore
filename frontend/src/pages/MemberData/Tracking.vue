@@ -128,7 +128,7 @@
 </template>
 
 <script>
-import _ from 'lodash';
+import {debounce} from "../../classes/Debounce";
 import DataTable from 'datatables.net';
 import 'datatables.net-bs5';
 import 'datatables.net-bs5/css/dataTables.bootstrap5.css';
@@ -229,7 +229,7 @@ function getCorporations(vm) {
     });
 }
 
-const getMembersDelayed = _.debounce(vm => {
+const getMembersDelayed = debounce(vm => {
     getMembers(vm);
 }, 400);
 

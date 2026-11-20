@@ -1,5 +1,5 @@
 
-import _ from "lodash";
+import {debounce} from "./Debounce";
 import {AllianceApi, CorporationApi} from "neucore-js-client";
 
 export default class Util {
@@ -118,7 +118,7 @@ export default class Util {
         return this.buildIdList(model).join(',');
     }
 
-    static findCorporationsOrAlliancesDelayed = _.debounce((query, type, callback) => {
+    static findCorporationsOrAlliancesDelayed = debounce((query, type, callback) => {
         if (['Corporations', 'Alliances'].indexOf(type) === -1) {
             return;
         }
