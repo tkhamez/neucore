@@ -63,6 +63,12 @@ if (Object.keys(pkg.scripts).length === 0) {
     delete pkg.scripts;
 }
 
+// The test specs are no longer generated at all (see .openapi-generator-ignore),
+// so drop the test runner devDependencies as well.
+for (const name of ['mocha', 'sinon', 'expect.js']) {
+    delete pkg.devDependencies[name];
+}
+
 for (const key of ['dependencies', 'devDependencies']) {
     for (const name of Object.keys(pkg[key] || {})) {
         if (name.startsWith('@babel/')) {
