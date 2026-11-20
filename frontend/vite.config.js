@@ -119,20 +119,15 @@ export default defineConfig(({mode}) => {
             },
         ],
         server: {
-            // The dev server runs inside the neucore_node container on port 8080,
-            // published as 127.0.0.1:3000 (see setup/compose.yaml).
             host: true,
-            port: 8080,
+            port: 5173,
             strictPort: true,
-            hmr: {
-                clientPort: 3000,
-            },
             // The ESI path files (Member Data -> ESI page) are static files in
             // web/, served by the backend (nginx) in production. In dev the page
-            // runs on :3000, so the app fetches them same-origin and the dev
+            // runs on :5173, so the app fetches them same-origin and the dev
             // server proxies the requests to the backend container. The target
-            // must be the docker network address: from inside the container,
-            // "localhost:8080" would point back to this dev server.
+            // must be the docker network address of the http container, not a
+            // localhost URL (different container).
             proxy: {
                 '/esi-paths-http-get.json': {
                     target: 'http://neucore_http:80',

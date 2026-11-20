@@ -56,6 +56,8 @@ Security
 
 Development
 - The frontend is now built with Vite instead of Vue CLI (Webpack). [#42][i42]
+- The frontend development server now runs on port 5173 (Vite's default) instead
+  of port 3000.
 - The frontend environment variables have been renamed from `VUE_APP_*` to `VITE_*`
   (Vite's default prefix).
 - The generated JavaScript API client (`neucore-js-client`) is now ESM-native: it ships

@@ -33,8 +33,8 @@ Java is available in the `neucore_node` container for the OpenAPI Generator.
   (plugin dirs, PHP Dockerfile selection).
 - Initial setup: `docker compose build` → `docker compose up` → `setup/install-docker.sh` (production variant:
   `setup/install-docker.sh prod`, which also builds the frontend). In dev, the frontend is served by the dev
-  server on port 3000 — no separate `npm run build` needed.
-- URLs: app `http://localhost:8080`, frontend dev server `http://localhost:3000`, DB `127.0.0.1:30306`.
+  server on port 5173 — no separate `npm run build` needed.
+- URLs: app `http://localhost:8080`, frontend dev server `http://localhost:5173`, DB `127.0.0.1:30306`.
 - Inside containers: DB host is `neucore_db`; working dirs are `/app/backend` (PHP) and `/app/frontend` (Node).
 - Copy `backend/.env.dist` → `backend/.env` (gitignored).
 
@@ -97,7 +97,7 @@ docker compose exec neucore_node npm run build
 ```
 
 Frontend production build writes to `web/dist/` and `web/index.html`.
-Dev server (`npm run serve`) hot-reloads on port 3000, proxies to `VITE_BACKEND_HOST` 
+Dev server (`npm run serve`) hot-reloads on port 5173, proxies to `VITE_BACKEND_HOST` 
 (set in `frontend/.env.development`).
 
 **`composer.json` has `"sort-packages": true`** — keep `require`/`require-dev` alphabetically sorted.
