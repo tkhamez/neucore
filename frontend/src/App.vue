@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import {toRef} from "vue";
+import {defineAsyncComponent, toRef} from "vue";
 import superAgentPlugin from './superagent-plugin.js';
 import { ApiClient, AuthApi, CharacterApi, PlayerApi, SettingsApi } from 'neucore-js-client';
 import Data   from "./classes/Data";
@@ -62,8 +62,6 @@ import TrackingAdmin  from './pages/Administration/TrackingAdmin.vue';
 import WatchlistAdmin from './pages/Administration/WatchlistAdmin.vue';
 import SystemSettings from './pages/Administration/SystemSettings.vue';
 import EVELoginAdmin  from './pages/Administration/EVELoginAdmin.vue';
-import Statistics     from './pages/Administration/Statistics.vue';
-import Tracking   from './pages/MemberData/Tracking.vue';
 import Watchlist  from './pages/MemberData/Watchlist.vue';
 import Characters from './pages/MemberData/Characters.vue';
 import Esi        from './pages/MemberData/Esi.vue';
@@ -91,8 +89,8 @@ export default {
         WatchlistAdmin,
         SystemSettings,
         EVELoginAdmin,
-        Statistics,
-        Tracking,
+        Statistics: defineAsyncComponent(() => import('./pages/Administration/Statistics.vue')),
+        Tracking: defineAsyncComponent(() => import('./pages/MemberData/Tracking.vue')),
         Watchlist,
         Characters,
         Esi,

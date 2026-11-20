@@ -27,6 +27,9 @@ Change
   It now only opens a dialogue. The password is generated with a button inside the dialogue.
 - The length of the generated password is now randomly determined within certain limits.
 - Removed custom colours from the Swagger UI (URL `/api`).
+- The Statistics and Member Tracking pages (including the ECharts and DataTables
+  libraries) are now loaded on demand, reducing the initial JavaScript download
+  by about 60 %.
 
 Fix
 - The MCP tools `get_groups` and `get_group_members` now respect the groups assigned to the app, 
