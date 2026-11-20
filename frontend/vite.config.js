@@ -14,9 +14,9 @@ const webDir = path.resolve(root, '../web');
 const outDir = path.join(webDir, 'dist');
 
 /**
- * Load the .env files (with variable expansion, e.g. VUE_APP_BACKEND_HOST=$BACKEND_HOST)
- * into process.env, mimicking the dotenv/dotenv-expand behaviour of Vue CLI. Because of
- * envPrefix below, Vite exposes them as import.meta.env.VUE_APP_*.
+ * Load the .env files (with variable expansion, e.g. VITE_BACKEND_HOST=$BACKEND_HOST)
+ * into process.env, mimicking the dotenv/dotenv-expand behaviour of Vue CLI. Vite
+ * exposes them as import.meta.env.VITE_* (its default env prefix).
  */
 function loadEnvFiles(mode) {
     for (const file of ['.env', '.env.local', `.env.${mode}`, `.env.${mode}.local`]) {
@@ -38,7 +38,6 @@ export default defineConfig(({mode}) => {
 
     return {
         base,
-        envPrefix: 'VUE_APP_',
         resolve: {
             alias: [
                 {

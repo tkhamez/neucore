@@ -97,7 +97,7 @@ docker compose exec neucore_node npm run build
 ```
 
 Frontend production build writes to `web/dist/` and `web/index.html`.
-Dev server (`npm run serve`) hot-reloads on port 3000, proxies to `VUE_APP_BACKEND_HOST` 
+Dev server (`npm run serve`) hot-reloads on port 3000, proxies to `VITE_BACKEND_HOST` 
 (set in `frontend/.env.development`).
 
 **`composer.json` has `"sort-packages": true`** — keep `require`/`require-dev` alphabetically sorted.
