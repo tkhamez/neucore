@@ -66,6 +66,9 @@ Development
 - Fixed the Member Data -> ESI page failing to load the list of ESI paths in the
   development environment: the `esi-paths-*.json` files are now fetched same-origin
   and the Vite dev server proxies the requests to the backend.
+- The development server now serves /dist/* paths from the public directory, so that 
+  paths to images that use the URL of the production asset in Markdown (customisations 
+  stored in the database) are also loaded in the development environment.
 - Exposed the Docker service ports only on localhost instead of all interfaces in the compose.yaml example.
 - Updated dependencies
 

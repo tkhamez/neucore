@@ -117,6 +117,22 @@ export default defineConfig(({mode}) => {
                     walk(outDir);
                 },
             },
+            {
+                // The home page Markdown is DB content rendered at runtime (v-html), so its
+                // asset URLs cannot be base-rewritten by the build: it uses the production
+                // URL /dist/img/... In dev, public files are served from the root, so map
+                // /dist/* to them, keeping dev and prod asset URLs identical.
+                name: 'neucore:dev-dist-alias',
+                apply: 'serve',
+                configureServer(server) {
+                    server.middlewares.use((req, res, next) => {
+                        if (req.url?.startsWith('/dist/')) {
+                            req.url = req.url.slice('/dist'.length);
+                        }
+                        next();
+                    });
+                },
+            },
         ],
         server: {
             host: true,
