@@ -14,6 +14,21 @@ fi
 
 rm -Rf "${DIR}"/neucore-js-client/*
 
+# Restrict the generated output to what the frontend actually uses. The
+# generator honours the ignore file (without overwriting an existing one), so
+# it is rewritten on every run to also exist on a fresh checkout.
+mkdir -p "${DIR}"/neucore-js-client
+cat > "${DIR}"/neucore-js-client/.openapi-generator-ignore <<'EOF'
+.babelrc
+.gitignore
+.travis.yml
+README.md
+docs/
+git_push.sh
+mocha.opts
+test/
+EOF
+
 java -jar "${DIR}"/${FILENAME} generate \
     -c "${DIR}"/neucore-js-client-config.json \
     -i "${DIR}"/../web/frontend-api-3.yml \
@@ -61,5 +76,3 @@ for (const key of ['dependencies', 'devDependencies']) {
 
 fs.writeFileSync(packageJsonPath, JSON.stringify(pkg, null, 2) + '\n');
 EOF
-
-rm -f "${CLIENT_DIR}"/.babelrc
