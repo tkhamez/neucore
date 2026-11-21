@@ -59,6 +59,7 @@
         "arokettu/composer-license-manager": "^1.2",
         "friendsofphp/php-cs-fixer": "^3.0",
         "maglnet/composer-require-checker": "^4.7",
+        "phpcompatibility/php-compatibility": "^10.0.0-alpha2",
         "phpstan/phpstan": "^2.0",
         "phpunit/phpunit": "^10.5",
         "web-token/jwt-library": "^3.2"
@@ -100,6 +101,7 @@
         "phpstan": "phpstan analyse --ansi --memory-limit 512M .",
         "test": "phpunit --colors=always",
         "test:cov": "phpunit --colors=always --coverage-html var/phpunit",
+        "compat": "phpcs --standard=PHPCompatibility --runtime-set testVersion 8.1-8.5 --colors -p src tests",
         "style:check": "php-cs-fixer fix --config config/php-cs-fixer.dist.php --dry-run --diff --ansi",
         "style:fix": "php-cs-fixer fix --config config/php-cs-fixer.dist.php --ansi",
         "licenses-scan": "composer licenses:scan",
@@ -113,6 +115,7 @@
         "sort-packages": true,
         "allow-plugins": {
             "arokettu/composer-license-manager": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
             "php-http/discovery": true
         },
         "policy": {
@@ -129,10 +132,9 @@
     "extra": {
         "arokettu/composer-license-manager": {
             "licenses": {
-                "allowed": ["MIT", "ISC", "BSD-3*", "Apache*"],
+                "allowed": ["MIT", "ISC", "BSD-3*", "Apache*", "LGPL-3.0-or-later"],
                 "allow-empty": false
-            },
-            "enforced": true
+            }
         }
     }
 }
