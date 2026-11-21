@@ -18,6 +18,24 @@ return array (
       'windowSize' => '15m',
     ),
   ),
+  '/characters/[0-9]+/access-lists' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-access',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/access-lists/{access_list_id}' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-access',
+      'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
   '/characters/[0-9]+/agents_research' => 
   array (
     'get' => 
@@ -174,6 +192,24 @@ return array (
     array (
       'group' => 'char-contract',
       'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/cosmetics/skinr' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-skinr',
+      'maxTokens' => 30,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/cosmetics/skinr/components' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-skinr',
+      'maxTokens' => 30,
       'windowSize' => '15m',
     ),
   ),
@@ -378,6 +414,42 @@ return array (
       'windowSize' => '15m',
     ),
   ),
+  '/characters/[0-9]+/mercenary-tactical-operations' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-activity',
+      'maxTokens' => 150,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/mercenary-tactical-operations/{operation_id}' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-activity',
+      'maxTokens' => 150,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/military-campaigns/objectives' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-military-campaign',
+      'maxTokens' => 150,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/military-campaigns/objectives/{objective_id}' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-military-campaign',
+      'maxTokens' => 150,
+      'windowSize' => '15m',
+    ),
+  ),
   '/characters/[0-9]+/mining' => 
   array (
     'get' => 
@@ -411,6 +483,15 @@ return array (
     array (
       'group' => 'char-location',
       'maxTokens' => 1200,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/paragon-hub/skinr' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-paragon-hub',
+      'maxTokens' => 150,
       'windowSize' => '15m',
     ),
   ),
@@ -483,6 +564,24 @@ return array (
     array (
       'group' => 'char-social',
       'maxTokens' => 600,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/structures/mercenary-dens' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-structure',
+      'maxTokens' => 30,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/characters/[0-9]+/structures/mercenary-dens/{mercenary_den_id}' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-structure',
+      'maxTokens' => 30,
       'windowSize' => '15m',
     ),
   ),
@@ -864,6 +963,42 @@ return array (
       'windowSize' => '15m',
     ),
   ),
+  '/corporations/[0-9]+/structures/skyhooks' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'corp-structure',
+      'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/corporations/[0-9]+/structures/skyhooks/{skyhook_id}' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'corp-structure',
+      'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/corporations/[0-9]+/structures/sovereignty-hubs' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'corp-structure',
+      'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/corporations/[0-9]+/structures/sovereignty-hubs/{sovereignty_hub_id}' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'corp-structure',
+      'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
   '/corporations/[0-9]+/titles' => 
   array (
     'get' => 
@@ -897,6 +1032,15 @@ return array (
     array (
       'group' => 'corp-wallet',
       'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/cosmetics/skinr/{skinr_id}' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'skinr',
+      'maxTokens' => 12000,
       'windowSize' => '15m',
     ),
   ),
@@ -1143,11 +1287,92 @@ return array (
       'windowSize' => '15m',
     ),
   ),
+  '/meta/name' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'meta',
+      'maxTokens' => 150,
+      'windowSize' => '15m',
+    ),
+  ),
   '/meta/status' => 
   array (
     'get' => 
     array (
       'group' => 'meta',
+      'maxTokens' => 150,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/military-campaigns' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'military-campaign',
+      'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/military-campaigns/{campaign_id}' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'military-campaign',
+      'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/military-campaigns/{campaign_id}/objectives' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'military-campaign',
+      'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/military-campaigns/{campaign_id}/objectives/{objective_id}' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'military-campaign',
+      'maxTokens' => 300,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/paragon-hub/skinr' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'paragon-hub',
+      'maxTokens' => 150,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/paragon-hub/skinr/alliances/[0-9]+' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-paragon-hub',
+      'maxTokens' => 150,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/paragon-hub/skinr/characters/[0-9]+' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-paragon-hub',
+      'maxTokens' => 150,
+      'windowSize' => '15m',
+    ),
+  ),
+  '/paragon-hub/skinr/corporations/[0-9]+' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'char-paragon-hub',
       'maxTokens' => 150,
       'windowSize' => '15m',
     ),
@@ -1161,6 +1386,15 @@ return array (
       'windowSize' => '15m',
     ),
   ),
+  '/skyhooks/raidable' => 
+  array (
+    'get' => 
+    array (
+      'group' => 'activity',
+      'maxTokens' => 30,
+      'windowSize' => '15m',
+    ),
+  ),
   '/sovereignty/campaigns' => 
   array (
     'get' => 
@@ -1170,16 +1404,7 @@ return array (
       'windowSize' => '15m',
     ),
   ),
-  '/sovereignty/map' => 
-  array (
-    'get' => 
-    array (
-      'group' => 'sovereignty',
-      'maxTokens' => 600,
-      'windowSize' => '15m',
-    ),
-  ),
-  '/sovereignty/structures' => 
+  '/sovereignty/systems' => 
   array (
     'get' => 
     array (
