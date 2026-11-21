@@ -350,10 +350,12 @@ Referrer-Policy "same-origin"
 Cross-Origin-Embedder-Policy "credentialless"
 Cross-Origin-Opener-Policy "same-origin"
 Cross-Origin-Resource-Policy "same-origin"
-Permissions-Policy: "accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=(self), gamepad=(), speaker-selection=(), conversion-measurement=(), focus-without-user-activation=(), hid=(), idle-detection=(), interest-cohort=(), serial=(), sync-script=(), trust-token-redemption=(), unload=(), window-placement=(), vertical-scroll=()"
+Permissions-Policy: "accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), cross-origin-isolated=(), display-capture=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=(self), gamepad=(), speaker-selection=(), conversion-measurement=(), focus-without-user-activation=(), hid=(), idle-detection=(), serial=(), trust-token-redemption=(), unload=(), window-management=(), storage-access=(), vertical-scroll=()"
 ```
 
-Note: `Cross-Origin-Embedder-Policy "credentialless"` is necessary to load images from https://images.evetech.net/.
+Notes:
+- `Cross-Origin-Embedder-Policy "credentialless"` is necessary to load images from https://images.evetech.net/.
+- For `Permissions-Policy` see also https://github.com/w3c/webappsec-permissions-policy/blob/main/features.md
 
 ## Build Distribution
 

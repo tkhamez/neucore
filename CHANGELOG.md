@@ -61,7 +61,8 @@ Security
   CSP `frame-ancestors 'none'` directive (for Browsers that do not support `frame-ancestors`).
 - Removed the `sandbox` directive from the CSP. It only restricted browser APIs that the application
   does not use, while it had to allow everything the application does use. The required `allow-scripts` +
-  `allow-same-origin` combination is escapable by design and produced console warnings. 
+  `allow-same-origin` combination is escapable by design and produced console warnings.
+- Updated the `Permissions-Policy` header features.
 
 Development
 - The frontend is now built with Vite instead of Vue CLI (Webpack). [#42][i42]
