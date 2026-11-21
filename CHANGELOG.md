@@ -10,10 +10,12 @@ dd mm yyyy
 
 New
 - The storage for the API rate limit counters is now explicitly configured with the new
-  `NEUCORE_RATE_LIMIT_STORAGE` environment variable. Memcached is now also supported.
-  APCu is the default. Previously the storage was selected automatically: APCu if available, 
-  database otherwise. For backward compatibility, the database will still be used for storage 
-  if APCu has been configured but is not available.
+  `NEUCORE_RATE_LIMIT_STORAGE` environment variable and supports Memcached now (see also 
+  [.env.dist](backend/.env.dist)).
+  Memcached uses atomic updates and is the recommended choice. APCu is the default. 
+  Previously the storage was selected automatically: APCu if available, database otherwise. 
+  For backward compatibility, the database will still be used for storage if APCu has been configured 
+  but is not available.
 - Memcached: Reduced the timeouts and made them configurable with `NEUCORE_MEMCACHED_CONNECT_TIMEOUT` 
   and `NEUCORE_MEMCACHED_POLL_TIMEOUT`, see [.env.dist](backend/.env.dist) for more information.
 - All outgoing HTTP requests (ESI proxy, EVE API, SSO) are now bounded by timeouts:
@@ -54,7 +56,12 @@ Security
   (only relevant if they contain invalid values).
 - The redirect parameter of the login flow is now validated before being stored in the session.
 - Improved/fixed nginx configuration example
-- Added a minimum release age for packages from Composer and npm. 
+- Added a minimum release age for packages from Composer and npm.
+- The `X-Frame-Options` header is now set to `DENY` instead of `sameorigin` to match the
+  CSP `frame-ancestors 'none'` directive (for Browsers that do not support `frame-ancestors`).
+- Removed the `sandbox` directive from the CSP. It only restricted browser APIs that the application
+  does not use, while it had to allow everything the application does use. The required `allow-scripts` +
+  `allow-same-origin` combination is escapable by design and produced console warnings. 
 
 Development
 - The frontend is now built with Vite instead of Vue CLI (Webpack). [#42][i42]

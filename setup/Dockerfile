@@ -41,8 +41,8 @@ RUN a2enmod rewrite headers ssl socache_shmcb \
 
 RUN cat <<'EOF' > /etc/apache2/conf-enabled/x-neucore.conf
 Header always set Strict-Transport-Security "max-age=31536000"
-Header always set Content-Security-Policy "default-src 'none'; style-src 'self'; script-src 'self'; font-src 'self' data:; img-src 'self' data: https://images.evetech.net; connect-src 'self' https://esi.evetech.net; form-action 'self'; base-uri 'none'; frame-ancestors 'none'; sandbox allow-downloads allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation;"
-Header always set X-Frame-Options "sameorigin"
+Header always set Content-Security-Policy "default-src 'none'; style-src 'self'; script-src 'self'; font-src 'self' data:; img-src 'self' data: https://images.evetech.net; connect-src 'self' https://esi.evetech.net; form-action 'self'; base-uri 'none'; frame-ancestors 'none';"
+Header always set X-Frame-Options "DENY"
 Header always set X-Content-Type-Options "nosniff"
 Header always set Referrer-Policy "same-origin"
 Header always set Cross-Origin-Embedder-Policy "credentialless"

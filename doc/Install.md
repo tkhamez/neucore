@@ -343,8 +343,8 @@ It is recommended to set the following security-related HTTP headers in the web 
 
 ```
 Strict-Transport-Security "max-age=31536000"
-Content-Security-Policy "default-src 'none'; style-src 'self'; script-src 'self'; font-src 'self' data:; img-src 'self' data: https://images.evetech.net; connect-src 'self' https://esi.evetech.net; form-action 'self'; base-uri 'none'; frame-ancestors 'none'; sandbox allow-downloads allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation;"
-X-Frame-Options "sameorigin"
+Content-Security-Policy "default-src 'none'; style-src 'self'; script-src 'self'; font-src 'self' data:; img-src 'self' data: https://images.evetech.net; connect-src 'self' https://esi.evetech.net; form-action 'self'; base-uri 'none'; frame-ancestors 'none';"
+X-Frame-Options "DENY"
 X-Content-Type-Options "nosniff"
 Referrer-Policy "same-origin"
 Cross-Origin-Embedder-Policy "credentialless"
