@@ -50,9 +50,9 @@
         "symfony/polyfill-php84": "^1.43",
         "symfony/yaml": "^6.0",
         "tkhamez/eve-api": "^16.20260818",
-        "tkhamez/eve-sso": "^6.0",
-        "tkhamez/neucore-plugin": "^6.1",
-        "tkhamez/slim-role-auth": "^6.0",
+        "tkhamez/eve-sso": "^6.2",
+        "tkhamez/neucore-plugin": "^6.3",
+        "tkhamez/slim-role-auth": "^6.1",
         "zircote/swagger-php": "^5.0"
     },
     "require-dev": {
@@ -117,7 +117,12 @@
         },
         "policy": {
             "cooldown": {
-                "period": "7 days"
+                "period": "7 days",
+                "ignore": [
+                  "tkhamez/eve-sso",
+                  "tkhamez/neucore-plugin",
+                  "tkhamez/slim-role-auth"
+                ]
             }
         }
     },
