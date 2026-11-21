@@ -4,9 +4,9 @@
 - [2.0.0](#200)
 - [1.0.0](#100)
 
-## next 
+## 3.4.0 
 
-dd mm yyyy
+21 Nov 2026
 
 New
 - The storage for the API rate limit counters is now explicitly configured with the new
