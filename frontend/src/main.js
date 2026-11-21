@@ -19,6 +19,10 @@ import store from "./store";
 import "./index.scss";
 import App from './App.vue';
 
+// Remove the static fallback from index.html; it stays visible only in browsers
+// that cannot run this application (no JavaScript / no ES module support).
+document.getElementById('app-fallback')?.remove();
+
 const app = createApp(App);
 
 app.config.globalProperties.emitter = createNanoEvents();

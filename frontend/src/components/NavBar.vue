@@ -340,10 +340,6 @@ function addNavBehaviour() {
 
 <!--suppress CssUnusedSymbol -->
 <style scoped>
-    .navbar {
-        padding-top: 0.25rem;
-        padding-bottom: 0.25rem;
-    }
     .dropdown-menu {
         margin: 0;
     }

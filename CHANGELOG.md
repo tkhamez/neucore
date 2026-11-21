@@ -24,13 +24,14 @@ New
   to an unresponsive endpoint could stall indefinitely.
 - ESI header cache: Memcached failures are now logged instead of failing silently.
 
-Change
+Improvements
 - The navigation menu entry "Generate password" has been renamed to "Setup password login".
   It now only opens a dialogue. The password is generated with a button inside the dialogue.
 - The length of the generated password is now randomly determined within certain limits.
 - Removed custom colours from the Swagger UI (URL `/api`).
 - The application now loads significantly less data when starting up (code splitting, tree-shake). This means 
   shorter loading times and faster access to the application. Additional sections are only loaded when needed.
+- Changed the browser compatibility check.
 
 Fix
 - The MCP tools `get_groups` and `get_group_members` now respect the groups assigned to the app, 

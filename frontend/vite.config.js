@@ -62,14 +62,14 @@ export default defineConfig(({mode}) => {
                 },
             }),
             {
-                // Inject the plain (non-module) public scripts (browser-check.js,
-                // setup.js, custom.js) right before the app module script. This keeps
-                // the historical HTML layout and avoids Vite trying to bundle them.
+                // Inject the plain (non-module) public scripts (setup.js, custom.js)
+                // right before the app module script. This keeps the historical HTML
+                // layout and avoids Vite trying to bundle them.
                 name: 'neucore:html-scripts',
                 transformIndexHtml: {
                     order: 'post',
                     handler: html => {
-                        const scripts = ['browser-check.js', 'setup.js', 'custom.js']
+                        const scripts = ['setup.js', 'custom.js']
                             .map(file => `<script type="text/javascript" src="${base}${file}"></script>`)
                             .join('\n        ');
                         let result = html.replace(

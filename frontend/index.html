@@ -16,17 +16,39 @@
     </head>
 
     <body class="neucore">
-        <noscript>
-            <h1>Neucore - Alliance Core Services</h1>
-            <p>
-                A central identity and access management system for EVE Online communities.
-                <br>
-                <a href="https://github.com/tkhamez/neucore" target="_blank"
-                   rel="noopener noreferrer">github.com/tkhamez/neucore</a>
-            </p>
-            <small><strong>You need to enable <em>JavaScript</em> to run this application.</strong></small>
-        </noscript>
-
-        <div id="app"></div>
+        <div id="app">
+            <div id="app-fallback">
+                <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+                    <div class="container-fluid">
+                        <span class="navbar-brand">
+                            <img src="/dist/img/logo-small.png" alt="Logo" class="align-top me-2 align-middle">
+                            Neucore
+                        </span>
+                    </div>
+                </nav>
+                <div class="container-fluid">
+                    <div class="card mt-3 mb-3">
+                        <div class="card-body">
+                            <h1 class="text-muted">Neucore - Alliance Core Services</h1>
+                            <small class="text-muted">
+                                A central identity and access management system for EVE Online communities -
+                                <a href="https://github.com/tkhamez/neucore" target="_blank"
+                                   rel="noopener noreferrer">github.com/tkhamez/neucore</a>.
+                            </small>
+                            <br>
+                            <br>
+                            <p><strong>Loading&hellip;</strong></p>
+                            <p>
+                                If this message remains, you are using an <strong>outdated browser</strong>
+                                or <em>JavaScript</em> is disabled. Please
+                                <a href="https://browsehappy.com/" target="_blank"
+                                   rel="noopener noreferrer">upgrade your browser</a> to improve
+                                your experience and security.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
