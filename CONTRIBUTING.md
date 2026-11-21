@@ -55,6 +55,7 @@ Run checks - in the `neucore_php` container:
 composer style:check    # Check style
 composer style:fix      # Auto-fix style issues
 composer phpstan        # Static analysis
+composer compat         # Version compatibility check
 composer test           # Run tests
 ```
 

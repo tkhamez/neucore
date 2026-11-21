@@ -77,7 +77,7 @@ Java is available in the `neucore_node` container for the OpenAPI Generator.
 - Max line length: **120 characters**. Not enforced by any tool, but it is a hard requirement in all new or
   modified code (backend and frontend).
 - Frontend: 4-space indent, 120 char line max. No linter/formatter — manual compliance.
-- Verification order: `composer style:check && composer phpstan && composer test`.
+- Verification order: `composer style:check && composer phpstan && composer compat && composer test`.
 
 ## Build / codegen order
 
@@ -91,7 +91,6 @@ docker compose exec neucore_node markdown-toc ../doc/API.md -i
 # 2. JS API client
 docker compose exec neucore_node /app/frontend/openapi.sh
 docker compose exec neucore_node npm install --ignore-scripts --prefix /app/frontend/neucore-js-client
-docker compose exec neucore_node npm run build --prefix /app/frontend/neucore-js-client
 # 3. Frontend production build
 docker compose exec neucore_node npm run build
 ```
