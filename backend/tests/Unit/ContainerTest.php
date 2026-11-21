@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use DI\ContainerBuilder;
+use DI\DependencyException;
+use DI\NotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Application;
 use Neucore\Container;
@@ -135,5 +138,50 @@ class ContainerTest extends TestCase
         $this->expectExceptionMessage('Invalid storage type invalid.');
         $factory = Container::getDefinitions()[ApiRateLimitStorage::class];
         $factory($configContainer);
+    }
+
+    /**
+     * @throws DependencyException
+     * @throws NotFoundException
+     * @throws \Exception
+     */
+    public function testStorageFactoryInCompiledContainer(): void
+    {
+        // The compiled container (used in production) inlines the factory closures into its own
+        // class, so private methods of Container are not accessible from the compiled code
+        // (getStorage() must be public).
+
+        $cacheDir = Application::ROOT_DIR . '/var/cache/test/' . uniqid('', true);
+
+        $builder = new ContainerBuilder();
+        $builder->enableCompilation($cacheDir);
+        $builder->addDefinitions(Container::getDefinitions());
+        $container = $builder->build();
+
+        try {
+            $config = new Config(['rate_limit' => ['storage' => Container::STORAGE_APC]]);
+            $container->set(Config::class, $config);
+
+            // In case APC is not available in the test environment, the factory falls back
+            // to the database storage, which requires these two entries.
+            $om = (new Helper())->getObjectManager();
+            $container->set(RepositoryFactory::class, new RepositoryFactory($om));
+            $container->set(ObjectManager::class, new ObjectManager($om, new Logger()));
+
+            $this->assertInstanceOf(
+                ApiRateLimitStorage::class,
+                $container->get(ApiRateLimitStorage::class),
+            );
+        } finally {
+            // Clean-up the compiled container cache
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($cacheDir, \FilesystemIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::CHILD_FIRST,
+            );
+            foreach ($iterator as $file) { /* @var $file \SplFileInfo */
+                $file->isDir() ? rmdir($file->getPathname()) : unlink($file->getPathname());
+            }
+            rmdir($cacheDir);
+        }
     }
 }

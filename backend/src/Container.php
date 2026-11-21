@@ -41,6 +41,11 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Psr7\Factory\ResponseFactory;
 
+/**
+ * Note: Everything here must be public and `self::` cannot be used. PHP-DI extracts the closures
+ * from getDefinitions() into the compiled container class for production, so private members of
+ * this class are not accessible from the compiled code.
+ */
 class Container
 {
     public const STORAGE_DATABASE = 'database';
@@ -206,12 +211,11 @@ class Container
      * @throws NotFoundExceptionInterface
      * @throws ContainerExceptionInterface
      */
-    private static function getStorage(
+    public static function getStorage(
         ContainerInterface $c,
         string $storageName,
         bool $apcFallback = false,
     ): EsiHeaderStorage|ApiRateLimitStorage|null {
-        # Note: "self" does not work here when compiling for production.
         if ($storageName === Container::STORAGE_DATABASE) {
             return new DatabaseStorage(
                 $c->get(RepositoryFactory::class),
